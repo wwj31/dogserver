@@ -5,7 +5,6 @@ import (
 	"github.com/wwj31/dogactor/log"
 	"github.com/wwj31/dogactor/network"
 	"github.com/wwj31/dogactor/tools"
-	lua "github.com/yuin/gopher-lua"
 	"server/common"
 	"server/msg/inner_message"
 	"server/msg/inner_message/inner"
@@ -26,13 +25,13 @@ func (s *UserSession) OnSessionCreated(sess network.INetSession) {
 	// 这里只做session映射，等待客户端请求登录
 	_ = s.gateway.Send(s.gateway.GetID(), func() {
 		// 黑名单判断
-		ip := s.RemoteIP()
-		ret := s.gateway.CallLua("IPFilter", 1, lua.LString(ip))
-		if len(ret) > 0 && !lua.LVIsFalse(ret[0]) {
-			s.Stop()
-			log.KV("ip", s.RemoteIP()).Warn("ip filter")
-			return
-		}
+		//ip := s.RemoteIP()
+		//ret := s.gateway.CallLua("IPFilter", 1, lua.LString(ip))
+		//if len(ret) > 0 && !lua.LVIsFalse(ret[0]) {
+		//	s.Stop()
+		//	log.KV("ip", s.RemoteIP()).Warn("ip filter")
+		//	return
+		//}
 		s.gateway.sessions[s.Id()] = s
 	})
 }

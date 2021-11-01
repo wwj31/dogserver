@@ -12,7 +12,7 @@ import (
 	"os"
 	"os/signal"
 	"server/common"
-	"server/gateway"
+	"server/service/gateway"
 	"syscall"
 )
 
@@ -55,6 +55,7 @@ func main() {
 		case common.GateWay_Actor:
 			regErr = system.Regist(actor.New(common.GatewayName(appId), &gateway.GateWay{Config: conf}))
 		case "all":
+			regErr = system.Regist(actor.New(common.GatewayName(appId), &gateway.GateWay{Config: conf}))
 		}
 
 		if regErr != nil {

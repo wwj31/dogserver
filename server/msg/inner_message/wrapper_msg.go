@@ -18,6 +18,7 @@ func NewGateWrapperByPb(pb proto.Message, gateSession string) *inner.GateMsgWrap
 	return &inner.GateMsgWrapper{GateSession: gateSession, MsgName: tools.MsgName(pb), Data: data}
 }
 
+// 网关封装的消息信息
 func NewGateWrapperByBytes(data []byte, msgName, gateSession string) *inner.GateMsgWrapper {
 	return &inner.GateMsgWrapper{GateSession: gateSession, MsgName: msgName, Data: data}
 }
