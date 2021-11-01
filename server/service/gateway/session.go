@@ -6,9 +6,9 @@ import (
 	"github.com/wwj31/dogactor/network"
 	"github.com/wwj31/dogactor/tools"
 	"server/common"
-	"server/msg/inner_message"
-	"server/msg/inner_message/inner"
-	"server/msg/message"
+	"server/proto/inner_message"
+	"server/proto/inner_message/inner"
+	"server/proto/message"
 )
 
 type UserSession struct {
@@ -73,7 +73,7 @@ func (s *UserSession) OnRecv(data []byte) {
 
 	msgName, ok := s.gateway.msgParser.MsgIdToName(msgId)
 	if !ok {
-		log.KV("msgId", msgId).Error("msg not find struct")
+		log.KV("msgId", msgId).Error("proto not find struct")
 		return
 	}
 
@@ -86,7 +86,5 @@ func (s *UserSession) OnRecv(data []byte) {
 	} else if message.MSG_GAME_SEGMENT_BEGIN.Int32() <= msgId && msgId <= message.MSG_GAME_SEGMENT_END.Int32() {
 		expect.True(s.GameActor != "", log.Fields{"session": s.Id(), "msgId": msgId})
 		err = s.gateway.Send(s.GameActor, wrapperMsg)
-	} else if message.MSG_WORLD_SEGMENT_BEGIN.Int32() <= msgId && msgId <= message.MSG_WORLD_SEGMENT_END.Int32() {
-		err = s.gateway.Send(common.Center_Actor, wrapperMsg)
 	}
 }

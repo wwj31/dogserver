@@ -83,27 +83,3 @@ message L2GTUserSessionDisabled
     string GateSession = 1;
     int64  UID         = 2;
 }
-
-//////////////////////////////////////////////////// world ///////////////////////////////////////////////////////////
-// game通知world创建新玩家
-message G2WCreateNewPlayer
-{
-    int64  RID         = 1;
-    string GateSession = 2;
-    string EID         = 3;
-    double X           = 4;
-    double Y           = 5;
-}
-
-// game通知world玩家进入世界
-message G2WEnterPlayer
-{
-    int64  RID         = 1;
-    string GateSession = 2;
-    string EID         = 3;
-}
-// game通知world session断开
-message G2WInvaildSession
-{
-    string GateSession = 1;
-}

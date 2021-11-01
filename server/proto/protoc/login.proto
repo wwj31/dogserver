@@ -1,0 +1,41 @@
+syntax = "proto3";
+package message;
+option  go_package = "/message";
+
+import "error.proto";
+
+message Ping
+{
+    int64 ClientTimestamp = 1;
+}
+message Pong
+{
+    int64 ClientTimestamp = 1;
+    int64 ServerTimestamp = 2;
+}
+
+message LoginReq
+{
+    string PlatformUUID = 1;    // 平台uuid
+    string PlatformName = 2;    // 平台名字
+    string OS           = 3;    // 系统
+}
+
+message LoginRsp
+{
+    ERROR  Error       = 1;
+    int64  UID         = 2; // 账号唯一id
+    int64  RID         = 3; // 角色Id
+    string  ServerId   = 4; // 服务器Id
+
+}
+
+message EnterGameReq
+{
+
+}
+
+message EnterGameRsp
+{
+
+}

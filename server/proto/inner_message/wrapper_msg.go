@@ -6,7 +6,7 @@ import (
 	"github.com/wwj31/dogactor/tools"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/reflect/protoregistry"
-	"server/msg/inner_message/inner"
+	"server/proto/inner_message/inner"
 )
 
 func NewGateWrapperByPb(pb proto.Message, gateSession string) *inner.GateMsgWrapper {

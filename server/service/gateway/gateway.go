@@ -10,16 +10,18 @@ import (
 	"time"
 
 	"server/common"
-	"server/msg/inner_message/inner"
+	"server/proto/inner_message/inner"
 )
 
 type GateWay struct {
 	actor.Base
 	Config iniconfig.Config
 
+	// 管理所有对外的玩家tcp连接
 	listener network.INetListener
 	sessions map[uint32]*UserSession
 
+	// 消息映射表
 	msgParser *tools.ProtoParser
 }
 

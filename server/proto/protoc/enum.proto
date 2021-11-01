@@ -1,0 +1,33 @@
+syntax = "proto3";
+package message;
+option  go_package = "/message";
+
+//前后端通信协议 id段 100000-1000000
+enum MSG
+{
+    UNKNOWN = 0;
+    PING  = 100001;
+    PONG  = 100002;
+
+    //--------------------------------------------------------------- login proto 200001-300000
+    // 消息段begin
+    LOGIN_SEGMENT_BEGIN = 200001;
+
+    // 请求登录
+    LOGIN_REQ = 200002; // LoginReq
+    LOGIN_RES = 200003; // LoginRes
+
+    // 消息段end
+    LOGIN_SEGMENT_END = 300000;
+
+    //--------------------------------------------------------------- game proto 300001-310000
+    // 消息段begin
+    GAME_SEGMENT_BEGIN = 300001;
+
+    // 请求登录
+    ENTER_GAME_REQ = 300010; // EnterGameReq
+    ENTER_GAME_RSP = 300011; // EnterGameRsp
+
+    // 消息段end
+    GAME_SEGMENT_END = 310000;
+}

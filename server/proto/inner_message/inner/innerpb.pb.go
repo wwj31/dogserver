@@ -709,199 +709,6 @@ func (x *L2GTUserSessionDisabled) GetUID() int64 {
 	return 0
 }
 
-//////////////////////////////////////////////////// world ///////////////////////////////////////////////////////////
-// game通知world创建新玩家
-type G2WCreateNewPlayer struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	RID         int64   `protobuf:"varint,1,opt,name=RID,proto3" json:"RID,omitempty"`
-	GateSession string  `protobuf:"bytes,2,opt,name=GateSession,proto3" json:"GateSession,omitempty"`
-	EID         string  `protobuf:"bytes,3,opt,name=EID,proto3" json:"EID,omitempty"`
-	X           float64 `protobuf:"fixed64,4,opt,name=X,proto3" json:"X,omitempty"`
-	Y           float64 `protobuf:"fixed64,5,opt,name=Y,proto3" json:"Y,omitempty"`
-}
-
-func (x *G2WCreateNewPlayer) Reset() {
-	*x = G2WCreateNewPlayer{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_inner_innerpb_proto_msgTypes[13]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *G2WCreateNewPlayer) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*G2WCreateNewPlayer) ProtoMessage() {}
-
-func (x *G2WCreateNewPlayer) ProtoReflect() protoreflect.Message {
-	mi := &file_inner_innerpb_proto_msgTypes[13]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use G2WCreateNewPlayer.ProtoReflect.Descriptor instead.
-func (*G2WCreateNewPlayer) Descriptor() ([]byte, []int) {
-	return file_inner_innerpb_proto_rawDescGZIP(), []int{13}
-}
-
-func (x *G2WCreateNewPlayer) GetRID() int64 {
-	if x != nil {
-		return x.RID
-	}
-	return 0
-}
-
-func (x *G2WCreateNewPlayer) GetGateSession() string {
-	if x != nil {
-		return x.GateSession
-	}
-	return ""
-}
-
-func (x *G2WCreateNewPlayer) GetEID() string {
-	if x != nil {
-		return x.EID
-	}
-	return ""
-}
-
-func (x *G2WCreateNewPlayer) GetX() float64 {
-	if x != nil {
-		return x.X
-	}
-	return 0
-}
-
-func (x *G2WCreateNewPlayer) GetY() float64 {
-	if x != nil {
-		return x.Y
-	}
-	return 0
-}
-
-// game通知world玩家进入世界
-type G2WEnterPlayer struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	RID         int64  `protobuf:"varint,1,opt,name=RID,proto3" json:"RID,omitempty"`
-	GateSession string `protobuf:"bytes,2,opt,name=GateSession,proto3" json:"GateSession,omitempty"`
-	EID         string `protobuf:"bytes,3,opt,name=EID,proto3" json:"EID,omitempty"`
-}
-
-func (x *G2WEnterPlayer) Reset() {
-	*x = G2WEnterPlayer{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_inner_innerpb_proto_msgTypes[14]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *G2WEnterPlayer) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*G2WEnterPlayer) ProtoMessage() {}
-
-func (x *G2WEnterPlayer) ProtoReflect() protoreflect.Message {
-	mi := &file_inner_innerpb_proto_msgTypes[14]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use G2WEnterPlayer.ProtoReflect.Descriptor instead.
-func (*G2WEnterPlayer) Descriptor() ([]byte, []int) {
-	return file_inner_innerpb_proto_rawDescGZIP(), []int{14}
-}
-
-func (x *G2WEnterPlayer) GetRID() int64 {
-	if x != nil {
-		return x.RID
-	}
-	return 0
-}
-
-func (x *G2WEnterPlayer) GetGateSession() string {
-	if x != nil {
-		return x.GateSession
-	}
-	return ""
-}
-
-func (x *G2WEnterPlayer) GetEID() string {
-	if x != nil {
-		return x.EID
-	}
-	return ""
-}
-
-// game通知world session断开
-type G2WInvaildSession struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	GateSession string `protobuf:"bytes,1,opt,name=GateSession,proto3" json:"GateSession,omitempty"`
-}
-
-func (x *G2WInvaildSession) Reset() {
-	*x = G2WInvaildSession{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_inner_innerpb_proto_msgTypes[15]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *G2WInvaildSession) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*G2WInvaildSession) ProtoMessage() {}
-
-func (x *G2WInvaildSession) ProtoReflect() protoreflect.Message {
-	mi := &file_inner_innerpb_proto_msgTypes[15]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use G2WInvaildSession.ProtoReflect.Descriptor instead.
-func (*G2WInvaildSession) Descriptor() ([]byte, []int) {
-	return file_inner_innerpb_proto_rawDescGZIP(), []int{15}
-}
-
-func (x *G2WInvaildSession) GetGateSession() string {
-	if x != nil {
-		return x.GateSession
-	}
-	return ""
-}
-
 var File_inner_innerpb_proto protoreflect.FileDescriptor
 
 var file_inner_innerpb_proto_rawDesc = []byte{
@@ -963,24 +770,8 @@ var file_inner_innerpb_proto_rawDesc = []byte{
 	0x20, 0x0a, 0x0b, 0x47, 0x61, 0x74, 0x65, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x01,
 	0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x47, 0x61, 0x74, 0x65, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f,
 	0x6e, 0x12, 0x10, 0x0a, 0x03, 0x55, 0x49, 0x44, 0x18, 0x02, 0x20, 0x01, 0x28, 0x03, 0x52, 0x03,
-	0x55, 0x49, 0x44, 0x22, 0x76, 0x0a, 0x12, 0x47, 0x32, 0x57, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65,
-	0x4e, 0x65, 0x77, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x12, 0x10, 0x0a, 0x03, 0x52, 0x49, 0x44,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x03, 0x52, 0x49, 0x44, 0x12, 0x20, 0x0a, 0x0b, 0x47,
-	0x61, 0x74, 0x65, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x0b, 0x47, 0x61, 0x74, 0x65, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x10, 0x0a,
-	0x03, 0x45, 0x49, 0x44, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x45, 0x49, 0x44, 0x12,
-	0x0c, 0x0a, 0x01, 0x58, 0x18, 0x04, 0x20, 0x01, 0x28, 0x01, 0x52, 0x01, 0x58, 0x12, 0x0c, 0x0a,
-	0x01, 0x59, 0x18, 0x05, 0x20, 0x01, 0x28, 0x01, 0x52, 0x01, 0x59, 0x22, 0x56, 0x0a, 0x0e, 0x47,
-	0x32, 0x57, 0x45, 0x6e, 0x74, 0x65, 0x72, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x12, 0x10, 0x0a,
-	0x03, 0x52, 0x49, 0x44, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x03, 0x52, 0x49, 0x44, 0x12,
-	0x20, 0x0a, 0x0b, 0x47, 0x61, 0x74, 0x65, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x02,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x47, 0x61, 0x74, 0x65, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f,
-	0x6e, 0x12, 0x10, 0x0a, 0x03, 0x45, 0x49, 0x44, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03,
-	0x45, 0x49, 0x44, 0x22, 0x35, 0x0a, 0x11, 0x47, 0x32, 0x57, 0x49, 0x6e, 0x76, 0x61, 0x69, 0x6c,
-	0x64, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x20, 0x0a, 0x0b, 0x47, 0x61, 0x74, 0x65,
-	0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x47,
-	0x61, 0x74, 0x65, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x42, 0x08, 0x5a, 0x06, 0x2f, 0x69,
-	0x6e, 0x6e, 0x65, 0x72, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x55, 0x49, 0x44, 0x42, 0x08, 0x5a, 0x06, 0x2f, 0x69, 0x6e, 0x6e, 0x65, 0x72, 0x62, 0x06, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -995,7 +786,7 @@ func file_inner_innerpb_proto_rawDescGZIP() []byte {
 	return file_inner_innerpb_proto_rawDescData
 }
 
-var file_inner_innerpb_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
+var file_inner_innerpb_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
 var file_inner_innerpb_proto_goTypes = []interface{}{
 	(*Error)(nil),                   // 0: inner_message.Error
 	(*GateMsgWrapper)(nil),          // 1: inner_message.GateMsgWrapper
@@ -1010,13 +801,10 @@ var file_inner_innerpb_proto_goTypes = []interface{}{
 	(*G2LRoleOffline)(nil),          // 10: inner_message.G2LRoleOffline
 	(*G2DGameStop)(nil),             // 11: inner_message.G2DGameStop
 	(*L2GTUserSessionDisabled)(nil), // 12: inner_message.L2GTUserSessionDisabled
-	(*G2WCreateNewPlayer)(nil),      // 13: inner_message.G2WCreateNewPlayer
-	(*G2WEnterPlayer)(nil),          // 14: inner_message.G2WEnterPlayer
-	(*G2WInvaildSession)(nil),       // 15: inner_message.G2WInvaildSession
-	nil,                             // 16: inner_message.D2GRoleRes.WholeInfoEntry
+	nil,                             // 13: inner_message.D2GRoleRes.WholeInfoEntry
 }
 var file_inner_innerpb_proto_depIdxs = []int32{
-	16, // 0: inner_message.D2GRoleRes.WholeInfo:type_name -> inner_message.D2GRoleRes.WholeInfoEntry
+	13, // 0: inner_message.D2GRoleRes.WholeInfo:type_name -> inner_message.D2GRoleRes.WholeInfoEntry
 	1,  // [1:1] is the sub-list for method output_type
 	1,  // [1:1] is the sub-list for method input_type
 	1,  // [1:1] is the sub-list for extension type_name
@@ -1186,42 +974,6 @@ func file_inner_innerpb_proto_init() {
 				return nil
 			}
 		}
-		file_inner_innerpb_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*G2WCreateNewPlayer); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_inner_innerpb_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*G2WEnterPlayer); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_inner_innerpb_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*G2WInvaildSession); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -1229,7 +981,7 @@ func file_inner_innerpb_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_inner_innerpb_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   17,
+			NumMessages:   14,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

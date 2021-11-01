@@ -4,7 +4,7 @@ import (
 	"github.com/wwj31/dogactor/expect"
 	"github.com/wwj31/dogactor/log"
 	"server/common"
-	"server/msg/inner_message/inner"
+	"server/proto/inner_message/inner"
 )
 
 // 处理其他服务向gateway发送的消息
@@ -47,7 +47,7 @@ func (s *GateWay) L2GTUserSessionDisabled(sourceId string, msg interface{}) {
 	}
 	session := s.sessions[sessionId]
 	if session == nil {
-		log.KVs(fields).Warn("recvice disabled session msg,but session is nil")
+		log.KVs(fields).Warn("recvice disabled session proto,but session is nil")
 		return
 	}
 	session.Stop()
