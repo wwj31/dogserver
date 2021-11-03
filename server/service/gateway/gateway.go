@@ -41,8 +41,9 @@ func (s *GateWay) OnInit() {
 
 	if err := s.listener.Start(); err != nil {
 		log.KV("err", err).KV("addr", s.Config.String("gate_addr")).Error("gateway listener start err")
-
+		return
 	}
+	log.Debug("gateway OnInit")
 }
 
 // 定期检查并清理死链接

@@ -31,14 +31,12 @@ func UnwrapperGateMsg(msg interface{}) (interface{}, string, error) {
 
 	tp, err := protoregistry.GlobalTypes.FindMessageByName(protoreflect.FullName(wrapper.MsgName))
 	if err != nil {
-		log.KV("msgName", wrapper.MsgName).KV("error", err).Error("not find")
 		return nil, wrapper.GateSession, err
 	}
 
 	actMsg := tp.New().Interface().(proto.Message)
 	err = proto.Unmarshal(wrapper.Data, actMsg.(proto.Message))
 	if err != nil {
-		log.KV("MsgName", wrapper.MsgName).KV("error", err).KV("err", err).Error("Unmarshal failed")
 		return nil, wrapper.GateSession, err
 	}
 	return actMsg, wrapper.GateSession, nil

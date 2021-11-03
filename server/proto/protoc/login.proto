@@ -4,6 +4,10 @@ option  go_package = "/message";
 
 import "error.proto";
 
+message Unknown
+{
+}
+
 message Ping
 {
     int64 ClientTimestamp = 1;

@@ -15,7 +15,7 @@ enum MSG
 
     // 请求登录
     LOGIN_REQ = 200002; // LoginReq
-    LOGIN_RES = 200003; // LoginRes
+    LOGIN_RSP = 200003; // LoginRsp
 
     // 消息段end
     LOGIN_SEGMENT_END = 300000;
