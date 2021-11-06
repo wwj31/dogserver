@@ -3,19 +3,21 @@ package main
 import (
 	"flag"
 	"fmt"
+	"math/rand"
+	"os"
+	"os/signal"
+	"syscall"
+
 	"github.com/spf13/cast"
 	"github.com/wwj31/dogactor/actor"
 	"github.com/wwj31/dogactor/expect"
 	"github.com/wwj31/dogactor/iniconfig"
 	"github.com/wwj31/dogactor/log"
 	"github.com/wwj31/dogactor/tools"
-	"math/rand"
-	"os"
-	"os/signal"
 	"server/common"
+	"server/service/client"
 	"server/service/gateway"
 	"server/service/login"
-	"syscall"
 )
 
 func main() {
@@ -53,8 +55,12 @@ func main() {
 		system, _ := actor.NewSystem()
 
 		switch appType {
+		case common.Client:
+			expect.Nil(system.Regist(actor.New(common.Client, &client.Client{})))
 		case common.GateWay_Actor:
 			expect.Nil(system.Regist(actor.New(common.GatewayName(appId), &gateway.GateWay{Config: conf})))
+		case common.Login_Actor:
+			expect.Nil(system.Regist(actor.New(common.Login_Actor, &login.Login{})))
 		case "all":
 			expect.Nil(system.Regist(actor.New(common.GatewayName(appId), &gateway.GateWay{Config: conf})))
 			expect.Nil(system.Regist(actor.New(common.Login_Actor, &login.Login{})))

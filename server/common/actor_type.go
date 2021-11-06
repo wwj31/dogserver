@@ -10,6 +10,7 @@ import (
 const (
 	Login_Actor  = "Login"
 	Center_Actor = "CenterWorld"
+	Client       = "Client"
 )
 
 // 动态增删的actor,会有多个 game1、game2
