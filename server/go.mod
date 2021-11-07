@@ -1,17 +1,27 @@
 module server
 
-go 1.15
+go 1.17
 
-replace (
-	github.com/coreos/bbolt => go.etcd.io/bbolt v1.3.4
-	google.golang.org/grpc => google.golang.org/grpc v1.26.0
+require (
+	github.com/golang/protobuf v1.5.2
+	github.com/spf13/cast v1.4.1
+	github.com/wwj31/dogactor v1.0.5
+	google.golang.org/protobuf v1.27.1
 )
 
 require (
-	github.com/golang/protobuf v1.5.0
-	github.com/google/uuid v1.2.0 // indirect
-	github.com/spf13/cast v1.4.1
-	github.com/wwj31/dogactor v1.0.4
-	github.com/yuin/gopher-lua v0.0.0-20200816102855-ee81675732da
-	google.golang.org/protobuf v1.26.0
+	github.com/go-ini/ini v1.63.2 // indirect
+	github.com/gogo/protobuf v1.3.2 // indirect
+	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible // indirect
+	github.com/lestrrat-go/strftime v1.0.5 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
+	github.com/satori/go.uuid v1.2.0 // indirect
+	github.com/wwj31/jtimer v1.1.4 // indirect
+	github.com/yuin/gopher-lua v0.0.0-20210529063254-f4c35e4016d9 // indirect
+	go.uber.org/atomic v1.9.0 // indirect
+	golang.org/x/net v0.0.0-20210405180319-a5a99cb37ef4 // indirect
+	golang.org/x/sys v0.0.0-20210603081109-ebe580a85c40 // indirect
+	golang.org/x/text v0.3.5 // indirect
+	google.golang.org/genproto v0.0.0-20210602131652-f16073e35f0c // indirect
+	google.golang.org/grpc v1.42.0 // indirect
 )

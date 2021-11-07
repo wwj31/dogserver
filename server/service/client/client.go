@@ -8,6 +8,7 @@ import (
 	"github.com/wwj31/dogactor/network"
 	"github.com/wwj31/dogactor/tools"
 	"server/proto/message"
+	"time"
 )
 
 var logger = log.New(log.TAG_DEBUG_I)
@@ -25,20 +26,29 @@ func (s *Client) OnInit() {
 	s.cli.AddLast(func() network.INetHandler { return &SessionHandler{client: s} })
 	expect.Nil(s.cli.Start(false))
 
+	s.InitCmd()
 	s.msgParser = tools.NewProtoParser().Init("message", "MSG")
+
+	// 心跳
+	s.AddTimer(tools.UUID(), 10*time.Second, func(dt int64) {
+		s.SendToServer(message.MSG_PING.Int32(), &message.Ping{})
+	}, -1)
 }
 
-func (s *Client) SendToServer(pb proto.Message) {
-	data, err := proto.Marshal(pb)
+func (s *Client) SendToServer(msgId int32, pb proto.Message) {
+	bytes, err := proto.Marshal(pb)
 	expect.Nil(err)
 
+	data := network.CombineMsgWithId(msgId, bytes)
 	err = s.cli.SendMsg(data)
 	expect.Nil(err)
 }
 
 func (s *Client) OnHandleMessage(sourceId, targetId string, v interface{}) {
 	switch msg := v.(type) {
-	case message.LoginRsp:
-		logger.KV("msg", msg.String()).Info("login success")
+	case *message.LoginRsp:
+		logger.KV("msg", msg.String()).Info("login success!")
+	case *message.Pong:
+		logger.Info("aliving~")
 	}
 }

@@ -20,14 +20,17 @@ func (s *Login) OnHandleMessage(sourceId, targetId string, msg interface{}) {
 	v, gateway, err := inner_message.UnwrapperGateMsg(msg)
 	expect.Nil(err)
 
-	switch m := v.(type) {
+	switch msg := v.(type) {
 	case *message.LoginReq:
-		s.LoginReq(sourceId, gateway, m)
+		s.LoginReq(sourceId, gateway, msg)
 	}
 }
 
 func (s *Login) LoginReq(sourceId, gateway string, msg *message.LoginReq) {
 	log.Debug(msg.String())
+
+	// todo ....处理登录消息
+
 	wrap := inner_message.NewGateWrapperByPb(&message.LoginRsp{}, gateway)
 	expect.Nil(s.Send(sourceId, wrap))
 }

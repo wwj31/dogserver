@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/wwj31/dogactor/actor/cmd"
 	"math/rand"
 	"os"
 	"os/signal"
@@ -52,7 +53,7 @@ func main() {
 			return
 		}
 		// 启动actor服务
-		system, _ := actor.NewSystem()
+		system, _ := actor.NewSystem(actor.WithCMD(cmd.New()))
 
 		switch appType {
 		case common.Client:
@@ -66,6 +67,8 @@ func main() {
 			expect.Nil(system.Regist(actor.New(common.Login_Actor, &login.Login{})))
 		}
 
+		<-exit
+		system.Stop()
 		<-system.CStop
 
 		log.Stop()
