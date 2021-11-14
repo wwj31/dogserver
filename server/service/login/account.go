@@ -1,0 +1,3 @@
+package login
+
+func NewAccount() {}

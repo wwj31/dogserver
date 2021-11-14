@@ -4,16 +4,17 @@ import (
 	"flag"
 	"fmt"
 	"github.com/wwj31/dogactor/actor/cmd"
+	"github.com/wwj31/dogactor/log"
 	"math/rand"
 	"os"
 	"os/signal"
+	"server/service/db"
 	"syscall"
 
 	"github.com/spf13/cast"
 	"github.com/wwj31/dogactor/actor"
 	"github.com/wwj31/dogactor/expect"
 	"github.com/wwj31/dogactor/iniconfig"
-	"github.com/wwj31/dogactor/log"
 	"github.com/wwj31/dogactor/tools"
 	"server/common"
 	"server/service/client"
@@ -25,7 +26,6 @@ func main() {
 	tools.Try(func() {
 		exit := make(chan os.Signal)
 		signal.Notify(exit, syscall.SIGKILL, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
-
 		rand.Seed(tools.Now().UnixNano())
 
 		// 获取程序启动参数
@@ -55,33 +55,34 @@ func main() {
 		// 启动actor服务
 		system, _ := actor.NewSystem(actor.WithCMD(cmd.New()))
 
+		db := db.New(conf)
+		loginActor := login.New(db, conf)
 		switch appType {
 		case common.Client:
 			expect.Nil(system.Regist(actor.New(common.Client, &client.Client{})))
 		case common.GateWay_Actor:
 			expect.Nil(system.Regist(actor.New(common.GatewayName(appId), &gateway.GateWay{Config: conf})))
 		case common.Login_Actor:
-			expect.Nil(system.Regist(actor.New(common.Login_Actor, &login.Login{})))
-		case "all":
+			expect.Nil(system.Regist(actor.New(common.Login_Actor, loginActor)))
+		case "All":
 			expect.Nil(system.Regist(actor.New(common.GatewayName(appId), &gateway.GateWay{Config: conf})))
-			expect.Nil(system.Regist(actor.New(common.Login_Actor, &login.Login{})))
+			expect.Nil(system.Regist(actor.New(common.Login_Actor, loginActor)))
 		}
-
 		<-exit
+
 		system.Stop()
 		<-system.CStop
-
-		log.Stop()
-
-		fmt.Println("stop")
 	}, nil)
+
+	log.Stop()
+	fmt.Println("stop")
 }
 
 func initConf() (appType string, appId, logLv int32, err error) {
 	rand.Seed(tools.Now().UnixNano()) //设置随机数种子
 
 	flag.String("ini", "../ini/config.ini", "ini file path")
-	flag.String("app", "all", "app type")
+	flag.String("app", "All", "app type")
 	flag.Int("id", 0, "app id")
 	flag.Int("log", 0, "log level, if debug log=0")
 

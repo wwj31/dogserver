@@ -7,11 +7,16 @@ require (
 	github.com/spf13/cast v1.4.1
 	github.com/wwj31/dogactor v1.0.5
 	google.golang.org/protobuf v1.27.1
+	gorm.io/driver/mysql v1.1.3
+	gorm.io/gorm v1.22.3
 )
 
 require (
 	github.com/go-ini/ini v1.63.2 // indirect
+	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
+	github.com/jinzhu/inflection v1.0.0 // indirect
+	github.com/jinzhu/now v1.1.2 // indirect
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible // indirect
 	github.com/lestrrat-go/strftime v1.0.5 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
