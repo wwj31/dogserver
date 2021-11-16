@@ -23,7 +23,7 @@ func New() *UID {
 
 func (s *UID) Uuid() (uuid uint64) {
 	if len(s.ids) == 0 {
-		time.Sleep(1 * time.Second)
+		time.Sleep(100 * time.Millisecond)
 		s.gen()
 	}
 
