@@ -16,7 +16,7 @@ func New() *UID {
 		ids:    make([]uint64, 0, max),
 		lastAt: time.Now().UnixNano(),
 	}
-	time.Sleep(1 * time.Second)
+	time.Sleep(500 * time.Millisecond)
 	uid.gen()
 	return uid
 }
