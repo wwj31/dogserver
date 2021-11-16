@@ -8,8 +8,8 @@ import (
 // 玩家角色属性
 type Role struct {
 	gorm.Model
-	RoleId   int64  `gorm:"not null; default 0 BIGINT(20); primary_key"` //角色ID
-	UUID     uint64 `gorm:"index"`                                       //账号ID
+	RoleId   uint64 `gorm:"primary_key"` //角色ID
+	UUID     uint64 `gorm:"index"`       //账号ID
 	SId      int64  //分配的区服ID
 	Name     string `gorm:"index"`
 	Icon     string //头像

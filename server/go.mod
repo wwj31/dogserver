@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/golang/protobuf v1.5.2
 	github.com/spf13/cast v1.4.1
-	github.com/wwj31/dogactor v1.0.5
+	github.com/wwj31/dogactor v1.0.6
 	google.golang.org/protobuf v1.27.1
 	gorm.io/driver/mysql v1.1.3
 	gorm.io/gorm v1.22.3

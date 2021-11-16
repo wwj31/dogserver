@@ -6,10 +6,11 @@ import (
 )
 
 type Account struct {
-	UUId int64 `gorm:"primary_key"` //账号ID
+	UUId         uint64 `gorm:"primary_key"` //账号ID
+	PlatformUUId string `gorm:"index"`       //平台Id
 
 	//最近一次登录角色Id
-	LastRoleId int64
+	LastRoleId uint64
 
 	// map[Role.RoleId]*Role 一个玩家可以拥有多个角色
 	Roles RoleMap `gorm:"type:json"`

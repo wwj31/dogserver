@@ -1,10 +1,12 @@
 package login
 
 import (
+	"github.com/golang/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
 	"github.com/wwj31/dogactor/expect"
 	"github.com/wwj31/dogactor/iniconfig"
 	"github.com/wwj31/dogactor/log"
+	"server/common"
 	"server/proto/inner_message"
 	"server/proto/message"
 )
@@ -32,20 +34,29 @@ func (s *Login) OnInit() {
 }
 
 func (s *Login) OnHandleMessage(sourceId, targetId string, msg interface{}) {
-	v, gateway, err := inner_message.UnwrapperGateMsg(msg)
+	v, gSession, err := inner_message.UnwrapperGateMsg(msg)
 	expect.Nil(err)
 
 	switch msg := v.(type) {
 	case *message.LoginReq:
-		s.LoginReq(sourceId, gateway, msg)
+		s.LoginReq(sourceId, gSession, msg)
 	}
 }
 
-func (s *Login) LoginReq(sourceId, gateway string, msg *message.LoginReq) {
+func (s *Login) LoginReq(sourceId, gSession string, msg *message.LoginReq) {
 	log.Debug(msg.String())
 
+	s.login(msg)
 	// todo ....处理登录消息
+	s.send(sourceId, &message.LoginRsp{})
+}
 
-	wrap := inner_message.NewGateWrapperByPb(&message.LoginRsp{}, gateway)
-	expect.Nil(s.Send(sourceId, wrap))
+func (s *Login) login(*message.LoginReq) {
+
+}
+
+func (s *Login) send(gSession string, pb proto.Message) {
+	gateId, _ := common.SplitGateSession(gSession)
+	wrap := inner_message.NewGateWrapperByPb(pb, gSession)
+	expect.Nil(s.Send(gateId, wrap))
 }
