@@ -20,9 +20,10 @@ message Pong
 
 message LoginReq
 {
-    string PlatformUUID = 1;    // 平台uuid
-    string PlatformName = 2;    // 平台名字
-    string OS           = 3;    // 系统
+    string PlatformUUID  = 1;    // 平台uuid
+    string PlatformName  = 2;    // 平台名字
+    string OS            = 3;    // 系统
+    string ClientVersion = 4;    // 版本号
 }
 
 message LoginRsp

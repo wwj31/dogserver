@@ -9,6 +9,7 @@ import (
 	"server/common"
 	"server/proto/inner_message"
 	"server/proto/message"
+	"server/service/login/account"
 )
 
 type saveLoader interface {
@@ -20,6 +21,8 @@ type Login struct {
 	Config iniconfig.Config
 
 	storage saveLoader
+
+	accountMgr *account.AccountMgr
 }
 
 func New(s saveLoader, conf iniconfig.Config) *Login {
@@ -30,6 +33,7 @@ func New(s saveLoader, conf iniconfig.Config) *Login {
 }
 
 func (s *Login) OnInit() {
+	s.accountMgr = account.NewAccountMgr()
 	log.Debug("login OnInit")
 }
 
@@ -39,20 +43,19 @@ func (s *Login) OnHandleMessage(sourceId, targetId string, msg interface{}) {
 
 	switch msg := v.(type) {
 	case *message.LoginReq:
-		s.LoginReq(sourceId, gSession, msg)
+		s.LoginReq(gSession, msg)
 	}
 }
 
-func (s *Login) LoginReq(sourceId, gSession string, msg *message.LoginReq) {
+func (s *Login) LoginReq(gSession string, msg *message.LoginReq) {
 	log.Debug(msg.String())
 
-	s.login(msg)
-	// todo ....处理登录消息
-	s.send(sourceId, &message.LoginRsp{})
-}
-
-func (s *Login) login(*message.LoginReq) {
-
+	acc, _ := s.accountMgr.Login(msg)
+	s.send(gSession, &message.LoginRsp{
+		UID:      int64(acc.UUId),
+		RID:      int64(acc.LastRoleId),
+		ServerId: acc.Roles[acc.LastRoleId].SId,
+	})
 }
 
 func (s *Login) send(gSession string, pb proto.Message) {

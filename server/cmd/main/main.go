@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/wwj31/dogactor/actor/cluster"
 	"github.com/wwj31/dogactor/actor/cmd"
 	"github.com/wwj31/dogactor/log"
 	"math/rand"
@@ -52,21 +53,20 @@ func main() {
 			fmt.Println("NewAppConf error", conferr)
 			return
 		}
+		etcdAddr, etcdPrefix := iniconfig.BaseString("etcd_addr"), iniconfig.BaseString("etcd_prefix")
 		// 启动actor服务
-		system, _ := actor.NewSystem(actor.WithCMD(cmd.New()))
+		system, _ := actor.NewSystem(actor.WithCMD(cmd.New()), cluster.WithRemote(etcdAddr, etcdPrefix), actor.Addr(conf.String("actor_addr")))
 
-		db := db.New(conf)
-		loginActor := login.New(db, conf)
 		switch appType {
 		case common.Client:
-			expect.Nil(system.Regist(actor.New(common.Client, &client.Client{})))
+			expect.Nil(system.Regist(actor.New(common.Client, &client.Client{}, actor.SetLocalized())))
 		case common.GateWay_Actor:
 			expect.Nil(system.Regist(actor.New(common.GatewayName(appId), &gateway.GateWay{Config: conf})))
 		case common.Login_Actor:
-			expect.Nil(system.Regist(actor.New(common.Login_Actor, loginActor)))
+			newLogin(conf, system)
 		case "All":
 			expect.Nil(system.Regist(actor.New(common.GatewayName(appId), &gateway.GateWay{Config: conf})))
-			expect.Nil(system.Regist(actor.New(common.Login_Actor, loginActor)))
+			newLogin(conf, system)
 		}
 		<-exit
 
@@ -76,6 +76,12 @@ func main() {
 
 	log.Stop()
 	fmt.Println("stop")
+}
+
+func newLogin(conf iniconfig.Config, system *actor.System) {
+	db := db.New(conf)
+	loginActor := login.New(db, conf)
+	expect.Nil(system.Regist(actor.New(common.Login_Actor, loginActor)))
 }
 
 func initConf() (appType string, appId, logLv int32, err error) {

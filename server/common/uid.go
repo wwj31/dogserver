@@ -11,7 +11,7 @@ type UID struct {
 	lastAt int64
 }
 
-func New() *UID {
+func NewUID() *UID {
 	uid := &UID{
 		ids:    make([]uint64, 0, max),
 		lastAt: time.Now().UnixNano(),

@@ -15,8 +15,7 @@ import (
 		gorm的 mssql.JSON 定义
 */
 type (
-	RoleMap map[int64]*Role
-	SDKMap  map[string]*SDK
+	RoleMap map[uint64]*Role
 )
 
 // RoleMap
@@ -25,14 +24,5 @@ func (s RoleMap) Value() (driver.Value, error) {
 }
 
 func (s *RoleMap) Scan(input interface{}) error {
-	return json.Unmarshal(input.([]byte), s)
-}
-
-// SDKMap
-func (s SDKMap) Value() (driver.Value, error) {
-	return json.Marshal(s)
-}
-
-func (s *SDKMap) Scan(input interface{}) error {
 	return json.Unmarshal(input.([]byte), s)
 }

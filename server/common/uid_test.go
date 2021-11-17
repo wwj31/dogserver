@@ -5,7 +5,7 @@ import (
 )
 
 func TestUids(t *testing.T) {
-	uid := New()
+	uid := NewUID()
 	m := make(map[uint64]bool)
 	for {
 		u := uid.Uuid()
