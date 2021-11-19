@@ -10,22 +10,19 @@ import (
 	"server/proto/inner_message"
 	"server/proto/message"
 	"server/service/login/account"
+	"server/service/login/iface"
 )
 
-type saveLoader interface {
-	Save(key string, data interface{}) error
-	Load(key string) interface{}
-}
 type Login struct {
 	actor.Base
 	Config iniconfig.Config
 
-	storage saveLoader
+	storage iface.SaveLoader
 
 	accountMgr *account.AccountMgr
 }
 
-func New(s saveLoader, conf iniconfig.Config) *Login {
+func New(s iface.SaveLoader, conf iniconfig.Config) *Login {
 	return &Login{
 		storage: s,
 		Config:  conf,
@@ -33,7 +30,7 @@ func New(s saveLoader, conf iniconfig.Config) *Login {
 }
 
 func (s *Login) OnInit() {
-	s.accountMgr = account.NewAccountMgr()
+	s.accountMgr = account.NewAccountMgr(s.storage)
 	log.Debug("login OnInit")
 }
 

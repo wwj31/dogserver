@@ -79,8 +79,8 @@ func main() {
 }
 
 func newLogin(conf iniconfig.Config, system *actor.System) {
-	db := db.New(conf)
-	loginActor := login.New(db, conf)
+	dbIns := db.New(conf.String("mysql"), conf.String("database"))
+	loginActor := login.New(dbIns, conf)
 	expect.Nil(system.Regist(actor.New(common.Login_Actor, loginActor)))
 }
 

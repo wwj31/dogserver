@@ -1,13 +1,11 @@
 package table
 
 import (
-	"gorm.io/gorm"
 	"reflect"
 )
 
 // 玩家角色属性
 type Role struct {
-	gorm.Model
 	RoleId   uint64 `gorm:"primary_key"` //角色ID
 	UUId     uint64 `gorm:"index"`       //账号ID
 	SId      string //分配的区服ID
@@ -15,6 +13,7 @@ type Role struct {
 	Icon     string //头像
 	Country  string
 	IsDelete bool //是否删除
+	CreateAt int64
 	LoginAt  int64
 	LogoutAt int64
 }
@@ -29,5 +28,9 @@ func (s *Role) TableName() string {
 
 // 分表数量
 func (s *Role) Count() int {
-	return 0
+	return 2
+}
+
+func (s *Role) Key() uint64 {
+	return s.RoleId
 }

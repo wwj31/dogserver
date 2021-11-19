@@ -32,3 +32,7 @@ func (s *Account) TableName() string {
 func (s *Account) Count() int {
 	return 0
 }
+
+func (s *Account) Key() uint64 {
+	return s.UUId
+}

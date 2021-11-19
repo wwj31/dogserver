@@ -1,6 +1,7 @@
 package common
 
 import (
+	"math/rand"
 	"time"
 )
 
@@ -27,9 +28,14 @@ func (s *UID) Uuid() (uuid uint64) {
 		s.gen()
 	}
 
-	last := len(s.ids) - 1
+	var last int
+	if rand.Int()%2 == 0 && len(s.ids) > 1 {
+		last = 1
+	} else {
+		last = 2
+	}
 	uuid = s.ids[last]
-	s.ids = s.ids[:last]
+	s.ids = s.ids[last+1:]
 
 	if len(s.ids) < max/2 && s.lastAt < time.Now().UnixNano() {
 		s.gen()
