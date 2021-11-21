@@ -17,22 +17,20 @@ type AccountMgr struct {
 	accountsByName       map[string]*Account
 
 	uuidGen *common.UID
-	stored  iface.SaveLoader
 }
 
-func NewAccountMgr(stored iface.SaveLoader) *AccountMgr {
+func NewAccountMgr() *AccountMgr {
 	return &AccountMgr{
 		accountsByUId:        make(map[uint64]*Account),
 		accountsByPlatformId: make(map[string]*Account),
 		accountsByName:       make(map[string]*Account),
 		uuidGen:              common.NewUID(1),
-		stored:               stored,
 	}
 }
 
-func (s *AccountMgr) LoadAllAccount() {
+func (s *AccountMgr) LoadAllAccount(loader iface.Loader) {
 	var all []table.Account
-	err := s.stored.LoadAll((&table.Account{}).TableName(), &all)
+	err := loader.LoadAll((&table.Account{}).TableName(), &all)
 	expect.Nil(err)
 
 	for _, data := range all {
@@ -46,7 +44,7 @@ func (s *AccountMgr) LoadAllAccount() {
 	}
 }
 
-func (s *AccountMgr) Login(msg *message.LoginReq) (acc *Account, new bool) {
+func (s *AccountMgr) Login(msg *message.LoginReq, saver iface.Saver) (acc *Account, new bool) {
 	platformId := combine(msg.PlatformName, msg.PlatformUUID)
 	if acc = s.accountsByPlatformId[platformId]; acc != nil {
 		return acc, false
@@ -80,11 +78,11 @@ func (s *AccountMgr) Login(msg *message.LoginReq) (acc *Account, new bool) {
 	s.accountsByUId[newAcc.UUId] = newAcc
 
 	// 回存db
-	if err := s.stored.Save(&newAcc.Account); err != nil {
+	if err := saver.Save(&newAcc.Account); err != nil {
 		log.KV("err", err).Error("save err")
 		return nil, false
 	}
-	if err := s.stored.Save(newRole); err != nil {
+	if err := saver.Save(newRole); err != nil {
 		log.KV("err", err).Error("save err")
 		return nil, false
 	}

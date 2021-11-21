@@ -30,8 +30,8 @@ func New(s iface.SaveLoader, conf iniconfig.Config) *Login {
 }
 
 func (s *Login) OnInit() {
-	s.accountMgr = account.NewAccountMgr(s.stored)
-	s.accountMgr.LoadAllAccount()
+	s.accountMgr = account.NewAccountMgr()
+	s.accountMgr.LoadAllAccount(s.stored)
 	log.Debug("login OnInit")
 }
 
@@ -48,7 +48,7 @@ func (s *Login) OnHandleMessage(sourceId, targetId string, msg interface{}) {
 func (s *Login) LoginReq(gSession string, msg *message.LoginReq) {
 	log.Debug(msg.String())
 
-	acc, _ := s.accountMgr.Login(msg)
+	acc, _ := s.accountMgr.Login(msg, s.stored)
 	s.send(gSession, &message.LoginRsp{
 		UID:      int64(acc.UUId),
 		RID:      int64(acc.LastRoleId),
