@@ -71,9 +71,7 @@ func (s *AccountMgr) Login(msg *message.LoginReq, saver iface.Saver) (acc *Accou
 	}
 	newAcc.Roles[newRole.RoleId] = newRole
 	newAcc.LastRoleId = newRole.RoleId
-
-	s.accountsByPlatformId[platformId] = newAcc
-	s.accountsByUId[newAcc.UUId] = newAcc
+	newAcc.ServerId = common.GameServer(int32(newRole.SId))
 
 	// 回存db
 	if err := saver.Save(&newAcc.Account); err != nil {
@@ -84,5 +82,9 @@ func (s *AccountMgr) Login(msg *message.LoginReq, saver iface.Saver) (acc *Accou
 		log.KV("err", err).Error("save err")
 		return nil, false
 	}
+
+	s.accountsByPlatformId[platformId] = newAcc
+	s.accountsByUId[newAcc.UUId] = newAcc
+
 	return newAcc, true
 }
