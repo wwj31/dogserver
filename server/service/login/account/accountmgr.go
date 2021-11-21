@@ -69,7 +69,7 @@ func (s *AccountMgr) Login(msg *message.LoginReq, saver iface.Saver) (acc *Accou
 		LoginAt:  time.Now().Unix(),
 		LogoutAt: 0,
 	}
-	newAcc.Roles[newRole.RoleId] = newRole
+	newAcc.Roles = table.RoleMap{newRole.RoleId: newRole}
 	newAcc.LastRoleId = newRole.RoleId
 	newAcc.ServerId = common.GameServer(int32(newRole.SId))
 
