@@ -2,7 +2,7 @@ package account
 
 import (
 	"fmt"
-	"server/service/db/table"
+	"server/db/table"
 )
 
 type Account struct {

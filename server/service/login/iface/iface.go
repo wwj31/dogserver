@@ -1,6 +1,6 @@
 package iface
 
-import "server/service/db/table"
+import "server/db/table"
 
 type SaveLoader interface {
 	Saver
@@ -13,4 +13,5 @@ type Saver interface {
 
 type Loader interface {
 	Load(data table.Tabler) error
+	LoadAll(tableName string, arr interface{}) error
 }

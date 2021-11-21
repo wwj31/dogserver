@@ -9,7 +9,7 @@ import (
 	"math/rand"
 	"os"
 	"os/signal"
-	"server/service/db"
+	"server/db"
 	"syscall"
 
 	"github.com/spf13/cast"

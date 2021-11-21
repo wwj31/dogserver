@@ -17,20 +17,21 @@ type Login struct {
 	actor.Base
 	Config iniconfig.Config
 
-	storage iface.SaveLoader
+	stored iface.SaveLoader
 
 	accountMgr *account.AccountMgr
 }
 
 func New(s iface.SaveLoader, conf iniconfig.Config) *Login {
 	return &Login{
-		storage: s,
-		Config:  conf,
+		stored: s,
+		Config: conf,
 	}
 }
 
 func (s *Login) OnInit() {
-	s.accountMgr = account.NewAccountMgr(s.storage)
+	s.accountMgr = account.NewAccountMgr(s.stored)
+	s.accountMgr.LoadAllAccount()
 	log.Debug("login OnInit")
 }
 

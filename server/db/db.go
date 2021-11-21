@@ -9,8 +9,9 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
-	"server/service/db/table"
+	"server/db/table"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -42,7 +43,7 @@ func New(addr, databaseAddr string) *DB {
 func (s *DB) Save(data table.Tabler) error {
 	name := data.TableName()
 	if data.Count() > 1 {
-		name = name + strconv.Itoa(int(data.Key()%uint64(data.Count()))+1)
+		name = name + strconv.Itoa(num(data.Key(), data.Count()))
 	}
 
 	return s.dbIns.Table(name).Save(data).Error
@@ -51,17 +52,14 @@ func (s *DB) Save(data table.Tabler) error {
 func (s *DB) Load(data table.Tabler) error {
 	name := data.TableName()
 	if data.Count() > 1 {
-		name = name + strconv.Itoa(int(data.Key()%uint64(data.Count()))+1)
+		name = name + strconv.Itoa(num(data.Key(), data.Count()))
 	}
 	return s.dbIns.Table(name).First(data).Error
 }
 
-func (s *DB) LoadAll(data table.Tabler, arr interface{}) error {
-	name := data.TableName()
-	if data.Count() > 1 {
-		name = name + strconv.Itoa(int(data.Key()%uint64(data.Count()))+1)
-	}
-	return s.dbIns.Table(name).Find(arr).Error
+func (s *DB) LoadAll(tableName string, arr interface{}) error {
+	tableName = strings.ToLower(tableName)
+	return s.dbIns.Table(tableName).Find(arr).Error
 }
 
 func checkDatabase(addr string, databaseName string) error {
@@ -111,4 +109,9 @@ func checkTables(addr string, db *gorm.DB) error {
 		}
 	}
 	return nil
+}
+
+func num(key uint64, count int) int {
+	v := int((key>>32)%uint64(count)) + 1
+	return v
 }

@@ -4,6 +4,7 @@ go 1.17
 
 require (
 	github.com/golang/protobuf v1.5.2
+	github.com/sony/sonyflake v1.0.0
 	github.com/spf13/cast v1.4.1
 	github.com/wwj31/dogactor v1.0.6
 	google.golang.org/protobuf v1.27.1

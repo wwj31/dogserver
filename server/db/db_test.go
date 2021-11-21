@@ -3,7 +3,7 @@ package db
 import (
 	"fmt"
 	"github.com/wwj31/dogactor/expect"
-	"server/service/db/table"
+	"server/db/table"
 	"testing"
 )
 
@@ -25,7 +25,11 @@ func TestDBLoadAll(t *testing.T) {
 		"game",
 	)
 
-	all := []*table.Role{}
-	dbIns.LoadAll(&table.Role{RoleId: 1}, &all)
-	fmt.Println(all)
+	var all []table.Account
+	tbName := (&table.Account{}).TableName()
+	dbIns.LoadAll(tbName, &all)
+	for _, v := range all {
+		fmt.Println(v)
+	}
+
 }

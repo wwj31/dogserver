@@ -2,10 +2,11 @@ package account
 
 import (
 	"fmt"
+	"github.com/wwj31/dogactor/expect"
 	"github.com/wwj31/dogactor/log"
 	"server/common"
+	"server/db/table"
 	"server/proto/message"
-	"server/service/db/table"
 	"server/service/login/iface"
 	"time"
 )
@@ -13,17 +14,35 @@ import (
 type AccountMgr struct {
 	accountsByUId        map[uint64]*Account
 	accountsByPlatformId map[string]*Account
+	accountsByName       map[string]*Account
 
 	uuidGen *common.UID
-	saver   iface.Saver
+	stored  iface.SaveLoader
 }
 
-func NewAccountMgr(saver iface.Saver) *AccountMgr {
+func NewAccountMgr(stored iface.SaveLoader) *AccountMgr {
 	return &AccountMgr{
 		accountsByUId:        make(map[uint64]*Account),
 		accountsByPlatformId: make(map[string]*Account),
-		uuidGen:              common.NewUID(),
-		saver:                saver,
+		accountsByName:       make(map[string]*Account),
+		uuidGen:              common.NewUID(1),
+		stored:               stored,
+	}
+}
+
+func (s *AccountMgr) LoadAllAccount() {
+	var all []table.Account
+	err := s.stored.LoadAll((&table.Account{}).TableName(), &all)
+	expect.Nil(err)
+
+	for _, data := range all {
+		acc := &Account{Account: data}
+		s.accountsByPlatformId[acc.PlatformUUId] = acc
+		s.accountsByUId[acc.UUId] = acc
+		lastLoginRole := acc.Roles[acc.LastRoleId]
+		if lastLoginRole != nil {
+			s.accountsByName[lastLoginRole.Name] = acc
+		}
 	}
 }
 
@@ -60,12 +79,12 @@ func (s *AccountMgr) Login(msg *message.LoginReq) (acc *Account, new bool) {
 	s.accountsByPlatformId[platformId] = newAcc
 	s.accountsByUId[newAcc.UUId] = newAcc
 
-	// todo ... 回存db
-	if err := s.saver.Save(&newAcc.Account); err != nil {
+	// 回存db
+	if err := s.stored.Save(&newAcc.Account); err != nil {
 		log.KV("err", err).Error("save err")
 		return nil, false
 	}
-	if err := s.saver.Save(newRole); err != nil {
+	if err := s.stored.Save(newRole); err != nil {
 		log.KV("err", err).Error("save err")
 		return nil, false
 	}
