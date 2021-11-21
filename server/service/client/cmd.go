@@ -14,7 +14,6 @@ func (s *Client) InitCmd() {
 }
 
 func (s *Client) login(arg ...string) {
-
 	expect.True(len(arg) == 1)
 	logReq := &message.LoginReq{
 		PlatformUUID: arg[0],

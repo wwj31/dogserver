@@ -8,7 +8,7 @@ import (
 type Role struct {
 	RoleId   uint64 `gorm:"primary_key"` //角色ID
 	UUId     uint64 `gorm:"index"`       //账号ID
-	SId      string //分配的区服ID
+	SId      uint64 //分配的区服ID
 	Name     string `gorm:"index"`
 	Icon     string //头像
 	Country  string

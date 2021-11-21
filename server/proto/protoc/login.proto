@@ -18,6 +18,11 @@ message Pong
     int64 ServerTimestamp = 2;
 }
 
+message Error
+{
+    ERROR  Error = 1;
+}
+
 message LoginReq
 {
     string PlatformUUID  = 1;    // 平台uuid
@@ -28,16 +33,14 @@ message LoginReq
 
 message LoginRsp
 {
-    ERROR  Error       = 1;
-    int64  UID         = 2; // 账号唯一id
-    int64  RID         = 3; // 角色Id
-    string  ServerId   = 4; // 服务器Id
-
+    uint64  UID         = 1; // 账号id
+    uint64  RID         = 2; // 角色Id
 }
 
 message EnterGameReq
 {
-
+    uint64  UID = 1; // 账号id
+    uint64  RID = 2; // 角色Id
 }
 
 message EnterGameRsp

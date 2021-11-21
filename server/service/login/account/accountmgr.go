@@ -15,6 +15,7 @@ type AccountMgr struct {
 	accountsByUId        map[uint64]*Account
 	accountsByPlatformId map[string]*Account
 	accountsByName       map[string]*Account
+	accountsBygSession   map[string]*Account
 
 	uuidGen *common.UID
 }
@@ -55,14 +56,11 @@ func (s *AccountMgr) Login(msg *message.LoginReq, saver iface.Saver) (acc *Accou
 	newAcc.UUId = s.uuidGen.Uuid()
 	newAcc.PlatformUUId = platformId
 	newAcc.OS = msg.OS
-	newAcc.ClientVersion = msg.ClientVersion
-	newAcc.Roles = make(table.RoleMap)
-
-	// newRole
+	newAcc.ClientVersion = msg.ClientVersion // newRole
 	newRole := &table.Role{
 		UUId:     newAcc.UUId,
 		RoleId:   s.uuidGen.Uuid(),
-		SId:      "S1",
+		SId:      1,
 		Name:     fmt.Sprintf("player_%v", newAcc.UUId),
 		Icon:     "Avatar",
 		Country:  "中国",

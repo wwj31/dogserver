@@ -9,18 +9,19 @@ import (
 	"server/proto/inner_message"
 	"server/proto/inner_message/inner"
 	"server/proto/message"
+	"time"
 )
 
 type UserSession struct {
 	gateway   *GateWay
-	GameActor string // 处理当前session的game
-	Alive     bool
+	GameId    common.ActorId // 处理当前session的game
+	LeaseTime int64
 	network.INetSession
 }
 
 func (s *UserSession) OnSessionCreated(sess network.INetSession) {
-	s.Alive = true
 	s.INetSession = sess
+	s.LeaseTime = time.Now().UnixMilli()
 
 	// 这里只做session映射，等待客户端请求登录
 	_ = s.gateway.Send(s.gateway.GetID(), func() {
@@ -37,10 +38,10 @@ func (s *UserSession) OnSessionCreated(sess network.INetSession) {
 }
 
 func (s *UserSession) OnSessionClosed() {
-	if s.GameActor != "" {
+	if s.GameId != "" {
 		// 连接断开，通知game
 		gateSession := common.GateSession(s.gateway.GetID(), s.Id())
-		_ = s.gateway.Send(s.GameActor, &inner.GT2GSessionClosed{GateSession: gateSession})
+		_ = s.gateway.Send(s.GameId, &inner.GT2GSessionClosed{GateSession: gateSession})
 	}
 
 	_ = s.gateway.Send(s.gateway.GetID(), func() {
@@ -67,7 +68,7 @@ func (s *UserSession) OnRecv(data []byte) {
 			ServerTimestamp: tools.Milliseconds(),
 		}, message.MSG_PONG.Int32())
 		err = s.SendMsg(pong.Buffer())
-		s.Alive = true
+		s.LeaseTime = time.Now().UnixMilli()
 		return
 	}
 
@@ -84,7 +85,7 @@ func (s *UserSession) OnRecv(data []byte) {
 	if message.MSG_LOGIN_SEGMENT_BEGIN.Int32() <= msgId && msgId <= message.MSG_LOGIN_SEGMENT_END.Int32() {
 		err = s.gateway.Send(common.Login_Actor, wrapperMsg)
 	} else if message.MSG_GAME_SEGMENT_BEGIN.Int32() <= msgId && msgId <= message.MSG_GAME_SEGMENT_END.Int32() {
-		expect.True(s.GameActor != "", log.Fields{"session": s.Id(), "msgId": msgId})
-		err = s.gateway.Send(s.GameActor, wrapperMsg)
+		expect.True(s.GameId != "", log.Fields{"session": s.Id(), "msgId": msgId})
+		err = s.gateway.Send(s.GameId, wrapperMsg)
 	}
 }

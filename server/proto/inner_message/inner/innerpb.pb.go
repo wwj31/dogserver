@@ -121,331 +121,6 @@ func (x *GateMsgWrapper) GetData() []byte {
 	return nil
 }
 
-// 存储信息
-type G2DModelSave struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Data      []byte `protobuf:"bytes,1,opt,name=Data,proto3" json:"Data,omitempty"`
-	ModelName string `protobuf:"bytes,2,opt,name=ModelName,proto3" json:"ModelName,omitempty"`
-	RID       int64  `protobuf:"varint,3,opt,name=RID,proto3" json:"RID,omitempty"`
-}
-
-func (x *G2DModelSave) Reset() {
-	*x = G2DModelSave{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_inner_innerpb_proto_msgTypes[2]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *G2DModelSave) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*G2DModelSave) ProtoMessage() {}
-
-func (x *G2DModelSave) ProtoReflect() protoreflect.Message {
-	mi := &file_inner_innerpb_proto_msgTypes[2]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use G2DModelSave.ProtoReflect.Descriptor instead.
-func (*G2DModelSave) Descriptor() ([]byte, []int) {
-	return file_inner_innerpb_proto_rawDescGZIP(), []int{2}
-}
-
-func (x *G2DModelSave) GetData() []byte {
-	if x != nil {
-		return x.Data
-	}
-	return nil
-}
-
-func (x *G2DModelSave) GetModelName() string {
-	if x != nil {
-		return x.ModelName
-	}
-	return ""
-}
-
-func (x *G2DModelSave) GetRID() int64 {
-	if x != nil {
-		return x.RID
-	}
-	return 0
-}
-
-// login 请求所有角色数据
-type L2DAllUserReq struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-}
-
-func (x *L2DAllUserReq) Reset() {
-	*x = L2DAllUserReq{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_inner_innerpb_proto_msgTypes[3]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *L2DAllUserReq) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*L2DAllUserReq) ProtoMessage() {}
-
-func (x *L2DAllUserReq) ProtoReflect() protoreflect.Message {
-	mi := &file_inner_innerpb_proto_msgTypes[3]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use L2DAllUserReq.ProtoReflect.Descriptor instead.
-func (*L2DAllUserReq) Descriptor() ([]byte, []int) {
-	return file_inner_innerpb_proto_rawDescGZIP(), []int{3}
-}
-
-type D2LAllUserRes struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Data []byte `protobuf:"bytes,1,opt,name=Data,proto3" json:"Data,omitempty"` // models.GameUser
-}
-
-func (x *D2LAllUserRes) Reset() {
-	*x = D2LAllUserRes{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_inner_innerpb_proto_msgTypes[4]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *D2LAllUserRes) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*D2LAllUserRes) ProtoMessage() {}
-
-func (x *D2LAllUserRes) ProtoReflect() protoreflect.Message {
-	mi := &file_inner_innerpb_proto_msgTypes[4]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use D2LAllUserRes.ProtoReflect.Descriptor instead.
-func (*D2LAllUserRes) Descriptor() ([]byte, []int) {
-	return file_inner_innerpb_proto_rawDescGZIP(), []int{4}
-}
-
-func (x *D2LAllUserRes) GetData() []byte {
-	if x != nil {
-		return x.Data
-	}
-	return nil
-}
-
-// login 请求回存新玩家
-type L2DUserSave struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Data []byte `protobuf:"bytes,1,opt,name=Data,proto3" json:"Data,omitempty"` // models.GameUser
-}
-
-func (x *L2DUserSave) Reset() {
-	*x = L2DUserSave{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_inner_innerpb_proto_msgTypes[5]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *L2DUserSave) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*L2DUserSave) ProtoMessage() {}
-
-func (x *L2DUserSave) ProtoReflect() protoreflect.Message {
-	mi := &file_inner_innerpb_proto_msgTypes[5]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use L2DUserSave.ProtoReflect.Descriptor instead.
-func (*L2DUserSave) Descriptor() ([]byte, []int) {
-	return file_inner_innerpb_proto_rawDescGZIP(), []int{5}
-}
-
-func (x *L2DUserSave) GetData() []byte {
-	if x != nil {
-		return x.Data
-	}
-	return nil
-}
-
-// game请求role数据
-type G2DRoleReq struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	CallbackId int64 `protobuf:"varint,1,opt,name=CallbackId,proto3" json:"CallbackId,omitempty"` // 回调Id
-	RID        int64 `protobuf:"varint,2,opt,name=RID,proto3" json:"RID,omitempty"`
-}
-
-func (x *G2DRoleReq) Reset() {
-	*x = G2DRoleReq{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_inner_innerpb_proto_msgTypes[6]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *G2DRoleReq) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*G2DRoleReq) ProtoMessage() {}
-
-func (x *G2DRoleReq) ProtoReflect() protoreflect.Message {
-	mi := &file_inner_innerpb_proto_msgTypes[6]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use G2DRoleReq.ProtoReflect.Descriptor instead.
-func (*G2DRoleReq) Descriptor() ([]byte, []int) {
-	return file_inner_innerpb_proto_rawDescGZIP(), []int{6}
-}
-
-func (x *G2DRoleReq) GetCallbackId() int64 {
-	if x != nil {
-		return x.CallbackId
-	}
-	return 0
-}
-
-func (x *G2DRoleReq) GetRID() int64 {
-	if x != nil {
-		return x.RID
-	}
-	return 0
-}
-
-type D2GRoleRes struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	CallbackId int64             `protobuf:"varint,1,opt,name=CallbackId,proto3" json:"CallbackId,omitempty"` // 回调Id
-	Valid      int32             `protobuf:"varint,2,opt,name=valid,proto3" json:"valid,omitempty"`           // 数据是否找到 0.成功 1.未找到角色
-	RID        int64             `protobuf:"varint,3,opt,name=RID,proto3" json:"RID,omitempty"`
-	WholeInfo  map[string][]byte `protobuf:"bytes,4,rep,name=WholeInfo,proto3" json:"WholeInfo,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"` // 角色各个模块的数据
-}
-
-func (x *D2GRoleRes) Reset() {
-	*x = D2GRoleRes{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_inner_innerpb_proto_msgTypes[7]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *D2GRoleRes) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*D2GRoleRes) ProtoMessage() {}
-
-func (x *D2GRoleRes) ProtoReflect() protoreflect.Message {
-	mi := &file_inner_innerpb_proto_msgTypes[7]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use D2GRoleRes.ProtoReflect.Descriptor instead.
-func (*D2GRoleRes) Descriptor() ([]byte, []int) {
-	return file_inner_innerpb_proto_rawDescGZIP(), []int{7}
-}
-
-func (x *D2GRoleRes) GetCallbackId() int64 {
-	if x != nil {
-		return x.CallbackId
-	}
-	return 0
-}
-
-func (x *D2GRoleRes) GetValid() int32 {
-	if x != nil {
-		return x.Valid
-	}
-	return 0
-}
-
-func (x *D2GRoleRes) GetRID() int64 {
-	if x != nil {
-		return x.RID
-	}
-	return 0
-}
-
-func (x *D2GRoleRes) GetWholeInfo() map[string][]byte {
-	if x != nil {
-		return x.WholeInfo
-	}
-	return nil
-}
-
 // gatesession断开,gate通知game
 type GT2GSessionClosed struct {
 	state         protoimpl.MessageState
@@ -458,7 +133,7 @@ type GT2GSessionClosed struct {
 func (x *GT2GSessionClosed) Reset() {
 	*x = GT2GSessionClosed{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_inner_innerpb_proto_msgTypes[8]
+		mi := &file_inner_innerpb_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -471,7 +146,7 @@ func (x *GT2GSessionClosed) String() string {
 func (*GT2GSessionClosed) ProtoMessage() {}
 
 func (x *GT2GSessionClosed) ProtoReflect() protoreflect.Message {
-	mi := &file_inner_innerpb_proto_msgTypes[8]
+	mi := &file_inner_innerpb_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -484,7 +159,7 @@ func (x *GT2GSessionClosed) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GT2GSessionClosed.ProtoReflect.Descriptor instead.
 func (*GT2GSessionClosed) Descriptor() ([]byte, []int) {
-	return file_inner_innerpb_proto_rawDescGZIP(), []int{8}
+	return file_inner_innerpb_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *GT2GSessionClosed) GetGateSession() string {
@@ -500,14 +175,14 @@ type L2GTSessionAssignGame struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	GateSession string `protobuf:"bytes,1,opt,name=GateSession,proto3" json:"GateSession,omitempty"` //
-	GameActorId string `protobuf:"bytes,2,opt,name=GameActorId,proto3" json:"GameActorId,omitempty"` // 分配的游戏Actor
+	GateSession  string `protobuf:"bytes,1,opt,name=GateSession,proto3" json:"GateSession,omitempty"`   //
+	GameServerId string `protobuf:"bytes,2,opt,name=GameServerId,proto3" json:"GameServerId,omitempty"` // 分配的游戏服
 }
 
 func (x *L2GTSessionAssignGame) Reset() {
 	*x = L2GTSessionAssignGame{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_inner_innerpb_proto_msgTypes[9]
+		mi := &file_inner_innerpb_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -520,7 +195,7 @@ func (x *L2GTSessionAssignGame) String() string {
 func (*L2GTSessionAssignGame) ProtoMessage() {}
 
 func (x *L2GTSessionAssignGame) ProtoReflect() protoreflect.Message {
-	mi := &file_inner_innerpb_proto_msgTypes[9]
+	mi := &file_inner_innerpb_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -533,7 +208,7 @@ func (x *L2GTSessionAssignGame) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use L2GTSessionAssignGame.ProtoReflect.Descriptor instead.
 func (*L2GTSessionAssignGame) Descriptor() ([]byte, []int) {
-	return file_inner_innerpb_proto_rawDescGZIP(), []int{9}
+	return file_inner_innerpb_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *L2GTSessionAssignGame) GetGateSession() string {
@@ -543,9 +218,9 @@ func (x *L2GTSessionAssignGame) GetGateSession() string {
 	return ""
 }
 
-func (x *L2GTSessionAssignGame) GetGameActorId() string {
+func (x *L2GTSessionAssignGame) GetGameServerId() string {
 	if x != nil {
-		return x.GameActorId
+		return x.GameServerId
 	}
 	return ""
 }
@@ -564,7 +239,7 @@ type G2LRoleOffline struct {
 func (x *G2LRoleOffline) Reset() {
 	*x = G2LRoleOffline{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_inner_innerpb_proto_msgTypes[10]
+		mi := &file_inner_innerpb_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -577,7 +252,7 @@ func (x *G2LRoleOffline) String() string {
 func (*G2LRoleOffline) ProtoMessage() {}
 
 func (x *G2LRoleOffline) ProtoReflect() protoreflect.Message {
-	mi := &file_inner_innerpb_proto_msgTypes[10]
+	mi := &file_inner_innerpb_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -590,7 +265,7 @@ func (x *G2LRoleOffline) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use G2LRoleOffline.ProtoReflect.Descriptor instead.
 func (*G2LRoleOffline) Descriptor() ([]byte, []int) {
-	return file_inner_innerpb_proto_rawDescGZIP(), []int{10}
+	return file_inner_innerpb_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *G2LRoleOffline) GetUID() int64 {
@@ -624,7 +299,7 @@ type G2DGameStop struct {
 func (x *G2DGameStop) Reset() {
 	*x = G2DGameStop{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_inner_innerpb_proto_msgTypes[11]
+		mi := &file_inner_innerpb_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -637,7 +312,7 @@ func (x *G2DGameStop) String() string {
 func (*G2DGameStop) ProtoMessage() {}
 
 func (x *G2DGameStop) ProtoReflect() protoreflect.Message {
-	mi := &file_inner_innerpb_proto_msgTypes[11]
+	mi := &file_inner_innerpb_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -650,36 +325,35 @@ func (x *G2DGameStop) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use G2DGameStop.ProtoReflect.Descriptor instead.
 func (*G2DGameStop) Descriptor() ([]byte, []int) {
-	return file_inner_innerpb_proto_rawDescGZIP(), []int{11}
+	return file_inner_innerpb_proto_rawDescGZIP(), []int{5}
 }
 
 // login通知game,玩家顶号，旧session失效
-type L2GTUserSessionDisabled struct {
+type L2GTSessionDisabled struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
 	GateSession string `protobuf:"bytes,1,opt,name=GateSession,proto3" json:"GateSession,omitempty"`
-	UID         int64  `protobuf:"varint,2,opt,name=UID,proto3" json:"UID,omitempty"`
 }
 
-func (x *L2GTUserSessionDisabled) Reset() {
-	*x = L2GTUserSessionDisabled{}
+func (x *L2GTSessionDisabled) Reset() {
+	*x = L2GTSessionDisabled{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_inner_innerpb_proto_msgTypes[12]
+		mi := &file_inner_innerpb_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
 }
 
-func (x *L2GTUserSessionDisabled) String() string {
+func (x *L2GTSessionDisabled) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*L2GTUserSessionDisabled) ProtoMessage() {}
+func (*L2GTSessionDisabled) ProtoMessage() {}
 
-func (x *L2GTUserSessionDisabled) ProtoReflect() protoreflect.Message {
-	mi := &file_inner_innerpb_proto_msgTypes[12]
+func (x *L2GTSessionDisabled) ProtoReflect() protoreflect.Message {
+	mi := &file_inner_innerpb_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -690,23 +364,16 @@ func (x *L2GTUserSessionDisabled) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use L2GTUserSessionDisabled.ProtoReflect.Descriptor instead.
-func (*L2GTUserSessionDisabled) Descriptor() ([]byte, []int) {
-	return file_inner_innerpb_proto_rawDescGZIP(), []int{12}
+// Deprecated: Use L2GTSessionDisabled.ProtoReflect.Descriptor instead.
+func (*L2GTSessionDisabled) Descriptor() ([]byte, []int) {
+	return file_inner_innerpb_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *L2GTUserSessionDisabled) GetGateSession() string {
+func (x *L2GTSessionDisabled) GetGateSession() string {
 	if x != nil {
 		return x.GateSession
 	}
 	return ""
-}
-
-func (x *L2GTUserSessionDisabled) GetUID() int64 {
-	if x != nil {
-		return x.UID
-	}
-	return 0
 }
 
 var File_inner_innerpb_proto protoreflect.FileDescriptor
@@ -721,57 +388,27 @@ var file_inner_innerpb_proto_rawDesc = []byte{
 	0x6e, 0x12, 0x18, 0x0a, 0x07, 0x4d, 0x73, 0x67, 0x4e, 0x61, 0x6d, 0x65, 0x18, 0x02, 0x20, 0x01,
 	0x28, 0x09, 0x52, 0x07, 0x4d, 0x73, 0x67, 0x4e, 0x61, 0x6d, 0x65, 0x12, 0x12, 0x0a, 0x04, 0x44,
 	0x61, 0x74, 0x61, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x04, 0x44, 0x61, 0x74, 0x61, 0x22,
-	0x52, 0x0a, 0x0c, 0x47, 0x32, 0x44, 0x4d, 0x6f, 0x64, 0x65, 0x6c, 0x53, 0x61, 0x76, 0x65, 0x12,
-	0x12, 0x0a, 0x04, 0x44, 0x61, 0x74, 0x61, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x04, 0x44,
-	0x61, 0x74, 0x61, 0x12, 0x1c, 0x0a, 0x09, 0x4d, 0x6f, 0x64, 0x65, 0x6c, 0x4e, 0x61, 0x6d, 0x65,
-	0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x4d, 0x6f, 0x64, 0x65, 0x6c, 0x4e, 0x61, 0x6d,
-	0x65, 0x12, 0x10, 0x0a, 0x03, 0x52, 0x49, 0x44, 0x18, 0x03, 0x20, 0x01, 0x28, 0x03, 0x52, 0x03,
-	0x52, 0x49, 0x44, 0x22, 0x0f, 0x0a, 0x0d, 0x4c, 0x32, 0x44, 0x41, 0x6c, 0x6c, 0x55, 0x73, 0x65,
-	0x72, 0x52, 0x65, 0x71, 0x22, 0x23, 0x0a, 0x0d, 0x44, 0x32, 0x4c, 0x41, 0x6c, 0x6c, 0x55, 0x73,
-	0x65, 0x72, 0x52, 0x65, 0x73, 0x12, 0x12, 0x0a, 0x04, 0x44, 0x61, 0x74, 0x61, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x0c, 0x52, 0x04, 0x44, 0x61, 0x74, 0x61, 0x22, 0x21, 0x0a, 0x0b, 0x4c, 0x32, 0x44,
-	0x55, 0x73, 0x65, 0x72, 0x53, 0x61, 0x76, 0x65, 0x12, 0x12, 0x0a, 0x04, 0x44, 0x61, 0x74, 0x61,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x04, 0x44, 0x61, 0x74, 0x61, 0x22, 0x3e, 0x0a, 0x0a,
-	0x47, 0x32, 0x44, 0x52, 0x6f, 0x6c, 0x65, 0x52, 0x65, 0x71, 0x12, 0x1e, 0x0a, 0x0a, 0x43, 0x61,
-	0x6c, 0x6c, 0x62, 0x61, 0x63, 0x6b, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0a,
-	0x43, 0x61, 0x6c, 0x6c, 0x62, 0x61, 0x63, 0x6b, 0x49, 0x64, 0x12, 0x10, 0x0a, 0x03, 0x52, 0x49,
-	0x44, 0x18, 0x02, 0x20, 0x01, 0x28, 0x03, 0x52, 0x03, 0x52, 0x49, 0x44, 0x22, 0xda, 0x01, 0x0a,
-	0x0a, 0x44, 0x32, 0x47, 0x52, 0x6f, 0x6c, 0x65, 0x52, 0x65, 0x73, 0x12, 0x1e, 0x0a, 0x0a, 0x43,
-	0x61, 0x6c, 0x6c, 0x62, 0x61, 0x63, 0x6b, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52,
-	0x0a, 0x43, 0x61, 0x6c, 0x6c, 0x62, 0x61, 0x63, 0x6b, 0x49, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x76,
-	0x61, 0x6c, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x69,
-	0x64, 0x12, 0x10, 0x0a, 0x03, 0x52, 0x49, 0x44, 0x18, 0x03, 0x20, 0x01, 0x28, 0x03, 0x52, 0x03,
-	0x52, 0x49, 0x44, 0x12, 0x46, 0x0a, 0x09, 0x57, 0x68, 0x6f, 0x6c, 0x65, 0x49, 0x6e, 0x66, 0x6f,
-	0x18, 0x04, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x28, 0x2e, 0x69, 0x6e, 0x6e, 0x65, 0x72, 0x5f, 0x6d,
-	0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x2e, 0x44, 0x32, 0x47, 0x52, 0x6f, 0x6c, 0x65, 0x52, 0x65,
-	0x73, 0x2e, 0x57, 0x68, 0x6f, 0x6c, 0x65, 0x49, 0x6e, 0x66, 0x6f, 0x45, 0x6e, 0x74, 0x72, 0x79,
-	0x52, 0x09, 0x57, 0x68, 0x6f, 0x6c, 0x65, 0x49, 0x6e, 0x66, 0x6f, 0x1a, 0x3c, 0x0a, 0x0e, 0x57,
-	0x68, 0x6f, 0x6c, 0x65, 0x49, 0x6e, 0x66, 0x6f, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x12, 0x10, 0x0a,
-	0x03, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x6b, 0x65, 0x79, 0x12,
-	0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x05,
-	0x76, 0x61, 0x6c, 0x75, 0x65, 0x3a, 0x02, 0x38, 0x01, 0x22, 0x35, 0x0a, 0x11, 0x47, 0x54, 0x32,
-	0x47, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x43, 0x6c, 0x6f, 0x73, 0x65, 0x64, 0x12, 0x20,
-	0x0a, 0x0b, 0x47, 0x61, 0x74, 0x65, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x0b, 0x47, 0x61, 0x74, 0x65, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e,
-	0x22, 0x5b, 0x0a, 0x15, 0x4c, 0x32, 0x47, 0x54, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x41,
-	0x73, 0x73, 0x69, 0x67, 0x6e, 0x47, 0x61, 0x6d, 0x65, 0x12, 0x20, 0x0a, 0x0b, 0x47, 0x61, 0x74,
-	0x65, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b,
-	0x47, 0x61, 0x74, 0x65, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x20, 0x0a, 0x0b, 0x47,
-	0x61, 0x6d, 0x65, 0x41, 0x63, 0x74, 0x6f, 0x72, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x0b, 0x47, 0x61, 0x6d, 0x65, 0x41, 0x63, 0x74, 0x6f, 0x72, 0x49, 0x64, 0x22, 0x56, 0x0a,
-	0x0e, 0x47, 0x32, 0x4c, 0x52, 0x6f, 0x6c, 0x65, 0x4f, 0x66, 0x66, 0x6c, 0x69, 0x6e, 0x65, 0x12,
-	0x10, 0x0a, 0x03, 0x55, 0x49, 0x44, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x03, 0x55, 0x49,
-	0x44, 0x12, 0x10, 0x0a, 0x03, 0x52, 0x49, 0x44, 0x18, 0x02, 0x20, 0x01, 0x28, 0x03, 0x52, 0x03,
-	0x52, 0x49, 0x44, 0x12, 0x20, 0x0a, 0x0b, 0x47, 0x61, 0x74, 0x65, 0x53, 0x65, 0x73, 0x73, 0x69,
-	0x6f, 0x6e, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x47, 0x61, 0x74, 0x65, 0x53, 0x65,
-	0x73, 0x73, 0x69, 0x6f, 0x6e, 0x22, 0x0d, 0x0a, 0x0b, 0x47, 0x32, 0x44, 0x47, 0x61, 0x6d, 0x65,
-	0x53, 0x74, 0x6f, 0x70, 0x22, 0x4d, 0x0a, 0x17, 0x4c, 0x32, 0x47, 0x54, 0x55, 0x73, 0x65, 0x72,
-	0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x44, 0x69, 0x73, 0x61, 0x62, 0x6c, 0x65, 0x64, 0x12,
+	0x35, 0x0a, 0x11, 0x47, 0x54, 0x32, 0x47, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x43, 0x6c,
+	0x6f, 0x73, 0x65, 0x64, 0x12, 0x20, 0x0a, 0x0b, 0x47, 0x61, 0x74, 0x65, 0x53, 0x65, 0x73, 0x73,
+	0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x47, 0x61, 0x74, 0x65, 0x53,
+	0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x22, 0x5d, 0x0a, 0x15, 0x4c, 0x32, 0x47, 0x54, 0x53, 0x65,
+	0x73, 0x73, 0x69, 0x6f, 0x6e, 0x41, 0x73, 0x73, 0x69, 0x67, 0x6e, 0x47, 0x61, 0x6d, 0x65, 0x12,
 	0x20, 0x0a, 0x0b, 0x47, 0x61, 0x74, 0x65, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x01,
 	0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x47, 0x61, 0x74, 0x65, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f,
-	0x6e, 0x12, 0x10, 0x0a, 0x03, 0x55, 0x49, 0x44, 0x18, 0x02, 0x20, 0x01, 0x28, 0x03, 0x52, 0x03,
-	0x55, 0x49, 0x44, 0x42, 0x08, 0x5a, 0x06, 0x2f, 0x69, 0x6e, 0x6e, 0x65, 0x72, 0x62, 0x06, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x6e, 0x12, 0x22, 0x0a, 0x0c, 0x47, 0x61, 0x6d, 0x65, 0x53, 0x65, 0x72, 0x76, 0x65, 0x72, 0x49,
+	0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x47, 0x61, 0x6d, 0x65, 0x53, 0x65, 0x72,
+	0x76, 0x65, 0x72, 0x49, 0x64, 0x22, 0x56, 0x0a, 0x0e, 0x47, 0x32, 0x4c, 0x52, 0x6f, 0x6c, 0x65,
+	0x4f, 0x66, 0x66, 0x6c, 0x69, 0x6e, 0x65, 0x12, 0x10, 0x0a, 0x03, 0x55, 0x49, 0x44, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x03, 0x52, 0x03, 0x55, 0x49, 0x44, 0x12, 0x10, 0x0a, 0x03, 0x52, 0x49, 0x44,
+	0x18, 0x02, 0x20, 0x01, 0x28, 0x03, 0x52, 0x03, 0x52, 0x49, 0x44, 0x12, 0x20, 0x0a, 0x0b, 0x47,
+	0x61, 0x74, 0x65, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x0b, 0x47, 0x61, 0x74, 0x65, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x22, 0x0d, 0x0a,
+	0x0b, 0x47, 0x32, 0x44, 0x47, 0x61, 0x6d, 0x65, 0x53, 0x74, 0x6f, 0x70, 0x22, 0x37, 0x0a, 0x13,
+	0x4c, 0x32, 0x47, 0x54, 0x53, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x44, 0x69, 0x73, 0x61, 0x62,
+	0x6c, 0x65, 0x64, 0x12, 0x20, 0x0a, 0x0b, 0x47, 0x61, 0x74, 0x65, 0x53, 0x65, 0x73, 0x73, 0x69,
+	0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x47, 0x61, 0x74, 0x65, 0x53, 0x65,
+	0x73, 0x73, 0x69, 0x6f, 0x6e, 0x42, 0x08, 0x5a, 0x06, 0x2f, 0x69, 0x6e, 0x6e, 0x65, 0x72, 0x62,
+	0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -786,30 +423,22 @@ func file_inner_innerpb_proto_rawDescGZIP() []byte {
 	return file_inner_innerpb_proto_rawDescData
 }
 
-var file_inner_innerpb_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
+var file_inner_innerpb_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_inner_innerpb_proto_goTypes = []interface{}{
-	(*Error)(nil),                   // 0: inner_message.Error
-	(*GateMsgWrapper)(nil),          // 1: inner_message.GateMsgWrapper
-	(*G2DModelSave)(nil),            // 2: inner_message.G2DModelSave
-	(*L2DAllUserReq)(nil),           // 3: inner_message.L2DAllUserReq
-	(*D2LAllUserRes)(nil),           // 4: inner_message.D2LAllUserRes
-	(*L2DUserSave)(nil),             // 5: inner_message.L2DUserSave
-	(*G2DRoleReq)(nil),              // 6: inner_message.G2DRoleReq
-	(*D2GRoleRes)(nil),              // 7: inner_message.D2GRoleRes
-	(*GT2GSessionClosed)(nil),       // 8: inner_message.GT2GSessionClosed
-	(*L2GTSessionAssignGame)(nil),   // 9: inner_message.L2GTSessionAssignGame
-	(*G2LRoleOffline)(nil),          // 10: inner_message.G2LRoleOffline
-	(*G2DGameStop)(nil),             // 11: inner_message.G2DGameStop
-	(*L2GTUserSessionDisabled)(nil), // 12: inner_message.L2GTUserSessionDisabled
-	nil,                             // 13: inner_message.D2GRoleRes.WholeInfoEntry
+	(*Error)(nil),                 // 0: inner_message.Error
+	(*GateMsgWrapper)(nil),        // 1: inner_message.GateMsgWrapper
+	(*GT2GSessionClosed)(nil),     // 2: inner_message.GT2GSessionClosed
+	(*L2GTSessionAssignGame)(nil), // 3: inner_message.L2GTSessionAssignGame
+	(*G2LRoleOffline)(nil),        // 4: inner_message.G2LRoleOffline
+	(*G2DGameStop)(nil),           // 5: inner_message.G2DGameStop
+	(*L2GTSessionDisabled)(nil),   // 6: inner_message.L2GTSessionDisabled
 }
 var file_inner_innerpb_proto_depIdxs = []int32{
-	13, // 0: inner_message.D2GRoleRes.WholeInfo:type_name -> inner_message.D2GRoleRes.WholeInfoEntry
-	1,  // [1:1] is the sub-list for method output_type
-	1,  // [1:1] is the sub-list for method input_type
-	1,  // [1:1] is the sub-list for extension type_name
-	1,  // [1:1] is the sub-list for extension extendee
-	0,  // [0:1] is the sub-list for field type_name
+	0, // [0:0] is the sub-list for method output_type
+	0, // [0:0] is the sub-list for method input_type
+	0, // [0:0] is the sub-list for extension type_name
+	0, // [0:0] is the sub-list for extension extendee
+	0, // [0:0] is the sub-list for field type_name
 }
 
 func init() { file_inner_innerpb_proto_init() }
@@ -843,78 +472,6 @@ func file_inner_innerpb_proto_init() {
 			}
 		}
 		file_inner_innerpb_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*G2DModelSave); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_inner_innerpb_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*L2DAllUserReq); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_inner_innerpb_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*D2LAllUserRes); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_inner_innerpb_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*L2DUserSave); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_inner_innerpb_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*G2DRoleReq); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_inner_innerpb_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*D2GRoleRes); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_inner_innerpb_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*GT2GSessionClosed); i {
 			case 0:
 				return &v.state
@@ -926,7 +483,7 @@ func file_inner_innerpb_proto_init() {
 				return nil
 			}
 		}
-		file_inner_innerpb_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
+		file_inner_innerpb_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*L2GTSessionAssignGame); i {
 			case 0:
 				return &v.state
@@ -938,7 +495,7 @@ func file_inner_innerpb_proto_init() {
 				return nil
 			}
 		}
-		file_inner_innerpb_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
+		file_inner_innerpb_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*G2LRoleOffline); i {
 			case 0:
 				return &v.state
@@ -950,7 +507,7 @@ func file_inner_innerpb_proto_init() {
 				return nil
 			}
 		}
-		file_inner_innerpb_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
+		file_inner_innerpb_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*G2DGameStop); i {
 			case 0:
 				return &v.state
@@ -962,8 +519,8 @@ func file_inner_innerpb_proto_init() {
 				return nil
 			}
 		}
-		file_inner_innerpb_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*L2GTUserSessionDisabled); i {
+		file_inner_innerpb_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*L2GTSessionDisabled); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -981,7 +538,7 @@ func file_inner_innerpb_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_inner_innerpb_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   14,
+			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

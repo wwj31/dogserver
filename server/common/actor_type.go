@@ -6,6 +6,8 @@ import (
 	"regexp"
 )
 
+type ActorId = string
+
 // 静态Actor类型,全局唯一
 const (
 	Login_Actor  = "Login"
@@ -22,15 +24,15 @@ const (
 	MYSQL_Actor   = "Mysql"
 )
 
-func GameName(id int32) string {
+func GameServer(id int32) ActorId {
 	return fmt.Sprintf("%v%v_Actor", Game_Actor, id)
 }
 
-func WorldName(id int32) string {
+func WorldName(id int32) ActorId {
 	return fmt.Sprintf("%v%v_Actor", World_Actor, id)
 }
 
-func GatewayName(id int32) string {
+func GatewayName(id int32) ActorId {
 	return fmt.Sprintf("%v%v_Actor", GateWay_Actor, id)
 }
 

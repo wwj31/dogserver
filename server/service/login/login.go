@@ -8,6 +8,7 @@ import (
 	"github.com/wwj31/dogactor/log"
 	"server/common"
 	"server/proto/inner_message"
+	"server/proto/inner_message/inner"
 	"server/proto/message"
 	"server/service/login/account"
 	"server/service/login/iface"
@@ -49,14 +50,30 @@ func (s *Login) LoginReq(gSession string, msg *message.LoginReq) {
 	log.Debug(msg.String())
 
 	acc, _ := s.accountMgr.Login(msg, s.stored)
+
+	// 通知顶号
+	if acc.GSession != "" {
+		s.send(gSession, &inner.L2GTSessionDisabled{GateSession: gSession})
+	}
+	acc.GSession = gSession
+
+	// 通知gate绑定角色服务器
+	s.send(gSession, &inner.L2GTSessionAssignGame{
+		GateSession:  gSession,
+		GameServerId: acc.ServerId,
+	})
+
+	// 通知玩家登录成功
 	s.send(gSession, &message.LoginRsp{
-		UID:      int64(acc.UUId),
-		RID:      int64(acc.LastRoleId),
-		ServerId: acc.Roles[acc.LastRoleId].SId,
+		UID: acc.UUId,
+		RID: acc.LastRoleId,
 	})
 }
 
 func (s *Login) send(gSession string, pb proto.Message) {
+	if gSession == "" {
+		return
+	}
 	gateId, _ := common.SplitGateSession(gSession)
 	wrap := inner_message.NewGateWrapperByPb(pb, gSession)
 	expect.Nil(s.Send(gateId, wrap))

@@ -49,11 +49,10 @@ func (s *GateWay) OnInit() {
 // 定期检查并清理死链接
 func (s *GateWay) checkDeadSession(dt int64) {
 	for id, session := range s.sessions {
-		if session.Alive {
-			session.Alive = false
-		} else {
+		if time.Now().UnixMilli()-session.LeaseTime > int64(time.Hour) {
 			session.Stop()
 			delete(s.sessions, id)
+			log.KV("sesion", id).Warn(" find dead session")
 		}
 	}
 }
@@ -68,24 +67,24 @@ func (s *GateWay) OnHandleEvent(event interface{}) {
 }
 
 // 所有消息，直接转发给用户
-func (s *GateWay) OnHandleMessage(sourceId, targetId string, msg interface{}) {
-	switch msg.(type) {
+func (s *GateWay) OnHandleMessage(sourceId, targetId string, v interface{}) {
+	switch msg := v.(type) {
 	case *inner.GateMsgWrapper:
 		// 用户消息，直接转发给用户
-		wrapper := msg.(*inner.GateMsgWrapper)
-
-		actorId, sessionId := common.SplitGateSession(wrapper.GateSession)
-		logInfo := log.Fields{"own": s.GetID(), "gateSession": wrapper.GateSession, "sourceId": sourceId, "msgName": wrapper.MsgName}
+		actorId, sessionId := common.SplitGateSession(msg.GateSession)
+		logInfo := log.Fields{"own": s.GetID(), "gateSession": msg.GateSession, "sourceId": sourceId, "msgName": msg.MsgName}
 		expect.True(s.GetID() == actorId, logInfo)
 		userSessionHandler := s.sessions[sessionId]
 		if userSessionHandler == nil {
 			log.KVs(logInfo).Warn("cannot find sessionId")
 			return
 		}
+
 		log.KVs(logInfo).Info("server message to user")
-		msgId, _ := s.msgParser.MsgNameToId(wrapper.GetMsgName())
-		_ = userSessionHandler.SendMsg(network.CombineMsgWithId(msgId, wrapper.Data))
+		msgId, _ := s.msgParser.MsgNameToId(msg.GetMsgName())
+		_ = userSessionHandler.SendMsg(network.CombineMsgWithId(msgId, msg.Data))
+
 	default:
-		s.InnerHandler(sourceId, msg) // 内部消息，单独处理
+		s.InnerHandler(sourceId, v) // 内部消息，单独处理
 	}
 }

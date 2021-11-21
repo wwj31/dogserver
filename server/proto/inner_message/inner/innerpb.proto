@@ -13,45 +13,6 @@ message GateMsgWrapper
     bytes  Data        = 3;
 }
 
-// 存储信息
-message G2DModelSave
-{
-    bytes  Data      = 1;
-    string ModelName = 2;
-    int64  RID       = 3;
-}
-
-// login 请求所有角色数据
-message L2DAllUserReq
-{
-}
-
-message D2LAllUserRes
-{
-    bytes Data = 1; // models.GameUser
-}
-
-// login 请求回存新玩家
-message L2DUserSave
-{
-    bytes Data = 1; // models.GameUser
-}
-
-// game请求role数据
-message G2DRoleReq
-{
-    int64 CallbackId = 1; // 回调Id
-    int64 RID        = 2;
-}
-
-message D2GRoleRes
-{
-    int64              CallbackId = 1; // 回调Id
-    int32              valid      = 2; // 数据是否找到 0.成功 1.未找到角色
-    int64              RID        = 3;
-    map<string, bytes> WholeInfo  = 4; // 角色各个模块的数据
-}
-
 // gatesession断开,gate通知game
 message GT2GSessionClosed
 {
@@ -62,7 +23,7 @@ message GT2GSessionClosed
 message L2GTSessionAssignGame
 {
     string GateSession = 1; //
-    string GameActorId = 2; // 分配的游戏Actor
+    string GameServerId = 2; // 分配的游戏服
 }
 
 // game通知login，玩家离线
@@ -78,8 +39,7 @@ message G2DGameStop
 }
 
 // login通知game,玩家顶号，旧session失效
-message L2GTUserSessionDisabled
+message L2GTSessionDisabled
 {
     string GateSession = 1;
-    int64  UID         = 2;
 }
