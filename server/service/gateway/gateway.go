@@ -15,7 +15,7 @@ import (
 
 type GateWay struct {
 	actor.Base
-	Config iniconfig.Config
+	config iniconfig.Config
 
 	// 管理所有对外的玩家tcp连接
 	listener network.INetListener
@@ -25,10 +25,16 @@ type GateWay struct {
 	msgParser *tools.ProtoParser
 }
 
+func New(conf iniconfig.Config) *GateWay {
+	return &GateWay{
+		config: conf,
+	}
+}
+
 func (s *GateWay) OnInit() {
 	s.sessions = make(map[uint32]*UserSession)
 
-	s.listener = network.StartTcpListen(s.Config.String("gate_addr"),
+	s.listener = network.StartTcpListen(s.config.String("gate_addr"),
 		func() network.ICodec { return &network.StreamCodec{} },
 		func() network.INetHandler { return &UserSession{gateway: s} },
 	)
@@ -40,7 +46,7 @@ func (s *GateWay) OnInit() {
 	s.AddTimer(tools.UUID(), time.Hour, s.checkDeadSession, -1)
 
 	if err := s.listener.Start(); err != nil {
-		log.KV("err", err).KV("addr", s.Config.String("gate_addr")).Error("gateway listener start err")
+		log.KV("err", err).KV("addr", s.config.String("gate_addr")).Error("gateway listener start err")
 		return
 	}
 	log.Debug("gateway OnInit")
@@ -71,7 +77,7 @@ func (s *GateWay) OnHandleMessage(sourceId, targetId string, v interface{}) {
 	switch msg := v.(type) {
 	case *inner.GateMsgWrapper:
 		// 用户消息，直接转发给用户
-		actorId, sessionId := common.SplitGateSession(msg.GateSession)
+		actorId, sessionId := common.GSession(msg.GateSession).SplitGateSession()
 		logInfo := log.Fields{"own": s.GetID(), "gateSession": msg.GateSession, "sourceId": sourceId, "msgName": msg.MsgName}
 		expect.True(s.GetID() == actorId, logInfo)
 		userSessionHandler := s.sessions[sessionId]

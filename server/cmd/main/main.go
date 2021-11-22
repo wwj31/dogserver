@@ -3,24 +3,16 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/wwj31/dogactor/actor/cluster"
-	"github.com/wwj31/dogactor/actor/cmd"
+	"github.com/spf13/cast"
 	"github.com/wwj31/dogactor/log"
 	"math/rand"
 	"os"
 	"os/signal"
-	"server/db"
 	"syscall"
 
-	"github.com/spf13/cast"
-	"github.com/wwj31/dogactor/actor"
-	"github.com/wwj31/dogactor/expect"
 	"github.com/wwj31/dogactor/iniconfig"
 	"github.com/wwj31/dogactor/tools"
 	"server/common"
-	"server/service/client"
-	"server/service/gateway"
-	"server/service/login"
 )
 
 func main() {
@@ -40,34 +32,11 @@ func main() {
 		common.InitLog(logLv, iniconfig.BaseString("logdir"), appType, appId)
 
 		// 加载配置表
-		//
 		//err = config_go.Load(iniconfig.BaseString("configjson"))
-		//if err != nil {
-		//	return
-		//}
-		common.RefactorConfig()
+		//expect.Nil(err)
+		//common.RefactorConfig()
 
-		// 服务通用配置
-		conf, conferr := iniconfig.NewAppConf(appType, appId)
-		if conferr != nil {
-			fmt.Println("NewAppConf error", conferr)
-			return
-		}
-		etcdAddr, etcdPrefix := iniconfig.BaseString("etcd_addr"), iniconfig.BaseString("etcd_prefix")
-		// 启动actor服务
-		system, _ := actor.NewSystem(actor.WithCMD(cmd.New()), cluster.WithRemote(etcdAddr, etcdPrefix), actor.Addr(conf.String("actor_addr")))
-
-		switch appType {
-		case common.Client:
-			expect.Nil(system.Regist(actor.New(common.Client, &client.Client{}, actor.SetLocalized())))
-		case common.GateWay_Actor:
-			expect.Nil(system.Regist(actor.New(common.GatewayName(appId), &gateway.GateWay{Config: conf})))
-		case common.Login_Actor:
-			newLogin(conf, system)
-		case "All":
-			expect.Nil(system.Regist(actor.New(common.GatewayName(appId), &gateway.GateWay{Config: conf})))
-			newLogin(conf, system)
-		}
+		system := run(appType, appId)
 		<-exit
 
 		system.Stop()
@@ -76,12 +45,6 @@ func main() {
 
 	log.Stop()
 	fmt.Println("stop")
-}
-
-func newLogin(conf iniconfig.Config, system *actor.System) {
-	dbIns := db.New(conf.String("mysql"), conf.String("database"))
-	loginActor := login.New(dbIns, conf)
-	expect.Nil(system.Regist(actor.New(common.Login_Actor, loginActor)))
 }
 
 func initConf() (appType string, appId, logLv int32, err error) {

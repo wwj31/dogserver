@@ -16,7 +16,7 @@ import (
 
 type Login struct {
 	actor.Base
-	Config iniconfig.Config
+	config iniconfig.Config
 
 	stored iface.SaveLoader
 
@@ -26,7 +26,7 @@ type Login struct {
 func New(s iface.SaveLoader, conf iniconfig.Config) *Login {
 	return &Login{
 		stored: s,
-		Config: conf,
+		config: conf,
 	}
 }
 
@@ -46,20 +46,20 @@ func (s *Login) OnHandleMessage(sourceId, targetId string, msg interface{}) {
 	}
 }
 
-func (s *Login) LoginReq(gSession string, msg *message.LoginReq) {
+func (s *Login) LoginReq(gSession common.GSession, msg *message.LoginReq) {
 	log.Debug(msg.String())
 
 	acc, _ := s.accountMgr.Login(msg, s.stored)
 
 	// 通知顶号
-	if acc.GSession != "" {
-		s.send(gSession, &inner.L2GTSessionDisabled{GateSession: gSession})
+	if acc.GSession.Valid() {
+		s.send(acc.GSession, &inner.L2GTSessionDisabled{GateSession: gSession.String()})
 	}
 	acc.GSession = gSession
 
 	// 通知gate绑定角色服务器
 	s.send(gSession, &inner.L2GTSessionAssignGame{
-		GateSession:  gSession,
+		GateSession:  gSession.String(),
 		GameServerId: acc.ServerId,
 	})
 
@@ -70,11 +70,11 @@ func (s *Login) LoginReq(gSession string, msg *message.LoginReq) {
 	})
 }
 
-func (s *Login) send(gSession string, pb proto.Message) {
-	if gSession == "" {
+func (s *Login) send(gSession common.GSession, pb proto.Message) {
+	if gSession.Invalid() {
 		return
 	}
-	gateId, _ := common.SplitGateSession(gSession)
+	gateId, _ := gSession.SplitGateSession()
 	wrap := inner_message.NewGateWrapperByPb(pb, gSession)
 	expect.Nil(s.Send(gateId, wrap))
 }

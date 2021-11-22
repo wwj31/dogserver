@@ -11,6 +11,8 @@ import (
 func (s *Client) InitCmd() {
 	s.System().RegistCmd(s.GetID(), "login", s.login)
 	s.System().RegistCmd(s.GetID(), "rlogin", s.randLogin)
+
+	s.System().RegistCmd(s.GetID(), "enter", s.enter)
 }
 
 func (s *Client) login(arg ...string) {
@@ -33,4 +35,11 @@ func (s *Client) randLogin(arg ...string) {
 		s.SendToServer(message.MSG_LOGIN_REQ.Int32(), logReq)
 		time.Sleep(time.Duration(rand.Intn(500)) * time.Millisecond)
 	}
+}
+func (s *Client) enter(arg ...string) {
+	enterReq := &message.EnterGameReq{
+		UID: s.UID,
+		RID: s.RID,
+	}
+	s.SendToServer(message.MSG_LOGIN_REQ.Int32(), enterReq)
 }

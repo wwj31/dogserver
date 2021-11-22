@@ -40,8 +40,8 @@ func (s *UserSession) OnSessionCreated(sess network.INetSession) {
 func (s *UserSession) OnSessionClosed() {
 	if s.GameId != "" {
 		// 连接断开，通知game
-		gateSession := common.GateSession(s.gateway.GetID(), s.Id())
-		_ = s.gateway.Send(s.GameId, &inner.GT2GSessionClosed{GateSession: gateSession})
+		gSession := common.GateSession(s.gateway.GetID(), s.Id())
+		_ = s.gateway.Send(s.GameId, &inner.GT2GSessionClosed{GateSession: gSession.String()})
 	}
 
 	_ = s.gateway.Send(s.gateway.GetID(), func() {
@@ -78,14 +78,16 @@ func (s *UserSession) OnRecv(data []byte) {
 		return
 	}
 
-	log.KV("msgId", msgId).KV("msgName", msgName).Info("UserSession OnRecv Msg")
+	gSession := common.GateSession(s.gateway.GetID(), s.Id())
+	wrapperMsg := inner_message.NewGateWrapperByBytes(data[4:], msgName, gSession)
 
-	gateSession := common.GateSession(s.gateway.GetID(), s.Id())
-	wrapperMsg := inner_message.NewGateWrapperByBytes(data[4:], msgName, gateSession)
 	if message.MSG_LOGIN_SEGMENT_BEGIN.Int32() <= msgId && msgId <= message.MSG_LOGIN_SEGMENT_END.Int32() {
 		err = s.gateway.Send(common.Login_Actor, wrapperMsg)
 	} else if message.MSG_GAME_SEGMENT_BEGIN.Int32() <= msgId && msgId <= message.MSG_GAME_SEGMENT_END.Int32() {
-		expect.True(s.GameId != "", log.Fields{"session": s.Id(), "msgId": msgId})
+		if s.GameId == "" {
+			return
+		}
 		err = s.gateway.Send(s.GameId, wrapperMsg)
 	}
+	log.KV("msgId", msgId).KV("msgName", msgName).Info("UserSession OnRecv Msg")
 }

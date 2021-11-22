@@ -15,7 +15,6 @@ type AccountMgr struct {
 	accountsByUId        map[uint64]*Account
 	accountsByPlatformId map[string]*Account
 	accountsByName       map[string]*Account
-	accountsBygSession   map[string]*Account
 
 	uuidGen *common.UID
 }

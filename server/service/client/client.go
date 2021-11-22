@@ -19,6 +19,8 @@ type Client struct {
 	actor.Base
 	cli       network.INetClient
 	msgParser *tools.ProtoParser
+	UID       uint64
+	RID       uint64
 }
 
 func (s *Client) OnInit() {
@@ -48,6 +50,9 @@ func (s *Client) OnHandleMessage(sourceId, targetId string, v interface{}) {
 	switch msg := v.(type) {
 	case *message.LoginRsp:
 		logger.KV("msg", msg.String()).Info("login success!")
+		s.UID = msg.UID
+		s.RID = msg.RID
+
 	case *message.Pong:
 		logger.Info("aliving~")
 	}

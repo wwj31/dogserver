@@ -8,8 +8,8 @@ import (
 )
 
 // 处理其他服务向gateway发送的消息
-func (s *GateWay) InnerHandler(sourceId string, msg interface{}) bool {
-	switch msg.(type) {
+func (s *GateWay) InnerHandler(sourceId string, v interface{}) bool {
+	switch msg := v.(type) {
 	case *inner.L2GTSessionAssignGame: // login分配游戏服，通知gate绑定用户gameActor
 		s.L2GTSessionAssignGame(msg)
 	case *inner.L2GTSessionDisabled: // login通知gate 用户旧session失效
@@ -20,11 +20,9 @@ func (s *GateWay) InnerHandler(sourceId string, msg interface{}) bool {
 	return true
 }
 
-// login通知gate登录成功，绑定game server
-func (s *GateWay) L2GTSessionAssignGame(msg interface{}) {
-	recvData := msg.(*inner.L2GTSessionAssignGame)
-	gate, sessionId := common.SplitGateSession(recvData.GateSession)
-	fields := log.Fields{"actor": s.GetID(), "gateSession": recvData.GateSession, "game": recvData.GameServerId}
+func (s *GateWay) L2GTSessionAssignGame(msg *inner.L2GTSessionAssignGame) {
+	gate, sessionId := common.GSession(msg.GateSession).SplitGateSession()
+	fields := log.Fields{"actor": s.GetID(), "gateSession": msg.GateSession, "game": msg.GameServerId}
 	expect.True(s.GetID() == gate, fields)
 
 	session := s.sessions[sessionId]
@@ -32,14 +30,13 @@ func (s *GateWay) L2GTSessionAssignGame(msg interface{}) {
 		log.KVs(fields).Warn("session was closed")
 		return
 	}
-	session.GameId = recvData.GameServerId
+	session.GameId = msg.GameServerId
 	log.KVs(fields).Info("L2GTSessionAssignGame")
 }
 
-func (s *GateWay) L2GTSessionDisabled(sourceId string, msg interface{}) {
-	recvData := msg.(*inner.L2GTSessionDisabled)
-	gate, sessionId := common.SplitGateSession(recvData.GateSession)
-	fields := log.Fields{"actor": s.GetID(), "gateSession": recvData.GateSession, "source": sourceId}
+func (s *GateWay) L2GTSessionDisabled(sourceId string, msg *inner.L2GTSessionDisabled) {
+	gate, sessionId := common.GSession(msg.GateSession).SplitGateSession()
+	fields := log.Fields{"actor": s.GetID(), "gateSession": msg.GateSession, "source": sourceId}
 	expect.True(s.GetID() == gate, fields)
 	session := s.sessions[sessionId]
 	if session == nil {

@@ -9,7 +9,7 @@ import (
 type Account struct {
 	table.Account
 	ServerId common.ActorId
-	GSession string
+	GSession common.GSession
 }
 
 func combine(a, b string) string {
