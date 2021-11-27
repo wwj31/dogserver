@@ -42,23 +42,24 @@ func (s *Login) OnHandleMessage(sourceId, targetId string, msg interface{}) {
 
 	switch msg := v.(type) {
 	case *message.LoginReq:
-		s.LoginReq(gSession, msg)
+		s.LoginReq(sourceId, gSession, msg)
 	}
 }
 
-func (s *Login) LoginReq(gSession common.GSession, msg *message.LoginReq) {
+func (s *Login) LoginReq(sourceId string, gSession common.GSession, msg *message.LoginReq) {
 	log.Debug(msg.String())
 
 	acc, _ := s.accountMgr.Login(msg, s.stored)
 
-	// 通知顶号
-	if acc.GSession.Valid() {
-		s.send(acc.GSession, &inner.L2GTSessionDisabled{GateSession: gSession.String()})
+	// 新、旧session相同，则同一连接多次登录，不做顶号处理
+	if acc.GSession.Valid() && acc.GSession != gSession {
+		oldId, _ := acc.GSession.Split()
+		s.send2Gate(oldId, &inner.L2GTSessionDisabled{GateSession: acc.GSession.String()})
 	}
 	acc.GSession = gSession
 
 	// 通知gate绑定角色服务器
-	s.send(gSession, &inner.L2GTSessionAssignGame{
+	s.send2Gate(sourceId, &inner.L2GTSessionAssignGame{
 		GateSession:  gSession.String(),
 		GameServerId: acc.ServerId,
 	})
@@ -74,7 +75,13 @@ func (s *Login) send(gSession common.GSession, pb proto.Message) {
 	if gSession.Invalid() {
 		return
 	}
-	gateId, _ := gSession.SplitGateSession()
+	gateId, _ := gSession.Split()
 	wrap := inner_message.NewGateWrapperByPb(pb, gSession)
 	expect.Nil(s.Send(gateId, wrap))
+}
+
+func (s *Login) send2Gate(id common.ActorId, pb proto.Message) {
+	if err := s.Send(id, pb); err != nil {
+		log.KV("err", err).Error(" send to gateway error")
+	}
 }

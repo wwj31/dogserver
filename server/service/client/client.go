@@ -32,7 +32,7 @@ func (s *Client) OnInit() {
 	s.msgParser = tools.NewProtoParser().Init("message", "MSG")
 
 	// 心跳
-	s.AddTimer(tools.UUID(), 30*time.Second, func(dt int64) {
+	s.AddTimer(tools.UUID(), 20*time.Second, func(dt int64) {
 		s.SendToServer(message.MSG_PING.Int32(), &message.Ping{})
 	}, -1)
 }

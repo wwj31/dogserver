@@ -9,16 +9,16 @@ import (
 
 type GSession string
 
-func (s GSession) SplitGateSession() (actorId ActorId, sessionId uint32) {
+func (s GSession) Split() (actorId ActorId, sessionId uint32) {
 	strs := strings.Split(string(s), ":")
 	if len(strs) != 2 {
-		log.KV("gateSession", s).ErrorStack(3, "SplitGateSession error")
+		log.KV("gateSession", s).ErrorStack(3, "Split error")
 		panic(nil)
 	}
 	actorId = strs[0]
 	sint, e := cast.ToUint32E(strs[1])
 	if e != nil {
-		log.KV("gateSession", string(s)).ErrorStack(3, "SplitGateSession error")
+		log.KV("gateSession", string(s)).ErrorStack(3, "Split error")
 		panic(nil)
 	}
 	sessionId = sint
@@ -38,8 +38,4 @@ func (s GSession) Valid() bool {
 
 func GateSession(actorID ActorId, sessionId uint32) GSession {
 	return GSession(fmt.Sprintf("%v:%v", actorID, sessionId))
-}
-
-func SplitGateSession(gateSession string) (actorId ActorId, sessionId uint32) {
-	return GSession(gateSession).SplitGateSession()
 }

@@ -41,5 +41,5 @@ func (s *Client) enter(arg ...string) {
 		UID: s.UID,
 		RID: s.RID,
 	}
-	s.SendToServer(message.MSG_LOGIN_REQ.Int32(), enterReq)
+	s.SendToServer(message.MSG_ENTER_GAME_REQ.Int32(), enterReq)
 }

@@ -89,5 +89,9 @@ func (s *UserSession) OnRecv(data []byte) {
 		}
 		err = s.gateway.Send(s.GameId, wrapperMsg)
 	}
-	log.KV("msgId", msgId).KV("msgName", msgName).Info("UserSession OnRecv Msg")
+	log.KVs(log.Fields{
+		"msgId":    msgId,
+		"msgName":  msgName,
+		"gSession": gSession,
+	}).Info("user msg")
 }

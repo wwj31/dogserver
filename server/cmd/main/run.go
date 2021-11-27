@@ -23,7 +23,11 @@ func run(appType string, appId int32) *actor.System {
 	}
 	etcdAddr, etcdPrefix := iniconfig.BaseString("etcd_addr"), iniconfig.BaseString("etcd_prefix")
 	// 启动actor服务
-	system, _ := actor.NewSystem(actor.WithCMD(cmd.New()), cluster.WithRemote(etcdAddr, etcdPrefix), actor.Addr(conf.String("actor_addr")))
+	system, _ := actor.NewSystem(
+		actor.WithCMD(cmd.New()),
+		cluster.WithRemote(etcdAddr, etcdPrefix),
+		actor.Addr(conf.String("actor_addr")),
+	)
 
 	switch appType {
 	case common.Client:

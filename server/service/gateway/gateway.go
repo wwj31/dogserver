@@ -77,8 +77,8 @@ func (s *GateWay) OnHandleMessage(sourceId, targetId string, v interface{}) {
 	switch msg := v.(type) {
 	case *inner.GateMsgWrapper:
 		// 用户消息，直接转发给用户
-		actorId, sessionId := common.GSession(msg.GateSession).SplitGateSession()
-		logInfo := log.Fields{"own": s.ID(), "gateSession": msg.GateSession, "sourceId": sourceId, "msgName": msg.MsgName}
+		actorId, sessionId := common.GSession(msg.GateSession).Split()
+		logInfo := log.Fields{"own": s.ID(), "gSession": msg.GateSession, "sourceId": sourceId, "msgName": msg.MsgName}
 		expect.True(s.ID() == actorId, logInfo)
 		userSessionHandler := s.sessions[sessionId]
 		if userSessionHandler == nil {
@@ -86,7 +86,7 @@ func (s *GateWay) OnHandleMessage(sourceId, targetId string, v interface{}) {
 			return
 		}
 
-		log.KVs(logInfo).Info("server message to user")
+		log.KVs(logInfo).Info("server msg")
 		msgId, _ := s.msgParser.MsgNameToId(msg.GetMsgName())
 		_ = userSessionHandler.SendMsg(network.CombineMsgWithId(msgId, msg.Data))
 

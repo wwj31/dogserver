@@ -35,7 +35,7 @@ func (s *Game) RegistMsg(msg proto.Message, handle common.Handle) {
 }
 
 func (s *Game) SendToPlayer(gSession common.GSession, pb proto.Message) {
-	actorId, _ := gSession.SplitGateSession()
+	actorId, _ := gSession.Split()
 	err := s.Send(actorId, inner_message.NewGateWrapperByPb(pb, gSession))
 	if err != nil {
 		log.Error(err.Error())
