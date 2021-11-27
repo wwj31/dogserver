@@ -9,10 +9,10 @@ import (
 )
 
 func (s *Client) InitCmd() {
-	s.System().RegistCmd(s.GetID(), "login", s.login)
-	s.System().RegistCmd(s.GetID(), "rlogin", s.randLogin)
+	s.RegistCmd("login", s.login, "login <uid>")
+	s.RegistCmd("rlogin", s.randLogin, "")
 
-	s.System().RegistCmd(s.GetID(), "enter", s.enter)
+	s.RegistCmd("enter", s.enter, "enter game")
 }
 
 func (s *Client) login(arg ...string) {

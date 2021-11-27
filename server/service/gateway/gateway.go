@@ -41,7 +41,7 @@ func (s *GateWay) OnInit() {
 
 	s.msgParser = tools.NewProtoParser().Init("message", "MSG")
 
-	_ = s.System().RegistEvent(s.GetID(), (*actor.Ev_delActor)(nil))
+	_ = s.System().RegistEvent(s.ID(), (*actor.EvDelactor)(nil))
 
 	s.AddTimer(tools.UUID(), time.Hour, s.checkDeadSession, -1)
 
@@ -66,8 +66,8 @@ func (s *GateWay) checkDeadSession(dt int64) {
 // 处理actorcore抛来的事件
 func (s *GateWay) OnHandleEvent(event interface{}) {
 	switch event.(type) {
-	case *actor.Ev_delActor:
-		evData := event.(*actor.Ev_delActor)
+	case *actor.EvDelactor:
+		evData := event.(*actor.EvDelactor)
 		log.KV("remote actor", evData.ActorId).Warn("remote actor is inexistent")
 	}
 }
@@ -78,8 +78,8 @@ func (s *GateWay) OnHandleMessage(sourceId, targetId string, v interface{}) {
 	case *inner.GateMsgWrapper:
 		// 用户消息，直接转发给用户
 		actorId, sessionId := common.GSession(msg.GateSession).SplitGateSession()
-		logInfo := log.Fields{"own": s.GetID(), "gateSession": msg.GateSession, "sourceId": sourceId, "msgName": msg.MsgName}
-		expect.True(s.GetID() == actorId, logInfo)
+		logInfo := log.Fields{"own": s.ID(), "gateSession": msg.GateSession, "sourceId": sourceId, "msgName": msg.MsgName}
+		expect.True(s.ID() == actorId, logInfo)
 		userSessionHandler := s.sessions[sessionId]
 		if userSessionHandler == nil {
 			log.KVs(logInfo).Warn("cannot find sessionId")

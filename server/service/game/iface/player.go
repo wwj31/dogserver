@@ -7,7 +7,7 @@ type Player interface {
 	SetGateSession(gSession common.GSession)
 }
 
-type PlayerMgr interface {
+type Manager interface {
 	PlayerBySession(gateSession common.GSession) (Player, bool)
 	PlayerByUID(uid uint64) (Player, bool)
 	PlayerByRID(rid uint64) (Player, bool)

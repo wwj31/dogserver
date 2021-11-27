@@ -24,7 +24,7 @@ func (s *UserSession) OnSessionCreated(sess network.INetSession) {
 	s.LeaseTime = time.Now().UnixMilli()
 
 	// 这里只做session映射，等待客户端请求登录
-	_ = s.gateway.Send(s.gateway.GetID(), func() {
+	_ = s.gateway.Send(s.gateway.ID(), func() {
 		// 黑名单判断
 		//ip := s.RemoteIP()
 		//ret := s.gateway.CallLua("IPFilter", 1, lua.LString(ip))
@@ -40,11 +40,11 @@ func (s *UserSession) OnSessionCreated(sess network.INetSession) {
 func (s *UserSession) OnSessionClosed() {
 	if s.GameId != "" {
 		// 连接断开，通知game
-		gSession := common.GateSession(s.gateway.GetID(), s.Id())
+		gSession := common.GateSession(s.gateway.ID(), s.Id())
 		_ = s.gateway.Send(s.GameId, &inner.GT2GSessionClosed{GateSession: gSession.String()})
 	}
 
-	_ = s.gateway.Send(s.gateway.GetID(), func() {
+	_ = s.gateway.Send(s.gateway.ID(), func() {
 		delete(s.gateway.sessions, s.Id())
 	})
 }
@@ -78,7 +78,7 @@ func (s *UserSession) OnRecv(data []byte) {
 		return
 	}
 
-	gSession := common.GateSession(s.gateway.GetID(), s.Id())
+	gSession := common.GateSession(s.gateway.ID(), s.Id())
 	wrapperMsg := inner_message.NewGateWrapperByBytes(data[4:], msgName, gSession)
 
 	if message.MSG_LOGIN_SEGMENT_BEGIN.Int32() <= msgId && msgId <= message.MSG_LOGIN_SEGMENT_END.Int32() {

@@ -22,8 +22,8 @@ func (s *GateWay) InnerHandler(sourceId string, v interface{}) bool {
 
 func (s *GateWay) L2GTSessionAssignGame(msg *inner.L2GTSessionAssignGame) {
 	gate, sessionId := common.GSession(msg.GateSession).SplitGateSession()
-	fields := log.Fields{"actor": s.GetID(), "gateSession": msg.GateSession, "game": msg.GameServerId}
-	expect.True(s.GetID() == gate, fields)
+	fields := log.Fields{"actor": s.ID(), "gateSession": msg.GateSession, "game": msg.GameServerId}
+	expect.True(s.ID() == gate, fields)
 
 	session := s.sessions[sessionId]
 	if session == nil {
@@ -36,8 +36,8 @@ func (s *GateWay) L2GTSessionAssignGame(msg *inner.L2GTSessionAssignGame) {
 
 func (s *GateWay) L2GTSessionDisabled(sourceId string, msg *inner.L2GTSessionDisabled) {
 	gate, sessionId := common.GSession(msg.GateSession).SplitGateSession()
-	fields := log.Fields{"actor": s.GetID(), "gateSession": msg.GateSession, "source": sourceId}
-	expect.True(s.GetID() == gate, fields)
+	fields := log.Fields{"actor": s.ID(), "gateSession": msg.GateSession, "source": sourceId}
+	expect.True(s.ID() == gate, fields)
 	session := s.sessions[sessionId]
 	if session == nil {
 		return

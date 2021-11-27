@@ -20,6 +20,6 @@ func (s SessionHandler) OnSessionClosed() {
 func (s SessionHandler) OnRecv(bytes []byte) {
 	msgType := int32(network.Byte4ToUint32(bytes[:4]))
 	pb := s.client.msgParser.UnmarshalPbMsg(msgType, bytes[4:])
-	err := s.client.Send(s.client.GetID(), pb)
+	err := s.client.Send(s.client.ID(), pb)
 	expect.Nil(err)
 }

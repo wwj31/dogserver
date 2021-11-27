@@ -15,5 +15,6 @@ func NewPlayer(g iface.Gamer) *Player {
 		game: g,
 	}
 }
+
 func (s *Player) GateSession() common.GSession            { return s.gateSession }
 func (s *Player) SetGateSession(gSession common.GSession) { s.gateSession = gSession }
