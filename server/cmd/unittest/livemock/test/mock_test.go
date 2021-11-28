@@ -2,8 +2,8 @@ package test
 
 import (
 	"errors"
-	"server/cmd/livemock/foo"
-	"server/cmd/livemock/mock"
+	"server/cmd/unittest/livemock/foo"
+	"server/cmd/unittest/livemock/mock"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -11,6 +11,11 @@ import (
 	"github.com/smartystreets/goconvey/convey"
 )
 
+// 说明：
+//   mock和stub本质是两种不同的构建测试数据的技术，
+//   使用mock必须保证功能实现了接口，
+//   模块和模块依赖的是接口，而不是实现。
+//   这样能很好的适配整个调用过程，无需打桩修改调用函数。
 func Test_Live(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	life := mock.NewMockLife(ctrl)

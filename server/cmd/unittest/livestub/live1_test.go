@@ -2,11 +2,18 @@ package main
 
 import (
 	"errors"
+	"testing"
+
 	"github.com/agiledragon/gomonkey/v2"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
+// 说明：
+//   最基础的单元测试，将依赖的函数进行打桩处理，
+//   然后依次断言执行要测试的函数Live()。
+// 缺点：
+//   对于每一次测试，都需要重新构建桩函数，以下示例中
+//   总共构建了4次GoodGoodStudy桩函数。
 func Test_Live1(t *testing.T) {
 	patches := gomonkey.NewPatches()
 	// GoodGoodStudy error
@@ -48,32 +55,4 @@ func Test_Live1(t *testing.T) {
 	})
 	assert.NoError(t, Live(100, 100, 100))
 	patches.Reset()
-}
-
-func Test_Live2(t *testing.T) {
-	patches := gomonkey.NewPatches()
-	defer patches.Reset()
-	output := []gomonkey.OutputCell{
-		{Values: gomonkey.Params{errors.New("error")}, Times: 1},
-		{Values: gomonkey.Params{nil}, Times: 3},
-	}
-	patches.ApplyFuncSeq(GoodGoodStudy, output)
-	output = []gomonkey.OutputCell{
-		{Values: gomonkey.Params{errors.New("error")}, Times: 1},
-		{Values: gomonkey.Params{nil}, Times: 2},
-	}
-	patches.ApplyFuncSeq(BuyHouse, output)
-	output = []gomonkey.OutputCell{
-		{Values: gomonkey.Params{errors.New("error")}, Times: 1},
-		{Values: gomonkey.Params{nil}, Times: 1},
-	}
-	patches.ApplyFuncSeq(Marry, output)
-	// GoodGoodStudy error
-	assert.Error(t, Live(100, 100, 100))
-	// BuyHouse error
-	assert.Error(t, Live(100, 100, 100))
-	// Marry error
-	assert.Error(t, Live(100, 100, 100))
-	// ok
-	assert.NoError(t, Live(100, 100, 100))
 }
