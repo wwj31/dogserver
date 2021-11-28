@@ -16,8 +16,7 @@ import (
 type Login struct {
 	actor.Base
 	common.Sender
-	stored iface.SaveLoader
-
+	stored     iface.SaveLoader
 	accountMgr *account.AccountMgr
 }
 
