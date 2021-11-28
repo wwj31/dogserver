@@ -10,7 +10,7 @@ require (
 	github.com/sony/sonyflake v1.0.0
 	github.com/spf13/cast v1.4.1
 	github.com/stretchr/testify v1.7.0
-	github.com/wwj31/dogactor v1.1.0
+	github.com/wwj31/dogactor v1.1.1
 	google.golang.org/protobuf v1.27.1
 	gorm.io/driver/mysql v1.1.3
 	gorm.io/gorm v1.22.3

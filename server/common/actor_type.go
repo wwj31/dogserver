@@ -37,8 +37,8 @@ func GatewayName(id int32) ActorId {
 }
 
 // 匹配actor类型 按照固定格式匹配
-func IsActorOf(t, actorId string) bool {
-	str := fmt.Sprintf("%v([0-9]+)_Actor", t)
+func IsActorOf(actorId, typ string) bool {
+	str := typ + "([0-9]+)_Actor"
 	match, e := regexp.MatchString(str, actorId)
 	if e != nil {
 		log.KV("actorId", actorId).ErrorStack(3, "error")
