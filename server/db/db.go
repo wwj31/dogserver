@@ -40,21 +40,35 @@ func New(addr, databaseAddr string) *DB {
 	}
 }
 
-func (s *DB) Save(data table.Tabler) error {
-	name := data.TableName()
-	if data.Count() > 1 {
-		name = name + strconv.Itoa(num(data.Key(), data.Count()))
+func (s *DB) Save(datas ...table.Tabler) error {
+	transaction := s.dbIns.Begin()
+	for _, t := range datas {
+		name := t.TableName()
+		if t.Count() > 1 {
+			name = name + strconv.Itoa(num(t.Key(), t.Count()))
+		}
+		transaction.Table(name).Save(t)
 	}
 
-	return s.dbIns.Table(name).Save(data).Error
+	err := transaction.Commit().Error
+	if err != nil {
+		transaction.Rollback()
+	}
+
+	return err
 }
 
-func (s *DB) Load(data table.Tabler) error {
-	name := data.TableName()
-	if data.Count() > 1 {
-		name = name + strconv.Itoa(num(data.Key(), data.Count()))
+func (s *DB) Load(datas ...table.Tabler) error {
+	transaction := s.dbIns.Begin()
+	for _, t := range datas {
+		name := t.TableName()
+		if t.Count() > 1 {
+			name = name + strconv.Itoa(num(t.Key(), t.Count()))
+		}
+		transaction.Table(name).First(t)
 	}
-	return s.dbIns.Table(name).First(data).Error
+
+	return transaction.Commit().Error
 }
 
 func (s *DB) LoadAll(tableName string, arr interface{}) error {

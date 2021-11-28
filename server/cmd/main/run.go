@@ -45,7 +45,7 @@ func run(appType string, appId int32) *actor.System {
 
 func newLogin(conf iniconfig.Config, system *actor.System) {
 	dbIns := db.New(conf.String("mysql"), conf.String("database"))
-	loginActor := login.New(dbIns, conf)
+	loginActor := login.New(dbIns)
 	expect.Nil(system.Regist(actor.New(common.Login_Actor, loginActor)))
 }
 

@@ -4,7 +4,6 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
 	"github.com/wwj31/dogactor/expect"
-	"github.com/wwj31/dogactor/iniconfig"
 	"github.com/wwj31/dogactor/log"
 	"server/common"
 	"server/proto/inner_message"
@@ -16,17 +15,15 @@ import (
 
 type Login struct {
 	actor.Base
-	config iniconfig.Config
 
 	stored iface.SaveLoader
 
 	accountMgr *account.AccountMgr
 }
 
-func New(s iface.SaveLoader, conf iniconfig.Config) *Login {
+func New(s iface.SaveLoader) *Login {
 	return &Login{
 		stored: s,
-		config: conf,
 	}
 }
 

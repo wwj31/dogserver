@@ -73,11 +73,7 @@ func (s *AccountMgr) Login(msg *message.LoginReq, saver iface.Saver) (acc *Accou
 	newAcc.ServerId = common.GameServer(int32(newRole.SId))
 
 	// 回存db
-	if err := saver.Save(&newAcc.Account); err != nil {
-		log.KV("err", err).Error("save err")
-		return nil, false
-	}
-	if err := saver.Save(newRole); err != nil {
+	if err := saver.Save(&newAcc.Account, newRole); err != nil {
 		log.KV("err", err).Error("save err")
 		return nil, false
 	}
