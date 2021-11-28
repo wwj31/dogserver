@@ -49,16 +49,16 @@ func (s *Login) LoginReq(sourceId string, gSession common.GSession, msg *message
 	acc, _ := s.accountMgr.Login(msg, s.stored)
 
 	// 新、旧session相同，则同一连接多次登录，不做顶号处理
-	if acc.GSession.Valid() && acc.GSession != gSession {
-		oldId, _ := acc.GSession.Split()
-		s.send2Gate(oldId, &inner.L2GTSessionDisabled{GateSession: acc.GSession.String()})
+	if acc.GSession().Valid() && acc.GSession() != gSession {
+		oldId, _ := acc.GSession().Split()
+		s.send2Gate(oldId, &inner.L2GTSessionDisabled{GateSession: acc.GSession().String()})
 	}
-	acc.GSession = gSession
+	acc.SetgSession(gSession)
 
 	// 通知gate绑定角色服务器
 	s.send2Gate(sourceId, &inner.L2GTSessionAssignGame{
 		GateSession:  gSession.String(),
-		GameServerId: acc.ServerId,
+		GameServerId: acc.ServerId(),
 	})
 
 	// 通知玩家登录成功

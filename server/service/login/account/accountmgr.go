@@ -70,7 +70,7 @@ func (s *AccountMgr) Login(msg *message.LoginReq, saver iface.Saver) (acc *Accou
 	}
 	newAcc.Roles = table.RoleMap{newRole.RoleId: newRole}
 	newAcc.LastRoleId = newRole.RoleId
-	newAcc.ServerId = common.GameServer(int32(newRole.SId))
+	newAcc.serverId = common.GameServer(int32(newRole.SId))
 
 	// 回存db
 	if err := saver.Save(&newAcc.Account, newRole); err != nil {
