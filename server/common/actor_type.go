@@ -46,11 +46,3 @@ func IsActorOf(actorId, typ string) bool {
 	}
 	return match
 }
-
-func DBName(prex string, id int32) string {
-	return fmt.Sprintf("%v%v%v_Actor", prex, DB_Actor, id)
-}
-
-func MysqlName(prex string, id int32) string {
-	return fmt.Sprintf("%v%v%v_Actor", prex, MYSQL_Actor, id)
-}

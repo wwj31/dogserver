@@ -10,6 +10,7 @@ import (
 	"server/common"
 	"server/db"
 	"server/service/client"
+	"server/service/game"
 	"server/service/gateway"
 	"server/service/login"
 )
@@ -21,6 +22,7 @@ func run(appType string, appId int32) *actor.System {
 		fmt.Println("NewAppConf error", conferr)
 		return nil
 	}
+
 	etcdAddr, etcdPrefix := iniconfig.BaseString("etcd_addr"), iniconfig.BaseString("etcd_prefix")
 	// 启动actor服务
 	system, _ := actor.NewSystem(
@@ -36,8 +38,11 @@ func run(appType string, appId int32) *actor.System {
 		newGateway(appId, conf, system)
 	case common.Login_Actor:
 		newLogin(conf, system)
+	case common.Game_Actor:
+		newGame(appId, conf, system)
 	case "All":
 		newGateway(appId, conf, system)
+		newGame(appId, conf, system)
 		newLogin(conf, system)
 	}
 	return system
@@ -52,4 +57,9 @@ func newLogin(conf iniconfig.Config, system *actor.System) {
 func newGateway(appId int32, conf iniconfig.Config, system *actor.System) {
 	loginActor := gateway.New(conf)
 	expect.Nil(system.Regist(actor.New(common.GatewayName(appId), loginActor)))
+}
+
+func newGame(appId int32, conf iniconfig.Config, system *actor.System) {
+	gameActor := game.New(conf)
+	expect.Nil(system.Regist(actor.New(common.GameServer(appId), gameActor)))
 }

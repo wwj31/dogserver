@@ -11,17 +11,18 @@ type Sender interface {
 	Send2Gate(id ActorId, pb proto.Message) error
 }
 
-type sendTools struct {
+type SendTools struct {
 	sender actor.Sender
 }
 
-func NewSendTools(s actor.Sender) *sendTools {
-	return &sendTools{
+func NewSendTools(s actor.Sender) SendTools {
+	return SendTools{
 		sender: s,
 	}
 }
 
-func (s *sendTools) Send2Client(gSession GSession, pb proto.Message) error {
+// 发送至前端
+func (s *SendTools) Send2Client(gSession GSession, pb proto.Message) error {
 	if gSession.Invalid() {
 		return fmt.Errorf("gSession is invalid %v", gSession)
 	}
@@ -31,8 +32,9 @@ func (s *sendTools) Send2Client(gSession GSession, pb proto.Message) error {
 	return s.sender.Send(gateId, wrap)
 }
 
-func (s *sendTools) Send2Gate(id ActorId, pb proto.Message) error {
-	if IsActorOf(id, GateWay_Actor) {
+// 发送至网关
+func (s *SendTools) Send2Gate(id ActorId, pb proto.Message) error {
+	if !IsActorOf(id, GateWay_Actor) {
 		return fmt.Errorf("send to gate, but type is not gate id:%v", id)
 	}
 

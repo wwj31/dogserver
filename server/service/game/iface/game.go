@@ -8,8 +8,8 @@ import (
 
 type Gamer interface {
 	actor.Actor
+	common.Sender
 
 	SID() int32
 	RegistMsg(msg proto.Message, handle common.Handle)
-	Send2Client(gSession common.GSession, pb proto.Message)
 }

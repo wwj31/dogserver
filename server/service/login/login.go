@@ -14,7 +14,7 @@ import (
 
 type Login struct {
 	actor.Base
-	common.Sender
+	common.SendTools
 	stored     iface.SaveLoader
 	accountMgr *account.AccountMgr
 }
@@ -26,7 +26,7 @@ func New(s iface.SaveLoader) *Login {
 }
 
 func (s *Login) OnInit() {
-	s.Sender = common.NewSendTools(s)
+	s.SendTools = common.NewSendTools(s)
 	s.accountMgr = account.NewAccountMgr()
 	s.accountMgr.LoadAllAccount(s.stored)
 	log.Debug("login OnInit")

@@ -6,14 +6,19 @@ import (
 	"github.com/wwj31/dogactor/expect"
 	"github.com/wwj31/dogactor/iniconfig"
 	"github.com/wwj31/dogactor/log"
-
 	"server/common"
+	"server/service/game/handler"
 	"server/service/game/iface"
 	"server/service/game/player"
 )
 
+func New(conf iniconfig.Config) *Game {
+	return &Game{config: conf}
+}
+
 type Game struct {
 	actor.Base
+	common.SendTools
 	config     iniconfig.Config
 	sid        int32 // 服务器Id
 	playerMgr  iface.Manager
@@ -21,8 +26,13 @@ type Game struct {
 }
 
 func (s *Game) OnInit() {
+	s.SendTools = common.NewSendTools(s)
 	s.playerMgr = player.NewMgr(s)
 	s.msgHandler = common.NewMsgHandler()
+
+	// handler模块初始化
+	handler.Init(s)
+	log.Debug("game OnInit")
 }
 
 // 区服id
@@ -35,15 +45,6 @@ func (s *Game) RegistMsg(msg proto.Message, handle common.Handle) {
 	s.msgHandler.Reg(msg, handle)
 }
 
-// 消息发送至前端
-func (s *Game) Send2Client(gSession common.GSession, pb proto.Message) {
-	actorId, _ := gSession.Split()
-	err := s.Send(actorId, common.NewGateWrapperByPb(pb, gSession))
-	if err != nil {
-		log.Error(err.Error())
-	}
-}
-
 func (s *Game) OnHandleMessage(sourceId, targetId string, msg interface{}) {
 	actMsg, gSession, err := common.UnwrapperGateMsg(msg)
 	expect.Nil(err)
@@ -53,12 +54,14 @@ func (s *Game) OnHandleMessage(sourceId, targetId string, msg interface{}) {
 
 	rsp := s.msgHandler.Handle(sourceId, gSession, pbMsg)
 	if rsp != nil {
+		var err error
 		if gSession.Valid() {
-			s.Send2Client(gSession, rsp)
+			err = s.Send2Client(gSession, rsp)
 		} else {
-			if err := s.Send(sourceId, rsp); err != nil {
-				log.Error(err.Error())
-			}
+			err = s.Send(sourceId, rsp)
+		}
+		if err != nil {
+			log.Error(err.Error())
 		}
 	}
 }
