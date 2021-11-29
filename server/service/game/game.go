@@ -8,7 +8,6 @@ import (
 	"github.com/wwj31/dogactor/log"
 
 	"server/common"
-	"server/proto/inner_message"
 	"server/service/game/iface"
 	"server/service/game/player"
 )
@@ -18,7 +17,7 @@ type Game struct {
 	config     iniconfig.Config
 	sid        int32 // 服务器Id
 	playerMgr  iface.Manager
-	msgHandler *common.MsgHandler
+	msgHandler common.MsgHandler
 }
 
 func (s *Game) OnInit() {
@@ -26,24 +25,27 @@ func (s *Game) OnInit() {
 	s.msgHandler = common.NewMsgHandler()
 }
 
+// 区服id
 func (s *Game) SID() int32 {
 	return s.sid
 }
 
+// 注册消息
 func (s *Game) RegistMsg(msg proto.Message, handle common.Handle) {
 	s.msgHandler.Reg(msg, handle)
 }
 
-func (s *Game) SendToPlayer(gSession common.GSession, pb proto.Message) {
+// 消息发送至前端
+func (s *Game) Send2Client(gSession common.GSession, pb proto.Message) {
 	actorId, _ := gSession.Split()
-	err := s.Send(actorId, inner_message.NewGateWrapperByPb(pb, gSession))
+	err := s.Send(actorId, common.NewGateWrapperByPb(pb, gSession))
 	if err != nil {
 		log.Error(err.Error())
 	}
 }
 
 func (s *Game) OnHandleMessage(sourceId, targetId string, msg interface{}) {
-	actMsg, gSession, err := inner_message.UnwrapperGateMsg(msg)
+	actMsg, gSession, err := common.UnwrapperGateMsg(msg)
 	expect.Nil(err)
 
 	pbMsg, ok := actMsg.(proto.Message)
@@ -52,9 +54,11 @@ func (s *Game) OnHandleMessage(sourceId, targetId string, msg interface{}) {
 	rsp := s.msgHandler.Handle(sourceId, gSession, pbMsg)
 	if rsp != nil {
 		if gSession.Valid() {
-			s.SendToPlayer(gSession, rsp)
+			s.Send2Client(gSession, rsp)
 		} else {
-			s.Send(sourceId, rsp)
+			if err := s.Send(sourceId, rsp); err != nil {
+				log.Error(err.Error())
+			}
 		}
 	}
 }

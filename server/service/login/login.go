@@ -6,7 +6,6 @@ import (
 	"github.com/wwj31/dogactor/expect"
 	"github.com/wwj31/dogactor/log"
 	"server/common"
-	"server/proto/inner_message"
 	"server/proto/inner_message/inner"
 	"server/proto/message"
 	"server/service/login/account"
@@ -34,7 +33,7 @@ func (s *Login) OnInit() {
 }
 
 func (s *Login) OnHandleMessage(sourceId, targetId string, msg interface{}) {
-	v, gSession, err := inner_message.UnwrapperGateMsg(msg)
+	v, gSession, err := common.UnwrapperGateMsg(msg)
 	expect.Nil(err)
 	switch msg := v.(type) {
 	case *message.LoginReq:

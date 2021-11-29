@@ -2,20 +2,25 @@ package common
 
 import (
 	"fmt"
+	"github.com/golang/protobuf/proto"
 	"github.com/spf13/cast"
 	"github.com/wwj31/dogactor/log"
+	"github.com/wwj31/dogactor/tools"
+	"google.golang.org/protobuf/reflect/protoreflect"
+	"google.golang.org/protobuf/reflect/protoregistry"
+	"server/proto/inner_message/inner"
 	"strings"
 )
 
 type GSession string
 
-func (s GSession) Split() (actorId ActorId, sessionId uint32) {
+func (s GSession) Split() (gateId ActorId, sessionId uint32) {
 	strs := strings.Split(string(s), ":")
 	if len(strs) != 2 {
 		log.KV("gateSession", s).ErrorStack(3, "Split error")
 		panic(nil)
 	}
-	actorId = strs[0]
+	gateId = strs[0]
 	sint, e := cast.ToUint32E(strs[1])
 	if e != nil {
 		log.KV("gateSession", string(s)).ErrorStack(3, "Split error")
@@ -36,6 +41,39 @@ func (s GSession) Valid() bool {
 	return s != ""
 }
 
-func GateSession(actorID ActorId, sessionId uint32) GSession {
-	return GSession(fmt.Sprintf("%v:%v", actorID, sessionId))
+func GateSession(gateId ActorId, sessionId uint32) GSession {
+	return GSession(fmt.Sprintf("%v:%v", gateId, sessionId))
+}
+
+func NewGateWrapperByPb(pb proto.Message, gateSession GSession) *inner.GateMsgWrapper {
+	data, err := proto.Marshal(pb)
+	if err != nil {
+		log.KV("err", err).ErrorStack(3, "marshal pb failed")
+		return nil
+	}
+	return &inner.GateMsgWrapper{GateSession: gateSession.String(), MsgName: tools.MsgName(pb), Data: data}
+}
+
+// 网关封装的消息信息(避免一次序列化操作)
+func NewGateWrapperByBytes(data []byte, msgName string, gateSession GSession) *inner.GateMsgWrapper {
+	return &inner.GateMsgWrapper{GateSession: gateSession.String(), MsgName: msgName, Data: data}
+}
+
+func UnwrapperGateMsg(msg interface{}) (interface{}, GSession, error) {
+	wrapper, is := msg.(*inner.GateMsgWrapper)
+	if !is {
+		return msg, "", nil
+	}
+
+	tp, err := protoregistry.GlobalTypes.FindMessageByName(protoreflect.FullName(wrapper.MsgName))
+	if err != nil {
+		return nil, GSession(wrapper.GateSession), err
+	}
+
+	actMsg := tp.New().Interface().(proto.Message)
+	err = proto.Unmarshal(wrapper.Data, actMsg.(proto.Message))
+	if err != nil {
+		return nil, GSession(wrapper.GateSession), err
+	}
+	return actMsg, GSession(wrapper.GateSession), nil
 }

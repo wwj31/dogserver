@@ -6,7 +6,6 @@ import (
 	"github.com/wwj31/dogactor/network"
 	"github.com/wwj31/dogactor/tools"
 	"server/common"
-	"server/proto/inner_message"
 	"server/proto/inner_message/inner"
 	"server/proto/message"
 	"time"
@@ -79,7 +78,7 @@ func (s *UserSession) OnRecv(data []byte) {
 	}
 
 	gSession := common.GateSession(s.gateway.ID(), s.Id())
-	wrapperMsg := inner_message.NewGateWrapperByBytes(data[4:], msgName, gSession)
+	wrapperMsg := common.NewGateWrapperByBytes(data[4:], msgName, gSession)
 
 	if message.MSG_LOGIN_SEGMENT_BEGIN.Int32() <= msgId && msgId <= message.MSG_LOGIN_SEGMENT_END.Int32() {
 		err = s.gateway.Send(common.Login_Actor, wrapperMsg)

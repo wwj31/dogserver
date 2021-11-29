@@ -11,5 +11,5 @@ type Gamer interface {
 
 	SID() int32
 	RegistMsg(msg proto.Message, handle common.Handle)
-	SendToPlayer(gSession common.GSession, pb proto.Message)
+	Send2Client(gSession common.GSession, pb proto.Message)
 }

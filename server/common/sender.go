@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/golang/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
-	"server/proto/inner_message"
 )
 
 type Sender interface {
@@ -28,7 +27,7 @@ func (s *sendTools) Send2Client(gSession GSession, pb proto.Message) error {
 	}
 
 	gateId, _ := gSession.Split()
-	wrap := inner_message.NewGateWrapperByPb(pb, gSession)
+	wrap := NewGateWrapperByPb(pb, gSession)
 	return s.sender.Send(gateId, wrap)
 }
 

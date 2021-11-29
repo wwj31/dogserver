@@ -11,8 +11,8 @@ type MsgHandler struct {
 	handleFunc map[string]Handle
 }
 
-func NewMsgHandler() *MsgHandler {
-	return &MsgHandler{
+func NewMsgHandler() MsgHandler {
+	return MsgHandler{
 		handleFunc: make(map[string]Handle),
 	}
 }
