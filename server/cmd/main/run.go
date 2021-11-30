@@ -61,5 +61,5 @@ func newGateway(appId int32, conf iniconfig.Config, system *actor.System) {
 
 func newGame(appId int32, conf iniconfig.Config, system *actor.System) {
 	gameActor := game.New(conf)
-	expect.Nil(system.Regist(actor.New(common.GameServer(appId), gameActor)))
+	expect.Nil(system.Regist(actor.New(common.GameName(appId), gameActor)))
 }

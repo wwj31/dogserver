@@ -3,6 +3,7 @@ package common
 import (
 	"github.com/golang/protobuf/proto"
 	"github.com/wwj31/dogactor/expect"
+	"reflect"
 )
 
 type Handle func(sourceId string, gSession GSession, msg interface{}) proto.Message
@@ -18,7 +19,7 @@ func NewMsgHandler() MsgHandler {
 }
 
 func (s *MsgHandler) Reg(msg proto.Message, h Handle) {
-	name := msg.String()
+	name := reflect.TypeOf(msg).String()
 	_, exist := s.handleFunc[name]
 	expect.True(!exist)
 
@@ -26,7 +27,8 @@ func (s *MsgHandler) Reg(msg proto.Message, h Handle) {
 }
 
 func (s *MsgHandler) Handle(sourceId string, gSession GSession, msg proto.Message) proto.Message {
-	handle, ok := s.handleFunc[msg.String()]
+	name := reflect.TypeOf(msg).String()
+	handle, ok := s.handleFunc[name]
 	expect.True(ok)
 	return handle(sourceId, gSession, msg)
 }

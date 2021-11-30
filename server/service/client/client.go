@@ -52,7 +52,8 @@ func (s *Client) OnHandleMessage(sourceId, targetId string, v interface{}) {
 		logger.KV("msg", msg.String()).Info("login success!")
 		s.UID = msg.UID
 		s.RID = msg.RID
-
+	case *message.EnterGameRsp:
+		logger.KV("msg", msg.String()).Info("enter success!")
 	case *message.Pong:
 		logger.Info("aliving~")
 	}

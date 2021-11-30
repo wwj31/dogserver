@@ -24,7 +24,7 @@ const (
 	MYSQL_Actor   = "Mysql"
 )
 
-func GameServer(id int32) ActorId {
+func GameName(id int32) ActorId {
 	return fmt.Sprintf("%v%v_Actor", Game_Actor, id)
 }
 

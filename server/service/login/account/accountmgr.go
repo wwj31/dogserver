@@ -40,6 +40,7 @@ func (s *AccountMgr) LoadAllAccount(loader iface.Loader) {
 		lastLoginRole := acc.Roles[acc.LastRoleId]
 		if lastLoginRole != nil {
 			s.accountsByName[lastLoginRole.Name] = acc
+			acc.serverId = common.GameName(int32(lastLoginRole.SId))
 		}
 	}
 }
@@ -70,7 +71,7 @@ func (s *AccountMgr) Login(msg *message.LoginReq, saver iface.Saver) (acc *Accou
 	}
 	newAcc.Roles = table.RoleMap{newRole.RoleId: newRole}
 	newAcc.LastRoleId = newRole.RoleId
-	newAcc.serverId = common.GameServer(int32(newRole.SId))
+	newAcc.serverId = common.GameName(int32(newRole.SId))
 
 	// 回存db
 	if err := saver.Save(&newAcc.Account, newRole); err != nil {
