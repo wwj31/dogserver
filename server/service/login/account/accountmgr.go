@@ -7,7 +7,7 @@ import (
 	"server/common"
 	"server/db/table"
 	"server/proto/message"
-	"server/service/login/iface"
+	"server/service/game/iface"
 	"time"
 )
 

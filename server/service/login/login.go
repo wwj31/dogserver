@@ -8,8 +8,8 @@ import (
 	"server/common"
 	"server/proto/inner_message/inner"
 	"server/proto/message"
+	"server/service/game/iface"
 	"server/service/login/account"
-	"server/service/login/iface"
 )
 
 type Login struct {

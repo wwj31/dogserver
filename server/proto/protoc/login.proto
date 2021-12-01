@@ -45,5 +45,7 @@ message EnterGameReq
 
 message EnterGameRsp
 {
-
+    uint64  UID = 1; // 账号id
+    uint64  RID = 2; // 角色Id
+    string  Name = 3;
 }

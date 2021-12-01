@@ -5,14 +5,27 @@ import (
 	"github.com/wwj31/dogactor/log"
 	"server/common"
 	"server/proto/message"
+	"server/service/game/player"
+	"server/service/game/player/role"
 )
 
 // 玩家请求进入游戏
 func (s *Controller) EnterGameReq(sourceId string, gSession common.GSession, pbMsg interface{}) proto.Message {
 	msg := pbMsg.(*message.EnterGameReq)
 	log.KV("msg", msg).Debug("EnterGameReq")
-	// 登录成功的消息
+
+	_player, exist := s.PlayerMgr().PlayerByRID(msg.RID)
+	if !exist {
+		_player = player.
+			NewBuildProcess().
+			SetGame(s).
+			SetRole(role.New(msg.RID, s.Gamer)).
+			Player()
+	}
+
 	return &message.EnterGameRsp{
-		// todo ...
+		UID:  _player.Table().UUId,
+		RID:  _player.Table().RoleId,
+		Name: _player.Table().Name,
 	}
 }

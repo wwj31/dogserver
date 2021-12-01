@@ -7,6 +7,7 @@ import (
 	"github.com/wwj31/dogactor/iniconfig"
 	"github.com/wwj31/dogactor/log"
 	"server/common"
+	"server/db"
 	"server/service/game/handler"
 	"server/service/game/iface"
 	"server/service/game/player"
@@ -19,13 +20,17 @@ func New(conf iniconfig.Config) *Game {
 type Game struct {
 	actor.Base
 	common.SendTools
+	*db.DB
+
+	sid int32 // 服务器Id
+
 	config     iniconfig.Config
-	sid        int32 // 服务器Id
-	playerMgr  iface.Manager
+	playerMgr  iface.PlayerManager
 	msgHandler common.MsgHandler
 }
 
 func (s *Game) OnInit() {
+	s.DB = db.New(s.config.String("mysql"), s.config.String("database"))
 	s.SendTools = common.NewSendTools(s)
 	s.playerMgr = player.NewMgr(s)
 	s.msgHandler = common.NewMsgHandler()
@@ -38,6 +43,10 @@ func (s *Game) OnInit() {
 // 区服id
 func (s *Game) SID() int32 {
 	return s.sid
+}
+
+func (s *Game) PlayerMgr() iface.PlayerManager {
+	return s.playerMgr
 }
 
 // 注册消息

@@ -8,12 +8,8 @@ import (
 type Player struct {
 	game        iface.Gamer
 	gateSession common.GSession
-}
 
-func NewPlayer(g iface.Gamer) *Player {
-	return &Player{
-		game: g,
-	}
+	iface.Role
 }
 
 func (s *Player) GateSession() common.GSession            { return s.gateSession }
