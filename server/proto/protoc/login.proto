@@ -35,17 +35,28 @@ message LoginRsp
 {
     uint64  UID         = 1; // 账号id
     uint64  RID         = 2; // 角色Id
+    string  cryptic     = 3; // 密文
 }
 
 message EnterGameReq
 {
-    uint64  UID = 1; // 账号id
-    uint64  RID = 2; // 角色Id
+    uint64  UID       = 1; // 账号id
+    uint64  RID       = 2; // 角色Id
+    string  cryptic   = 3; // 密文
 }
 
 message EnterGameRsp
 {
-    uint64  UID = 1; // 账号id
-    uint64  RID = 2; // 角色Id
-    string  Name = 3;
+    bool NewPlayer = 1; // 是否是新玩家
+}
+
+// 角色信息
+message RoleInfoPush
+{
+    uint64  UID     = 1; // 账号Id
+    uint64  RID     = 2; // 角色Id
+    uint64  SId     = 3; // 服务器Id
+    string  Name    = 4;
+    string  Icon    = 5;
+    string  Country = 6;
 }

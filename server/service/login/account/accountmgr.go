@@ -66,7 +66,7 @@ func (s *AccountMgr) Login(msg *message.LoginReq, saver iface.Saver) (acc *Accou
 		Country:  "中国",
 		IsDelete: false,
 		CreateAt: time.Now().Unix(),
-		LoginAt:  time.Now().Unix(),
+		LoginAt:  0,
 		LogoutAt: 0,
 	}
 	newAcc.Roles = table.RoleMap{newRole.RoleId: newRole}

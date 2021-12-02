@@ -25,8 +25,11 @@ enum MSG
     GAME_SEGMENT_BEGIN = 300001;
 
     // 请求登录
-    ENTER_GAME_REQ = 300010; // EnterGameReq
-    ENTER_GAME_RSP = 300011; // EnterGameRsp
+    ENTER_GAME_REQ = 300100; // EnterGameReq
+    ROLE_INFO_PUSH = 300101; // RoleInfoPush
+    ENTER_GAME_RSP = 300201; // EnterGameRsp
+
+
 
     // 消息段end
     GAME_SEGMENT_END = 310000;

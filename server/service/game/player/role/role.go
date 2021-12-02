@@ -3,19 +3,45 @@ package role
 import (
 	"github.com/wwj31/dogactor/expect"
 	"server/db/table"
-	"server/service/game/iface"
+	"server/proto/message"
+	"server/service/game/player/model"
 )
 
 type Role struct {
+	model.Model
+
 	table.Role
 }
 
-func New(rid uint64, loader iface.Loader) *Role {
-	t := table.Role{RoleId: rid}
-	err := loader.Load(&t)
+func New(rid uint64, base model.Model) *Role {
+	t_role := table.Role{RoleId: rid}
+	role := &Role{
+		Model: base,
+		Role:  t_role,
+	}
+	err := role.Game().Load(&t_role)
 	expect.Nil(err)
 
-	return &Role{Role: t}
+	return role
+}
+
+func (s *Role) OnLogin() {
+	_ = s.Game().Send2Client(s.GateSession(), s.roleInfoPush())
+}
+
+func (s *Role) OnLogout() {
+	s.Log().Info("Logout Role")
 }
 
 func (s *Role) Table() table.Role { return s.Role }
+
+func (s *Role) roleInfoPush() *message.RoleInfoPush {
+	return &message.RoleInfoPush{
+		UID:     s.UUId,
+		RID:     s.RoleId,
+		SId:     s.SId,
+		Name:    s.Name,
+		Icon:    s.Icon,
+		Country: s.Country,
+	}
+}

@@ -4,7 +4,12 @@ import "server/common"
 
 type Player interface {
 	Session
-	Role
+	Game() Gamer
+
+	Login()
+	Logout()
+
+	Role() Role
 }
 
 type PlayerManager interface {
