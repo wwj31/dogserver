@@ -2,6 +2,7 @@ package role
 
 import (
 	"github.com/wwj31/dogactor/expect"
+	"github.com/wwj31/dogactor/tools"
 	"server/db/table"
 	"server/proto/message"
 	"server/service/game/player/model"
@@ -15,21 +16,23 @@ type Role struct {
 
 func New(rid uint64, base model.Model) *Role {
 	t_role := table.Role{RoleId: rid}
+	err := base.Game().Load(&t_role)
+	expect.Nil(err)
+
 	role := &Role{
 		Model: base,
 		Role:  t_role,
 	}
-	err := role.Game().Load(&t_role)
-	expect.Nil(err)
-
 	return role
 }
 
 func (s *Role) OnLogin() {
+	s.LoginAt = tools.Milliseconds()
 	_ = s.Game().Send2Client(s.GateSession(), s.roleInfoPush())
 }
 
 func (s *Role) OnLogout() {
+	s.LogoutAt = tools.Milliseconds()
 	s.Log().Info("Logout Role")
 }
 

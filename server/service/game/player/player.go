@@ -27,14 +27,14 @@ func (s *Player) GateSession() common.GSession            { return s.gateSession
 func (s *Player) SetGateSession(gSession common.GSession) { s.gateSession = gSession }
 
 func (s *Player) Login() {
-	for _, model := range s.models {
-		model.OnLogin()
+	for _, mod := range s.models {
+		mod.OnLogin()
 	}
 }
 
 func (s *Player) Logout() {
-	for _, model := range s.models {
-		model.OnLogout()
+	for _, mod := range s.models {
+		mod.OnLogout()
 	}
 }
 

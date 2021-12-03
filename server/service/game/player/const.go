@@ -1,8 +1,7 @@
 package player
 
 const (
-	_ = iota
-	Role
+	Role = iota
 
 	All
 )

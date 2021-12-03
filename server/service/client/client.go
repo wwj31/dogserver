@@ -54,6 +54,8 @@ func (s *Client) OnHandleMessage(sourceId, targetId string, v interface{}) {
 		s.RID = msg.RID
 	case *message.EnterGameRsp:
 		logger.KV("msg", msg.String()).Info("enter success!")
+	case *message.RoleInfoPush:
+		logger.KV("msg", msg.String()).Info("RoleInfoPush!")
 	case *message.Pong:
 		logger.Info("aliving~")
 	}
