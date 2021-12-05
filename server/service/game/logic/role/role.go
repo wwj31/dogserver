@@ -5,7 +5,7 @@ import (
 	"github.com/wwj31/dogactor/tools"
 	"server/db/table"
 	"server/proto/message"
-	"server/service/game/player/model"
+	"server/service/game/logic/model"
 )
 
 type Role struct {

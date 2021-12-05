@@ -3,21 +3,21 @@ package player
 import (
 	"server/common"
 	"server/service/game/iface"
-	"server/service/game/player/model"
-	"server/service/game/player/role"
+	"server/service/game/logic/model"
+	"server/service/game/logic/role"
 )
 
 type (
 	Player struct {
 		game        iface.Gamer
 		gateSession common.GSession
-		models      [All]iface.Modeler
+		models      [all]iface.Modeler
 	}
 )
 
 func New(roleId uint64, game iface.Gamer) *Player {
 	p := &Player{game: game}
-	p.models[Role] = role.New(roleId, model.New(p)) // 角色
+	p.models[modRole] = role.New(roleId, model.New(p)) // 角色
 
 	return p
 }
@@ -39,5 +39,5 @@ func (s *Player) Logout() {
 }
 
 func (s *Player) Role() iface.Role {
-	return s.models[Role].(iface.Role)
+	return s.models[modRole].(iface.Role)
 }

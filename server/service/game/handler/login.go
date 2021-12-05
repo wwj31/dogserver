@@ -5,7 +5,7 @@ import (
 	"github.com/wwj31/dogactor/log"
 	"server/common"
 	"server/proto/message"
-	"server/service/game/player"
+	"server/service/game/logic/player"
 )
 
 // 玩家请求进入游戏

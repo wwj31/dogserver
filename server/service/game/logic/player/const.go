@@ -1,7 +1,7 @@
 package player
 
 const (
-	Role = iota
+	modRole = iota
 
-	All
+	all
 )

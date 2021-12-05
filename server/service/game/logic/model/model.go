@@ -18,7 +18,7 @@ func New(player iface.Player, loglevel ...int32) Model {
 
 	model := Model{
 		Player: player,
-		logger: *log.New(lv),
+		logger: log.New(lv),
 	}
 	return model
 }

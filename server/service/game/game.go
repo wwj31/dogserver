@@ -10,7 +10,7 @@ import (
 	"server/db"
 	"server/service/game/handler"
 	"server/service/game/iface"
-	"server/service/game/player"
+	"server/service/game/logic/player"
 )
 
 func New(conf iniconfig.Config) *Game {
