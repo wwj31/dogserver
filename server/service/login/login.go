@@ -16,7 +16,7 @@ type Login struct {
 	actor.Base
 	common.SendTools
 	stored     iface.SaveLoader
-	accountMgr *account.AccountMgr
+	accountMgr account.AccountMgr
 }
 
 func New(s iface.SaveLoader) *Login {

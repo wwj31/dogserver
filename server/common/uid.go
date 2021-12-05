@@ -10,11 +10,11 @@ type UID struct {
 	sonyflake *sonyflake.Sonyflake
 }
 
-func NewUID(insId uint16) *UID {
+func NewUID(insId uint16) UID {
 	sf := sonyflake.NewSonyflake(sonyflake.Settings{MachineID: func() (uint16, error) {
 		return insId, nil
 	}})
-	return &UID{
+	return UID{
 		sonyflake: sf,
 	}
 }

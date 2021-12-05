@@ -16,11 +16,11 @@ type AccountMgr struct {
 	accountsByPlatformId map[string]*Account
 	accountsByName       map[string]*Account
 
-	uuidGen *common.UID
+	uuidGen common.UID
 }
 
-func NewAccountMgr() *AccountMgr {
-	return &AccountMgr{
+func NewAccountMgr() AccountMgr {
+	return AccountMgr{
 		accountsByUId:        make(map[uint64]*Account),
 		accountsByPlatformId: make(map[string]*Account),
 		accountsByName:       make(map[string]*Account),
