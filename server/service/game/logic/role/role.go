@@ -11,40 +11,47 @@ import (
 type Role struct {
 	model.Model
 
-	table.Role
+	tRole table.Role
 }
 
 func New(rid uint64, base model.Model) *Role {
-	t_role := table.Role{RoleId: rid}
-	err := base.Game().Load(&t_role)
+	tRole := table.Role{RoleId: rid}
+	err := base.Game().Load(&tRole)
 	expect.Nil(err)
 
 	role := &Role{
 		Model: base,
-		Role:  t_role,
+		tRole: tRole,
 	}
 	return role
 }
 
 func (s *Role) OnLogin() {
-	s.LoginAt = tools.Milliseconds()
+	s.tRole.LoginAt = tools.Milliseconds()
 	_ = s.Game().Send2Client(s.GateSession(), s.roleInfoPush())
+
+	s.save()
 }
 
 func (s *Role) OnLogout() {
-	s.LogoutAt = tools.Milliseconds()
+	s.tRole.LogoutAt = tools.Milliseconds()
 	s.Log().Info("Logout Role")
-}
 
-func (s *Role) Table() table.Role { return s.Role }
+	s.save()
+}
+func (s *Role) Table() table.Tabler { return &s.tRole }
 
 func (s *Role) roleInfoPush() *message.RoleInfoPush {
 	return &message.RoleInfoPush{
-		UID:     s.UUId,
-		RID:     s.RoleId,
-		SId:     s.SId,
-		Name:    s.Name,
-		Icon:    s.Icon,
-		Country: s.Country,
+		UID:     s.tRole.UUId,
+		RID:     s.tRole.RoleId,
+		SId:     s.tRole.SId,
+		Name:    s.tRole.Name,
+		Icon:    s.tRole.Icon,
+		Country: s.tRole.Country,
 	}
+}
+
+func (s *Role) save() {
+	s.SetTable(&s.tRole)
 }

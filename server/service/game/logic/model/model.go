@@ -2,12 +2,14 @@ package model
 
 import (
 	"github.com/wwj31/dogactor/log"
+	"server/db/table"
 	"server/service/game/iface"
 )
 
 type Model struct {
 	iface.Player
 	logger log.Logger
+	tab    table.Tabler
 }
 
 func New(player iface.Player, loglevel ...int32) Model {
@@ -23,8 +25,11 @@ func New(player iface.Player, loglevel ...int32) Model {
 	return model
 }
 
-func (s *Model) OnLogin()  {}
-func (s *Model) OnLogout() {}
+func (s *Model) OnLogin()            {}
+func (s *Model) OnLogout()           {}
+func (s *Model) Table() table.Tabler { return nil }
+
+func (s *Model) SetTable(t table.Tabler) { s.tab = t }
 
 func (s *Model) Log() *log.Logger {
 	return &s.logger
