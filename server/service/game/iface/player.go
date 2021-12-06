@@ -13,7 +13,8 @@ type Player interface {
 }
 
 type PlayerManager interface {
-	PlayerBySession(gateSession common.GSession) (Player, bool)
+	SetPlayer(p Player)
+	PlayerBySession(gSession common.GSession) (Player, bool)
 	PlayerByUID(uid uint64) (Player, bool)
 	PlayerByRID(rid uint64) (Player, bool)
 }

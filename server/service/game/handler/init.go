@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"server/proto/inner_message/inner"
 	"server/proto/message"
 	"server/service/game/iface"
 )
@@ -14,4 +15,5 @@ func Init(g iface.Gamer) {
 		Gamer: g,
 	}
 	g.RegistMsg((*message.EnterGameReq)(nil), handler.EnterGameReq)
+	g.RegistMsg((*inner.GT2GSessionClosed)(nil), handler.Logout)
 }

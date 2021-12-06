@@ -41,6 +41,9 @@ func New(addr, databaseAddr string) *DB {
 }
 
 func (s *DB) Save(datas ...table.Tabler) error {
+	if datas == nil {
+		return nil
+	}
 	transaction := s.dbIns.Begin()
 	for _, t := range datas {
 		name := t.TableName()

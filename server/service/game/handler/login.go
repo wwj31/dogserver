@@ -4,6 +4,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/wwj31/dogactor/log"
 	"server/common"
+	"server/proto/inner_message/inner"
 	"server/proto/message"
 	"server/service/game/logic/player"
 )
@@ -21,5 +22,19 @@ func (s *Controller) EnterGameReq(sourceId string, gSession common.GSession, pbM
 	}
 	_player.SetGateSession(gSession)
 	_player.Login()
+	s.PlayerMgr().SetPlayer(_player)
+
+	log.KVs(log.Fields{"roleId": _player.Role().RoleId(), "gSession": gSession}).Info("player login")
 	return &message.EnterGameRsp{}
+}
+
+// 玩家离线
+func (s *Controller) Logout(sourceId string, gSession common.GSession, pbMsg interface{}) proto.Message {
+	msg := pbMsg.(*inner.GT2GSessionClosed)
+	p, ok := s.PlayerMgr().PlayerBySession(common.GSession(msg.GateSession))
+	if ok {
+		p.Logout()
+	}
+	log.KVs(log.Fields{"roleId": p.Role().RoleId(), "gSession": msg.GateSession}).Info("player logout")
+	return nil
 }

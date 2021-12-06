@@ -35,7 +35,6 @@ func (s *Role) OnLogin() {
 
 func (s *Role) OnLogout() {
 	s.tRole.LogoutAt = tools.Milliseconds()
-	s.Log().Info("Logout Role")
 
 	s.save()
 }
