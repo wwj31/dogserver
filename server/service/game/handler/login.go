@@ -20,6 +20,11 @@ func (s *Controller) EnterGameReq(sourceId string, gSession common.GSession, pbM
 	if !exist {
 		_player = player.New(msg.RID, s)
 	}
+	// 没有登录过，是新玩家
+	if _player.Role().LoginAt() == 0 {
+		// todo ...
+	}
+
 	_player.SetGateSession(gSession)
 	_player.Login()
 	s.PlayerMgr().SetPlayer(_player)
