@@ -12,4 +12,5 @@ type Role interface {
 	CreateAt() int64
 	LoginAt() int64
 	LogoutAt() int64
+	GetAttr(typ int64) int64
 }
