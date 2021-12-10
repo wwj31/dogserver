@@ -1,0 +1,35 @@
+[base]
+logpath    = "./log"
+etcdprefix = "/actor/"
+etcdaddr   = "127.0.0.1:2379"
+configjson = "./root/internal/config/config_json"
+
+# 网关
+[server]
+    [server.login_1]
+        actoraddr  = "127.0.0.1:8100"
+        mysql      = "root:123456@tcp(127.0.0.1:3306)/%s?charset=utf8mb4&parseTime=True&loc=Local"
+        luapath    = "./root/servers/gate/lua/main.lua"
+        database   = "game"
+
+    [server.gateway_1]
+        actoraddr = "127.0.0.1:8001"
+        gateaddr  = "0.0.0.0:9001"     # client连接端口
+
+    [server.gateway_2]
+        actoraddr = "127.0.0.1:8002"
+        gateaddr  = "0.0.0.0:9002"     # client连接端口
+
+    [server.game_1]
+        actoraddr  = "127.0.0.1:8201"
+        mysql      = "root:123456@tcp(127.0.0.1:3306)/%s?charset=utf8mb4&parseTime=True&loc=Local"
+        database   = "game"
+
+
+    [server.all_0]
+        actoraddr  = "127.0.0.1:8000"
+        gateaddr   = "0.0.0.0:9001"
+        mysql      = "root:123456@tcp(127.0.0.1:3306)/%s?charset=utf8mb4&parseTime=True&loc=Local"
+        database   = "game"
+
+    [server.client_0]

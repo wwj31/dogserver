@@ -1,13 +1,14 @@
 package gateway
 
 import (
+	"server/common/toml"
+	"time"
+
 	"github.com/wwj31/dogactor/actor"
 	"github.com/wwj31/dogactor/expect"
-	"github.com/wwj31/dogactor/iniconfig"
 	"github.com/wwj31/dogactor/log"
 	"github.com/wwj31/dogactor/network"
 	"github.com/wwj31/dogactor/tools"
-	"time"
 
 	"server/common"
 	"server/proto/inner_message/inner"
@@ -15,7 +16,6 @@ import (
 
 type GateWay struct {
 	actor.Base
-	config iniconfig.Config
 
 	// 管理所有对外的玩家tcp连接
 	listener network.INetListener
@@ -25,16 +25,14 @@ type GateWay struct {
 	msgParser *tools.ProtoParser
 }
 
-func New(conf iniconfig.Config) *GateWay {
-	return &GateWay{
-		config: conf,
-	}
+func New() *GateWay {
+	return &GateWay{}
 }
 
 func (s *GateWay) OnInit() {
 	s.sessions = make(map[uint32]*UserSession)
 
-	s.listener = network.StartTcpListen(s.config.String("gate_addr"),
+	s.listener = network.StartTcpListen(toml.Get("gateaddr"),
 		func() network.ICodec { return &network.StreamCodec{} },
 		func() network.INetHandler { return &UserSession{gateway: s} },
 	)
@@ -46,7 +44,7 @@ func (s *GateWay) OnInit() {
 	s.AddTimer(tools.UUID(), time.Hour, s.checkDeadSession, -1)
 
 	if err := s.listener.Start(); err != nil {
-		log.KV("err", err).KV("addr", s.config.String("gate_addr")).Error("gateway listener start err")
+		log.KV("err", err).KV("addr", toml.Get("gateaddr")).Error("gateway listener start err")
 		return
 	}
 	log.Debug("gateway OnInit")

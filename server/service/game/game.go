@@ -1,20 +1,21 @@
 package game
 
 import (
-	"github.com/golang/protobuf/proto"
-	"github.com/wwj31/dogactor/actor"
-	"github.com/wwj31/dogactor/expect"
-	"github.com/wwj31/dogactor/iniconfig"
-	"github.com/wwj31/dogactor/log"
 	"server/common"
+	"server/common/toml"
 	"server/db"
 	"server/service/game/handler"
 	"server/service/game/iface"
 	"server/service/game/logic/player"
+
+	"github.com/golang/protobuf/proto"
+	"github.com/wwj31/dogactor/actor"
+	"github.com/wwj31/dogactor/expect"
+	"github.com/wwj31/dogactor/log"
 )
 
-func New(conf iniconfig.Config) *Game {
-	return &Game{config: conf}
+func New() *Game {
+	return &Game{}
 }
 
 type Game struct {
@@ -24,13 +25,12 @@ type Game struct {
 
 	sid int32 // 服务器Id
 
-	config     iniconfig.Config
 	playerMgr  iface.PlayerManager
 	msgHandler common.MsgHandler
 }
 
 func (s *Game) OnInit() {
-	s.DB = db.New(s.config.String("mysql"), s.config.String("database"))
+	s.DB = db.New(toml.Get("mysql"), toml.Get("database"))
 	s.SendTools = common.NewSendTools(s)
 	s.playerMgr = player.NewMgr(s)
 	s.msgHandler = common.NewMsgHandler()

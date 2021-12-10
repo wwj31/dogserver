@@ -3,15 +3,16 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/spf13/cast"
-	"github.com/wwj31/dogactor/log"
 	"math/rand"
 	"os"
 	"os/signal"
+	"server/common/toml"
 	"syscall"
 
-	"github.com/wwj31/dogactor/iniconfig"
+	"github.com/spf13/cast"
+	"github.com/wwj31/dogactor/log"
 	"github.com/wwj31/dogactor/tools"
+
 	"server/common"
 )
 
@@ -22,15 +23,17 @@ func main() {
 		rand.Seed(tools.Now().UnixNano())
 
 		// 获取程序启动参数
-		appType, appId, logLv, err := initConf()
+		appType, tomlPath, appId, logLv, err := outputFlags()
 		if err != nil {
 			fmt.Println("initConf error", err)
 			return
 		}
 
-		// 初始化日志
-		common.InitLog(logLv, iniconfig.BaseString("logdir"), appType, appId)
+		// 初始化toml配置
+		toml.Init(tomlPath, appType, appId)
 
+		// 初始化日志
+		common.InitLog(logLv, toml.Get("logpath"), appType, appId)
 		// 加载配置表
 		//err = config_go.Load(iniconfig.BaseString("configjson"))
 		//expect.Nil(err)
@@ -47,11 +50,11 @@ func main() {
 	fmt.Println("stop")
 }
 
-func initConf() (appType string, appId, logLv int32, err error) {
+func outputFlags() (appType, tomlPath string, appId, logLv int32, err error) {
 	rand.Seed(tools.Now().UnixNano()) //设置随机数种子
 
-	flag.String("ini", "../ini/config.ini", "ini file path")
-	flag.String("app", "All", "app type")
+	flag.String("toml", "../ini", "ini file path")
+	flag.String("app", "all", "app type")
 	flag.Int("id", 0, "app id")
 	flag.Int("log", 0, "log level, if debug log=0")
 
@@ -63,11 +66,7 @@ func initConf() (appType string, appId, logLv int32, err error) {
 		return
 	}
 
-	configPath := flag.Lookup("ini")
-	err = iniconfig.LoadINIConfig(configPath.Value.String())
-	if err != nil {
-		return
-	}
+	tomlPath = flag.Lookup("toml").Value.String()
 
 	logLv, err = cast.ToInt32E(flag.Lookup("log").Value.String())
 	if err != nil {

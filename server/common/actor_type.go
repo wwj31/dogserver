@@ -2,26 +2,27 @@ package common
 
 import (
 	"fmt"
-	"github.com/wwj31/dogactor/log"
 	"regexp"
+
+	"github.com/wwj31/dogactor/log"
 )
 
 type ActorId = string
 
 // 静态Actor类型,全局唯一
 const (
-	Login_Actor  = "Login"
-	Center_Actor = "CenterWorld"
-	Client       = "Client"
+	Login_Actor  = "login"
+	Center_Actor = "centerWorld"
+	Client       = "client"
 )
 
 // 动态增删的actor,会有多个 game1、game2
 const (
-	Game_Actor    = "Game"
-	GateWay_Actor = "Gateway"
-	World_Actor   = "World"
-	DB_Actor      = "DB"
-	MYSQL_Actor   = "Mysql"
+	Game_Actor    = "game"
+	GateWay_Actor = "gateway"
+	World_Actor   = "world"
+	DB_Actor      = "dB"
+	MYSQL_Actor   = "mysql"
 )
 
 func GameName(id int32) ActorId {
