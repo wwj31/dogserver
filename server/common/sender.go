@@ -6,6 +6,9 @@ import (
 	"github.com/wwj31/dogactor/actor"
 )
 
+// 封装发送用户和网关的sender
+
+
 type Sender interface {
 	Send2Client(gSession GSession, pb proto.Message) error
 	Send2Gate(id ActorId, pb proto.Message) error

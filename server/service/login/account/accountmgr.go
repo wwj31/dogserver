@@ -34,13 +34,13 @@ func (s *AccountMgr) LoadAllAccount(loader iface.Loader) {
 	expect.Nil(err)
 
 	for _, data := range all {
-		acc := &Account{Account: data}
-		s.accountsByPlatformId[acc.PlatformUUId] = acc
-		s.accountsByUId[acc.UUId] = acc
-		lastLoginRole := acc.Roles[acc.LastRoleId]
+		account := &Account{table: data}
+		s.accountsByPlatformId[account.table.PlatformUUId] = account
+		s.accountsByUId[account.table.UUId] = account
+		lastLoginRole := account.table.Roles[account.table.LastRoleId]
 		if lastLoginRole != nil {
-			s.accountsByName[lastLoginRole.Name] = acc
-			acc.serverId = common.GameName(int32(lastLoginRole.SId))
+			s.accountsByName[lastLoginRole.Name] = account
+			account.serverId = common.GameName(int32(lastLoginRole.SId))
 		}
 	}
 }
@@ -53,15 +53,15 @@ func (s *AccountMgr) Login(msg *message.LoginReq, saver iface.Saver) (acc *Accou
 
 	// newAccount
 	newAcc := &Account{}
-	newAcc.UUId = s.uuidGen.Uuid()
-	newAcc.PlatformUUId = platformId
-	newAcc.OS = msg.OS
-	newAcc.ClientVersion = msg.ClientVersion // newRole
+	newAcc.table.UUId = s.uuidGen.Uuid()
+	newAcc.table.PlatformUUId = platformId
+	newAcc.table.OS = msg.OS
+	newAcc.table.ClientVersion = msg.ClientVersion // newRole
 	newRole := &table.Role{
-		UUId:     newAcc.UUId,
+		UUId:     newAcc.table.UUId,
 		RoleId:   s.uuidGen.Uuid(),
 		SId:      1,
-		Name:     fmt.Sprintf("player_%v", newAcc.UUId),
+		Name:     fmt.Sprintf("player_%v", newAcc.table.UUId),
 		Icon:     "Avatar",
 		Country:  "中国",
 		IsDelete: false,
@@ -69,18 +69,18 @@ func (s *AccountMgr) Login(msg *message.LoginReq, saver iface.Saver) (acc *Accou
 		LoginAt:  0,
 		LogoutAt: 0,
 	}
-	newAcc.Roles = table.RoleMap{newRole.RoleId: newRole}
-	newAcc.LastRoleId = newRole.RoleId
+	newAcc.table.Roles = table.RoleMap{newRole.RoleId: newRole}
+	newAcc.table.LastRoleId = newRole.RoleId
 	newAcc.serverId = common.GameName(int32(newRole.SId))
 
 	// 回存db
-	if err := saver.Save(&newAcc.Account, newRole); err != nil {
+	if err := saver.Save(&newAcc.table, newRole); err != nil {
 		log.KV("err", err).Error("save err")
 		return nil, false
 	}
 
 	s.accountsByPlatformId[platformId] = newAcc
-	s.accountsByUId[newAcc.UUId] = newAcc
+	s.accountsByUId[newAcc.table.UUId] = newAcc
 
 	return newAcc, true
 }

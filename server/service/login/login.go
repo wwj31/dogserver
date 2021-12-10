@@ -15,20 +15,20 @@ import (
 type Login struct {
 	actor.Base
 	common.SendTools
-	stored     iface.SaveLoader
+	storer     iface.SaveLoader
 	accountMgr account.AccountMgr
 }
 
 func New(s iface.SaveLoader) *Login {
 	return &Login{
-		stored: s,
+		storer: s,
 	}
 }
 
 func (s *Login) OnInit() {
 	s.SendTools = common.NewSendTools(s)
 	s.accountMgr = account.NewAccountMgr()
-	s.accountMgr.LoadAllAccount(s.stored)
+	s.accountMgr.LoadAllAccount(s.storer)
 	log.Debug("login OnInit")
 }
 
@@ -51,7 +51,7 @@ func (s *Login) OnHandleMessage(sourceId, targetId string, msg interface{}) {
 func (s *Login) LoginReq(sourceId string, gSession common.GSession, msg *message.LoginReq) error {
 	log.Debug(msg.String())
 
-	acc, _ := s.accountMgr.Login(msg, s.stored)
+	acc, _ := s.accountMgr.Login(msg, s.storer)
 
 	// 新、旧session相同，则同一连接多次登录，不做顶号处理
 	if acc.GSession().Valid() && acc.GSession() != gSession {
@@ -71,7 +71,7 @@ func (s *Login) LoginReq(sourceId string, gSession common.GSession, msg *message
 
 	// 通知玩家登录成功
 	return s.Send2Client(gSession, &message.LoginRsp{
-		UID: acc.UUId,
-		RID: acc.LastRoleId,
+		UID: acc.UUId() ,
+		RID: acc.LastRoleId(),
 	})
 }
