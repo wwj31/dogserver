@@ -71,6 +71,7 @@ func (s *Player) SetTable(table.Tabler) {
 
 }
 
+// 回存功能模块
 func (s *Player) store() {
 	logFiled := log.Fields{"roleId": s.Role().RoleId()}
 	for _, mod := range s.models {
