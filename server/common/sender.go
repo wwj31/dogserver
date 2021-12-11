@@ -26,7 +26,7 @@ func NewSendTools(s actor.Sender) SendTools {
 // 发送至前端
 func (s *SendTools) Send2Client(gSession GSession, pb proto.Message) error {
 	if gSession.Invalid() {
-		return fmt.Errorf("gSession is invalid %v", gSession)
+		return nil
 	}
 
 	gateId, _ := gSession.Split()
