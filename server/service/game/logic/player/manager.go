@@ -40,3 +40,8 @@ func (s *Manager) PlayerByRID(rid uint64) (iface.Player, bool) {
 	p, ok := s.playerbyRID[rid]
 	return p, ok
 }
+func (s *Manager) Stop() {
+	for _, p := range s.playerbyUID {
+		p.Stop()
+	}
+}

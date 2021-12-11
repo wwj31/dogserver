@@ -1,6 +1,9 @@
 package role
 
-import "server/db/table"
+import (
+	"server/db/table"
+	"server/service/game/logic/typ"
+)
 
 func (s *Role) RoleId() uint64  { return s.tRole.RoleId }
 func (s *Role) UUId() uint64    { return s.tRole.UUId }
@@ -13,9 +16,9 @@ func (s *Role) CreateAt() int64 { return s.tRole.CreateAt }
 func (s *Role) LoginAt() int64  { return s.tRole.LoginAt }
 func (s *Role) LogoutAt() int64 { return s.tRole.LogoutAt }
 
-func (s *Role) GetAttr(typ int64) int64 {
+func (s *Role) GetAttribute(t typ.Attribute) int64 {
 	if s.tRole.Attributes == nil {
 		s.tRole.Attributes = table.AttributeMap{}
 	}
-	return s.tRole.Attributes[typ]
+	return s.tRole.Attributes[int64(t)]
 }

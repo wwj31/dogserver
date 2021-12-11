@@ -1,5 +1,7 @@
 package iface
 
+import "server/service/game/logic/typ"
+
 type Role interface {
 	Modeler
 	RoleId() uint64
@@ -12,5 +14,5 @@ type Role interface {
 	CreateAt() int64
 	LoginAt() int64
 	LogoutAt() int64
-	GetAttr(typ int64) int64
+	GetAttribute(typ typ.Attribute) int64
 }

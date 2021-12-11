@@ -53,7 +53,7 @@ func main() {
 func outputFlags() (appType, tomlPath string, appId, logLv int32, err error) {
 	rand.Seed(tools.Now().UnixNano()) //设置随机数种子
 
-	flag.String("toml", "../ini", "ini file path")
+	flag.String("toml", "../toml", "toml file path")
 	flag.String("app", "all", "app type")
 	flag.Int("id", 0, "app id")
 	flag.Int("log", 0, "log level, if debug log=0")

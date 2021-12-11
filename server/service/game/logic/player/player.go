@@ -3,7 +3,9 @@ package player
 import (
 	"github.com/wwj31/dogactor/log"
 	"github.com/wwj31/dogactor/tools"
+	"reflect"
 	"server/common"
+	"server/db/table"
 	"server/service/game/iface"
 	"server/service/game/logic/model"
 	"server/service/game/logic/role"
@@ -14,9 +16,9 @@ type (
 	Player struct {
 		game        iface.Gamer
 		gateSession common.GSession
-		models      [all]iface.Modeler
-
 		saveTimerId string
+
+		models [all]iface.Modeler
 	}
 )
 
@@ -40,8 +42,7 @@ func (s *Player) Login() {
 		s.game.CancelTimer(s.saveTimerId)
 	}
 
-	s.saveTimerId = s.game.AddTimer(tools.UUID(), 1*time.Second, func(dt int64) {
-		log.KV("roleId", s.Role().RoleId()).Info("player save")
+	s.saveTimerId = s.game.AddTimer(tools.UUID(), 1*time.Minute, func(dt int64) {
 		s.store()
 	}, -1)
 }
@@ -54,14 +55,36 @@ func (s *Player) Logout() {
 	s.game.CancelTimer(s.saveTimerId)
 }
 
+// 停服回存全量数据
+func (s *Player) Stop() {
+	for _, mod := range s.models {
+		mod.OnStop()
+	}
+	s.store()
+}
+
 func (s *Player) Role() iface.Role {
 	return s.models[modRole].(iface.Role)
 }
+
+func (s *Player) SetTable(table.Tabler) {
+
+}
+
 func (s *Player) store() {
+	logFiled := log.Fields{"roleId": s.Role().RoleId()}
 	for _, mod := range s.models {
-		err := s.game.Save(mod.Table())
+		tab := mod.Table()
+		if reflect.ValueOf(tab).IsNil() {
+			continue
+		}
+		err := s.game.Save(tab)
+		mod.SetTable(nil)
 		if err != nil {
 			log.KV("err", err).Error("player store err")
+		} else {
+			logFiled["table"] = tab.TableName()
 		}
 	}
+	log.KVs(logFiled).Info("player stored model")
 }

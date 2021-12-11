@@ -9,6 +9,7 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
+	"reflect"
 	"server/db/table"
 	"strconv"
 	"strings"
@@ -46,6 +47,10 @@ func (s *DB) Save(datas ...table.Tabler) error {
 	}
 	transaction := s.dbIns.Begin()
 	for _, t := range datas {
+		if reflect.ValueOf(t).IsNil() {
+			continue
+		}
+
 		name := t.TableName()
 		if t.Count() > 1 {
 			name = name + strconv.Itoa(num(t.Key(), t.Count()))

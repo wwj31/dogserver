@@ -41,6 +41,13 @@ func (s *Game) OnInit() {
 }
 
 // 区服id
+func (s *Game) OnStop() bool {
+	s.playerMgr.Stop()
+	log.Info("stop game")
+	return true
+}
+
+// 区服id
 func (s *Game) SID() int32 {
 	return s.sid
 }

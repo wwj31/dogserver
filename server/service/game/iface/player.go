@@ -8,6 +8,7 @@ type Player interface {
 
 	Login()
 	Logout()
+	Stop()
 
 	Role() Role
 }
@@ -17,4 +18,5 @@ type PlayerManager interface {
 	PlayerBySession(gSession common.GSession) (Player, bool)
 	PlayerByUID(uid uint64) (Player, bool)
 	PlayerByRID(rid uint64) (Player, bool)
+	Stop()
 }

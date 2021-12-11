@@ -1,10 +1,12 @@
+// go install golang.org/x/tools/cmd/stringer
+//go:generate stringer -type Attribute -linecomment
 package typ
 
-type Attr = int64
+type Attribute int64
 
 const (
-	_     Attr = iota
-	Level      // 等级
-	Exp        // 经验
-	Glod       // 金币
+	_     Attribute = iota
+	Level           // 等级
+	Exp             // 经验
+	Glod            // 金币
 )

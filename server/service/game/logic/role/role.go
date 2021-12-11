@@ -29,16 +29,17 @@ func New(rid uint64, base model.Model) *Role {
 func (s *Role) OnLogin() {
 	s.tRole.LoginAt = tools.Milliseconds()
 	_ = s.Game().Send2Client(s.GateSession(), s.roleInfoPush())
-
 	s.save()
 }
 
 func (s *Role) OnLogout() {
 	s.tRole.LogoutAt = tools.Milliseconds()
-
 	s.save()
 }
-func (s *Role) Table() table.Tabler { return &s.tRole }
+
+func (s *Role) OnStop() {
+	s.save()
+}
 
 func (s *Role) roleInfoPush() *message.RoleInfoPush {
 	return &message.RoleInfoPush{

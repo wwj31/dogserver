@@ -33,3 +33,4 @@ configjson = "./root/internal/config/config_json"
         database   = "game"
 
     [server.client_0]
+        actoraddr  = "127.0.0.1:8000"
