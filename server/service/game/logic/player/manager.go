@@ -1,6 +1,8 @@
 package player
 
 import (
+	"github.com/golang/protobuf/proto"
+	"github.com/wwj31/dogactor/log"
 	"server/common"
 	"server/service/game/iface"
 )
@@ -25,6 +27,7 @@ func (s *Manager) PlayerBySession(gateSession common.GSession) (iface.Player, bo
 	p, ok := s.playerbySession[gateSession]
 	return p, ok
 }
+
 func (s *Manager) SetPlayer(p iface.Player) {
 	s.playerbySession[p.GateSession()] = p
 	s.playerbyUID[p.Role().UUId()] = p
@@ -41,6 +44,10 @@ func (s *Manager) PlayerByRID(rid uint64) (iface.Player, bool) {
 	return p, ok
 }
 
+func (s *Manager) OfflinePlayer(gSession common.GSession) {
+	delete(s.playerbySession, gSession)
+}
+
 func (s *Manager) RangeOnline(f func(player iface.Player), except ...uint64) {
 	e := map[uint64]struct{}{}
 	for _, id := range except {
@@ -52,6 +59,17 @@ func (s *Manager) RangeOnline(f func(player iface.Player), except ...uint64) {
 		}
 		f(p)
 	}
+}
+
+func (s *Manager) Broadcast(msg proto.Message, except ...uint64) {
+	s.RangeOnline(func(p iface.Player) {
+		if err := s.game.Send2Client(p.GateSession(), msg); err != nil {
+			log.KVs(log.Fields{
+				"err":      err,
+				"gSession": p.GateSession(),
+				"RoleId":   p.Role().RoleId()}).ErrorStack(2, "broadcast msg error")
+		}
+	}, except...)
 }
 
 func (s *Manager) Stop() {

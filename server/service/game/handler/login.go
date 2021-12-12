@@ -40,6 +40,8 @@ func (s *Controller) Logout(sourceId string, gSession common.GSession, pbMsg int
 	if ok {
 		p.Logout()
 	}
+
+	s.PlayerMgr().OfflinePlayer(gSession)
 	log.KVs(log.Fields{"roleId": p.Role().RoleId(), "gSession": msg.GateSession}).Info("player logout")
 	return nil
 }
