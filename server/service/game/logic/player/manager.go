@@ -40,6 +40,20 @@ func (s *Manager) PlayerByRID(rid uint64) (iface.Player, bool) {
 	p, ok := s.playerbyRID[rid]
 	return p, ok
 }
+
+func (s *Manager) RangeOnline(f func(player iface.Player), except ...uint64) {
+	e := map[uint64]struct{}{}
+	for _, id := range except {
+		e[id] = struct{}{}
+	}
+	for _, p := range s.playerbySession {
+		if _, exist := e[p.Role().UUId()]; exist {
+			continue
+		}
+		f(p)
+	}
+}
+
 func (s *Manager) Stop() {
 	for _, p := range s.playerbyUID {
 		p.Stop()

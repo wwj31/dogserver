@@ -18,5 +18,6 @@ type PlayerManager interface {
 	PlayerBySession(gSession common.GSession) (Player, bool)
 	PlayerByUID(uid uint64) (Player, bool)
 	PlayerByRID(rid uint64) (Player, bool)
+	RangeOnline(f func(player Player), except ...uint64)
 	Stop()
 }
