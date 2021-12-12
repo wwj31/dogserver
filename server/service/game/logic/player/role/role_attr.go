@@ -2,7 +2,7 @@ package role
 
 import (
 	"server/db/table"
-	"server/service/game/logic/typ"
+	"server/service/game/logic/player/role/typ"
 )
 
 func (s *Role) RoleId() uint64  { return s.tRole.RoleId }

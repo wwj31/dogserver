@@ -4,6 +4,8 @@ import (
 	"reflect"
 )
 
+const split = 2
+
 type Account struct {
 	UUId         uint64 `gorm:"primary_key"` //账号ID
 	PlatformUUId string `gorm:"index"`       //平台Id
@@ -30,7 +32,7 @@ func (s *Account) TableName() string {
 
 // 分表数量
 func (s *Account) Count() int {
-	return 0
+	return split
 }
 
 func (s *Account) Key() uint64 {

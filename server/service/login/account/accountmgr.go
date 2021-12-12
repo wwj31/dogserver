@@ -2,6 +2,7 @@ package account
 
 import (
 	"fmt"
+	"github.com/spf13/cast"
 	"github.com/wwj31/dogactor/expect"
 	"github.com/wwj31/dogactor/log"
 	"server/common"
@@ -30,8 +31,18 @@ func NewAccountMgr() AccountMgr {
 
 func (s *AccountMgr) LoadAllAccount(loader iface.Loader) {
 	var all []table.Account
-	err := loader.LoadAll((&table.Account{}).TableName(), &all)
-	expect.Nil(err)
+	tb := &table.Account{}
+	if tb.Count() > 1 {
+		for i := 1; i <= tb.Count(); i++ {
+			ret := []table.Account{}
+			err := loader.LoadAll((tb).TableName()+cast.ToString(i), &ret)
+			expect.Nil(err)
+			all = append(all, ret...)
+		}
+	} else {
+		err := loader.LoadAll((tb).TableName(), &all)
+		expect.Nil(err)
+	}
 
 	for _, data := range all {
 		account := &Account{table: data}

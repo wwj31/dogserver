@@ -8,7 +8,8 @@ import (
 	"server/db/table"
 	"server/service/game/iface"
 	"server/service/game/logic/model"
-	"server/service/game/logic/role"
+	"server/service/game/logic/player/item"
+	"server/service/game/logic/player/role"
 	"time"
 )
 
@@ -25,6 +26,7 @@ type (
 func New(roleId uint64, game iface.Gamer) *Player {
 	p := &Player{game: game}
 	p.models[modRole] = role.New(roleId, model.New(p)) // 角色
+	p.models[modItem] = item.New(roleId, model.New(p)) // 道具
 
 	return p
 }
@@ -62,9 +64,15 @@ func (s *Player) Stop() {
 	}
 	s.store()
 }
+func (s *Player) IsNewRole() bool {
+	return s.Role().LoginAt() == 0
+}
 
 func (s *Player) Role() iface.Role {
 	return s.models[modRole].(iface.Role)
+}
+func (s *Player) Item() iface.Item {
+	return s.models[modItem].(iface.Item)
 }
 
 func (s *Player) SetTable(table.Tabler) {
@@ -76,7 +84,7 @@ func (s *Player) store() {
 	logFiled := log.Fields{"roleId": s.Role().RoleId()}
 	for _, mod := range s.models {
 		tab := mod.Table()
-		if reflect.ValueOf(tab).IsNil() {
+		if tab == nil || reflect.ValueOf(tab).IsNil() {
 			continue
 		}
 		err := s.game.Save(tab)

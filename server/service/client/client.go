@@ -56,7 +56,11 @@ func (s *Client) OnHandleMessage(sourceId, targetId string, v interface{}) {
 		logger.KV("msg", msg.String()).Info("enter success!")
 	case *message.RoleInfoPush:
 		logger.KV("msg", msg.String()).Info("RoleInfoPush!")
+	case *message.ItemInfoPush:
+		logger.KV("msg", msg.String()).Info("ItemInfoPush!")
 	case *message.Pong:
 		logger.Info("aliving~")
+	default:
+		logger.KV("msg", msg).Warn("not case msg")
 	}
 }

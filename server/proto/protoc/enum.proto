@@ -27,6 +27,7 @@ enum MSG
     // 请求登录
     ENTER_GAME_REQ = 300100; // EnterGameReq
     ROLE_INFO_PUSH = 300101; // RoleInfoPush
+    ITEM_INFO_PUSH = 300102; // ItemInfoPush
     ENTER_GAME_RSP = 300201; // EnterGameRsp
 
 

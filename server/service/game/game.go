@@ -2,8 +2,6 @@ package game
 
 import (
 	"server/common"
-	"server/common/toml"
-	"server/db"
 	"server/service/game/handler"
 	"server/service/game/iface"
 	"server/service/game/logic/player"
@@ -14,14 +12,16 @@ import (
 	"github.com/wwj31/dogactor/log"
 )
 
-func New() *Game {
-	return &Game{}
+func New(s iface.SaveLoader) *Game {
+	return &Game{
+		SaveLoader: s,
+	}
 }
 
 type Game struct {
 	actor.Base
 	common.SendTools
-	*db.DB
+	iface.SaveLoader
 
 	sid int32 // 服务器Id
 
@@ -30,7 +30,6 @@ type Game struct {
 }
 
 func (s *Game) OnInit() {
-	s.DB = db.New(toml.Get("mysql"), toml.Get("database"))
 	s.SendTools = common.NewSendTools(s)
 	s.playerMgr = player.NewMgr(s)
 	s.msgHandler = common.NewMsgHandler()

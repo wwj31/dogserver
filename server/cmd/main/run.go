@@ -53,6 +53,7 @@ func newGateway(appId int32, system *actor.System) {
 }
 
 func newGame(appId int32, system *actor.System) {
-	gameActor := game.New()
+	dbIns := db.New(toml.Get("mysql"), toml.Get("database"))
+	gameActor := game.New(dbIns)
 	expect.Nil(system.Regist(actor.New(common.GameName(appId), gameActor)))
 }

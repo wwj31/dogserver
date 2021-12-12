@@ -29,7 +29,7 @@ func (s *Role) TableName() string {
 
 // 分表数量
 func (s *Role) Count() int {
-	return 2
+	return split
 }
 
 func (s *Role) Key() uint64 {

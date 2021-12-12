@@ -13,7 +13,9 @@ type Player interface {
 	Logout()
 	Stop()
 
+	IsNewRole() bool
 	Role() Role
+	Item() Item
 }
 
 type PlayerManager interface {

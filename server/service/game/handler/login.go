@@ -20,15 +20,16 @@ func (s *Controller) EnterGameReq(sourceId string, gSession common.GSession, pbM
 	if !exist {
 		_player = player.New(msg.RID, s)
 	}
-	// 没有登录过，是新玩家
-	if _player.Role().LoginAt() == 0 {
-		// todo ...
-	}
-
 	_player.SetGateSession(gSession)
-	_player.Login()
 	s.PlayerMgr().SetPlayer(_player)
 
+	// 新号处理
+	if _player.IsNewRole() {
+		// todo ...
+		_player.Item().Add(map[int64]int64{123: 999})
+	}
+
+	_player.Login()
 	log.KVs(log.Fields{"roleId": _player.Role().RoleId(), "gSession": gSession}).Info("player login")
 	return &message.EnterGameRsp{}
 }
@@ -36,12 +37,13 @@ func (s *Controller) EnterGameReq(sourceId string, gSession common.GSession, pbM
 // 玩家离线
 func (s *Controller) Logout(sourceId string, gSession common.GSession, pbMsg interface{}) proto.Message {
 	msg := pbMsg.(*inner.GT2GSessionClosed)
-	p, ok := s.PlayerMgr().PlayerBySession(common.GSession(msg.GateSession))
+	gs := common.GSession(msg.GateSession)
+	p, ok := s.PlayerMgr().PlayerBySession(gs)
 	if ok {
 		p.Logout()
 	}
 
-	s.PlayerMgr().OfflinePlayer(gSession)
+	s.PlayerMgr().OfflinePlayer(gs)
 	log.KVs(log.Fields{"roleId": p.Role().RoleId(), "gSession": msg.GateSession}).Info("player logout")
 	return nil
 }

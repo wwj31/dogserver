@@ -3,6 +3,7 @@ package message;
 option  go_package = "/message";
 
 import "error.proto";
+import "common.proto";
 
 message Unknown
 {
@@ -59,4 +60,10 @@ message RoleInfoPush
     string  Name    = 4;
     string  Icon    = 5;
     string  Country = 6;
+}
+
+// 道具信息
+message ItemInfoPush
+{
+    map<int64,int64> Items = 1;
 }
