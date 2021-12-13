@@ -23,15 +23,15 @@ func NewMgr(g iface.Gamer) *Manager {
 	}
 }
 
-func (s *Manager) PlayerBySession(gateSession common.GSession) (iface.Player, bool) {
-	p, ok := s.playerbySession[gateSession]
-	return p, ok
-}
-
 func (s *Manager) SetPlayer(p iface.Player) {
 	s.playerbySession[p.GateSession()] = p
 	s.playerbyUID[p.Role().UUId()] = p
 	s.playerbyRID[p.Role().RoleId()] = p
+}
+
+func (s *Manager) PlayerBySession(gateSession common.GSession) (iface.Player, bool) {
+	p, ok := s.playerbySession[gateSession]
+	return p, ok
 }
 
 func (s *Manager) PlayerByUID(uid uint64) (iface.Player, bool) {
