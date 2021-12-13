@@ -41,10 +41,10 @@ func (s *Player) Login() {
 	}
 
 	if s.saveTimerId != "" {
-		s.game.CancelTimer(s.saveTimerId)
+		s.Game().CancelTimer(s.saveTimerId)
 	}
 
-	s.saveTimerId = s.game.AddTimer(tools.UUID(), 1*time.Minute, func(dt int64) {
+	s.saveTimerId = s.Game().AddTimer(tools.UUID(), 1*time.Minute, func(dt int64) {
 		s.store()
 	}, -1)
 }
@@ -54,7 +54,7 @@ func (s *Player) Logout() {
 		mod.OnLogout()
 	}
 	s.store()
-	s.game.CancelTimer(s.saveTimerId)
+	s.Game().CancelTimer(s.saveTimerId)
 }
 
 // 停服回存全量数据
@@ -87,7 +87,7 @@ func (s *Player) store() {
 		if tab == nil || reflect.ValueOf(tab).IsNil() {
 			continue
 		}
-		err := s.game.Save(tab)
+		err := s.Game().Save(tab)
 		mod.SetTable(nil)
 		if err != nil {
 			log.KV("err", err).Error("player store err")
