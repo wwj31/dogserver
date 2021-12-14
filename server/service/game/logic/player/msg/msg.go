@@ -1,4 +1,4 @@
-package player
+package msg
 
 import "server/common"
 

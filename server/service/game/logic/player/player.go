@@ -11,6 +11,7 @@ import (
 	"server/db"
 	"server/service/game/iface"
 	"server/service/game/logic/model"
+	"server/service/game/logic/player/handler"
 	"server/service/game/logic/player/item"
 	"server/service/game/logic/player/role"
 	"time"
@@ -46,6 +47,15 @@ func (s *Player) OnInit() {
 	s.saveTimerId = s.AddTimer(tools.UUID(), 1*time.Minute, func(dt int64) {
 		s.store()
 	}, -1)
+}
+func (s *Player) OnHandleMessage(sourceId, targetId string, msg interface{}) {
+	name := handler.MsgName(msg)
+	handle, ok := handler.MsgRouter[name]
+	if !ok {
+		log.KV("name", name).Error("player undefined route ")
+		return
+	}
+	handle(s, msg)
 }
 
 func (s *Player) GateSession() common.GSession            { return s.gSession }

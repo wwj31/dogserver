@@ -6,6 +6,7 @@ import (
 	"server/proto/message"
 	"server/service/game/iface"
 	"server/service/game/logic/player"
+	msg2 "server/service/game/logic/player/msg"
 
 	"github.com/golang/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
@@ -87,7 +88,7 @@ func (s *Game) EnterGameReq(gSession common.GSession, msg *message.EnterGameReq)
 		}
 	}
 
-	err := s.Send(playerId, player.MsgLogin{GSession: gSession})
+	err := s.Send(playerId, msg2.MsgLogin{GSession: gSession})
 	if err != nil {
 		log.KVs(log.Fields{"rid": msg.RID, "err": err, "playerId": playerId}).Error("login send error")
 		return
