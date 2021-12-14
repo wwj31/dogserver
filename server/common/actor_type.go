@@ -19,6 +19,7 @@ const (
 // 动态增删的actor,会有多个 game1、game2
 const (
 	Game_Actor    = "game"
+	Player_Actor  = "player"
 	GateWay_Actor = "gateway"
 	World_Actor   = "world"
 	DB_Actor      = "dB"
@@ -27,6 +28,10 @@ const (
 
 func GameName(id int32) ActorId {
 	return fmt.Sprintf("%v%v_Actor", Game_Actor, id)
+}
+
+func PlayerId(id uint64) ActorId {
+	return fmt.Sprintf("%v%v_Actor", Player_Actor, id)
 }
 
 func WorldName(id int32) ActorId {

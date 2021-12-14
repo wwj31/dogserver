@@ -20,7 +20,7 @@ func New(rid uint64, base model.Model) *Item {
 
 	// 不是新号，找db要数据
 	if !base.Player.IsNewRole() {
-		err := base.Game().Load(&tItem)
+		err := base.Load(&tItem)
 		expect.Nil(err)
 	}
 
@@ -39,7 +39,7 @@ func New(rid uint64, base model.Model) *Item {
 }
 
 func (s *Item) OnLogin() {
-	_ = s.Game().Send2Client(s.GateSession(), s.itemInfoPush())
+	s.Send2Client(s.itemInfoPush())
 }
 
 func (s *Item) OnStop() {
@@ -62,7 +62,7 @@ func (s *Item) Add(items map[int64]int64, push ...bool) {
 	}
 
 	if len(push) > 0 {
-		_ = s.Game().Send2Client(s.GateSession(), &message.ItemMap{
+		s.Send2Client(&message.ItemMap{
 			Items: items,
 		})
 	}

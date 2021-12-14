@@ -8,72 +8,52 @@ import (
 )
 
 type Manager struct {
-	game            iface.Gamer
-	playerbySession map[common.GSession]iface.Player
-	playerbyUID     map[uint64]iface.Player
-	playerbyRID     map[uint64]iface.Player
+	game             iface.Gamer
+	playerByGsession map[common.GSession]common.ActorId
+	gSessionByPlayer map[common.ActorId]common.GSession
 }
 
 func NewMgr(g iface.Gamer) *Manager {
 	return &Manager{
-		game:            g,
-		playerbySession: make(map[common.GSession]iface.Player, 100),
-		playerbyUID:     make(map[uint64]iface.Player, 100),
-		playerbyRID:     make(map[uint64]iface.Player, 100),
+		game:             g,
+		playerByGsession: make(map[common.GSession]common.ActorId, 100),
+		gSessionByPlayer: make(map[common.ActorId]common.GSession, 100),
 	}
 }
 
-func (s *Manager) SetPlayer(p iface.Player) {
-	s.playerbySession[p.GateSession()] = p
-	s.playerbyUID[p.Role().UUId()] = p
-	s.playerbyRID[p.Role().RoleId()] = p
+func (s *Manager) SetPlayer(gSession common.GSession, id common.ActorId) {
+	s.playerByGsession[gSession] = id
+	s.gSessionByPlayer[id] = gSession
 }
 
-func (s *Manager) PlayerBySession(gateSession common.GSession) (iface.Player, bool) {
-	p, ok := s.playerbySession[gateSession]
+func (s *Manager) PlayerBySession(gateSession common.GSession) (common.ActorId, bool) {
+	p, ok := s.playerByGsession[gateSession]
 	return p, ok
 }
-
-func (s *Manager) PlayerByUID(uid uint64) (iface.Player, bool) {
-	p, ok := s.playerbyUID[uid]
+func (s *Manager) GSessionByPlayer(id common.ActorId) (common.GSession, bool) {
+	p, ok := s.gSessionByPlayer[id]
 	return p, ok
 }
-
-func (s *Manager) PlayerByRID(rid uint64) (iface.Player, bool) {
-	p, ok := s.playerbyRID[rid]
-	return p, ok
-}
-
-func (s *Manager) OfflinePlayer(gSession common.GSession) {
-	delete(s.playerbySession, gSession)
-}
-
-func (s *Manager) RangeOnline(f func(player iface.Player), except ...uint64) {
-	e := map[uint64]struct{}{}
-	for _, id := range except {
-		e[id] = struct{}{}
+func (s *Manager) DelGSession(gateSession common.GSession) {
+	id, ok := s.playerByGsession[gateSession]
+	if ok {
+		delete(s.gSessionByPlayer, id)
 	}
-	for _, p := range s.playerbySession {
-		if _, exist := e[p.Role().UUId()]; exist {
-			continue
+	delete(s.playerByGsession, gateSession)
+
+}
+
+func (s *Manager) RangeOnline(f func(common.GSession, common.ActorId)) {
+	for id, s := range s.gSessionByPlayer {
+		f(s, id)
+	}
+}
+
+func (s *Manager) Broadcast(msg proto.Message) {
+	s.RangeOnline(func(gs common.GSession, id common.ActorId) {
+		if err := s.game.Send2Client(gs, msg); err != nil {
+			log.KVs(log.Fields{"err": err, "gSession": gs, "Player": id}).
+				ErrorStack(2, "broadcast msg error")
 		}
-		f(p)
-	}
-}
-
-func (s *Manager) Broadcast(msg proto.Message, except ...uint64) {
-	s.RangeOnline(func(p iface.Player) {
-		if err := s.game.Send2Client(p.GateSession(), msg); err != nil {
-			log.KVs(log.Fields{
-				"err":      err,
-				"gSession": p.GateSession(),
-				"RoleId":   p.Role().RoleId()}).ErrorStack(2, "broadcast msg error")
-		}
-	}, except...)
-}
-
-func (s *Manager) Stop() {
-	for _, p := range s.playerbyUID {
-		p.Stop()
-	}
+	})
 }

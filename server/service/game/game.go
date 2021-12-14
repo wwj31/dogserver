@@ -2,7 +2,8 @@ package game
 
 import (
 	"server/common"
-	"server/service/game/handler"
+	"server/proto/inner_message/inner"
+	"server/proto/message"
 	"server/service/game/iface"
 	"server/service/game/logic/player"
 
@@ -25,23 +26,18 @@ type Game struct {
 
 	sid int32 // 服务器Id
 
-	playerMgr  iface.PlayerManager
-	msgHandler common.MsgHandler
+	playerMgr iface.PlayerManager
 }
 
 func (s *Game) OnInit() {
 	s.SendTools = common.NewSendTools(s)
 	s.playerMgr = player.NewMgr(s)
-	s.msgHandler = common.NewMsgHandler()
 
-	// handler模块初始化
-	handler.Init(s)
 	log.Debug("game OnInit")
 }
 
 // 区服id
 func (s *Game) OnStop() bool {
-	s.playerMgr.Stop()
 	log.Info("stop game")
 	return true
 }
@@ -55,39 +51,72 @@ func (s *Game) PlayerMgr() iface.PlayerManager {
 	return s.playerMgr
 }
 
-// 注册消息
-func (s *Game) RegistMsg(msg proto.Message, handle common.Handle) {
-	s.msgHandler.Reg(msg, handle)
-}
-
 func (s *Game) OnHandleMessage(sourceId, targetId string, msg interface{}) {
 	actMsg, gSession, err := common.UnwrapperGateMsg(msg)
 	expect.Nil(err)
 
-	pbMsg, ok := actMsg.(proto.Message)
-	expect.True(ok)
-
-	rsp := s.msgHandler.Handle(sourceId, gSession, pbMsg)
-	if rsp != nil {
-		var err error
-		if gSession.Valid() {
-			err = s.Send2Client(gSession, rsp)
-		} else {
-			err = s.Send(sourceId, rsp)
-		}
-		if err != nil {
-			log.Error(err.Error())
-		}
+	switch pbMsg := actMsg.(type) {
+	case *message.EnterGameReq:
+		s.EnterGameReq(gSession, pbMsg)
+	case *inner.GT2GSessionClosed:
+		s.Logout(gSession, pbMsg)
 	}
 }
 
-func (s *Game) OnHandleRequest(sourceId, targetId, requestId string, msg interface{}) (respErr error) {
-	pbMsg, ok := msg.(proto.Message)
-	expect.True(ok)
+// 玩家请求进入游戏
+func (s *Game) EnterGameReq(gSession common.GSession, msg *message.EnterGameReq) {
+	log.KV("msg", msg).Debug("EnterGameReq")
 
-	rsp := s.msgHandler.Handle(sourceId, "", pbMsg)
-	if rsp != nil {
-		return s.Response(requestId, msg)
+	// 重复登录
+	if _, ok := s.PlayerMgr().PlayerBySession(gSession); ok {
+		log.KVs(log.Fields{"gSession": gSession, "msg": msg.RID}).Warn("player repeated enter game")
+		return
 	}
+
+	// todo .. 解密
+	playerId := common.PlayerId(msg.RID)
+	// 重连删除旧session,否则创建Player Actor
+	if oldSession, ok := s.PlayerMgr().GSessionByPlayer(playerId); ok {
+		s.PlayerMgr().DelGSession(oldSession)
+	} else {
+		playerActor := actor.New(playerId, player.New(msg.RID), actor.SetMailBoxSize(500))
+		err := s.System().Regist(playerActor)
+		if err != nil {
+			log.KVs(log.Fields{"rid": msg.RID, "err": err}).Error("regist player actor error")
+			return
+		}
+	}
+
+	err := s.Send(playerId, player.MsgLogin{GSession: gSession})
+	if err != nil {
+		log.KVs(log.Fields{"rid": msg.RID, "err": err, "playerId": playerId}).Error("login send error")
+		return
+	}
+
+	s.PlayerMgr().SetPlayer(gSession, playerId)
+	//
+	//if !exist {
+	//	_player = player.New(msg.RID, s)
+	//}
+	//_player.SetGateSession(gSession)
+	//s.PlayerMgr().SetPlayer(gSession, playerId)
+	//
+	//// 新号处理
+	//if _player.IsNewRole() {
+	//	// todo ...
+	//	_player.Item().Add(map[int64]int64{123: 999})
+	//}
+	//
+	//_player.Login()
+}
+
+// 玩家离线
+func (s *Game) Logout(gs common.GSession, msg *inner.GT2GSessionClosed) proto.Message {
+	playerId, ok := s.PlayerMgr().PlayerBySession(gs)
+	if ok {
+		s.Send(playerId, msg)
+	}
+
+	s.PlayerMgr().DelGSession(gs)
 	return nil
 }

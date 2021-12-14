@@ -2,31 +2,29 @@ package iface
 
 import (
 	"github.com/golang/protobuf/proto"
+	"github.com/wwj31/dogactor/actor"
 	"server/common"
 )
 
 type Player interface {
+	actor.Actor
 	Session
-	Game() Gamer
+	SaveLoader
 
+	Send2Client(pb proto.Message)
 	Login()
 	Logout()
-	Stop()
-
 	IsNewRole() bool
 	Role() Role
 	Item() Item
 }
 
 type PlayerManager interface {
-	SetPlayer(p Player)
-	PlayerBySession(gSession common.GSession) (Player, bool)
-	PlayerByUID(uid uint64) (Player, bool)
-	PlayerByRID(rid uint64) (Player, bool)
-	OfflinePlayer(gSession common.GSession)
-	RangeOnline(f func(player Player), except ...uint64)
+	SetPlayer(gSession common.GSession, id common.ActorId)
+	PlayerBySession(gSession common.GSession) (common.ActorId, bool)
+	GSessionByPlayer(id common.ActorId) (common.GSession, bool)
+	DelGSession(gateSession common.GSession)
+	RangeOnline(f func(gs common.GSession, player common.ActorId))
 
-	Broadcast(msg proto.Message, except ...uint64)
-
-	Stop()
+	Broadcast(msg proto.Message)
 }

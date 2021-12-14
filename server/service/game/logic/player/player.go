@@ -1,11 +1,14 @@
 package player
 
 import (
+	"github.com/golang/protobuf/proto"
+	"github.com/wwj31/dogactor/actor"
 	"github.com/wwj31/dogactor/log"
 	"github.com/wwj31/dogactor/tools"
 	"reflect"
 	"server/common"
-	"server/db/table"
+	"server/common/toml"
+	"server/db"
 	"server/service/game/iface"
 	"server/service/game/logic/model"
 	"server/service/game/logic/player/item"
@@ -13,27 +16,45 @@ import (
 	"time"
 )
 
+func New(roleId uint64) *Player {
+	p := &Player{roleId: roleId}
+	return p
+}
+
 type (
 	Player struct {
-		game        iface.Gamer
-		gateSession common.GSession
+		actor.Base
+		iface.SaveLoader
+
+		gSession common.GSession
+		sender   common.SendTools
+
+		roleId      uint64
 		saveTimerId string
 
 		models [all]iface.Modeler
 	}
 )
 
-func New(roleId uint64, game iface.Gamer) *Player {
-	p := &Player{game: game}
-	p.models[modRole] = role.New(roleId, model.New(p)) // 角色
-	p.models[modItem] = item.New(roleId, model.New(p)) // 道具
+func (s *Player) OnInit() {
+	s.SaveLoader = db.New(toml.Get("mysql"), toml.Get("database"))
+	s.sender = common.NewSendTools(s)
 
-	return p
+	s.models[modRole] = role.New(s.roleId, model.New(s)) // 角色
+	s.models[modItem] = item.New(s.roleId, model.New(s)) // 道具
+
+	s.saveTimerId = s.AddTimer(tools.UUID(), 1*time.Minute, func(dt int64) {
+		s.store()
+	}, -1)
 }
 
-func (s *Player) Game() iface.Gamer                       { return s.game }
-func (s *Player) GateSession() common.GSession            { return s.gateSession }
-func (s *Player) SetGateSession(gSession common.GSession) { s.gateSession = gSession }
+func (s *Player) GateSession() common.GSession            { return s.gSession }
+func (s *Player) SetGateSession(gSession common.GSession) { s.gSession = gSession }
+func (s *Player) Send2Client(pb proto.Message) {
+	if err := s.sender.Send2Client(s.gSession, pb); err != nil {
+		log.KV("err", err).Error("player send faild")
+	}
+}
 
 func (s *Player) Login() {
 	for _, mod := range s.models {
@@ -41,20 +62,14 @@ func (s *Player) Login() {
 	}
 
 	if s.saveTimerId != "" {
-		s.Game().CancelTimer(s.saveTimerId)
+		s.CancelTimer(s.saveTimerId)
 	}
-
-	s.saveTimerId = s.Game().AddTimer(tools.UUID(), 1*time.Minute, func(dt int64) {
-		s.store()
-	}, -1)
 }
 
 func (s *Player) Logout() {
 	for _, mod := range s.models {
 		mod.OnLogout()
 	}
-	s.store()
-	s.Game().CancelTimer(s.saveTimerId)
 }
 
 // 停服回存全量数据
@@ -64,20 +79,10 @@ func (s *Player) Stop() {
 	}
 	s.store()
 }
-func (s *Player) IsNewRole() bool {
-	return s.Role().LoginAt() == 0
-}
 
-func (s *Player) Role() iface.Role {
-	return s.models[modRole].(iface.Role)
-}
-func (s *Player) Item() iface.Item {
-	return s.models[modItem].(iface.Item)
-}
-
-func (s *Player) SetTable(table.Tabler) {
-
-}
+func (s *Player) IsNewRole() bool  { return s.Role().LoginAt() == 0 }
+func (s *Player) Role() iface.Role { return s.models[modRole].(iface.Role) }
+func (s *Player) Item() iface.Item { return s.models[modItem].(iface.Item) }
 
 // 回存功能模块
 func (s *Player) store() {
@@ -87,7 +92,7 @@ func (s *Player) store() {
 		if tab == nil || reflect.ValueOf(tab).IsNil() {
 			continue
 		}
-		err := s.Game().Save(tab)
+		err := s.Save(tab)
 		mod.SetTable(nil)
 		if err != nil {
 			log.KV("err", err).Error("player store err")
