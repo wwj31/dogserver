@@ -6,8 +6,8 @@ import (
 	"server/service/game/logic/player/msg"
 )
 
-var _ = regist(MsgName(msg.MsgLogin{}), func(player iface.Player, v interface{}) {
-	msg := v.(msg.MsgLogin)
+var _ = regist(MsgName(msg.Login{}), func(player iface.Player, v interface{}) {
+	msg := v.(msg.Login)
 	player.SetGateSession(msg.GSession)
 
 	//// 新号处理

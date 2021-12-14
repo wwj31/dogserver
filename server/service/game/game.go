@@ -88,7 +88,7 @@ func (s *Game) EnterGameReq(gSession common.GSession, msg *message.EnterGameReq)
 		}
 	}
 
-	err := s.Send(playerId, msg2.MsgLogin{GSession: gSession})
+	err := s.Send(playerId, msg2.Login{GSession: gSession})
 	if err != nil {
 		log.KVs(log.Fields{"rid": msg.RID, "err": err, "playerId": playerId}).Error("login send error")
 		return

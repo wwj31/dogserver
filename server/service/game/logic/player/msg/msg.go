@@ -3,7 +3,7 @@ package msg
 import "server/common"
 
 type (
-	MsgLogin struct {
+	Login struct {
 		GSession common.GSession
 	}
 )
