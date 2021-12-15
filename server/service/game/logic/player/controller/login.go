@@ -1,6 +1,7 @@
-package handler
+package controller
 
 import (
+	"server/proto/inner_message/inner"
 	"server/proto/message"
 	"server/service/game/iface"
 	"server/service/game/logic/player/msg"
@@ -23,4 +24,9 @@ var _ = regist(MsgName(msg.Login{}), func(player iface.Player, v interface{}) {
 		RID:     player.Role().RoleId(),
 		Cryptic: "",
 	})
+})
+
+var _ = regist(MsgName(&inner.GT2GSessionClosed{}), func(player iface.Player, v interface{}) {
+	player.Logout()
+	player.Exit()
 })

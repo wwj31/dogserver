@@ -6,18 +6,20 @@ import (
 	"server/common"
 )
 
-type Player interface {
-	actor.Actor
-	Session
-	SaveLoader
+type (
+	Player interface {
+		actor.Actor
+		Session
+		SaveLoader
 
-	Send2Client(pb proto.Message)
-	Login()
-	Logout()
-	IsNewRole() bool
-	Role() Role
-	Item() Item
-}
+		Send2Client(pb proto.Message)
+		Login()
+		Logout()
+		IsNewRole() bool
+		Role() Role
+		Item() Item
+	}
+)
 
 type PlayerManager interface {
 	SetPlayer(gSession common.GSession, id common.ActorId)

@@ -24,7 +24,7 @@ func NewSendTools(s actor.Sender) SendTools {
 }
 
 // 发送至前端
-func (s *SendTools) Send2Client(gSession GSession, pb proto.Message) error {
+func (s SendTools) Send2Client(gSession GSession, pb proto.Message) error {
 	if gSession.Invalid() {
 		return nil
 	}
@@ -35,7 +35,7 @@ func (s *SendTools) Send2Client(gSession GSession, pb proto.Message) error {
 }
 
 // 发送至网关
-func (s *SendTools) Send2Gate(id ActorId, pb proto.Message) error {
+func (s SendTools) Send2Gate(id ActorId, pb proto.Message) error {
 	if !IsActorOf(id, GateWay_Actor) {
 		return fmt.Errorf("send to gate, but type is not gate id:%v", id)
 	}

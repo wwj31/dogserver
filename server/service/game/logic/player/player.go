@@ -11,7 +11,7 @@ import (
 	"server/db"
 	"server/service/game/iface"
 	"server/service/game/logic/model"
-	"server/service/game/logic/player/handler"
+	"server/service/game/logic/player/controller"
 	"server/service/game/logic/player/item"
 	"server/service/game/logic/player/role"
 	"time"
@@ -49,8 +49,8 @@ func (s *Player) OnInit() {
 	}, -1)
 }
 func (s *Player) OnHandleMessage(sourceId, targetId string, msg interface{}) {
-	name := handler.MsgName(msg)
-	handle, ok := handler.MsgRouter[name]
+	name := controller.MsgName(msg)
+	handle, ok := controller.MsgRouter[name]
 	if !ok {
 		log.KV("name", name).Error("player undefined route ")
 		return
@@ -80,14 +80,12 @@ func (s *Player) Logout() {
 	for _, mod := range s.models {
 		mod.OnLogout()
 	}
+	s.store()
 }
 
-// 停服回存全量数据
-func (s *Player) Stop() {
-	for _, mod := range s.models {
-		mod.OnStop()
-	}
-	s.store()
+func (s *Player) OnStop() bool {
+	s.Logout()
+	return true
 }
 
 func (s *Player) IsNewRole() bool  { return s.Role().LoginAt() == 0 }

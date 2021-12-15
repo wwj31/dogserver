@@ -60,7 +60,7 @@ func (s *Game) OnHandleMessage(sourceId, targetId string, msg interface{}) {
 	case *message.EnterGameReq:
 		s.EnterGameReq(gSession, pbMsg)
 	case *inner.GT2GSessionClosed:
-		s.Logout(gSession, pbMsg)
+		s.Logout(pbMsg)
 	}
 }
 
@@ -95,29 +95,16 @@ func (s *Game) EnterGameReq(gSession common.GSession, msg *message.EnterGameReq)
 	}
 
 	s.PlayerMgr().SetPlayer(gSession, playerId)
-	//
-	//if !exist {
-	//	_player = player.New(msg.RID, s)
-	//}
-	//_player.SetGateSession(gSession)
-	//s.PlayerMgr().SetPlayer(gSession, playerId)
-	//
-	//// 新号处理
-	//if _player.IsNewRole() {
-	//	// todo ...
-	//	_player.Item().Add(map[int64]int64{123: 999})
-	//}
-	//
-	//_player.Login()
 }
 
 // 玩家离线
-func (s *Game) Logout(gs common.GSession, msg *inner.GT2GSessionClosed) proto.Message {
-	playerId, ok := s.PlayerMgr().PlayerBySession(gs)
+func (s *Game) Logout(msg *inner.GT2GSessionClosed) proto.Message {
+	gSession := common.GSession(msg.GateSession)
+	playerId, ok := s.PlayerMgr().PlayerBySession(gSession)
 	if ok {
 		s.Send(playerId, msg)
 	}
 
-	s.PlayerMgr().DelGSession(gs)
+	s.PlayerMgr().DelGSession(gSession)
 	return nil
 }
