@@ -3,17 +3,18 @@ package db
 import (
 	"database/sql"
 	"fmt"
+	"reflect"
+	"server/db/table"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/wwj31/dogactor/expect"
 	"github.com/wwj31/dogactor/log"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
-	"reflect"
-	"server/db/table"
-	"strconv"
-	"strings"
-	"time"
 )
 
 type DB struct {
@@ -23,13 +24,13 @@ type DB struct {
 }
 
 func New(addr, databaseAddr string) *DB {
+	// 检查库是否存在，不存在就创建
+	expect.Nil(checkDatabase(fmt.Sprintf(addr, ""), databaseAddr))
+
 	db, err := gorm.Open(mysql.Open(fmt.Sprintf(addr, databaseAddr)), &gorm.Config{
 		NamingStrategy: schema.NamingStrategy{SingularTable: true},
 	})
 	expect.Nil(err)
-
-	// 检查库是否存在，不存在就创建
-	expect.Nil(checkDatabase(fmt.Sprintf(addr, ""), databaseAddr))
 
 	// 检查表是否存在，不存在就创建
 	expect.Nil(checkTables(fmt.Sprintf(addr, databaseAddr), db))

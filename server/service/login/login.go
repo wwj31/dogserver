@@ -2,14 +2,15 @@ package login
 
 import (
 	"fmt"
-	"github.com/wwj31/dogactor/actor"
-	"github.com/wwj31/dogactor/expect"
-	"github.com/wwj31/dogactor/log"
 	"server/common"
 	"server/proto/inner_message/inner"
 	"server/proto/message"
 	"server/service/game/iface"
 	"server/service/login/account"
+
+	"github.com/wwj31/dogactor/actor"
+	"github.com/wwj31/dogactor/expect"
+	"github.com/wwj31/dogactor/log"
 )
 
 type Login struct {
@@ -53,7 +54,7 @@ func (s *Login) LoginReq(sourceId string, gSession common.GSession, msg *message
 
 	acc, _ := s.accountMgr.Login(msg, s.storer)
 
-	// 新、旧session相同，则同一连接多次登录，不做顶号处理
+	// 新、旧sessio不相同做顶号处理
 	if acc.GSession().Valid() && acc.GSession() != gSession {
 		oldId, _ := acc.GSession().Split()
 		_ = s.Send2Gate(oldId, &inner.L2GTSessionDisabled{GateSession: acc.GSession().String()})
@@ -71,7 +72,7 @@ func (s *Login) LoginReq(sourceId string, gSession common.GSession, msg *message
 
 	// 通知玩家登录成功
 	return s.Send2Client(gSession, &message.LoginRsp{
-		UID: acc.UUId() ,
+		UID: acc.UUId(),
 		RID: acc.LastRoleId(),
 	})
 }

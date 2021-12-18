@@ -7,6 +7,7 @@ import (
 	"server/service/game/logic/player/msg"
 )
 
+// 玩家登录
 var _ = regist(MsgName(msg.Login{}), func(player iface.Player, v interface{}) {
 	msg := v.(msg.Login)
 	player.SetGateSession(msg.GSession)
