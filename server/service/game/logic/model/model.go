@@ -7,7 +7,7 @@ import (
 )
 
 type Model struct {
-	iface.Player
+	Player iface.Player
 	logger log.Logger
 	tab    table.Tabler
 }

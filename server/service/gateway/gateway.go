@@ -84,7 +84,7 @@ func (s *GateWay) OnHandleMessage(sourceId, targetId string, v interface{}) {
 			return
 		}
 
-		log.KVs(logInfo).Info("server msg")
+		log.KVs(logInfo).Info("server localmsg")
 		msgId, _ := s.msgParser.MsgNameToId(msg.GetMsgName())
 		_ = userSessionHandler.SendMsg(network.CombineMsgWithId(msgId, msg.Data))
 

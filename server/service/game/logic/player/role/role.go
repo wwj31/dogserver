@@ -16,7 +16,7 @@ type Role struct {
 
 func New(rid uint64, base model.Model) *Role {
 	tRole := table.Role{RoleId: rid}
-	err := base.Load(&tRole)
+	err := base.Player.Load(&tRole)
 	expect.Nil(err)
 
 	role := &Role{
@@ -28,7 +28,7 @@ func New(rid uint64, base model.Model) *Role {
 
 func (s *Role) OnLogin() {
 	s.tRole.LoginAt = tools.Milliseconds()
-	s.Send2Client(s.roleInfoPush())
+	s.Player.Send2Client(s.roleInfoPush())
 	s.save()
 }
 

@@ -92,5 +92,5 @@ func (s *UserSession) OnRecv(data []byte) {
 		"msgId":    msgId,
 		"msgName":  msgName,
 		"gSession": gSession,
-	}).Info("user msg")
+	}).Info("user localmsg")
 }

@@ -1,4 +1,4 @@
-package msg
+package localmsg
 
 import "server/common"
 

@@ -6,7 +6,7 @@ import (
 	"server/proto/message"
 	"server/service/game/iface"
 	"server/service/game/logic/player"
-	msg2 "server/service/game/logic/player/msg"
+	"server/service/game/logic/player/localmsg"
 
 	"github.com/golang/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
@@ -66,11 +66,11 @@ func (s *Game) OnHandleMessage(sourceId, targetId string, msg interface{}) {
 
 // 玩家请求进入游戏
 func (s *Game) EnterGameReq(gSession common.GSession, msg *message.EnterGameReq) {
-	log.KV("msg", msg).Debug("EnterGameReq")
+	log.KV("localmsg", msg).Debug("EnterGameReq")
 
 	// 重复登录
 	if _, ok := s.PlayerMgr().PlayerBySession(gSession); ok {
-		log.KVs(log.Fields{"gSession": gSession, "msg": msg.RID}).Warn("player repeated enter game")
+		log.KVs(log.Fields{"gSession": gSession, "localmsg": msg.RID}).Warn("player repeated enter game")
 		return
 	}
 
@@ -88,7 +88,7 @@ func (s *Game) EnterGameReq(gSession common.GSession, msg *message.EnterGameReq)
 		}
 	}
 
-	err := s.Send(playerId, msg2.Login{GSession: gSession})
+	err := s.Send(playerId, localmsg.Login{GSession: gSession})
 	if err != nil {
 		log.KVs(log.Fields{"rid": msg.RID, "err": err, "playerId": playerId}).Error("login send error")
 		return

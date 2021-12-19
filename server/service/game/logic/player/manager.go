@@ -53,7 +53,7 @@ func (s *Manager) Broadcast(msg proto.Message) {
 	s.RangeOnline(func(gs common.GSession, id common.ActorId) {
 		if err := s.game.Send2Client(gs, msg); err != nil {
 			log.KVs(log.Fields{"err": err, "gSession": gs, "Player": id}).
-				ErrorStack(2, "broadcast msg error")
+				ErrorStack(2, "broadcast localmsg error")
 		}
 	})
 }

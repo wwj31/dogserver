@@ -40,7 +40,7 @@ func (s *Login) OnHandleMessage(sourceId, targetId string, msg interface{}) {
 	case *message.LoginReq:
 		err = s.LoginReq(sourceId, gSession, msg)
 	default:
-		err = fmt.Errorf("undefined msg type %v", msg)
+		err = fmt.Errorf("undefined localmsg type %v", msg)
 	}
 
 	if err != nil {

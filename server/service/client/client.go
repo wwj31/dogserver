@@ -49,18 +49,18 @@ func (s *Client) SendToServer(msgId int32, pb proto.Message) {
 func (s *Client) OnHandleMessage(sourceId, targetId string, v interface{}) {
 	switch msg := v.(type) {
 	case *message.LoginRsp:
-		logger.KV("msg", msg.String()).Info("login success!")
+		logger.KV("localmsg", msg.String()).Info("login success!")
 		s.UID = msg.UID
 		s.RID = msg.RID
 	case *message.EnterGameRsp:
-		logger.KV("msg", msg.String()).Info("enter success!")
+		logger.KV("localmsg", msg.String()).Info("enter success!")
 	case *message.RoleInfoPush:
-		logger.KV("msg", msg.String()).Info("RoleInfoPush!")
+		logger.KV("localmsg", msg.String()).Info("RoleInfoPush!")
 	case *message.ItemInfoPush:
-		logger.KV("msg", msg.String()).Info("ItemInfoPush!")
+		logger.KV("localmsg", msg.String()).Info("ItemInfoPush!")
 	case *message.Pong:
 		logger.Info("aliving~")
 	default:
-		logger.KV("msg", msg).Warn("not case msg")
+		logger.KV("localmsg", msg).Warn("not case localmsg")
 	}
 }
