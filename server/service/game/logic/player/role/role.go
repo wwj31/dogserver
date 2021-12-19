@@ -37,10 +37,6 @@ func (s *Role) OnLogout() {
 	s.save()
 }
 
-func (s *Role) OnStop() {
-	s.save()
-}
-
 func (s *Role) roleInfoPush() *message.RoleInfoPush {
 	return &message.RoleInfoPush{
 		UID:     s.tRole.UUId,

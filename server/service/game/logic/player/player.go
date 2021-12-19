@@ -17,6 +17,10 @@ import (
 	"time"
 )
 
+// model作为功能聚合，player作为聚合根，roleId为聚合根ID
+// 聚合之间通过聚合根关联引用，聚合之间相互访问需先访问聚合根，在导航到相关功能
+// 设计目的：解决玩家复杂的功能模块相互引用带来的混乱问题，让模块真正独立、解耦
+
 func New(roleId uint64) *Player {
 	p := &Player{roleId: roleId}
 	return p
@@ -26,14 +30,12 @@ type (
 	Player struct {
 		actor.Base
 		iface.SaveLoader
+		roleId   uint64
+		models   [all]iface.Modeler // 玩家所有功能模块
+		gSession common.GSession    // 网络session
 
-		gSession common.GSession
-		sender   common.SendTools
-
-		roleId      uint64
+		sender      common.SendTools
 		saveTimerId string
-
-		models [all]iface.Modeler
 	}
 )
 
@@ -48,6 +50,7 @@ func (s *Player) OnInit() {
 		s.store()
 	}, -1)
 }
+
 func (s *Player) OnHandleMessage(sourceId, targetId string, msg interface{}) {
 	name := controller.MsgName(msg)
 	handle, ok := controller.MsgRouter[name]

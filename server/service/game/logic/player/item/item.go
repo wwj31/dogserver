@@ -42,7 +42,7 @@ func (s *Item) OnLogin() {
 	s.Player.Send2Client(s.itemInfoPush())
 }
 
-func (s *Item) OnStop() {
+func (s *Item) OnLogout() {
 	s.save()
 }
 

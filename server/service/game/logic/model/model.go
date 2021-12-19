@@ -27,7 +27,6 @@ func New(player iface.Player, loglevel ...int32) Model {
 
 func (s *Model) OnLogin()            {}
 func (s *Model) OnLogout()           {}
-func (s *Model) OnStop()             {}
 func (s *Model) Table() table.Tabler { return s.tab }
 
 func (s *Model) SetTable(t table.Tabler) { s.tab = t }
