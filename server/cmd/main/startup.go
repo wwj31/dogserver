@@ -25,34 +25,35 @@ import (
 )
 
 func startup() {
-	rand.Seed(tools.Now().UnixNano()) //设置随机数种子
-	c := make(chan os.Signal)
-	signal.Notify(c, syscall.SIGKILL, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
-	rand.Seed(tools.Now().UnixNano())
+	tools.Try(func() {
+		rand.Seed(tools.Now().UnixNano()) //设置随机数种子
+		c := make(chan os.Signal)
+		signal.Notify(c, syscall.SIGKILL, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
+		rand.Seed(tools.Now().UnixNano())
 
-	// 获取程序启动参数
-	appType, tomlPath, appId, logLv, err := outputFlags()
-	if err != nil {
-		fmt.Println("initConf error", err)
-		return
-	}
+		// 获取程序启动参数
+		appType, tomlPath, appId, logLv, err := outputFlags()
+		if err != nil {
+			fmt.Println("initConf error", err)
+			return
+		}
 
-	// 初始化toml配置
-	toml.Init(tomlPath, appType, appId)
+		// 初始化toml配置
+		toml.Init(tomlPath, appType, appId)
 
-	// 初始化日志
-	log.Init(logLv, common.ReportLog, toml.Get("logpath"), appType, appId)
+		// 初始化日志
+		log.Init(logLv, common.ReportLog, toml.Get("logpath"), appType, appId)
 
-	// 加载配置表
-	//err = config_go.Load(iniconfig.BaseString("configjson"))
-	//expect.Nil(err)
-	//common.RefactorConfig()
+		// 加载配置表
+		//err = config_go.Load(iniconfig.BaseString("configjson"))
+		//expect.Nil(err)
+		//common.RefactorConfig()
 
-	system := run(appType, appId)
-
-	<-c
-	system.Stop()
-	<-system.CStop
+		system := run(appType, appId)
+		<-c
+		system.Stop()
+		<-system.CStop
+	}, nil)
 	log.Stop()
 	fmt.Println("stop")
 }

@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"github.com/wwj31/dogactor/tools"
 )
 
 func main() {
@@ -12,7 +11,5 @@ func main() {
 	flag.Int("log", 0, "log level, if debug log=0")
 	flag.Parse()
 
-	tools.Try(func() {
-		startup()
-	}, nil)
+	startup()
 }
