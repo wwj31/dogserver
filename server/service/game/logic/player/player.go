@@ -64,6 +64,9 @@ func (s *Player) OnHandleMessage(sourceId, targetId string, msg interface{}) {
 func (s *Player) GateSession() common.GSession            { return s.gSession }
 func (s *Player) SetGateSession(gSession common.GSession) { s.gSession = gSession }
 func (s *Player) Send2Client(pb proto.Message) {
+	if pb == nil || reflect.ValueOf(pb).IsNil() {
+		return
+	}
 	if err := s.sender.Send2Client(s.gSession, pb); err != nil {
 		log.KV("err", err).Error("player send faild")
 	}
