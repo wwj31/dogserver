@@ -12,6 +12,7 @@ type Role interface {
 	Country() string
 	IsDelete() bool
 	CreateAt() int64
+	IsNewRole() bool
 	LoginAt() int64
 	LogoutAt() int64
 	GetAttribute(typ typ.Attribute) int64

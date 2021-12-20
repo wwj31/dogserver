@@ -14,6 +14,7 @@ func (s *Role) Country() string { return s.tRole.Country }
 func (s *Role) IsDelete() bool  { return s.tRole.IsDelete }
 func (s *Role) CreateAt() int64 { return s.tRole.CreateAt }
 func (s *Role) LoginAt() int64  { return s.tRole.LoginAt }
+func (s *Role) IsNewRole() bool { return s.tRole.LoginAt == 0 }
 func (s *Role) LogoutAt() int64 { return s.tRole.LogoutAt }
 
 func (s *Role) GetAttribute(t typ.Attribute) int64 {

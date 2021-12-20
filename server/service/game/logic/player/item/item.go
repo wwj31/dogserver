@@ -12,27 +12,22 @@ import (
 type Item struct {
 	model.Model
 
-	items *message.ItemMap
+	items message.ItemMap
 }
 
 func New(rid uint64, base model.Model) *Item {
-	tItem := table.Item{RoleId: rid}
-
-	// 不是新号，找db要数据
-	if !base.Player.IsNewRole() {
-		err := base.Player.Load(&tItem)
-		expect.Nil(err)
-	}
-
-	items := &message.ItemMap{Items: make(map[int64]int64, 10)}
-	if tItem.Items != nil {
-		err := proto.Unmarshal(tItem.Items, items)
-		expect.Nil(err)
-	}
-
 	role := &Item{
 		Model: base,
-		items: items,
+		items: message.ItemMap{Items: make(map[int64]int64, 10)},
+	}
+
+	if !base.Player.IsNewRole() {
+		tItem := table.Item{RoleId: rid}
+		err := base.Player.Load(&tItem)
+		expect.Nil(err)
+
+		err = proto.Unmarshal(tItem.Items, &role.items)
+		expect.Nil(err)
 	}
 
 	return role
@@ -79,7 +74,7 @@ func (s *Item) itemInfoPush() *message.ItemInfoPush {
 func (s *Item) save() {
 	s.SetTable(&table.Item{
 		RoleId: s.Player.Role().RoleId(),
-		Items:  s.marshal(s.items),
+		Items:  s.marshal(&s.items),
 	})
 }
 

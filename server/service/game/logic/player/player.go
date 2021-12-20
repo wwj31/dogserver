@@ -13,6 +13,7 @@ import (
 	"server/service/game/logic/model"
 	"server/service/game/logic/player/controller"
 	"server/service/game/logic/player/item"
+	"server/service/game/logic/player/mail"
 	"server/service/game/logic/player/role"
 	"time"
 )
@@ -45,6 +46,7 @@ func (s *Player) OnInit() {
 
 	s.models[modRole] = role.New(s.roleId, model.New(s)) // 角色
 	s.models[modItem] = item.New(s.roleId, model.New(s)) // 道具
+	s.models[modMail] = mail.New(s.roleId, model.New(s)) // 邮件
 
 	s.saveTimerId = s.AddTimer(tools.UUID(), 1*time.Minute, func(dt int64) {
 		s.store()
@@ -94,9 +96,10 @@ func (s *Player) OnStop() bool {
 	return true
 }
 
-func (s *Player) IsNewRole() bool  { return s.Role().LoginAt() == 0 }
+func (s *Player) IsNewRole() bool  { return s.Role().IsNewRole() }
 func (s *Player) Role() iface.Role { return s.models[modRole].(iface.Role) }
 func (s *Player) Item() iface.Item { return s.models[modItem].(iface.Item) }
+func (s *Player) Mail() iface.Mail { return s.models[modMail].(iface.Mail) }
 
 // 回存功能模块
 func (s *Player) store() {

@@ -53,7 +53,7 @@ func startup() {
 		<-c
 		system.Stop()
 		<-system.CStop
-	}, nil)
+	})
 	log.Stop()
 	fmt.Println("stop")
 }

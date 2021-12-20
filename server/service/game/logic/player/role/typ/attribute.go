@@ -10,3 +10,7 @@ const (
 	Exp             // 经验
 	Glod            // 金币
 )
+
+func (s Attribute) Int64() int64 {
+	return int64(s)
+}
