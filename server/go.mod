@@ -11,11 +11,10 @@ require (
 	github.com/spf13/cast v1.4.1
 	github.com/spf13/viper v1.9.0
 	github.com/stretchr/testify v1.7.0
-	github.com/wwj31/dogactor v1.1.10
+	github.com/wwj31/dogactor v1.1.12
 	google.golang.org/protobuf v1.27.1
 	gorm.io/driver/mysql v1.1.3
 	gorm.io/gorm v1.22.3
-	go.uber.org/zap v1.19.1
 )
 
 require (
@@ -56,12 +55,14 @@ require (
 	go.etcd.io/etcd/client/v3 v3.5.1 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.7.0 // indirect
+	go.uber.org/zap v1.19.1 // indirect
 	golang.org/x/net v0.0.0-20211015210444-4f30a5c0130f // indirect
 	golang.org/x/sys v0.0.0-20211019181941-9d821ace8654 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/genproto v0.0.0-20210828152312-66f60bf46e71 // indirect
 	google.golang.org/grpc v1.42.0 // indirect
 	gopkg.in/ini.v1 v1.63.2 // indirect
+	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )

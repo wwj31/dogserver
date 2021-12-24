@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/wwj31/dogactor/expect"
-	"github.com/wwj31/dogactor/log"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -94,12 +93,7 @@ func checkDatabase(addr string, databaseName string) error {
 
 	sql_format := fmt.Sprintf("CREATE DATABASE IF NOT EXISTS `%s` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci", databaseName)
 	_, err = msql.Exec(sql_format)
-	if err == nil {
-		log.KVs(log.Fields{"table": databaseName}).Debug("database create success")
-	} else {
-		return err
-	}
-	return nil
+	return err
 }
 
 func checkTables(addr string, db *gorm.DB) error {

@@ -4,14 +4,11 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
 	"github.com/wwj31/dogactor/expect"
-	"github.com/wwj31/dogactor/log"
 	"github.com/wwj31/dogactor/network"
 	"github.com/wwj31/dogactor/tools"
 	"server/proto/message"
 	"time"
 )
-
-var logger = log.New(log.TAG_DEBUG_I)
 
 const addr = "127.0.0.1:9001"
 
@@ -49,18 +46,18 @@ func (s *Client) SendToServer(msgId int32, pb proto.Message) {
 func (s *Client) OnHandleMessage(sourceId, targetId string, v interface{}) {
 	switch msg := v.(type) {
 	case *message.LoginRsp:
-		logger.KV("localmsg", msg.String()).Info("login success!")
+		logger.Infow("login success!", "localmsg", msg.String())
 		s.UID = msg.UID
 		s.RID = msg.RID
 	case *message.EnterGameRsp:
-		logger.KV("localmsg", msg.String()).Info("enter success!")
+		logger.Infow("enter success!", "localmsg", msg.String())
 	case *message.RoleInfoPush:
-		logger.KV("localmsg", msg.String()).Info("RoleInfoPush!")
+		logger.Infow("RoleInfoPush!", "localmsg", msg.String())
 	case *message.ItemInfoPush:
-		logger.KV("localmsg", msg.String()).Info("ItemInfoPush!")
+		logger.Infow("ItemInfoPush!", "localmsg", msg.String())
 	case *message.Pong:
-		logger.Info("aliving~")
+		logger.Infow("aliving~")
 	default:
-		logger.KV("localmsg", msg).Warn("not case localmsg")
+		logger.Infow("unknown type!", "msg", msg)
 	}
 }

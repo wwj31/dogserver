@@ -1,6 +1,7 @@
 package gateway
 
 import (
+	"github.com/wwj31/dogactor/l"
 	"server/common/toml"
 	"time"
 
@@ -45,9 +46,10 @@ func (s *GateWay) OnInit() {
 
 	if err := s.listener.Start(); err != nil {
 		log.KV("err", err).KV("addr", toml.Get("gateaddr")).Error("gateway listener start err")
+		l.Errorw("gateway listener start failed", "err", err, "addr", toml.Get("gateaddr"))
 		return
 	}
-	log.Debug("gateway OnInit")
+	l.Debugf("gateway OnInit")
 }
 
 // 定期检查并清理死链接
@@ -56,7 +58,7 @@ func (s *GateWay) checkDeadSession(dt int64) {
 		if time.Now().UnixMilli()-session.LeaseTime > int64(time.Hour) {
 			session.Stop()
 			delete(s.sessions, id)
-			log.KV("sesion", id).Warn(" find dead session")
+			l.Warnw(" find dead session", "sesion", id)
 		}
 	}
 }

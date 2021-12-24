@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/spf13/cast"
 	"github.com/wwj31/dogactor/expect"
-	"github.com/wwj31/dogactor/log"
+	"github.com/wwj31/dogactor/l"
 	"server/common"
 	"server/db/table"
 	"server/proto/message"
@@ -86,7 +86,7 @@ func (s *AccountMgr) Login(msg *message.LoginReq, saver iface.Saver) (acc *Accou
 
 	// 回存db
 	if err := saver.Save(&newAcc.table, newRole); err != nil {
-		log.KV("err", err).Error("save err")
+		l.Errorw("save failed", "err", err)
 		return nil, false
 	}
 

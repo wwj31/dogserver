@@ -2,7 +2,7 @@ package gateway
 
 import (
 	"github.com/wwj31/dogactor/expect"
-	"github.com/wwj31/dogactor/log"
+	"github.com/wwj31/dogactor/l"
 	"server/common"
 	"server/proto/inner_message/inner"
 )
@@ -22,22 +22,22 @@ func (s *GateWay) InnerHandler(sourceId string, v interface{}) bool {
 
 func (s *GateWay) L2GTSessionAssignGame(msg *inner.L2GTSessionAssignGame) {
 	gate, sessionId := common.GSession(msg.GateSession).Split()
-	fields := log.Fields{"actor": s.ID(), "gateSession": msg.GateSession, "game": msg.GameServerId}
-	expect.True(s.ID() == gate, fields)
+	logInfo := []interface{}{"actor", s.ID(), "gateSession", msg.GateSession, "game", msg.GameServerId}
+	expect.True(s.ID() == gate, logInfo...)
 
 	session := s.sessions[sessionId]
 	if session == nil {
-		log.KVs(fields).Warn("session was closed")
+		l.Warnw("session was closed", logInfo...)
 		return
 	}
 	session.GameId = msg.GameServerId
-	log.KVs(fields).Info("L2GTSessionAssignGame")
+	l.Infow("L2GTSessionAssignGame", logInfo...)
 }
 
 func (s *GateWay) L2GTSessionDisabled(sourceId string, msg *inner.L2GTSessionDisabled) {
 	gate, sessionId := common.GSession(msg.GateSession).Split()
-	fields := log.Fields{"actor": s.ID(), "gateSession": msg.GateSession, "source": sourceId}
-	expect.True(s.ID() == gate, fields)
+	logInfo := []interface{}{"actor", s.ID(), "gateSession", msg.GateSession, "source", sourceId}
+	expect.True(s.ID() == gate, logInfo...)
 	session := s.sessions[sessionId]
 	if session == nil {
 		return
@@ -45,5 +45,5 @@ func (s *GateWay) L2GTSessionDisabled(sourceId string, msg *inner.L2GTSessionDis
 
 	session.Stop()
 	delete(s.sessions, sessionId)
-	log.KVs(fields).Info("L2GTUserSessionDisabled")
+	l.Infow("L2GTUserSessionDisabled", logInfo...)
 }

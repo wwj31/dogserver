@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/spf13/cast"
-	"github.com/wwj31/dogactor/log"
+	"github.com/wwj31/dogactor/l"
 	"github.com/wwj31/dogactor/tools"
 	"math/rand"
 	"os"
@@ -42,7 +42,15 @@ func startup() {
 		toml.Init(tomlPath, appType, appId)
 
 		// 初始化日志
-		log.Init(logLv, common.ReportLog, toml.Get("logpath"), appType, appId)
+		l.Init(l.Option{
+			Level:          l.Level(logLv),
+			LogPath:        tomlPath,
+			FileName:       appType + cast.ToString(appId),
+			FileMaxAge:     5,
+			FileMaxSize:    512,
+			FileMaxBackups: 10,
+			DisplayConsole: cast.ToBool(toml.Get("dispaly")),
+		})
 
 		// 加载配置表
 		//err = config_go.Load(iniconfig.BaseString("configjson"))
@@ -54,7 +62,8 @@ func startup() {
 		system.Stop()
 		<-system.CStop
 	})
-	log.Stop()
+	l.Close()
+
 	fmt.Println("stop")
 }
 

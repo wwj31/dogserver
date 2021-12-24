@@ -2,6 +2,7 @@ package login
 
 import (
 	"fmt"
+	"github.com/wwj31/dogactor/l"
 	"server/common"
 	"server/proto/inner_message/inner"
 	"server/proto/message"
@@ -10,7 +11,6 @@ import (
 
 	"github.com/wwj31/dogactor/actor"
 	"github.com/wwj31/dogactor/expect"
-	"github.com/wwj31/dogactor/log"
 )
 
 type Login struct {
@@ -30,7 +30,7 @@ func (s *Login) OnInit() {
 	s.SendTools = common.NewSendTools(s)
 	s.accountMgr = account.NewAccountMgr()
 	s.accountMgr.LoadAllAccount(s.storer)
-	log.Debug("login OnInit")
+	l.Debugf("login OnInit")
 }
 
 func (s *Login) OnHandleMessage(sourceId, targetId string, msg interface{}) {
@@ -44,13 +44,13 @@ func (s *Login) OnHandleMessage(sourceId, targetId string, msg interface{}) {
 	}
 
 	if err != nil {
-		log.KV("err", err).Error("handle message error")
+		l.Errorw("handle message error", "err", err)
 	}
 }
 
 // 登录消息
 func (s *Login) LoginReq(sourceId string, gSession common.GSession, msg *message.LoginReq) error {
-	log.Debug(msg.String())
+	l.Debugf(msg.String())
 
 	acc, _ := s.accountMgr.Login(msg, s.storer)
 

@@ -1,4 +1,5 @@
 [base]
+dispaly    = "true"
 logpath    = "./log"
 etcdprefix = "/actor/"
 etcdaddr   = "127.0.0.1:2379"

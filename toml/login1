@@ -1,0 +1,4 @@
+2021-12-24T22:13:44.995+0800	DEBUG	login/login.go:33	login OnInit
+2021-12-24T22:14:45.351+0800	WARN	cmd/cmd.go:67	cmd not exists	{"cmdName": "cluserinfo"}
+2021-12-24T22:18:23.632+0800	DEBUG	login/login.go:53	PlatformUUID:"wwj"  PlatformName:"test"  OS:"test"
+2021-12-24T22:22:37.856+0800	DEBUG	login/login.go:53	PlatformUUID:"wwj"  PlatformName:"test"  OS:"test"

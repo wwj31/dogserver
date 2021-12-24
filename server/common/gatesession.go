@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/golang/protobuf/proto"
 	"github.com/spf13/cast"
-	"github.com/wwj31/dogactor/log"
+	"github.com/wwj31/dogactor/l"
 	"github.com/wwj31/dogactor/tools"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/reflect/protoregistry"
@@ -17,13 +17,13 @@ type GSession string
 func (s GSession) Split() (gateId ActorId, sessionId uint32) {
 	strs := strings.Split(string(s), ":")
 	if len(strs) != 2 {
-		log.KV("gateSession", s).ErrorStack(3, "Split error")
+		l.Errorw("split failed", "gateSession", s)
 		panic(nil)
 	}
 	gateId = strs[0]
 	sint, e := cast.ToUint32E(strs[1])
 	if e != nil {
-		log.KV("gateSession", string(s)).ErrorStack(3, "Split error")
+		l.Errorw("split failed", "gateSession", s)
 		panic(nil)
 	}
 	sessionId = sint
@@ -48,7 +48,7 @@ func GateSession(gateId ActorId, sessionId uint32) GSession {
 func NewGateWrapperByPb(pb proto.Message, gateSession GSession) *inner.GateMsgWrapper {
 	data, err := proto.Marshal(pb)
 	if err != nil {
-		log.KV("err", err).ErrorStack(3, "marshal pb failed")
+		l.Errorw("marshal pb failed", "err", err)
 		return nil
 	}
 	return &inner.GateMsgWrapper{GateSession: gateSession.String(), MsgName: tools.MsgName(pb), Data: data}

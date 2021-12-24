@@ -10,11 +10,11 @@ type SessionHandler struct {
 }
 
 func (s SessionHandler) OnSessionCreated(session network.INetSession) {
-	logger.Info("session OnSessionCreated!")
+	logger.Infof("session OnSessionCreated!")
 }
 
 func (s SessionHandler) OnSessionClosed() {
-	logger.Info("session OnSessionClosed!")
+	logger.Infof("session OnSessionClosed!")
 }
 
 func (s SessionHandler) OnRecv(bytes []byte) {
