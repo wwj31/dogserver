@@ -11,7 +11,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
 	"github.com/wwj31/dogactor/expect"
-	"github.com/wwj31/dogactor/log"
+	"server/common/log"
 )
 
 func New(s iface.SaveLoader) *Game {
@@ -34,12 +34,12 @@ func (s *Game) OnInit() {
 	s.SendTools = common.NewSendTools(s)
 	s.playerMgr = player.NewMgr(s)
 
-	log.Debug("game OnInit")
+	log.Debugf("game OnInit")
 }
 
 // 区服id
 func (s *Game) OnStop() bool {
-	log.Info("stop game")
+	log.Infof("stop game")
 	return true
 }
 
@@ -66,11 +66,11 @@ func (s *Game) OnHandleMessage(sourceId, targetId string, msg interface{}) {
 
 // 玩家请求进入游戏
 func (s *Game) EnterGameReq(gSession common.GSession, msg *message.EnterGameReq) {
-	log.KV("localmsg", msg).Debug("EnterGameReq")
+	log.Debugw("EnterGameReq", "msg", msg)
 
 	// 重复登录
 	if _, ok := s.PlayerMgr().PlayerBySession(gSession); ok {
-		log.KVs(log.Fields{"gSession": gSession, "localmsg": msg.RID}).Warn("player repeated enter game")
+		log.Warnw("player repeated enter game", "gSession", gSession, "localmsg", msg.RID)
 		return
 	}
 
@@ -80,17 +80,17 @@ func (s *Game) EnterGameReq(gSession common.GSession, msg *message.EnterGameReq)
 	if oldSession, ok := s.PlayerMgr().GSessionByPlayer(playerId); ok {
 		s.PlayerMgr().DelGSession(oldSession)
 	} else {
-		playerActor := actor.New(playerId, player.New(msg.RID), actor.SetMailBoxSize(500))
-		err := s.System().Regist(playerActor)
+		playerActor := actor.New(playerId, player.New(msg.RID), actor.SetMailBoxSize(200))
+		err := s.System().Add(playerActor)
 		if err != nil {
-			log.KVs(log.Fields{"rid": msg.RID, "err": err}).Error("regist player actor error")
+			log.Errorw("regist player actor error", "rid", msg.RID, "err", err)
 			return
 		}
 	}
 
 	err := s.Send(playerId, localmsg.Login{GSession: gSession})
 	if err != nil {
-		log.KVs(log.Fields{"rid": msg.RID, "err": err, "playerId": playerId}).Error("login send error")
+		log.Errorw("login send error", "rid", msg.RID, "err", err, "playerId", playerId)
 		return
 	}
 

@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/signal"
 	"server/common"
+	"server/common/log"
 	"server/common/toml"
 	"server/db"
 	"server/service/client"
@@ -42,15 +43,10 @@ func startup() {
 		toml.Init(tomlPath, appType, appId)
 
 		// 初始化日志
-		l.Init(l.Option{
-			Level:          l.Level(logLv),
-			LogPath:        tomlPath,
-			FileName:       appType + cast.ToString(appId),
-			FileMaxAge:     5,
-			FileMaxSize:    512,
-			FileMaxBackups: 10,
-			DisplayConsole: cast.ToBool(toml.Get("dispaly")),
-		})
+		log.Init(logLv, "./",
+			appType+cast.ToString(appId),
+			cast.ToBool(toml.Get("dispaly")),
+		)
 
 		// 加载配置表
 		//err = config_go.Load(iniconfig.BaseString("configjson"))
@@ -95,7 +91,7 @@ func run(appType string, appId int32) *actor.System {
 
 	switch appType {
 	case common.Client:
-		expect.Nil(system.Regist(actor.New(common.Client, &client.Client{}, actor.SetLocalized())))
+		expect.Nil(system.Add(actor.New(common.Client, &client.Client{}, actor.SetLocalized())))
 	case common.GateWay_Actor:
 		newGateway(appId, system)
 	case common.Login_Actor:
@@ -113,16 +109,16 @@ func run(appType string, appId int32) *actor.System {
 func newLogin(system *actor.System) {
 	dbIns := db.New(toml.Get("mysql"), toml.Get("database"))
 	loginActor := login.New(dbIns)
-	expect.Nil(system.Regist(actor.New(common.Login_Actor, loginActor)))
+	expect.Nil(system.Add(actor.New(common.Login_Actor, loginActor)))
 }
 
 func newGateway(appId int32, system *actor.System) {
 	loginActor := gateway.New()
-	expect.Nil(system.Regist(actor.New(common.GatewayName(appId), loginActor)))
+	expect.Nil(system.Add(actor.New(common.GatewayName(appId), loginActor)))
 }
 
 func newGame(appId int32, system *actor.System) {
 	dbIns := db.New(toml.Get("mysql"), toml.Get("database"))
 	gameActor := game.New(dbIns)
-	expect.Nil(system.Regist(actor.New(common.GameName(appId), gameActor)))
+	expect.Nil(system.Add(actor.New(common.GameName(appId), gameActor)))
 }

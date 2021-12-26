@@ -2,7 +2,6 @@ package client
 
 import (
 	"fmt"
-	"github.com/wwj31/dogactor/expect"
 	"math/rand"
 	"server/proto/message"
 	"time"
@@ -16,7 +15,9 @@ func (s *Client) InitCmd() {
 }
 
 func (s *Client) login(arg ...string) {
-	expect.True(len(arg) == 1)
+	if len(arg) != 1 {
+		return
+	}
 	logReq := &message.LoginReq{
 		PlatformUUID: arg[0],
 		PlatformName: "test",

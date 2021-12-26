@@ -4,6 +4,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/wwj31/dogactor/expect"
 	"server/common"
+	"server/common/log"
 	"server/db/table"
 	"server/proto/message"
 	"server/service/game/logic/model"
@@ -81,7 +82,7 @@ func (s *Item) save() {
 func (s *Item) marshal(msg proto.Message) []byte {
 	bytes, err := proto.Marshal(msg)
 	if err != nil {
-		s.Log().KV("err", err).Error("proto marshal error")
+		log.Errorw("proto marshal error", "err", err)
 	}
 	return bytes
 }

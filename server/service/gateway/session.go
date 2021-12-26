@@ -1,14 +1,15 @@
 package gateway
 
 import (
-	"github.com/wwj31/dogactor/expect"
-	"github.com/wwj31/dogactor/log"
-	"github.com/wwj31/dogactor/network"
-	"github.com/wwj31/dogactor/tools"
+	"time"
+
 	"server/common"
+	"server/common/log"
 	"server/proto/inner_message/inner"
 	"server/proto/message"
-	"time"
+
+	"github.com/wwj31/dogactor/network"
+	"github.com/wwj31/dogactor/tools"
 )
 
 type UserSession struct {
@@ -49,13 +50,16 @@ func (s *UserSession) OnSessionClosed() {
 }
 
 func (s *UserSession) OnRecv(data []byte) {
-	expect.True(len(data) >= 4, log.Fields{"len(data)": len(data), "session": s.Id()})
+	if len(data) < 4 {
+		log.Warnw("invalid data len", "len(data)", len(data), "session", s.Id())
+	}
+
 	msgId := int32(network.Byte4ToUint32(data[:4]))
 
 	var err error
 	defer func() {
 		if err != nil {
-			log.KVs(log.Fields{"err": err, "msgId": msgId}).Error("OnRecv error")
+			log.Errorw("OnRecv error", "err", err, "msgId", msgId)
 		}
 	}()
 
@@ -73,7 +77,7 @@ func (s *UserSession) OnRecv(data []byte) {
 
 	msgName, ok := s.gateway.msgParser.MsgIdToName(msgId)
 	if !ok {
-		log.KV("msgId", msgId).Error("proto not find struct")
+		log.Errorw("proto not find struct", "msgId", msgId)
 		return
 	}
 
@@ -88,9 +92,9 @@ func (s *UserSession) OnRecv(data []byte) {
 		}
 		err = s.gateway.Send(s.GameId, wrapperMsg)
 	}
-	log.KVs(log.Fields{
-		"msgId":    msgId,
-		"msgName":  msgName,
-		"gSession": gSession,
-	}).Info("user localmsg")
+	log.Infow("user msg -> server",
+		"msgId", msgId,
+		"msgName", msgName,
+		"gSession", gSession,
+	)
 }

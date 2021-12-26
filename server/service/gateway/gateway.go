@@ -1,18 +1,16 @@
 package gateway
 
 import (
-	"github.com/wwj31/dogactor/l"
-	"server/common/toml"
 	"time"
 
+	"server/common"
+	"server/common/log"
+	"server/common/toml"
+	"server/proto/inner_message/inner"
+
 	"github.com/wwj31/dogactor/actor"
-	"github.com/wwj31/dogactor/expect"
-	"github.com/wwj31/dogactor/log"
 	"github.com/wwj31/dogactor/network"
 	"github.com/wwj31/dogactor/tools"
-
-	"server/common"
-	"server/proto/inner_message/inner"
 )
 
 type GateWay struct {
@@ -42,14 +40,17 @@ func (s *GateWay) OnInit() {
 
 	_ = s.System().RegistEvent(s.ID(), (*actor.EvDelactor)(nil))
 
-	s.AddTimer(tools.UUID(), time.Hour, s.checkDeadSession, -1)
+	s.AddTimer(tools.UUID(), tools.NowTime()+int64(time.Hour), s.checkDeadSession, -1)
 
 	if err := s.listener.Start(); err != nil {
-		log.KV("err", err).KV("addr", toml.Get("gateaddr")).Error("gateway listener start err")
-		l.Errorw("gateway listener start failed", "err", err, "addr", toml.Get("gateaddr"))
+		log.Errorw("gateway listener start failed", "err", err, "addr", toml.Get("gateaddr"))
 		return
 	}
-	l.Debugf("gateway OnInit")
+	log.Debugf("gateway OnInit")
+}
+func (s *GateWay) OnStop() bool {
+	s.System().CancelAll(s.ID())
+	return true
 }
 
 // 定期检查并清理死链接
@@ -58,7 +59,7 @@ func (s *GateWay) checkDeadSession(dt int64) {
 		if time.Now().UnixMilli()-session.LeaseTime > int64(time.Hour) {
 			session.Stop()
 			delete(s.sessions, id)
-			l.Warnw(" find dead session", "sesion", id)
+			log.Warnw(" find dead session", "sesion", id)
 		}
 	}
 }
@@ -68,7 +69,7 @@ func (s *GateWay) OnHandleEvent(event interface{}) {
 	switch event.(type) {
 	case *actor.EvDelactor:
 		evData := event.(*actor.EvDelactor)
-		log.KV("remote actor", evData.ActorId).Warn("remote actor is inexistent")
+		log.Warnw("remote actor is inexistent", "remote actor", evData.ActorId)
 	}
 }
 
@@ -78,15 +79,18 @@ func (s *GateWay) OnHandleMessage(sourceId, targetId string, v interface{}) {
 	case *inner.GateMsgWrapper:
 		// 用户消息，直接转发给用户
 		actorId, sessionId := common.GSession(msg.GateSession).Split()
-		logInfo := log.Fields{"own": s.ID(), "gSession": msg.GateSession, "sourceId": sourceId, "msgName": msg.MsgName}
-		expect.True(s.ID() == actorId, logInfo)
+		logInfo := []interface{}{"own", s.ID(), "gSession", msg.GateSession, "sourceId", sourceId, "msgName", msg.MsgName}
+		if s.ID() != actorId {
+			log.Errorw("session disabled gate is not own", logInfo...)
+			return
+		}
 		userSessionHandler := s.sessions[sessionId]
 		if userSessionHandler == nil {
-			log.KVs(logInfo).Warn("cannot find sessionId")
+			log.Warnw("cannot find sessionId", logInfo...)
 			return
 		}
 
-		log.KVs(logInfo).Info("server localmsg")
+		log.Infow("server msg -> user", logInfo...)
 		msgId, _ := s.msgParser.MsgNameToId(msg.GetMsgName())
 		_ = userSessionHandler.SendMsg(network.CombineMsgWithId(msgId, msg.Data))
 

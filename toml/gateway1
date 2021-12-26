@@ -1,4 +1,0 @@
-2021-12-24T21:57:22.108+0800	DEBUG	gateway/gateway.go:52	gateway OnInit
-2021-12-24T22:15:02.021+0800	DEBUG	gateway/gateway.go:52	gateway OnInit
-2021-12-24T22:18:23.633+0800	INFO	gateway/inner_handler.go:34	L2GTSessionAssignGame	{"actor": "gateway1_Actor", "gateSession": "gateway1_Actor:1415020003", "game": "game1_Actor"}
-2021-12-24T22:22:37.856+0800	INFO	gateway/inner_handler.go:34	L2GTSessionAssignGame	{"actor": "gateway1_Actor", "gateSession": "gateway1_Actor:1415020004", "game": "game1_Actor"}

@@ -3,10 +3,10 @@ package player
 import (
 	"github.com/golang/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
-	"github.com/wwj31/dogactor/log"
 	"github.com/wwj31/dogactor/tools"
 	"reflect"
 	"server/common"
+	"server/common/log"
 	"server/common/toml"
 	"server/db"
 	"server/service/game/iface"
@@ -48,7 +48,7 @@ func (s *Player) OnInit() {
 	s.models[modItem] = item.New(s.roleId, model.New(s)) // 道具
 	s.models[modMail] = mail.New(s.roleId, model.New(s)) // 邮件
 
-	s.saveTimerId = s.AddTimer(tools.UUID(), 1*time.Minute, func(dt int64) {
+	s.saveTimerId = s.AddTimer(tools.UUID(), tools.NowTime()+int64(1*time.Minute), func(dt int64) {
 		s.store()
 	}, -1)
 }
@@ -57,7 +57,7 @@ func (s *Player) OnHandleMessage(sourceId, targetId string, msg interface{}) {
 	name := controller.MsgName(msg)
 	handle, ok := controller.MsgRouter[name]
 	if !ok {
-		log.KV("name", name).Error("player undefined route ")
+		log.Errorw("player undefined route ", "name", name)
 		return
 	}
 	handle(s, msg)
@@ -70,7 +70,7 @@ func (s *Player) Send2Client(pb proto.Message) {
 		return
 	}
 	if err := s.sender.Send2Client(s.gSession, pb); err != nil {
-		log.KV("err", err).Error("player send faild")
+		log.Errorw("player send faild", "err", err)
 	}
 }
 
@@ -103,7 +103,7 @@ func (s *Player) Mail() iface.Mail { return s.models[modMail].(iface.Mail) }
 
 // 回存功能模块
 func (s *Player) store() {
-	logFiled := log.Fields{"roleId": s.Role().RoleId()}
+	logFiled := []interface{}{"roleId", s.Role().RoleId()}
 	for _, mod := range s.models {
 		tab := mod.Table()
 		if tab == nil || reflect.ValueOf(tab).IsNil() {
@@ -112,10 +112,10 @@ func (s *Player) store() {
 		err := s.Save(tab)
 		mod.SetTable(nil)
 		if err != nil {
-			log.KV("err", err).Error("player store err")
+			log.Errorw("player store err", "err", err)
 		} else {
-			logFiled["table"] = tab.TableName()
+			logFiled = append(logFiled, "table", tab.TableName())
 		}
 	}
-	log.KVs(logFiled).Info("player stored model")
+	log.Infow("player stored model", logFiled...)
 }

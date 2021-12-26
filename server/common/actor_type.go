@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/wwj31/dogactor/log"
+	"server/common/log"
 )
 
 type ActorId = string
@@ -47,7 +47,7 @@ func IsActorOf(actorId, typ string) bool {
 	str := typ + "([0-9]+)_Actor"
 	match, e := regexp.MatchString(str, actorId)
 	if e != nil {
-		log.KV("actorId", actorId).ErrorStack(3, "error")
+		log.Errorw("IsActorOf regexp error", "err", e)
 		return false
 	}
 	return match

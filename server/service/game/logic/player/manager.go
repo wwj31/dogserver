@@ -2,8 +2,8 @@ package player
 
 import (
 	"github.com/golang/protobuf/proto"
-	"github.com/wwj31/dogactor/log"
 	"server/common"
+	"server/common/log"
 	"server/service/game/iface"
 )
 
@@ -52,8 +52,7 @@ func (s *Manager) RangeOnline(f func(common.GSession, common.ActorId)) {
 func (s *Manager) Broadcast(msg proto.Message) {
 	s.RangeOnline(func(gs common.GSession, id common.ActorId) {
 		if err := s.game.Send2Client(gs, msg); err != nil {
-			log.KVs(log.Fields{"err": err, "gSession": gs, "Player": id}).
-				ErrorStack(2, "broadcast localmsg error")
+			log.Errorw("broadcast localmsg error", "err", err, "gSession", gs, "Player", id)
 		}
 	})
 }

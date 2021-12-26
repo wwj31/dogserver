@@ -12,4 +12,5 @@ var logger = l.New(l.Option{
 	FileMaxSize:    100,
 	FileMaxBackups: 1,
 	DisplayConsole: true,
+	Skip:           2,
 })

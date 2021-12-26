@@ -2,8 +2,8 @@ package login
 
 import (
 	"fmt"
-	"github.com/wwj31/dogactor/l"
 	"server/common"
+	"server/common/log"
 	"server/proto/inner_message/inner"
 	"server/proto/message"
 	"server/service/game/iface"
@@ -30,7 +30,7 @@ func (s *Login) OnInit() {
 	s.SendTools = common.NewSendTools(s)
 	s.accountMgr = account.NewAccountMgr()
 	s.accountMgr.LoadAllAccount(s.storer)
-	l.Debugf("login OnInit")
+	log.Debugf("login OnInit")
 }
 
 func (s *Login) OnHandleMessage(sourceId, targetId string, msg interface{}) {
@@ -44,13 +44,13 @@ func (s *Login) OnHandleMessage(sourceId, targetId string, msg interface{}) {
 	}
 
 	if err != nil {
-		l.Errorw("handle message error", "err", err)
+		log.Errorw("handle message error", "err", err)
 	}
 }
 
 // 登录消息
 func (s *Login) LoginReq(sourceId string, gSession common.GSession, msg *message.LoginReq) error {
-	l.Debugf(msg.String())
+	log.Debugf(msg.String())
 
 	acc, _ := s.accountMgr.Login(msg, s.storer)
 
