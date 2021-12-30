@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"math/rand"
 	"os"
 	"os/signal"
 	"server/common"
@@ -26,11 +25,9 @@ import (
 )
 
 func startup() {
-	rand.Seed(tools.Now().UnixNano()) //设置随机数种子
 	tools.Try(func() {
-		c := make(chan os.Signal)
-		signal.Notify(c, syscall.SIGKILL, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
-		rand.Seed(tools.Now().UnixNano())
+		osSignal := make(chan os.Signal)
+		signal.Notify(osSignal, syscall.SIGKILL, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
 
 		// init toml file
 		toml.Init(*tomlPath, *appName, *appId)
@@ -47,7 +44,7 @@ func startup() {
 		//common.RefactorConfig()
 
 		system := run(*appName, int32(*appId))
-		<-c
+		<-osSignal
 		system.Stop()
 		<-system.CStop
 	})
