@@ -1,11 +1,7 @@
 package main
 
 import (
-	"flag"
 	"fmt"
-	"github.com/spf13/cast"
-	"github.com/wwj31/dogactor/l"
-	"github.com/wwj31/dogactor/tools"
 	"math/rand"
 	"os"
 	"os/signal"
@@ -19,6 +15,10 @@ import (
 	"server/service/login"
 	"syscall"
 
+	"github.com/spf13/cast"
+	"github.com/wwj31/dogactor/l"
+	"github.com/wwj31/dogactor/tools"
+
 	"github.com/wwj31/dogactor/actor"
 	"github.com/wwj31/dogactor/actor/cluster"
 	"github.com/wwj31/dogactor/actor/cmd"
@@ -26,25 +26,18 @@ import (
 )
 
 func startup() {
+	rand.Seed(tools.Now().UnixNano()) //设置随机数种子
 	tools.Try(func() {
-		rand.Seed(tools.Now().UnixNano()) //设置随机数种子
 		c := make(chan os.Signal)
 		signal.Notify(c, syscall.SIGKILL, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
 		rand.Seed(tools.Now().UnixNano())
 
-		// 获取程序启动参数
-		appType, tomlPath, appId, logLv, err := outputFlags()
-		if err != nil {
-			fmt.Println("initConf error", err)
-			return
-		}
-
 		// 初始化toml配置
-		toml.Init(tomlPath, appType, appId)
+		toml.Init(*tomlPath, *appName, *appId)
 
 		// 初始化日志
-		log.Init(logLv, "./",
-			appType+cast.ToString(appId),
+		log.Init(*logLevel, *logPath,
+			*appName+cast.ToString(appId),
 			cast.ToBool(toml.Get("dispaly")),
 		)
 
@@ -53,7 +46,7 @@ func startup() {
 		//expect.Nil(err)
 		//common.RefactorConfig()
 
-		system := run(appType, appId)
+		system := run(*appName, int32(*appId))
 		<-c
 		system.Stop()
 		<-system.CStop
@@ -61,23 +54,6 @@ func startup() {
 	l.Close()
 
 	fmt.Println("stop")
-}
-
-func outputFlags() (appType, tomlPath string, appId, logLv int32, err error) {
-	appType = flag.Lookup("app").Value.String()
-	appId, err = cast.ToInt32E(flag.Lookup("id").Value.String())
-	if err != nil {
-		return
-	}
-
-	tomlPath = flag.Lookup("toml").Value.String()
-
-	logLv, err = cast.ToInt32E(flag.Lookup("log").Value.String())
-	if err != nil {
-		return
-	}
-
-	return
 }
 
 func run(appType string, appId int32) *actor.System {

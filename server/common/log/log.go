@@ -6,7 +6,7 @@ import (
 
 var gLogger *l.Logger
 
-func Init(lv int32, path, fileName string, dispay bool) {
+func Init(lv int, path, fileName string, dispay bool) {
 	gLogger = l.New(l.Option{
 		Level:          l.Level(lv),
 		LogPath:        path,

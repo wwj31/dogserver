@@ -15,7 +15,7 @@ var (
 	Config     map[string]interface{}
 )
 
-func Init(path string, appType string, appId int32) {
+func Init(path string, appType string, appId int) {
 	viper.SetConfigName("config")
 	viper.SetConfigType("toml")
 	viper.AddConfigPath(path)
