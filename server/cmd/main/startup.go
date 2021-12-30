@@ -58,7 +58,6 @@ func run(appType string, appId int32) *actor.System {
 	system, _ := actor.NewSystem(
 		actor.WithCMD(cmd.New()),
 		cluster.WithRemote(toml.Get("etcdaddr"), toml.Get("etcdprefix")),
-
 		actor.Addr(toml.Get("actoraddr")),
 	)
 
