@@ -4,8 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"math/rand"
-
-	"github.com/wwj31/dogactor/tools"
+	"time"
 )
 
 var (
@@ -17,7 +16,7 @@ var (
 )
 
 func main() {
-	rand.Seed(tools.Now().UnixNano())
+	rand.Seed(time.Now().UnixNano())
 
 	flag.Usage = func() { fmt.Println("flag param error") }
 	flag.Parse()
