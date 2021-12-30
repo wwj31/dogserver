@@ -8,10 +8,11 @@ import (
 	"server/service/game/logic/player"
 	"server/service/game/logic/player/localmsg"
 
+	"server/common/log"
+
 	"github.com/golang/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
 	"github.com/wwj31/dogactor/expect"
-	"server/common/log"
 )
 
 func New(s iface.SaveLoader) *Game {
@@ -25,7 +26,7 @@ type Game struct {
 	common.SendTools
 	iface.SaveLoader
 
-	sid int32 // 服务器Id
+	sid int32 // serverId
 
 	playerMgr iface.PlayerManager
 }
@@ -37,7 +38,6 @@ func (s *Game) OnInit() {
 	log.Debugf("game OnInit")
 }
 
-// 区服id
 func (s *Game) OnStop() bool {
 	log.Infof("stop game")
 	return true
@@ -58,14 +58,14 @@ func (s *Game) OnHandleMessage(sourceId, targetId string, msg interface{}) {
 
 	switch pbMsg := actMsg.(type) {
 	case *message.EnterGameReq:
-		s.EnterGameReq(gSession, pbMsg)
+		s.enterGameReq(gSession, pbMsg)
 	case *inner.GT2GSessionClosed:
-		s.Logout(pbMsg)
+		s.logout(pbMsg)
 	}
 }
 
 // 玩家请求进入游戏
-func (s *Game) EnterGameReq(gSession common.GSession, msg *message.EnterGameReq) {
+func (s *Game) enterGameReq(gSession common.GSession, msg *message.EnterGameReq) {
 	log.Debugw("EnterGameReq", "msg", msg)
 
 	// 重复登录
@@ -98,7 +98,7 @@ func (s *Game) EnterGameReq(gSession common.GSession, msg *message.EnterGameReq)
 }
 
 // 玩家离线
-func (s *Game) Logout(msg *inner.GT2GSessionClosed) proto.Message {
+func (s *Game) logout(msg *inner.GT2GSessionClosed) proto.Message {
 	gSession := common.GSession(msg.GateSession)
 	playerId, ok := s.PlayerMgr().PlayerBySession(gSession)
 	if ok {

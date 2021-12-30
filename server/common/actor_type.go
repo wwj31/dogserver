@@ -9,21 +9,14 @@ import (
 
 type ActorId = string
 
-// 静态Actor类型,全局唯一
 const (
-	Login_Actor  = "login"
-	Center_Actor = "centerWorld"
-	Client       = "client"
-)
-
-// 动态增删的actor,会有多个 game1、game2
-const (
+	World_Actor   = "world"
+	Login_Actor   = "login"
 	Game_Actor    = "game"
 	Player_Actor  = "player"
 	GateWay_Actor = "gateway"
-	World_Actor   = "world"
-	DB_Actor      = "dB"
-	MYSQL_Actor   = "mysql"
+
+	Client = "client"
 )
 
 func GameName(id int32) ActorId {

@@ -15,13 +15,12 @@ import (
 	"syscall"
 
 	"github.com/spf13/cast"
-	"github.com/wwj31/dogactor/l"
-	"github.com/wwj31/dogactor/tools"
-
 	"github.com/wwj31/dogactor/actor"
 	"github.com/wwj31/dogactor/actor/cluster"
 	"github.com/wwj31/dogactor/actor/cmd"
 	"github.com/wwj31/dogactor/expect"
+	"github.com/wwj31/dogactor/l"
+	"github.com/wwj31/dogactor/tools"
 )
 
 func startup() {
