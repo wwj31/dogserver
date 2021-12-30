@@ -1,33 +1,34 @@
 package player
 
 import (
-	"github.com/golang/protobuf/proto"
 	"server/common"
 	"server/common/log"
 	"server/service/game/iface"
+
+	"github.com/golang/protobuf/proto"
 )
 
 type Manager struct {
 	game             iface.Gamer
-	playerByGsession map[common.GSession]common.ActorId
+	playerByGSession map[common.GSession]common.ActorId
 	gSessionByPlayer map[common.ActorId]common.GSession
 }
 
 func NewMgr(g iface.Gamer) *Manager {
 	return &Manager{
 		game:             g,
-		playerByGsession: make(map[common.GSession]common.ActorId, 100),
+		playerByGSession: make(map[common.GSession]common.ActorId, 100),
 		gSessionByPlayer: make(map[common.ActorId]common.GSession, 100),
 	}
 }
 
 func (s *Manager) SetPlayer(gSession common.GSession, id common.ActorId) {
-	s.playerByGsession[gSession] = id
+	s.playerByGSession[gSession] = id
 	s.gSessionByPlayer[id] = gSession
 }
 
 func (s *Manager) PlayerBySession(gateSession common.GSession) (common.ActorId, bool) {
-	p, ok := s.playerByGsession[gateSession]
+	p, ok := s.playerByGSession[gateSession]
 	return p, ok
 }
 func (s *Manager) GSessionByPlayer(id common.ActorId) (common.GSession, bool) {
@@ -35,11 +36,11 @@ func (s *Manager) GSessionByPlayer(id common.ActorId) (common.GSession, bool) {
 	return p, ok
 }
 func (s *Manager) DelGSession(gateSession common.GSession) {
-	id, ok := s.playerByGsession[gateSession]
+	id, ok := s.playerByGSession[gateSession]
 	if ok {
 		delete(s.gSessionByPlayer, id)
 	}
-	delete(s.playerByGsession, gateSession)
+	delete(s.playerByGSession, gateSession)
 
 }
 

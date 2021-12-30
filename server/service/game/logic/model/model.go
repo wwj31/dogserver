@@ -11,7 +11,6 @@ type Model struct {
 }
 
 func New(player iface.Player) Model {
-
 	model := Model{
 		Player: player,
 	}
