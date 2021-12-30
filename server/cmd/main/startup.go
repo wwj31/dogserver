@@ -33,10 +33,8 @@ func startup() {
 		toml.Init(*tomlPath, *appName, *appId)
 
 		// init log file
-		log.Init(*logLevel, *logPath,
-			*appName+cast.ToString(appId),
-			cast.ToBool(toml.Get("dispaly")),
-		)
+		logName := *appName + cast.ToString(appId)
+		log.Init(*logLevel, *logPath, logName, cast.ToBool(toml.Get("dispaly")))
 
 		// load config of excels
 		//err = config_go.Load(iniconfig.BaseString("configjson"))
