@@ -9,10 +9,9 @@ import (
 	"server/service/game/logic/player"
 	"server/service/game/logic/player/localmsg"
 
-	"github.com/wwj31/dogactor/expect"
-
 	"github.com/golang/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
+	"github.com/wwj31/dogactor/expect"
 )
 
 func New(s iface.SaveLoader) *Game {
