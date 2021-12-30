@@ -32,16 +32,16 @@ func startup() {
 		signal.Notify(c, syscall.SIGKILL, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
 		rand.Seed(tools.Now().UnixNano())
 
-		// 初始化toml配置
+		// init toml file
 		toml.Init(*tomlPath, *appName, *appId)
 
-		// 初始化日志
+		// init log file
 		log.Init(*logLevel, *logPath,
 			*appName+cast.ToString(appId),
 			cast.ToBool(toml.Get("dispaly")),
 		)
 
-		// 加载配置表
+		// load config of excels
 		//err = config_go.Load(iniconfig.BaseString("configjson"))
 		//expect.Nil(err)
 		//common.RefactorConfig()
@@ -57,7 +57,7 @@ func startup() {
 }
 
 func run(appType string, appId int32) *actor.System {
-	// 启动actor服务
+	// startup the system of actor
 	system, _ := actor.NewSystem(
 		actor.WithCMD(cmd.New()),
 		cluster.WithRemote(toml.Get("etcdaddr"), toml.Get("etcdprefix")),
@@ -74,7 +74,7 @@ func run(appType string, appId int32) *actor.System {
 		newLogin(system)
 	case common.Game_Actor:
 		newGame(appId, system)
-	case "All":
+	case "all":
 		newGateway(appId, system)
 		newGame(appId, system)
 		newLogin(system)
