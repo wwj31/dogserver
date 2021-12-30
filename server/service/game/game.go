@@ -2,17 +2,17 @@ package game
 
 import (
 	"server/common"
+	"server/common/log"
 	"server/proto/inner_message/inner"
 	"server/proto/message"
 	"server/service/game/iface"
 	"server/service/game/logic/player"
 	"server/service/game/logic/player/localmsg"
 
-	"server/common/log"
+	"github.com/wwj31/dogactor/expect"
 
 	"github.com/golang/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
-	"github.com/wwj31/dogactor/expect"
 )
 
 func New(s iface.SaveLoader) *Game {
@@ -43,15 +43,6 @@ func (s *Game) OnStop() bool {
 	return true
 }
 
-// 区服id
-func (s *Game) SID() int32 {
-	return s.sid
-}
-
-func (s *Game) PlayerMgr() iface.PlayerManager {
-	return s.playerMgr
-}
-
 func (s *Game) OnHandleMessage(sourceId, targetId string, msg interface{}) {
 	actMsg, gSession, err := common.UnwrapperGateMsg(msg)
 	expect.Nil(err)
@@ -64,26 +55,35 @@ func (s *Game) OnHandleMessage(sourceId, targetId string, msg interface{}) {
 	}
 }
 
-// 玩家请求进入游戏
+// SID serverId
+func (s *Game) SID() int32 {
+	return s.sid
+}
+
+func (s *Game) PlayerMgr() iface.PlayerManager {
+	return s.playerMgr
+}
+
+// player enter game
 func (s *Game) enterGameReq(gSession common.GSession, msg *message.EnterGameReq) {
 	log.Debugw("EnterGameReq", "msg", msg)
 
-	// 重复登录
+	// warn:repeated login
 	if _, ok := s.PlayerMgr().PlayerBySession(gSession); ok {
 		log.Warnw("player repeated enter game", "gSession", gSession, "localmsg", msg.RID)
 		return
 	}
 
-	// todo .. 解密
+	// todo .. decrypt
 	playerId := common.PlayerId(msg.RID)
-	// 重连删除旧session,否则创建Player Actor
+
 	if oldSession, ok := s.PlayerMgr().GSessionByPlayer(playerId); ok {
 		s.PlayerMgr().DelGSession(oldSession)
 	} else {
 		playerActor := actor.New(playerId, player.New(msg.RID), actor.SetMailBoxSize(200))
 		err := s.System().Add(playerActor)
 		if err != nil {
-			log.Errorw("regist player actor error", "rid", msg.RID, "err", err)
+			log.Errorw("add player actor error", "rid", msg.RID, "err", err)
 			return
 		}
 	}
@@ -97,12 +97,12 @@ func (s *Game) enterGameReq(gSession common.GSession, msg *message.EnterGameReq)
 	s.PlayerMgr().SetPlayer(gSession, playerId)
 }
 
-// 玩家离线
+// player offline
 func (s *Game) logout(msg *inner.GT2GSessionClosed) proto.Message {
 	gSession := common.GSession(msg.GateSession)
 	playerId, ok := s.PlayerMgr().PlayerBySession(gSession)
 	if ok {
-		s.Send(playerId, msg)
+		_ = s.Send(playerId, msg)
 	}
 
 	s.PlayerMgr().DelGSession(gSession)
