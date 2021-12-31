@@ -64,13 +64,13 @@ func (s *AccountMgr) Login(msg *message.LoginReq, saver iface.Saver) (acc *Accou
 
 	// newAccount
 	newAcc := &Account{}
-	newAcc.table.UUId = s.uuidGen.Uuid()
+	newAcc.table.UUId = s.uuidGen.GenUuid()
 	newAcc.table.PlatformUUId = platformId
 	newAcc.table.OS = msg.OS
 	newAcc.table.ClientVersion = msg.ClientVersion // newRole
 	newRole := &table.Role{
 		UUId:     newAcc.table.UUId,
-		RoleId:   s.uuidGen.Uuid(),
+		RoleId:   s.uuidGen.GenUuid(),
 		SId:      1,
 		Name:     fmt.Sprintf("player_%v", newAcc.table.UUId),
 		Icon:     "Avatar",

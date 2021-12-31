@@ -5,8 +5,11 @@ import (
 	"github.com/spf13/cast"
 	"github.com/wwj31/dogactor/container/rank"
 	"github.com/wwj31/dogactor/expect"
+	"github.com/wwj31/dogactor/tools"
+	"server/common/log"
 	"server/db/table"
 	"server/proto/message"
+	"server/service/game/iface"
 	"server/service/game/logic/model"
 )
 
@@ -40,6 +43,56 @@ func New(rid uint64, base model.Model) *Mail {
 	return mail
 }
 
-func (s *Mail) Add() {
+func (s *Mail) Add(mail *message.Mail) {
+	s.mailInfo.Mails[mail.Uuid] = mail
+	s.zSet.Add(cast.ToString(mail.Uuid), rank.Score(mail.CreateAt))
+}
 
+func (s *Mail) NewBuilder() iface.MailBuilder {
+	return &Builder{
+		mail: &message.Mail{
+			Uuid:     s.Player.GenUuid(),
+			CreateAt: tools.NowTime(),
+			Status:   0,
+		},
+		mailer: s,
+	}
+}
+
+func (s *Mail) Mails(count, limit int32) []*message.Mail {
+	var (
+		arr   []int
+		mails []*message.Mail
+	)
+	for c := count; c < count+limit; c++ {
+		arr = append(arr, int(c))
+	}
+	keys := s.zSet.Get(arr...)
+
+	for _, key := range keys {
+		mails = append(mails, s.mailInfo.Mails[cast.ToUint64(key)])
+	}
+	return mails
+}
+
+func (s *Mail) Read(uuid uint64) {
+	mail, ok := s.mailInfo.Mails[uuid]
+	if !ok {
+		log.Warnw("read mail can not find mail", "uuid", uuid, "roleId", s.Player.Role().RoleId())
+		return
+	}
+	mail.Status = 1
+}
+
+func (s *Mail) ReceiveItem(uuid uint64) {
+	mail, ok := s.mailInfo.Mails[uuid]
+	if !ok {
+		log.Warnw("ReceiveItem can not find mail", "uuid", uuid, "roleId", s.Player.Role().RoleId())
+		return
+	}
+	mail.Status = 2
+}
+
+func (s *Mail) Delete(uuid uint64) {
+	delete(s.mailInfo.Mails, uuid)
 }

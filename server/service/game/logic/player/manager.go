@@ -51,8 +51,9 @@ func (s *Manager) RangeOnline(f func(common.GSession, common.ActorId)) {
 }
 
 func (s *Manager) Broadcast(msg proto.Message) {
+	sender := common.NewSendTools(s.game)
 	s.RangeOnline(func(gs common.GSession, id common.ActorId) {
-		if err := s.game.Send2Client(gs, msg); err != nil {
+		if err := sender.Send2Client(gs, msg); err != nil {
 			log.Errorw("broadcast localmsg error", "err", err, "gSession", gs, "Player", id)
 		}
 	})

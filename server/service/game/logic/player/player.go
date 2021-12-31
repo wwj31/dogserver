@@ -7,8 +7,6 @@ import (
 	"reflect"
 	"server/common"
 	"server/common/log"
-	"server/common/toml"
-	"server/db"
 	"server/service/game/iface"
 	"server/service/game/logic/model"
 	"server/service/game/logic/player/controller"
@@ -22,15 +20,19 @@ import (
 // 聚合之间通过聚合根关联引用，聚合之间相互访问需先访问聚合根，在导航到相关功能
 // 设计目的：解决玩家复杂的功能模块相互引用带来的混乱问题，让模块真正独立、解耦
 
-func New(roleId uint64) *Player {
-	p := &Player{roleId: roleId}
+func New(roleId uint64, gamer iface.Gamer) *Player {
+	p := &Player{
+		roleId: roleId,
+		Gamer:  gamer,
+	}
 	return p
 }
 
 type (
 	Player struct {
 		actor.Base
-		iface.SaveLoader
+		iface.Gamer
+
 		roleId   uint64
 		models   [all]iface.Modeler // 玩家所有功能模块
 		gSession common.GSession    // 网络session
@@ -41,7 +43,6 @@ type (
 )
 
 func (s *Player) OnInit() {
-	s.SaveLoader = db.New(toml.Get("mysql"), toml.Get("database"))
 	s.sender = common.NewSendTools(s)
 
 	s.models[modRole] = role.New(s.roleId, model.New(s)) // 角色
@@ -96,10 +97,10 @@ func (s *Player) OnStop() bool {
 	return true
 }
 
-func (s *Player) IsNewRole() bool  { return s.Role().IsNewRole() }
-func (s *Player) Role() iface.Role { return s.models[modRole].(iface.Role) }
-func (s *Player) Item() iface.Item { return s.models[modItem].(iface.Item) }
-func (s *Player) Mail() iface.Mail { return s.models[modMail].(iface.Mail) }
+func (s *Player) IsNewRole() bool    { return s.Role().IsNewRole() }
+func (s *Player) Role() iface.Role   { return s.models[modRole].(iface.Role) }
+func (s *Player) Item() iface.Item   { return s.models[modItem].(iface.Item) }
+func (s *Player) Mail() iface.Mailer { return s.models[modMail].(iface.Mailer) }
 
 // 回存功能模块
 func (s *Player) store() {

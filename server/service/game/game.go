@@ -3,6 +3,8 @@ package game
 import (
 	"server/common"
 	"server/common/log"
+	"server/common/toml"
+	"server/db"
 	"server/proto/inner_message/inner"
 	"server/proto/message"
 	"server/service/game/iface"
@@ -14,24 +16,21 @@ import (
 	"github.com/wwj31/dogactor/expect"
 )
 
-func New(s iface.SaveLoader) *Game {
-	return &Game{
-		SaveLoader: s,
-	}
+func New(serverId uint16) *Game {
+	return &Game{sid: serverId}
 }
 
 type Game struct {
 	actor.Base
-	common.SendTools
+	sid uint16 // serverId
+	common.UID
 	iface.SaveLoader
-
-	sid int32 // serverId
-
 	playerMgr iface.PlayerManager
 }
 
 func (s *Game) OnInit() {
-	s.SendTools = common.NewSendTools(s)
+	s.SaveLoader = db.New(toml.Get("mysql"), toml.Get("database"))
+	s.UID = common.NewUID(s.sid)
 	s.playerMgr = player.NewMgr(s)
 
 	log.Debugf("game OnInit")
@@ -55,8 +54,12 @@ func (s *Game) OnHandleMessage(sourceId, targetId string, msg interface{}) {
 }
 
 // SID serverId
-func (s *Game) SID() int32 {
+func (s *Game) SID() uint16 {
 	return s.sid
+}
+
+func (s *Game) GenUuid() uint64 {
+	return s.UID.GenUuid()
 }
 
 func (s *Game) PlayerMgr() iface.PlayerManager {
@@ -79,7 +82,7 @@ func (s *Game) enterGameReq(gSession common.GSession, msg *message.EnterGameReq)
 	if oldSession, ok := s.PlayerMgr().GSessionByPlayer(playerId); ok {
 		s.PlayerMgr().DelGSession(oldSession)
 	} else {
-		playerActor := actor.New(playerId, player.New(msg.RID), actor.SetMailBoxSize(200))
+		playerActor := actor.New(playerId, player.New(msg.RID, s), actor.SetMailBoxSize(200))
 		err := s.System().Add(playerActor)
 		if err != nil {
 			log.Errorw("add player actor error", "rid", msg.RID, "err", err)

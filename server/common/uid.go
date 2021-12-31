@@ -19,7 +19,7 @@ func NewUID(insId uint16) UID {
 	}
 }
 
-func (s *UID) Uuid() uint64 {
+func (s *UID) GenUuid() uint64 {
 	uuid, err := s.sonyflake.NextID()
 	expect.Nil(err)
 	return uuid

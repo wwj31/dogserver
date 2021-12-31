@@ -9,8 +9,8 @@ import (
 type (
 	Player interface {
 		actor.Actor
+		Gamer
 		Session
-		SaveLoader
 
 		Send2Client(pb proto.Message)
 		Login()
@@ -18,6 +18,7 @@ type (
 		IsNewRole() bool
 		Role() Role
 		Item() Item
+		Mail() Mailer
 	}
 )
 
