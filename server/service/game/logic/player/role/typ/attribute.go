@@ -1,4 +1,4 @@
-// go install golang.org/x/tools/cmd/stringer
+// Package typ go install golang.org/x/tools/cmd/stringer
 //go:generate stringer -type Attribute -linecomment
 package typ
 
