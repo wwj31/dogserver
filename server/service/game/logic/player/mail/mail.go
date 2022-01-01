@@ -36,7 +36,7 @@ func New(rid uint64, base model.Model) *Mail {
 		expect.Nil(err)
 
 		for _, m := range mail.mailInfo.Mails {
-			mail.zSet.Add(cast.ToString(m.Uuid), rank.Score(m.CreateAt))
+			mail.zSet.Add(cast.ToString(m.Uuid), m.CreateAt)
 		}
 	}
 
@@ -45,7 +45,7 @@ func New(rid uint64, base model.Model) *Mail {
 
 func (s *Mail) Add(mail *message.Mail) {
 	s.mailInfo.Mails[mail.Uuid] = mail
-	s.zSet.Add(cast.ToString(mail.Uuid), rank.Score(mail.CreateAt))
+	s.zSet.Add(cast.ToString(mail.Uuid), mail.CreateAt)
 }
 
 func (s *Mail) NewBuilder() iface.MailBuilder {
