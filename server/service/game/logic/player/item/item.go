@@ -24,7 +24,7 @@ func New(rid uint64, base model.Model) *Item {
 
 	if !base.Player.IsNewRole() {
 		tItem := table.Item{RoleId: rid}
-		err := base.Player.Load(&tItem)
+		err := base.Player.Gamer().Load(&tItem)
 		expect.Nil(err)
 
 		err = proto.Unmarshal(tItem.Items, &role.items)

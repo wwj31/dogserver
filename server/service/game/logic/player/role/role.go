@@ -16,18 +16,20 @@ type Role struct {
 }
 
 func New(rid uint64, base model.Model) *Role {
-	tRole := table.Role{RoleId: rid}
-	err := base.Player.Load(&tRole)
-	expect.Nil(err)
 	role := &Role{
 		Model: base,
-		tRole: tRole,
+		tRole: table.Role{
+			RoleId:     rid,
+			Attributes: make(table.AttributeMap),
+		},
 	}
+	err := base.Player.Gamer().Load(&role.tRole)
+	expect.Nil(err)
 
 	if role.IsNewRole() {
-		role.tRole.Attributes[typ.Level.Int64()] = 1
-		role.tRole.Attributes[typ.Exp.Int64()] = 0
-		role.tRole.Attributes[typ.Glod.Int64()] = 0
+		role.SetAttribute(typ.Level, 1)
+		role.SetAttribute(typ.Exp, 0)
+		role.SetAttribute(typ.Glod, 0)
 	}
 	return role
 }

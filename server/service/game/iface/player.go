@@ -9,13 +9,14 @@ import (
 type (
 	Player interface {
 		actor.Actor
-		Gamer
 		Session
 
 		Send2Client(pb proto.Message)
 		Login()
 		Logout()
 		IsNewRole() bool
+
+		Gamer() Gamer
 		Role() Role
 		Item() Item
 		Mail() Mailer

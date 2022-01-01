@@ -15,5 +15,6 @@ type Role interface {
 	IsNewRole() bool
 	LoginAt() int64
 	LogoutAt() int64
-	GetAttribute(typ typ.Attribute) int64
+	Attribute(typ typ.Attribute) int64
+	SetAttribute(typ typ.Attribute, val int64)
 }

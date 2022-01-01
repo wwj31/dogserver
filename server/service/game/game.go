@@ -1,6 +1,9 @@
 package game
 
 import (
+	"github.com/golang/protobuf/proto"
+	"github.com/wwj31/dogactor/actor"
+	"github.com/wwj31/dogactor/expect"
 	"server/common"
 	"server/common/log"
 	"server/common/toml"
@@ -10,10 +13,6 @@ import (
 	"server/service/game/iface"
 	"server/service/game/logic/player"
 	"server/service/game/logic/player/localmsg"
-
-	"github.com/golang/protobuf/proto"
-	"github.com/wwj31/dogactor/actor"
-	"github.com/wwj31/dogactor/expect"
 )
 
 func New(serverId uint16) *Game {

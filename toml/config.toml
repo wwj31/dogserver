@@ -33,5 +33,5 @@ configjson = "./root/internal/config/config_json"
         mysql      = "root:123456@tcp(127.0.0.1:3306)/%s?charset=utf8mb4&parseTime=True&loc=Local"
         database   = "game"
 
-    [server.client_0]
-        actoraddr  = "127.0.0.1:8000"
+    [server.client_1]
+        actoraddr  = "127.0.0.1:5000"

@@ -29,7 +29,7 @@ func New(rid uint64, base model.Model) *Mail {
 
 	if !base.Player.IsNewRole() {
 		tMail := table.Mail{UUId: rid}
-		err := base.Player.Load(&tMail)
+		err := base.Player.Gamer().Load(&tMail)
 		expect.Nil(err)
 
 		err = proto.Unmarshal(tMail.Bytes, &mail.mailInfo)
@@ -51,7 +51,7 @@ func (s *Mail) Add(mail *message.Mail) {
 func (s *Mail) NewBuilder() iface.MailBuilder {
 	return &Builder{
 		mail: &message.Mail{
-			Uuid:     s.Player.GenUuid(),
+			Uuid:     s.Player.Gamer().GenUuid(),
 			CreateAt: tools.NowTime(),
 			Status:   0,
 		},
