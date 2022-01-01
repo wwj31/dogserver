@@ -114,17 +114,16 @@ func (s *Generate) writeGolangFile(struType, sheetName, keyType, key, xlsxname s
 	if err != nil {
 		return fmt.Errorf("模板执行输出失败:%v err:%v", err)
 	}
-	fmt.Printf("%-13v %v \n", "build golang", newFile)
 	return nil
 }
 
 // 拼装好json写入新的.json 文件
 func (s *Generate) writeJsonFile(data, filename string) error {
+	os.Mkdir(s.SaveJsonPath, 0666)
 	newFile := path.Join(s.SaveJsonPath, filename+".json")
 	if err := ioutil.WriteFile(newFile, []byte(data), 0644); err != nil {
 		return fmt.Errorf("writeJsonFile Write is err:%v", err)
 	}
-	fmt.Printf("%-13v %v \n", "build json", newFile)
 	return nil
 }
 

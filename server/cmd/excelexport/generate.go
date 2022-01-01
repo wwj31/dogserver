@@ -59,16 +59,18 @@ func (s *Generate) ReadExcel() {
 
 			// 遍历工作表
 			for _, sheet := range f.Sheets {
-				if err := s.BuildTypeStruct(sheet, files[j].Name()); err != nil {
+				fileName := files[j].Name()
+				if err := s.BuildTypeStruct(sheet, fileName); err != nil {
 					panic(err)
 				}
-				if err := s.BuildJsonStruct(sheet, files[j].Name()); err != nil {
+
+				if err := s.BuildJsonStruct(sheet, fileName); err != nil {
 					panic(err)
 				}
-				if err := s.BuildConfigConst(sheet); err != nil {
-					panic(err)
-				}
+
+				fmt.Printf("%-15v ok.\n", files[j].Name())
 			}
+
 		}(i)
 	}
 	wg.Wait()
@@ -155,6 +157,7 @@ func (s *Generate) BuildJsonStruct(sheet *xlsx.Sheet, fileName string) error {
 	}
 	// 遍历列
 	var err error
+	checkUnique := make(map[string]struct{}, sheet.MaxRow)
 	for i := lineNumber; i <= sheet.MaxRow; i++ {
 		// 遍历行
 		cell := sheet.Cell(i, 0)
@@ -166,6 +169,9 @@ func (s *Generate) BuildJsonStruct(sheet *xlsx.Sheet, fileName string) error {
 		key := strings.TrimSpace(cell.Value)
 		if key == "" {
 			break
+		}
+		if _, ex := checkUnique[key]; ex {
+			return fmt.Errorf("表:%v 主键重复 key:%v", fileName, key)
 		}
 		m := map[string]interface{}{}
 		for j := 0; j < sheet.MaxCol; j++ {
@@ -185,6 +191,7 @@ func (s *Generate) BuildJsonStruct(sheet *xlsx.Sheet, fileName string) error {
 		} else {
 			return fmt.Errorf("json.Marshal(array) error:%v ", err)
 		}
+		checkUnique[key] = struct{}{}
 	}
 	if err := s.writeJsonFile("[\n    "+strings.Join(array, ",\n    ")+"\n]", sheet.Name); err != nil {
 		return err
@@ -193,6 +200,7 @@ func (s *Generate) BuildJsonStruct(sheet *xlsx.Sheet, fileName string) error {
 }
 
 func (s *Generate) BuildConfigConst(sheet *xlsx.Sheet) error {
+	var ()
 	// 遍历列 找到STR_SERVER_CONST
 	constData := ""
 	for col := 0; col < sheet.MaxCol; col++ {
@@ -203,11 +211,12 @@ func (s *Generate) BuildConfigConst(sheet *xlsx.Sheet) error {
 				if cell == nil {
 					return fmt.Errorf("sheetName=%s, cell == nil ", sheet.Name)
 				}
-				if strings.TrimSpace(sheet.Cell(row, 0).Value) == "" {
+				key := sheet.Cell(row, 0).Value
+				if strings.TrimSpace(key) == "" {
 					break
 				}
 				if cell.Value != "" {
-					constData += cell.Value + " = " + sheet.Cell(row, 0).Value + "\n"
+					constData += cell.Value + " = " + key + "\n"
 				}
 			}
 			constData = "\n const( \n" + constData + ")"
