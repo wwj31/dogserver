@@ -54,21 +54,24 @@ func (s *Item) Enough(items map[int64]int64) bool {
 
 func (s *Item) Add(items map[int64]int64, push ...bool) {
 	for id, count := range items {
-		val := count
-		if old, ok := s.items.Items[id]; ok {
+		val, ok := s.items.Items[id]
+		if ok {
 			if count > 0 {
 				val += count
 			} else if count < 0 {
-				val -= common.Min(old, -count)
+				val -= common.Min(val, common.Abs(count))
 			} else {
 				continue
 			}
+		} else {
+			val = common.Max(0, count)
 		}
+
 		s.items.Items[id] = val
 	}
 
 	if len(push) > 0 {
-		s.Player.Send2Client(&message.ItemMap{
+		s.Player.Send2Client(&message.ItemChangeNotify{
 			Items: items,
 		})
 	}

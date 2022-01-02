@@ -10,3 +10,8 @@ message UseItemReq
 message UseItemResp
 {
 }
+
+message ItemChangeNotify
+{
+    map<int64,int64> Items = 1;
+}

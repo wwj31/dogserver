@@ -57,6 +57,8 @@ func (s *Client) OnHandleMessage(sourceId, targetId string, v interface{}) {
 		logger.Infow("ItemInfoPush!", "msg", msg.String())
 	case *message.UseItemResp:
 		logger.Infow("UseItemResp!", "msg", msg.String())
+	case *message.ItemChangeNotify:
+		logger.Infow("ItemChangeNotify!", "msg", msg.String())
 	case *message.Pong:
 		logger.Infow("aliving~")
 	case *message.Fail:

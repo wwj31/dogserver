@@ -2,11 +2,6 @@ syntax = "proto3";
 package message;
 option  go_package = "/message";
 
-message ItemMap
-{
-   map<int64,int64> Items = 1;
-}
-
 message Mail
 {
    uint64 Uuid            = 1;

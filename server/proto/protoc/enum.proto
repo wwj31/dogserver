@@ -36,8 +36,9 @@ enum MSG
     ENTER_GAME_RESP = 300201; // EnterGameRsp
 
     // 道具
-    USE_ITEM_REQ    = 300301; // UseItemReq
-    USE_ITEM_RESP   = 300302; // UseItemResp
+    USE_ITEM_REQ       = 300301; // UseItemReq
+    USE_ITEM_RESP      = 300302; // UseItemResp
+    ITEM_CHANGE_NOTIFY = 300303; // ItemChangeNotify
 
     // 消息段end
     GAME_SEGMENT_END = 310000;
