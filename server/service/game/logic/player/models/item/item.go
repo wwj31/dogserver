@@ -6,6 +6,7 @@ import (
 	"server/common"
 	"server/common/log"
 	"server/db/table"
+	"server/proto/inner_message/inner"
 	"server/proto/message"
 	"server/service/game/logic/player/models"
 )
@@ -13,13 +14,13 @@ import (
 type Item struct {
 	models.Model
 
-	items message.ItemMap
+	items inner.ItemMap
 }
 
 func New(rid uint64, base models.Model) *Item {
 	role := &Item{
 		Model: base,
-		items: message.ItemMap{Items: make(map[int64]int64, 10)},
+		items: inner.ItemMap{Items: make(map[int64]int64, 10)},
 	}
 
 	if !base.Player.IsNewRole() {

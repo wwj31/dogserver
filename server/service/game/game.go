@@ -1,8 +1,10 @@
 package game
 
 import (
+	"errors"
 	"github.com/golang/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
+	"github.com/wwj31/dogactor/actor/actorerr"
 	"github.com/wwj31/dogactor/expect"
 	"server/common"
 	"server/common/log"
@@ -49,6 +51,8 @@ func (s *Game) OnHandleMessage(sourceId, targetId string, msg interface{}) {
 		s.enterGameReq(gSession, pbMsg)
 	case *inner.GT2GSessionClosed:
 		s.logout(pbMsg)
+	default:
+		s.toPlayer(gSession, actMsg)
 	}
 }
 
@@ -84,8 +88,12 @@ func (s *Game) enterGameReq(gSession common.GSession, msg *message.EnterGameReq)
 		playerActor := actor.New(playerId, player.New(msg.RID, s), actor.SetMailBoxSize(200))
 		err := s.System().Add(playerActor)
 		if err != nil {
-			log.Errorw("add player actor error", "rid", msg.RID, "err", err)
-			return
+			if !errors.Is(err, actorerr.RegisterActorSameIdErr) {
+				log.Errorw("add player actor error", "rid", msg.RID, "err", err)
+				return
+			} else {
+				log.Infow("login activite player actor", "player", playerId)
+			}
 		}
 	}
 
@@ -108,4 +116,14 @@ func (s *Game) logout(msg *inner.GT2GSessionClosed) proto.Message {
 
 	s.PlayerMgr().DelGSession(gSession)
 	return nil
+}
+
+func (s *Game) toPlayer(gSession common.GSession, msg interface{}) {
+	actorId, ok := s.PlayerMgr().PlayerBySession(gSession)
+	if !ok {
+		log.Warnw("msg to player,but can not found player by gSession", "gSession", gSession)
+		return
+	}
+	err := s.Send(actorId, msg)
+	expect.Nil(err)
 }

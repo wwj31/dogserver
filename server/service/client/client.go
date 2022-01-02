@@ -45,18 +45,22 @@ func (s *Client) SendToServer(msgId int32, pb proto.Message) {
 
 func (s *Client) OnHandleMessage(sourceId, targetId string, v interface{}) {
 	switch msg := v.(type) {
-	case *message.LoginRsp:
-		logger.Infow("login success!", "localmsg", msg.String())
+	case *message.LoginResp:
+		logger.Infow("login success!", "msg", msg.String())
 		s.UID = msg.UID
 		s.RID = msg.RID
-	case *message.EnterGameRsp:
-		logger.Infow("enter success!", "localmsg", msg.String())
+	case *message.EnterGameResp:
+		logger.Infow("enter success!", "msg", msg.String())
 	case *message.RoleInfoPush:
-		logger.Infow("RoleInfoPush!", "localmsg", msg.String())
+		logger.Infow("RoleInfoPush!", "msg", msg.String())
 	case *message.ItemInfoPush:
-		logger.Infow("ItemInfoPush!", "localmsg", msg.String())
+		logger.Infow("ItemInfoPush!", "msg", msg.String())
+	case *message.UseItemResp:
+		logger.Infow("UseItemResp!", "msg", msg.String())
 	case *message.Pong:
 		logger.Infow("aliving~")
+	case *message.Fail:
+		logger.Infow("msg respones error", "err:", msg.String())
 	default:
 		logger.Infow("unknown type!", "msg", msg)
 	}

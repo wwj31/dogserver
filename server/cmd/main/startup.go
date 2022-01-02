@@ -41,7 +41,7 @@ func startup() {
 		//expect.Nil(err)
 		//common.RefactorConfig()
 
-		monitor()
+		//monitor()
 		system := run(*appName, int32(*appId))
 		<-osSignal
 		system.Stop()

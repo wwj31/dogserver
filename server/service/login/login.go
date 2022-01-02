@@ -74,7 +74,7 @@ func (s *Login) LoginReq(sourceId string, gSession common.GSession, msg *message
 	}
 
 	// 通知玩家登录成功
-	return s.Send2Client(gSession, &message.LoginRsp{
+	return s.Send2Client(gSession, &message.LoginResp{
 		UID: acc.UUId(),
 		RID: acc.LastRoleId(),
 	})

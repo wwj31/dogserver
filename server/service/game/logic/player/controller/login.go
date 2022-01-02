@@ -20,7 +20,7 @@ var _ = regist(MsgName(localmsg.Login{}), func(player iface.Player, v interface{
 
 	player.Login()
 
-	player.Send2Client(&message.LoginRsp{
+	player.Send2Client(&message.LoginResp{
 		UID:     player.Role().UUId(),
 		RID:     player.Role().RoleId(),
 		Cryptic: "",
