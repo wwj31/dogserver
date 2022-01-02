@@ -2,7 +2,6 @@ package client
 
 import (
 	"fmt"
-	"github.com/spf13/cast"
 	"math/rand"
 	"server/common"
 	"server/proto/message"
@@ -52,11 +51,8 @@ func (s *Client) enter(arg ...string) {
 }
 
 func (s *Client) useItem(arg ...string) {
-	if len(arg) != 2 {
-		return
-	}
 	msg := &message.UseItemReq{
-		Items: map[int64]int64{cast.ToInt64(arg[0]): cast.ToInt64(arg[1])},
+		Items: map[int64]int64{123: -1},
 	}
 	s.SendToServer(message.MSG_USE_ITEM_REQ.Int32(), msg)
 }

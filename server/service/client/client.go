@@ -60,7 +60,7 @@ func (s *Client) OnHandleMessage(sourceId, targetId string, v interface{}) {
 	case *message.Pong:
 		logger.Infow("aliving~")
 	case *message.Fail:
-		logger.Infow("msg respones error", "err:", msg.String())
+		logger.Infow("msg respones fail", "err:", msg.String())
 	default:
 		logger.Infow("unknown type!", "msg", msg)
 	}

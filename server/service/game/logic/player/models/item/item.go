@@ -45,7 +45,7 @@ func (s *Item) OnLogout() {
 
 func (s *Item) Enough(items map[int64]int64) bool {
 	for id, need := range items {
-		if s.items.Items[id] < need {
+		if s.items.Items[id] < common.Abs(need) {
 			return false
 		}
 	}
