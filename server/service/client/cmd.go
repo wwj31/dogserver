@@ -3,6 +3,7 @@ package client
 import (
 	"fmt"
 	"math/rand"
+	"server/common"
 	"server/proto/message"
 	"time"
 )
@@ -23,6 +24,8 @@ func (s *Client) login(arg ...string) {
 		PlatformName: "test",
 		OS:           "test",
 	}
+	checksum := common.LoginChecksum(logReq)
+	logReq.Checksum = checksum
 	s.SendToServer(message.MSG_LOGIN_REQ.Int32(), logReq)
 }
 

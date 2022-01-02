@@ -30,6 +30,7 @@ message LoginReq
     string PlatformName  = 2;    // 平台名字
     string OS            = 3;    // 系统
     string ClientVersion = 4;    // 版本号
+    string Checksum      = 5;    // 校验和
 }
 
 message LoginRsp

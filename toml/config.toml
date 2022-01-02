@@ -34,4 +34,8 @@ configjson = "./root/internal/config/config_json"
         database   = "game"
 
     [server.client_1]
-        actoraddr  = "127.0.0.1:5000"
+        actoraddr  = "127.0.0.1:5001"
+    [server.client_2]
+        actoraddr  = "127.0.0.1:5002"
+    [server.client_3]
+        actoraddr  = "127.0.0.1:5003"

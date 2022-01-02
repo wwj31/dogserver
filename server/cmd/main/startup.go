@@ -13,6 +13,7 @@ import (
 	"server/service/gateway"
 	"server/service/login"
 	"syscall"
+	"time"
 
 	"github.com/spf13/cast"
 	"github.com/wwj31/dogactor/actor"
@@ -40,6 +41,7 @@ func startup() {
 		//expect.Nil(err)
 		//common.RefactorConfig()
 
+		monitor()
 		system := run(*appName, int32(*appId))
 		<-osSignal
 		system.Stop()
@@ -89,4 +91,14 @@ func newGateway(appId int32, system *actor.System) {
 func newGame(appId int32, system *actor.System) {
 	gameActor := game.New(uint16(appId))
 	expect.Nil(system.Add(actor.New(common.GameName(appId), gameActor)))
+}
+
+func monitor() {
+	go func() {
+		tick := time.Tick(3 * time.Second)
+		for range tick {
+			tools.PrintMemUsage()
+		}
+	}()
+
 }

@@ -50,7 +50,7 @@ func (s *Player) OnInit() {
 	s.models[modItem] = item.New(s.roleId, model.New(s)) // 道具
 	s.models[modMail] = mail.New(s.roleId, model.New(s)) // 邮件
 
-	s.saveTimerId = s.AddTimer(tools.UUID(), tools.NowTime()+int64(1*time.Second), func(dt int64) {
+	s.saveTimerId = s.AddTimer(tools.UUID(), tools.NowTime()+int64(1*time.Minute), func(dt int64) {
 		s.store()
 	}, -1)
 }
