@@ -1,6 +1,8 @@
 package iface
 
-import "server/service/game/logic/player/role/typ"
+import (
+	"server/service/game/logic/player/models/role/typ"
+)
 
 type Role interface {
 	Modeler

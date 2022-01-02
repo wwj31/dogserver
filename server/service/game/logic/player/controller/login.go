@@ -29,5 +29,4 @@ var _ = regist(MsgName(localmsg.Login{}), func(player iface.Player, v interface{
 
 var _ = regist(MsgName(&inner.GT2GSessionClosed{}), func(player iface.Player, v interface{}) {
 	player.Logout()
-	player.Exit()
 })

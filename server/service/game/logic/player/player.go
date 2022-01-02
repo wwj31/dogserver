@@ -8,11 +8,11 @@ import (
 	"server/common"
 	"server/common/log"
 	"server/service/game/iface"
-	"server/service/game/logic/model"
 	"server/service/game/logic/player/controller"
-	"server/service/game/logic/player/item"
-	"server/service/game/logic/player/mail"
-	"server/service/game/logic/player/role"
+	"server/service/game/logic/player/models"
+	"server/service/game/logic/player/models/item"
+	"server/service/game/logic/player/models/mail"
+	"server/service/game/logic/player/models/role"
 	"time"
 )
 
@@ -40,15 +40,16 @@ type (
 		models [all]iface.Modeler // 玩家所有功能模块
 
 		saveTimerId string
+		exitTimerId string
 	}
 )
 
 func (s *Player) OnInit() {
 	s.sender = common.NewSendTools(s)
 
-	s.models[modRole] = role.New(s.roleId, model.New(s)) // 角色
-	s.models[modItem] = item.New(s.roleId, model.New(s)) // 道具
-	s.models[modMail] = mail.New(s.roleId, model.New(s)) // 邮件
+	s.models[modRole] = role.New(s.roleId, models.New(s)) // 角色
+	s.models[modItem] = item.New(s.roleId, models.New(s)) // 道具
+	s.models[modMail] = mail.New(s.roleId, models.New(s)) // 邮件
 
 	s.saveTimerId = s.AddTimer(tools.UUID(), tools.NowTime()+int64(1*time.Minute), func(dt int64) {
 		s.store()
@@ -80,13 +81,19 @@ func (s *Player) Login() {
 	for _, mod := range s.models {
 		mod.OnLogin()
 	}
+	s.CancelTimer(s.exitTimerId)
 }
 
 func (s *Player) Logout() {
 	for _, mod := range s.models {
 		mod.OnLogout()
 	}
-	s.store()
+
+	exitAt := tools.NowTime() + 5*time.Minute.Nanoseconds()
+	s.exitTimerId = s.AddTimer(tools.UUID(), exitAt, func(dt int64) {
+		s.store()
+		s.Exit()
+	})
 }
 
 func (s *Player) OnStop() bool {

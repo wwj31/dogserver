@@ -10,17 +10,17 @@ import (
 	"server/db/table"
 	"server/proto/message"
 	"server/service/game/iface"
-	"server/service/game/logic/model"
+	"server/service/game/logic/player/models"
 )
 
 type Mail struct {
-	model.Model
+	models.Model
 
 	zSet     *rank.Rank
 	mailInfo message.MailInfo
 }
 
-func New(rid uint64, base model.Model) *Mail {
+func New(rid uint64, base models.Model) *Mail {
 	mail := &Mail{
 		Model:    base,
 		zSet:     rank.New(),
@@ -90,6 +90,8 @@ func (s *Mail) ReceiveItem(uuid uint64) {
 		log.Warnw("ReceiveItem can not find mail", "uuid", uuid, "roleId", s.Player.Role().RoleId())
 		return
 	}
+
+	s.Player.Item().Add(mail.Items, true)
 	mail.Status = 2
 }
 

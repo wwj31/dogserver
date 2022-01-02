@@ -7,16 +7,16 @@ import (
 	"server/common/log"
 	"server/db/table"
 	"server/proto/message"
-	"server/service/game/logic/model"
+	"server/service/game/logic/player/models"
 )
 
 type Item struct {
-	model.Model
+	models.Model
 
 	items message.ItemMap
 }
 
-func New(rid uint64, base model.Model) *Item {
+func New(rid uint64, base models.Model) *Item {
 	role := &Item{
 		Model: base,
 		items: message.ItemMap{Items: make(map[int64]int64, 10)},
@@ -40,6 +40,15 @@ func (s *Item) OnLogin() {
 
 func (s *Item) OnLogout() {
 	s.save()
+}
+
+func (s *Item) Enough(items map[int64]int64) bool {
+	for id, need := range items {
+		if s.items.Items[id] < need {
+			return false
+		}
+	}
+	return true
 }
 
 func (s *Item) Add(items map[int64]int64, push ...bool) {

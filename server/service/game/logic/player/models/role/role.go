@@ -5,17 +5,17 @@ import (
 	"github.com/wwj31/dogactor/tools"
 	"server/db/table"
 	"server/proto/message"
-	"server/service/game/logic/model"
-	"server/service/game/logic/player/role/typ"
+	"server/service/game/logic/player/models"
+	"server/service/game/logic/player/models/role/typ"
 )
 
 type Role struct {
-	model.Model
+	models.Model
 
 	tRole table.Role
 }
 
-func New(rid uint64, base model.Model) *Role {
+func New(rid uint64, base models.Model) *Role {
 	role := &Role{
 		Model: base,
 		tRole: table.Role{
