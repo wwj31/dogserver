@@ -10,6 +10,7 @@ enum ERROR
    ITEM_NOT_ENOUGH            = 3;  //道具不足
    GOLD_NOT_ENOUGH            = 4;  //金币不足
    LEVEL_NOT_ENGOUTH          = 5;  //等级不足
+   MAIL_REPEAT_RECV_ITEM      = 6;  //邮件道具重复领取
 
    CLIENT_WRONG_PARAM         = 9;  //客户端错误参数
    CFG_NO_THIS_PARAM          = 10; //配置表错误

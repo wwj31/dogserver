@@ -12,7 +12,7 @@ type Mailer interface {
 
 	Read(uuid uint64)
 	ReceiveItem(uuid uint64)
-	Delete(uuid uint64)
+	Delete(uuid ...uint64)
 }
 
 type MailBuilder interface {

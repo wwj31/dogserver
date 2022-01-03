@@ -25,6 +25,7 @@ enum MSG
     // 消息段end
     LOGIN_SEGMENT_END = 300000;
 
+
     //--------------------------------------------------------------- game proto 300001-310000
     // 消息段begin
     GAME_SEGMENT_BEGIN = 300001;
@@ -39,6 +40,16 @@ enum MSG
     USE_ITEM_REQ       = 300301; // UseItemReq
     USE_ITEM_RESP      = 300302; // UseItemResp
     ITEM_CHANGE_NOTIFY = 300303; // ItemChangeNotify
+
+    // 邮件
+    MAIL_LIST_REQ          = 300401; // MailListReq
+    MAIL_LIST_RESP         = 300402; // MailListResp
+    ADD_MAIL_NOTIFY        = 300403; // AddMailNotify
+    READ_MAIL_REQ          = 300404; // ReadMailReq
+    READ_MAIL_RESP         = 300405; // ReadMailResp
+    RECEIVE_MAIL_ITEM_REQ  = 300406; // ReceiveMailItemReq
+    RECEIVE_MAIL_ITEM_RESP = 300407; // ReceiveMailItemResp
+    DELETE_MAIL_REQ        = 300408; // DeleteMailReq
 
     // 消息段end
     GAME_SEGMENT_END = 310000;

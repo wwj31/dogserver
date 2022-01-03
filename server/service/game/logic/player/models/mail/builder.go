@@ -19,6 +19,10 @@ func (s *Builder) SetContent(content string) iface.MailBuilder {
 	return s
 }
 func (s *Builder) SetItems(items map[int64]int64) iface.MailBuilder {
+	if s.mail.Items == nil {
+		s.mail.Items = make(map[int64]int64, len(items))
+	}
+
 	for itemId, c := range items {
 		if count, ok := s.mail.Items[itemId]; ok {
 			s.mail.Items[itemId] = count + c

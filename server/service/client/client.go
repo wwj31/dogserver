@@ -18,6 +18,7 @@ type Client struct {
 	msgParser *tools.ProtoParser
 	UID       uint64
 	RID       uint64
+	mails     []*message.Mail
 }
 
 func (s *Client) OnInit() {
@@ -45,6 +46,11 @@ func (s *Client) SendToServer(msgId int32, pb proto.Message) {
 
 func (s *Client) OnHandleMessage(sourceId, targetId string, v interface{}) {
 	switch msg := v.(type) {
+	case *message.Pong:
+		logger.Infow("aliving~")
+	case *message.Fail:
+		logger.Infow("msg respones fail", "err:", msg.String())
+	// 登录
 	case *message.LoginResp:
 		logger.Infow("login success!", "msg", msg.String())
 		s.UID = msg.UID
@@ -55,14 +61,20 @@ func (s *Client) OnHandleMessage(sourceId, targetId string, v interface{}) {
 		logger.Infow("RoleInfoPush!", "msg", msg.String())
 	case *message.ItemInfoPush:
 		logger.Infow("ItemInfoPush!", "msg", msg.String())
+	// 道具
 	case *message.UseItemResp:
 		logger.Infow("UseItemResp!", "msg", msg.String())
 	case *message.ItemChangeNotify:
 		logger.Infow("ItemChangeNotify!", "msg", msg.String())
-	case *message.Pong:
-		logger.Infow("aliving~")
-	case *message.Fail:
-		logger.Infow("msg respones fail", "err:", msg.String())
+	// 邮件
+	case *message.MailListResp:
+		s.mails = append(s.mails, msg.Mails...)
+		logger.Infow("MailListResp!", "msg", msg.String())
+	case *message.ReadMailResp:
+		logger.Infow("ReadMailResp!", "msg", msg.String())
+	case *message.ReceiveMailItemResp:
+		logger.Infow("ReceiveMailItemResp!", "msg", msg.String())
+
 	default:
 		logger.Infow("unknown type!", "msg", msg)
 	}

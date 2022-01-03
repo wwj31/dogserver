@@ -14,7 +14,13 @@ func (s *Client) InitCmd() {
 	s.RegistCmd("rlogin", s.randLogin, "")
 
 	s.RegistCmd("enter", s.enter, "enter game")
+
 	s.RegistCmd("item", s.item, "")
+
+	s.RegistCmd("listmail", s.listMail, "")
+	s.RegistCmd("readmail", s.readMail, "")
+	s.RegistCmd("recvmail", s.recvMail, "")
+	s.RegistCmd("delmail", s.delMail, "")
 }
 
 func (s *Client) login(arg ...string) {
@@ -61,4 +67,47 @@ func (s *Client) item(arg ...string) {
 		Items: map[int64]int64{itemId: itemcount},
 	}
 	s.SendToServer(message.MSG_USE_ITEM_REQ.Int32(), msg)
+}
+
+func (s *Client) listMail(arg ...string) {
+	if len(arg) != 1 {
+		return
+	}
+	count := cast.ToInt32(arg[0])
+	msg := &message.MailListReq{
+		Count: count,
+	}
+	s.SendToServer(message.MSG_MAIL_LIST_REQ.Int32(), msg)
+}
+func (s *Client) readMail(arg ...string) {
+	if len(arg) != 1 {
+		return
+	}
+	mailId := cast.ToUint64(arg[0])
+	msg := &message.ReadMailReq{
+		Uuid: mailId,
+	}
+	s.SendToServer(message.MSG_READ_MAIL_REQ.Int32(), msg)
+}
+
+func (s *Client) recvMail(arg ...string) {
+	if len(arg) != 1 {
+		return
+	}
+	mailId := cast.ToUint64(arg[0])
+	msg := &message.ReceiveMailItemReq{
+		Uuid: mailId,
+	}
+	s.SendToServer(message.MSG_RECEIVE_MAIL_ITEM_REQ.Int32(), msg)
+}
+
+func (s *Client) delMail(arg ...string) {
+	if len(arg) != 1 {
+		return
+	}
+	mailId := cast.ToUint64(arg[0])
+	msg := &message.DeleteMailReq{
+		Uuids: []uint64{mailId},
+	}
+	s.SendToServer(message.MSG_DELETE_MAIL_REQ.Int32(), msg)
 }

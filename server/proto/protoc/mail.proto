@@ -1,0 +1,43 @@
+syntax = "proto3";
+package message;
+option  go_package = "/message";
+
+import "common.proto";
+
+message MailListReq
+{
+    int32 count = 1;
+}
+message MailListResp
+{
+    repeated Mail Mails = 1;
+}
+
+message AddMailNotify
+{
+    uint64 Uuid = 1;
+}
+
+message ReadMailReq
+{
+    uint64 Uuid = 1;
+}
+message ReadMailResp
+{
+    uint64 Uuid = 1;
+}
+
+message ReceiveMailItemReq
+{
+    uint64 Uuid = 1;
+}
+
+message ReceiveMailItemResp
+{
+    uint64 Uuid = 1;
+}
+
+message DeleteMailReq
+{
+    repeated uint64 Uuids = 1;
+}
