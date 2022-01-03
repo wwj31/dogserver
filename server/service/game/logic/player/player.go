@@ -1,10 +1,13 @@
 package player
 
 import (
+	"reflect"
+	"time"
+
 	"github.com/golang/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
 	"github.com/wwj31/dogactor/tools"
-	"reflect"
+
 	"server/common"
 	"server/common/log"
 	"server/service/game/iface"
@@ -13,7 +16,6 @@ import (
 	"server/service/game/logic/player/models/item"
 	"server/service/game/logic/player/models/mail"
 	"server/service/game/logic/player/models/role"
-	"time"
 )
 
 // model作为功能聚合，player作为聚合根，roleId为聚合根ID

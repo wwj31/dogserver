@@ -19,7 +19,13 @@ func (s *Builder) SetContent(content string) iface.MailBuilder {
 	return s
 }
 func (s *Builder) SetItems(items map[int64]int64) iface.MailBuilder {
-	s.mail.Items = items
+	for itemId, c := range items {
+		if count, ok := s.mail.Items[itemId]; ok {
+			s.mail.Items[itemId] = count + c
+		} else {
+			s.mail.Items[itemId] = c
+		}
+	}
 	return s
 }
 func (s *Builder) SetSender(RoleId uint64) iface.MailBuilder {
