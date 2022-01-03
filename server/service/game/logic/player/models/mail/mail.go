@@ -6,6 +6,7 @@ import (
 	"github.com/wwj31/dogactor/container/rank"
 	"github.com/wwj31/dogactor/expect"
 	"github.com/wwj31/dogactor/tools"
+	"server/common"
 	"server/common/log"
 	"server/db/table"
 	"server/proto/message"
@@ -38,6 +39,7 @@ func New(rid uint64, base models.Model) *Mail {
 		tMail := table.Mail{RoleId: rid}
 		err := base.Player.Gamer().Load(&tMail)
 		expect.Nil(err)
+		tMail.Bytes, _ = common.UnGZip(tMail.Bytes)
 
 		err = proto.Unmarshal(tMail.Bytes, &mail.mailInfo)
 		expect.Nil(err)
@@ -126,9 +128,10 @@ func (s *Mail) save() {
 }
 
 func (s *Mail) marshal(msg proto.Message) []byte {
-	bytes, err := proto.Marshal(msg)
+	data, err := proto.Marshal(msg)
 	if err != nil {
 		log.Errorw("proto marshal error", "err", err)
 	}
-	return bytes
+	compress, _ := common.GZip(data)
+	return compress
 }
