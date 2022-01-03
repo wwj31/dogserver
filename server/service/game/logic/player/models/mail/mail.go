@@ -53,9 +53,7 @@ func New(rid uint64, base models.Model) *Mail {
 func (s *Mail) Add(mail *message.Mail) {
 	s.mailInfo.Mails[mail.Uuid] = mail
 	s.zSet.Add(cast.ToString(mail.Uuid), mail.CreateAt)
-	s.Player.Send2Client(&message.AddMailNotify{
-		Uuid: mail.Uuid,
-	})
+	s.Player.Send2Client(&message.AddMailNotify{Uuid: mail.Uuid})
 	log.Debugw("add mail ", "player", s.Player.Role().RoleId(), "mail", mail.Title, "items", mail.Items)
 	s.save()
 }

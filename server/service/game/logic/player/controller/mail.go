@@ -6,6 +6,7 @@ import (
 	"server/service/game/iface"
 )
 
+// 前端请求邮件列表，msg.Count 前端已有的邮件数量
 var _ = regist(MsgName(&message.MailListReq{}), func(player iface.Player, v interface{}) {
 	msg := v.(*message.MailListReq)
 
@@ -14,6 +15,7 @@ var _ = regist(MsgName(&message.MailListReq{}), func(player iface.Player, v inte
 	log.Debugw("player request mails ", "player", player.ID(), "mails", mails)
 })
 
+// 已读操作
 var _ = regist(MsgName(&message.ReadMailReq{}), func(player iface.Player, v interface{}) {
 	msg := v.(*message.ReadMailReq)
 
@@ -22,6 +24,7 @@ var _ = regist(MsgName(&message.ReadMailReq{}), func(player iface.Player, v inte
 	log.Debugw("player read mail ", "player", player.ID(), "mailId", msg.Uuid)
 })
 
+// 领取邮件道具
 var _ = regist(MsgName(&message.ReceiveMailItemReq{}), func(player iface.Player, v interface{}) {
 	msg := v.(*message.ReceiveMailItemReq)
 
@@ -30,6 +33,7 @@ var _ = regist(MsgName(&message.ReceiveMailItemReq{}), func(player iface.Player,
 	log.Debugw("player recv mail item", "player", player.ID(), "mailId", msg.Uuid)
 })
 
+// 删除邮件
 var _ = regist(MsgName(&message.DeleteMailReq{}), func(player iface.Player, v interface{}) {
 	msg := v.(*message.DeleteMailReq)
 

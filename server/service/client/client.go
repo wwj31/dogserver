@@ -55,6 +55,7 @@ func (s *Client) OnHandleMessage(sourceId, targetId string, v interface{}) {
 		logger.Infow("login success!", "msg", msg.String())
 		s.UID = msg.UID
 		s.RID = msg.RID
+		s.enter()
 	case *message.EnterGameResp:
 		logger.Infow("EnterGameResp!", "msg", msg.String())
 	case *message.RoleInfoPush:
