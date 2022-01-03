@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	"github.com/spf13/cast"
 	"math/rand"
 	"server/common"
 	"server/proto/message"
@@ -13,7 +14,7 @@ func (s *Client) InitCmd() {
 	s.RegistCmd("rlogin", s.randLogin, "")
 
 	s.RegistCmd("enter", s.enter, "enter game")
-	s.RegistCmd("useitem", s.useItem, "")
+	s.RegistCmd("item", s.item, "")
 }
 
 func (s *Client) login(arg ...string) {
@@ -50,9 +51,14 @@ func (s *Client) enter(arg ...string) {
 	s.SendToServer(message.MSG_ENTER_GAME_REQ.Int32(), msg)
 }
 
-func (s *Client) useItem(arg ...string) {
+func (s *Client) item(arg ...string) {
+	if len(arg) != 2 {
+		return
+	}
+	itemId := cast.ToInt64(arg[0])
+	itemcount := cast.ToInt64(arg[1])
 	msg := &message.UseItemReq{
-		Items: map[int64]int64{123: -1},
+		Items: map[int64]int64{itemId: itemcount},
 	}
 	s.SendToServer(message.MSG_USE_ITEM_REQ.Int32(), msg)
 }

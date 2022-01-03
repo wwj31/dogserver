@@ -50,7 +50,7 @@ func (s *Client) OnHandleMessage(sourceId, targetId string, v interface{}) {
 		s.UID = msg.UID
 		s.RID = msg.RID
 	case *message.EnterGameResp:
-		logger.Infow("enter success!", "msg", msg.String())
+		logger.Infow("EnterGameResp!", "msg", msg.String())
 	case *message.RoleInfoPush:
 		logger.Infow("RoleInfoPush!", "msg", msg.String())
 	case *message.ItemInfoPush:
