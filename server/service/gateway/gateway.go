@@ -17,7 +17,7 @@ type GateWay struct {
 	actor.Base
 
 	// 管理所有对外的玩家tcp连接
-	listener network.INetListener
+	listener network.Listener
 	sessions map[uint32]*UserSession
 
 	// 消息映射表
@@ -32,8 +32,8 @@ func (s *GateWay) OnInit() {
 	s.sessions = make(map[uint32]*UserSession)
 
 	s.listener = network.StartTcpListen(toml.Get("gateaddr"),
-		func() network.ICodec { return &network.StreamCodec{MaxDecode: int(10 * common.KB)} },
-		func() network.INetHandler { return &UserSession{gateway: s} },
+		func() network.DecodeEncoder { return &network.StreamCode{MaxDecode: int(10 * common.KB)} },
+		func() network.NetSessionHandler { return &UserSession{gateway: s} },
 	)
 
 	s.msgParser = tools.NewProtoParser().Init("message", "MSG")

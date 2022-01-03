@@ -14,7 +14,7 @@ const addr = "127.0.0.1:9002"
 
 type Client struct {
 	actor.Base
-	cli       network.INetClient
+	cli       network.Client
 	msgParser *tools.ProtoParser
 	UID       uint64
 	RID       uint64
@@ -22,8 +22,8 @@ type Client struct {
 }
 
 func (s *Client) OnInit() {
-	s.cli = network.NewTcpClient(addr, func() network.ICodec { return &network.StreamCodec{} })
-	s.cli.AddLast(func() network.INetHandler { return &SessionHandler{client: s} })
+	s.cli = network.NewTcpClient(addr, func() network.DecodeEncoder { return &network.StreamCode{} })
+	s.cli.AddLast(func() network.NetSessionHandler { return &SessionHandler{client: s} })
 	expect.Nil(s.cli.Start(false))
 
 	s.InitCmd()
