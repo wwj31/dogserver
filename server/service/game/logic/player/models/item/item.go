@@ -52,6 +52,19 @@ func (s *Item) Enough(items map[int64]int64) bool {
 	return true
 }
 
+func (s *Item) Use(items map[int64]int64) message.ERROR {
+	if len(items) == 0 {
+		return message.ERROR_SUCCESS
+	}
+
+	if !s.Player.Item().Enough(items) {
+		return message.ERROR_ITEM_NOT_ENOUGH
+	}
+
+	s.Player.Item().Add(items, true)
+	return message.ERROR_SUCCESS
+}
+
 func (s *Item) Add(items map[int64]int64, push ...bool) {
 	for id, count := range items {
 		val, ok := s.items.Items[id]
@@ -70,7 +83,7 @@ func (s *Item) Add(items map[int64]int64, push ...bool) {
 		s.items.Items[id] = val
 	}
 
-	if len(push) > 0 {
+	if len(push) > 0 && len(items) > 0 {
 		s.Player.Send2Client(&message.ItemChangeNotify{
 			Items: items,
 		})
