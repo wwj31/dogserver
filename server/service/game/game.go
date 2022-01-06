@@ -97,13 +97,14 @@ func (s *Game) enterGameReq(gSession common.GSession, msg *message.EnterGameReq)
 		}
 	}
 
+	s.PlayerMgr().SetPlayer(gSession, playerId)
+
 	err := s.Send(playerId, localmsg.Login{GSession: gSession})
 	if err != nil {
 		log.Errorw("login send error", "rid", msg.RID, "err", err, "playerId", playerId)
 		return
 	}
 
-	s.PlayerMgr().SetPlayer(gSession, playerId)
 }
 
 // player offline
