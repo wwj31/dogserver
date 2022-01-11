@@ -2,6 +2,8 @@ syntax = "proto3";
 package message;
 option  go_package = "/message";
 
+import "error.proto";
+
 //前后端通信协议 id段 100000-1000000
 enum MSG
 {
@@ -9,29 +11,56 @@ enum MSG
     PING  = 100001;
     PONG  = 100002;
 
+    FAIL = 100003;
+    OK   = 100004;
+
     //--------------------------------------------------------------- login proto 200001-300000
     // 消息段begin
     LOGIN_SEGMENT_BEGIN = 200001;
 
     // 请求登录
     LOGIN_REQ = 200002; // LoginReq
-    LOGIN_RSP = 200003; // LoginRsp
+    LOGIN_RESP = 200003; // LoginRsp
 
     // 消息段end
     LOGIN_SEGMENT_END = 300000;
+
 
     //--------------------------------------------------------------- game proto 300001-310000
     // 消息段begin
     GAME_SEGMENT_BEGIN = 300001;
 
     // 请求登录
-    ENTER_GAME_REQ = 300100; // EnterGameReq
-    ROLE_INFO_PUSH = 300101; // RoleInfoPush
-    ITEM_INFO_PUSH = 300102; // ItemInfoPush
-    ENTER_GAME_RSP = 300201; // EnterGameRsp
+    ENTER_GAME_REQ  = 300100; // EnterGameReq
+    ROLE_INFO_PUSH  = 300101; // RoleInfoPush
+    ITEM_INFO_PUSH  = 300102; // ItemInfoPush
+    ENTER_GAME_RESP = 300201; // EnterGameRsp
 
+    // 道具
+    USE_ITEM_REQ       = 300301; // UseItemReq
+    USE_ITEM_RESP      = 300302; // UseItemResp
+    ITEM_CHANGE_NOTIFY = 300303; // ItemChangeNotify
 
+    // 邮件
+    MAIL_LIST_REQ          = 300401; // MailListReq
+    MAIL_LIST_RESP         = 300402; // MailListResp
+    ADD_MAIL_NOTIFY        = 300403; // AddMailNotify
+    READ_MAIL_REQ          = 300404; // ReadMailReq
+    READ_MAIL_RESP         = 300405; // ReadMailResp
+    RECEIVE_MAIL_ITEM_REQ  = 300406; // ReceiveMailItemReq
+    RECEIVE_MAIL_ITEM_RESP = 300407; // ReceiveMailItemResp
+    DELETE_MAIL_REQ        = 300408; // DeleteMailReq
 
     // 消息段end
     GAME_SEGMENT_END = 310000;
 }
+
+
+message Unknown{}
+message Ok {}
+message Fail
+{
+    ERROR  Error = 1;
+    string info  = 2;
+}
+

@@ -9,7 +9,7 @@ type SessionHandler struct {
 	client *Client
 }
 
-func (s SessionHandler) OnSessionCreated(session network.INetSession) {
+func (s SessionHandler) OnSessionCreated(session network.NetSession) {
 	logger.Infof("session OnSessionCreated!")
 }
 

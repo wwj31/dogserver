@@ -2,14 +2,17 @@ package iface
 
 import (
 	"github.com/wwj31/dogactor/actor"
-	"server/common"
 )
 
 type Gamer interface {
 	actor.Actor
-	common.Sender
+	UuidGenerator
 	SaveLoader
 
-	SID() int32
+	SID() uint16
 	PlayerMgr() PlayerManager
+}
+
+type UuidGenerator interface {
+	GenUuid() uint64
 }

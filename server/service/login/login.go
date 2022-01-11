@@ -48,9 +48,12 @@ func (s *Login) OnHandleMessage(sourceId, targetId string, msg interface{}) {
 	}
 }
 
-// 登录消息
 func (s *Login) LoginReq(sourceId string, gSession common.GSession, msg *message.LoginReq) error {
 	log.Debugf(msg.String())
+
+	if common.LoginChecksum(msg) != msg.Checksum {
+		return fmt.Errorf("login req checksum failed msg:%v", msg.String())
+	}
 
 	acc, _ := s.accountMgr.Login(msg, s.storer)
 
@@ -71,7 +74,7 @@ func (s *Login) LoginReq(sourceId string, gSession common.GSession, msg *message
 	}
 
 	// 通知玩家登录成功
-	return s.Send2Client(gSession, &message.LoginRsp{
+	return s.Send2Client(gSession, &message.LoginResp{
 		UID: acc.UUId(),
 		RID: acc.LastRoleId(),
 	})

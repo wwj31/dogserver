@@ -1,52 +1,57 @@
 package player
 
 import (
+	"reflect"
+	"time"
+
 	"github.com/golang/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
 	"github.com/wwj31/dogactor/tools"
-	"reflect"
+
 	"server/common"
 	"server/common/log"
-	"server/common/toml"
-	"server/db"
 	"server/service/game/iface"
-	"server/service/game/logic/model"
 	"server/service/game/logic/player/controller"
-	"server/service/game/logic/player/item"
-	"server/service/game/logic/player/mail"
-	"server/service/game/logic/player/role"
-	"time"
+	"server/service/game/logic/player/models"
+	"server/service/game/logic/player/models/item"
+	"server/service/game/logic/player/models/mail"
+	"server/service/game/logic/player/models/role"
 )
 
 // model作为功能聚合，player作为聚合根，roleId为聚合根ID
 // 聚合之间通过聚合根关联引用，聚合之间相互访问需先访问聚合根，在导航到相关功能
-// 设计目的：解决玩家复杂的功能模块相互引用带来的混乱问题，让模块真正独立、解耦
+// 解决玩家复杂的功能模块相互引用带来的混乱问题，功能模块化，模块间解耦
 
-func New(roleId uint64) *Player {
-	p := &Player{roleId: roleId}
+func New(roleId uint64, gamer iface.Gamer) *Player {
+	p := &Player{
+		roleId: roleId,
+		gamer:  gamer,
+	}
 	return p
 }
 
 type (
 	Player struct {
 		actor.Base
-		iface.SaveLoader
-		roleId   uint64
-		models   [all]iface.Modeler // 玩家所有功能模块
-		gSession common.GSession    // 网络session
+		gamer iface.Gamer
 
-		sender      common.SendTools
+		roleId   uint64
+		gSession common.GSession // 网络session
+		sender   common.SendTools
+
+		models [all]iface.Modeler // 玩家所有功能模块
+
 		saveTimerId string
+		exitTimerId string
 	}
 )
 
 func (s *Player) OnInit() {
-	s.SaveLoader = db.New(toml.Get("mysql"), toml.Get("database"))
 	s.sender = common.NewSendTools(s)
 
-	s.models[modRole] = role.New(s.roleId, model.New(s)) // 角色
-	s.models[modItem] = item.New(s.roleId, model.New(s)) // 道具
-	s.models[modMail] = mail.New(s.roleId, model.New(s)) // 邮件
+	s.models[modRole] = role.New(s.roleId, models.New(s)) // 角色
+	s.models[modItem] = item.New(s.roleId, models.New(s)) // 道具
+	s.models[modMail] = mail.New(s.roleId, models.New(s)) // 邮件
 
 	s.saveTimerId = s.AddTimer(tools.UUID(), tools.NowTime()+int64(1*time.Minute), func(dt int64) {
 		s.store()
@@ -78,17 +83,19 @@ func (s *Player) Login() {
 	for _, mod := range s.models {
 		mod.OnLogin()
 	}
-
-	if s.saveTimerId != "" {
-		s.CancelTimer(s.saveTimerId)
-	}
+	s.CancelTimer(s.exitTimerId)
 }
 
 func (s *Player) Logout() {
 	for _, mod := range s.models {
 		mod.OnLogout()
 	}
-	s.store()
+
+	exitAt := tools.NowTime() + 5*time.Minute.Nanoseconds()
+	s.exitTimerId = s.AddTimer(tools.UUID(), exitAt, func(dt int64) {
+		s.store()
+		s.Exit()
+	})
 }
 
 func (s *Player) OnStop() bool {
@@ -96,12 +103,13 @@ func (s *Player) OnStop() bool {
 	return true
 }
 
-func (s *Player) IsNewRole() bool  { return s.Role().IsNewRole() }
-func (s *Player) Role() iface.Role { return s.models[modRole].(iface.Role) }
-func (s *Player) Item() iface.Item { return s.models[modItem].(iface.Item) }
-func (s *Player) Mail() iface.Mail { return s.models[modMail].(iface.Mail) }
+func (s *Player) IsNewRole() bool    { return s.Role().IsNewRole() }
+func (s *Player) Gamer() iface.Gamer { return s.gamer }
+func (s *Player) Role() iface.Role   { return s.models[modRole].(iface.Role) }
+func (s *Player) Item() iface.Item   { return s.models[modItem].(iface.Item) }
+func (s *Player) Mail() iface.Mailer { return s.models[modMail].(iface.Mailer) }
 
-// 回存功能模块
+// 回存数据
 func (s *Player) store() {
 	logFiled := []interface{}{"roleId", s.Role().RoleId()}
 	for _, mod := range s.models {
@@ -109,7 +117,7 @@ func (s *Player) store() {
 		if tab == nil || reflect.ValueOf(tab).IsNil() {
 			continue
 		}
-		err := s.Save(tab)
+		err := s.gamer.Save(tab)
 		mod.SetTable(nil)
 		if err != nil {
 			log.Errorw("player store err", "err", err)

@@ -10,19 +10,20 @@ import (
 	"time"
 )
 
-const addr = "127.0.0.1:9001"
+const addr = "127.0.0.1:9002"
 
 type Client struct {
 	actor.Base
-	cli       network.INetClient
+	cli       network.Client
 	msgParser *tools.ProtoParser
 	UID       uint64
 	RID       uint64
+	mails     []*message.Mail
 }
 
 func (s *Client) OnInit() {
-	s.cli = network.NewTcpClient(addr, func() network.ICodec { return &network.StreamCodec{} })
-	s.cli.AddLast(func() network.INetHandler { return &SessionHandler{client: s} })
+	s.cli = network.NewTcpClient(addr, func() network.DecodeEncoder { return &network.StreamCode{} })
+	s.cli.AddLast(func() network.NetSessionHandler { return &SessionHandler{client: s} })
 	expect.Nil(s.cli.Start(false))
 
 	s.InitCmd()
@@ -45,18 +46,36 @@ func (s *Client) SendToServer(msgId int32, pb proto.Message) {
 
 func (s *Client) OnHandleMessage(sourceId, targetId string, v interface{}) {
 	switch msg := v.(type) {
-	case *message.LoginRsp:
-		logger.Infow("login success!", "localmsg", msg.String())
-		s.UID = msg.UID
-		s.RID = msg.RID
-	case *message.EnterGameRsp:
-		logger.Infow("enter success!", "localmsg", msg.String())
-	case *message.RoleInfoPush:
-		logger.Infow("RoleInfoPush!", "localmsg", msg.String())
-	case *message.ItemInfoPush:
-		logger.Infow("ItemInfoPush!", "localmsg", msg.String())
 	case *message.Pong:
 		logger.Infow("aliving~")
+	case *message.Fail:
+		logger.Infow("msg respones fail", "err:", msg.String())
+	// 登录
+	case *message.LoginResp:
+		logger.Infow("login success!", "msg", msg.String())
+		s.UID = msg.UID
+		s.RID = msg.RID
+		s.enter()
+	case *message.EnterGameResp:
+		logger.Infow("EnterGameResp!", "msg", msg.String())
+	case *message.RoleInfoPush:
+		logger.Infow("RoleInfoPush!", "msg", msg.String())
+	case *message.ItemInfoPush:
+		logger.Infow("ItemInfoPush!", "msg", msg.String())
+	// 道具
+	case *message.UseItemResp:
+		logger.Infow("UseItemResp!", "msg", msg.String())
+	case *message.ItemChangeNotify:
+		logger.Infow("ItemChangeNotify!", "msg", msg.String())
+	// 邮件
+	case *message.MailListResp:
+		s.mails = append(s.mails, msg.Mails...)
+		logger.Infow("MailListResp!", "msg", msg.String())
+	case *message.ReadMailResp:
+		logger.Infow("ReadMailResp!", "msg", msg.String())
+	case *message.ReceiveMailItemResp:
+		logger.Infow("ReceiveMailItemResp!", "msg", msg.String())
+
 	default:
 		logger.Infow("unknown type!", "msg", msg)
 	}

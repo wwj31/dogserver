@@ -17,7 +17,7 @@ type GateWay struct {
 	actor.Base
 
 	// 管理所有对外的玩家tcp连接
-	listener network.INetListener
+	listener network.Listener
 	sessions map[uint32]*UserSession
 
 	// 消息映射表
@@ -32,8 +32,8 @@ func (s *GateWay) OnInit() {
 	s.sessions = make(map[uint32]*UserSession)
 
 	s.listener = network.StartTcpListen(toml.Get("gateaddr"),
-		func() network.ICodec { return &network.StreamCodec{} },
-		func() network.INetHandler { return &UserSession{gateway: s} },
+		func() network.DecodeEncoder { return &network.StreamCode{MaxDecode: int(10 * common.KB)} },
+		func() network.NetSessionHandler { return &UserSession{gateway: s} },
 	)
 
 	s.msgParser = tools.NewProtoParser().Init("message", "MSG")
@@ -79,7 +79,12 @@ func (s *GateWay) OnHandleMessage(sourceId, targetId string, v interface{}) {
 	case *inner.GateMsgWrapper:
 		// 用户消息，直接转发给用户
 		actorId, sessionId := common.GSession(msg.GateSession).Split()
-		logInfo := []interface{}{"own", s.ID(), "gSession", msg.GateSession, "sourceId", sourceId, "msgName", msg.MsgName}
+		logInfo := []interface{}{
+			"own", s.ID(),
+			"gSession", msg.GateSession,
+			"sourceId", sourceId,
+			"msgName", msg.MsgName}
+
 		if s.ID() != actorId {
 			log.Errorw("session disabled gate is not own", logInfo...)
 			return

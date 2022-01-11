@@ -27,11 +27,15 @@ configjson = "./root/internal/config/config_json"
         database   = "game"
 
 
-    [server.all_0]
+    [server.all_1]
         actoraddr  = "127.0.0.1:8000"
         gateaddr   = "0.0.0.0:9001"
         mysql      = "root:123456@tcp(127.0.0.1:3306)/%s?charset=utf8mb4&parseTime=True&loc=Local"
         database   = "game"
 
-    [server.client_0]
-        actoraddr  = "127.0.0.1:8000"
+    [server.client_1]
+        actoraddr  = "127.0.0.1:5001"
+    [server.client_2]
+        actoraddr  = "127.0.0.1:5002"
+    [server.client_3]
+        actoraddr  = "127.0.0.1:5003"

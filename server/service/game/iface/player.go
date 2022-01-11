@@ -10,14 +10,16 @@ type (
 	Player interface {
 		actor.Actor
 		Session
-		SaveLoader
 
 		Send2Client(pb proto.Message)
 		Login()
 		Logout()
 		IsNewRole() bool
+
+		Gamer() Gamer
 		Role() Role
 		Item() Item
+		Mail() Mailer
 	}
 )
 

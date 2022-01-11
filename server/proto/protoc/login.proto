@@ -5,9 +5,6 @@ option  go_package = "/message";
 import "error.proto";
 import "common.proto";
 
-message Unknown
-{
-}
 
 message Ping
 {
@@ -19,10 +16,6 @@ message Pong
     int64 ServerTimestamp = 2;
 }
 
-message Error
-{
-    ERROR  Error = 1;
-}
 
 message LoginReq
 {
@@ -30,9 +23,10 @@ message LoginReq
     string PlatformName  = 2;    // 平台名字
     string OS            = 3;    // 系统
     string ClientVersion = 4;    // 版本号
+    string Checksum      = 5;    // 校验和
 }
 
-message LoginRsp
+message LoginResp
 {
     uint64  UID         = 1; // 账号id
     uint64  RID         = 2; // 角色Id
@@ -46,7 +40,7 @@ message EnterGameReq
     string  cryptic   = 3; // 密文
 }
 
-message EnterGameRsp
+message EnterGameResp
 {
     bool NewPlayer = 1; // 是否是新玩家
 }
