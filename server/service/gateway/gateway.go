@@ -38,8 +38,6 @@ func (s *GateWay) OnInit() {
 
 	s.msgParser = tools.NewProtoParser().Init("message", "MSG")
 
-	_ = s.System().RegistEvent(s.ID(), (*actor.EvDelactor)(nil))
-
 	s.AddTimer(tools.UUID(), tools.NowTime()+int64(time.Hour), s.checkDeadSession, -1)
 
 	if err := s.listener.Start(); err != nil {
@@ -47,10 +45,6 @@ func (s *GateWay) OnInit() {
 		return
 	}
 	log.Debugf("gateway OnInit")
-}
-func (s *GateWay) OnStop() bool {
-	s.System().CancelAll(s.ID())
-	return true
 }
 
 // 定期检查并清理死链接
@@ -64,20 +58,11 @@ func (s *GateWay) checkDeadSession(dt int64) {
 	}
 }
 
-// 处理actorcore抛来的事件
-func (s *GateWay) OnHandleEvent(event interface{}) {
-	switch event.(type) {
-	case *actor.EvDelactor:
-		evData := event.(*actor.EvDelactor)
-		log.Warnw("remote actor is inexistent", "remote actor", evData.ActorId)
-	}
-}
-
 // 所有消息，直接转发给用户
 func (s *GateWay) OnHandleMessage(sourceId, targetId string, v interface{}) {
 	switch msg := v.(type) {
 	case *inner.GateMsgWrapper:
-		// 用户消息，直接转发给用户
+		// 用户消息直接转发前端
 		actorId, sessionId := common.GSession(msg.GateSession).Split()
 		logInfo := []interface{}{
 			"own", s.ID(),
