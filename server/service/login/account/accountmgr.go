@@ -2,14 +2,15 @@ package account
 
 import (
 	"fmt"
-	"github.com/spf13/cast"
-	"github.com/wwj31/dogactor/expect"
 	"server/common"
 	"server/common/log"
 	"server/db/table"
 	"server/proto/message"
 	"server/service/game/iface"
 	"time"
+
+	"github.com/spf13/cast"
+	"github.com/wwj31/dogactor/expect"
 )
 
 type AccountMgr struct {
@@ -34,7 +35,7 @@ func (s *AccountMgr) LoadAllAccount(loader iface.Loader) {
 	tb := &table.Account{}
 	if tb.Count() > 1 {
 		for i := 1; i <= tb.Count(); i++ {
-			ret := []table.Account{}
+			var ret []table.Account
 			err := loader.LoadAll((tb).TableName()+cast.ToString(i), &ret)
 			expect.Nil(err)
 			all = append(all, ret...)
@@ -62,12 +63,12 @@ func (s *AccountMgr) Login(msg *message.LoginReq, saver iface.Saver) (acc *Accou
 		return acc, false
 	}
 
-	// newAccount
 	newAcc := &Account{}
 	newAcc.table.UUId = s.uuidGen.GenUuid()
 	newAcc.table.PlatformUUId = platformId
 	newAcc.table.OS = msg.OS
-	newAcc.table.ClientVersion = msg.ClientVersion // newRole
+	newAcc.table.ClientVersion = msg.ClientVersion
+
 	newRole := &table.Role{
 		UUId:     newAcc.table.UUId,
 		RoleId:   s.uuidGen.GenUuid(),
