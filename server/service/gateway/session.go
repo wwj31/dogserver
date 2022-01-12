@@ -5,7 +5,7 @@ import (
 
 	"server/common"
 	"server/common/log"
-	"server/proto/inner_message/inner"
+	"server/proto/inner/inner"
 	"server/proto/message"
 
 	"github.com/wwj31/dogactor/network"

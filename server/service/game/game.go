@@ -10,7 +10,7 @@ import (
 	"server/common/log"
 	"server/common/toml"
 	"server/db"
-	"server/proto/inner_message/inner"
+	"server/proto/inner/inner"
 	"server/proto/message"
 	"server/service/game/iface"
 	"server/service/game/logic/player"

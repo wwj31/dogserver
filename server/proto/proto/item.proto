@@ -1,0 +1,17 @@
+syntax = "proto3";
+package message;
+option  go_package = "/message";
+
+message UseItemReq
+{
+    map<int64,int64> Items = 1;
+}
+
+message UseItemResp
+{
+}
+
+message ItemChangeNotify
+{
+    map<int64,int64> Items = 1;
+}

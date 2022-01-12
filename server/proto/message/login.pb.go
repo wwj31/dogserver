@@ -127,11 +127,16 @@ type LoginReq struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	PlatformUUID  string `protobuf:"bytes,1,opt,name=PlatformUUID,proto3" json:"PlatformUUID,omitempty"`   // 平台uuid
-	PlatformName  string `protobuf:"bytes,2,opt,name=PlatformName,proto3" json:"PlatformName,omitempty"`   // 平台名字
-	OS            string `protobuf:"bytes,3,opt,name=OS,proto3" json:"OS,omitempty"`                       // 系统
-	ClientVersion string `protobuf:"bytes,4,opt,name=ClientVersion,proto3" json:"ClientVersion,omitempty"` // 版本号
-	Checksum      string `protobuf:"bytes,5,opt,name=Checksum,proto3" json:"Checksum,omitempty"`           // 校验和
+	// 平台uuid
+	PlatformUUID string `protobuf:"bytes,1,opt,name=PlatformUUID,proto3" json:"PlatformUUID,omitempty"`
+	// 平台名字
+	PlatformName string `protobuf:"bytes,2,opt,name=PlatformName,proto3" json:"PlatformName,omitempty"`
+	// 系统
+	OS string `protobuf:"bytes,3,opt,name=OS,proto3" json:"OS,omitempty"`
+	// 版本号
+	ClientVersion string `protobuf:"bytes,4,opt,name=ClientVersion,proto3" json:"ClientVersion,omitempty"`
+	// 校验和
+	Checksum string `protobuf:"bytes,5,opt,name=Checksum,proto3" json:"Checksum,omitempty"`
 }
 
 func (x *LoginReq) Reset() {
@@ -206,9 +211,9 @@ type LoginResp struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	UID     uint64 `protobuf:"varint,1,opt,name=UID,proto3" json:"UID,omitempty"`        // 账号id
-	RID     uint64 `protobuf:"varint,2,opt,name=RID,proto3" json:"RID,omitempty"`        // 角色Id
-	Cryptic string `protobuf:"bytes,3,opt,name=cryptic,proto3" json:"cryptic,omitempty"` // 密文
+	UID     uint64 `protobuf:"varint,1,opt,name=UID,proto3" json:"UID,omitempty"`
+	RID     uint64 `protobuf:"varint,2,opt,name=RID,proto3" json:"RID,omitempty"`
+	Cryptic string `protobuf:"bytes,3,opt,name=cryptic,proto3" json:"cryptic,omitempty"`
 }
 
 func (x *LoginResp) Reset() {
@@ -269,9 +274,9 @@ type EnterGameReq struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	UID     uint64 `protobuf:"varint,1,opt,name=UID,proto3" json:"UID,omitempty"`        // 账号id
-	RID     uint64 `protobuf:"varint,2,opt,name=RID,proto3" json:"RID,omitempty"`        // 角色Id
-	Cryptic string `protobuf:"bytes,3,opt,name=cryptic,proto3" json:"cryptic,omitempty"` // 密文
+	UID     uint64 `protobuf:"varint,1,opt,name=UID,proto3" json:"UID,omitempty"`
+	RID     uint64 `protobuf:"varint,2,opt,name=RID,proto3" json:"RID,omitempty"`
+	Cryptic string `protobuf:"bytes,3,opt,name=cryptic,proto3" json:"cryptic,omitempty"`
 }
 
 func (x *EnterGameReq) Reset() {
@@ -332,7 +337,8 @@ type EnterGameResp struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	NewPlayer bool `protobuf:"varint,1,opt,name=NewPlayer,proto3" json:"NewPlayer,omitempty"` // 是否是新玩家
+	// 是否是新玩家
+	NewPlayer bool `protobuf:"varint,1,opt,name=NewPlayer,proto3" json:"NewPlayer,omitempty"`
 }
 
 func (x *EnterGameResp) Reset() {
@@ -380,9 +386,9 @@ type RoleInfoPush struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	UID     uint64 `protobuf:"varint,1,opt,name=UID,proto3" json:"UID,omitempty"` // 账号Id
-	RID     uint64 `protobuf:"varint,2,opt,name=RID,proto3" json:"RID,omitempty"` // 角色Id
-	SId     uint64 `protobuf:"varint,3,opt,name=SId,proto3" json:"SId,omitempty"` // 服务器Id
+	UID     uint64 `protobuf:"varint,1,opt,name=UID,proto3" json:"UID,omitempty"`
+	RID     uint64 `protobuf:"varint,2,opt,name=RID,proto3" json:"RID,omitempty"`
+	SId     uint64 `protobuf:"varint,3,opt,name=SId,proto3" json:"SId,omitempty"`
 	Name    string `protobuf:"bytes,4,opt,name=Name,proto3" json:"Name,omitempty"`
 	Icon    string `protobuf:"bytes,5,opt,name=Icon,proto3" json:"Icon,omitempty"`
 	Country string `protobuf:"bytes,6,opt,name=Country,proto3" json:"Country,omitempty"`

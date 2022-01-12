@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"server/proto/inner_message/inner"
+	"server/proto/inner/inner"
 	"server/proto/message"
 	"server/service/game/iface"
 	"server/service/game/logic/player/localmsg"

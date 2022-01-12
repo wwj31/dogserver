@@ -1,0 +1,18 @@
+syntax = "proto3";
+package message;
+option  go_package = "/message";
+
+enum ERROR
+{
+   SUCCESS                    = 0;  //执行成功
+   FAILED                     = 1;  //协议执行失败，原因模糊
+   SECURITYCODE_CHECK_FAILED  = 2;  //安全码校验失败
+   ITEM_NOT_ENOUGH            = 3;  //道具不足
+   GOLD_NOT_ENOUGH            = 4;  //金币不足
+   LEVEL_NOT_ENGOUTH          = 5;  //等级不足
+   MAIL_REPEAT_RECV_ITEM      = 6;  //邮件道具重复领取
+
+   CLIENT_WRONG_PARAM         = 9;  //客户端错误参数
+   CFG_NO_THIS_PARAM          = 10; //配置表错误
+   NAME_LEN_OUTRANGE          = 13; //命名超过长度限制
+}
