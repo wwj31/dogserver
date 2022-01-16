@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-const addr = "127.0.0.1:9002"
+const addr = "127.0.0.1:9001"
 
 type Client struct {
 	actor.Base
