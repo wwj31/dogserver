@@ -9,7 +9,7 @@ import (
 	"server/common"
 	"server/common/log"
 	"server/db/table"
-	"server/proto/message"
+	"server/proto/outermsg/outer"
 	"server/service/game/iface"
 	"server/service/game/logic/player/models"
 )
@@ -18,14 +18,14 @@ type Mail struct {
 	models.Model
 
 	zSet     *rank.Rank
-	mailInfo message.MailInfo
+	mailInfo outer.MailInfo
 }
 
 func New(rid uint64, base models.Model) *Mail {
 	mail := &Mail{
 		Model:    base,
 		zSet:     rank.New(),
-		mailInfo: message.MailInfo{Mails: make(map[uint64]*message.Mail)},
+		mailInfo: outer.MailInfo{Mails: make(map[uint64]*outer.Mail)},
 	}
 
 	if base.Player.IsNewRole() {
@@ -52,17 +52,17 @@ func New(rid uint64, base models.Model) *Mail {
 	return mail
 }
 
-func (s *Mail) Add(mail *message.Mail) {
+func (s *Mail) Add(mail *outer.Mail) {
 	s.mailInfo.Mails[mail.Uuid] = mail
 	s.zSet.Add(cast.ToString(mail.Uuid), mail.CreateAt)
-	s.Player.Send2Client(&message.AddMailNotify{Uuid: mail.Uuid})
+	s.Player.Send2Client(&outer.AddMailNotify{Uuid: mail.Uuid})
 	log.Debugw("add mail ", "player", s.Player.Role().RoleId(), "mail", mail.Title, "items", mail.Items)
 	s.save()
 }
 
 func (s *Mail) NewBuilder() iface.MailBuilder {
 	return &Builder{
-		mail: &message.Mail{
+		mail: &outer.Mail{
 			Uuid:     s.Player.Gamer().GenUuid(),
 			CreateAt: tools.NowTime(),
 			Status:   0,
@@ -71,8 +71,8 @@ func (s *Mail) NewBuilder() iface.MailBuilder {
 	}
 }
 
-func (s *Mail) Mails(count, limit int32) []*message.Mail {
-	var mails []*message.Mail
+func (s *Mail) Mails(count, limit int32) []*outer.Mail {
+	var mails []*outer.Mail
 	keys := s.zSet.Get(int(count+1), int(count+limit))
 
 	for _, key := range keys {
@@ -103,7 +103,7 @@ func (s *Mail) ReceiveItem(uuid uint64) {
 		return
 	}
 	if mail.Status == 2 {
-		s.Player.Send2Client(&message.Fail{Error: message.ERROR_MAIL_REPEAT_RECV_ITEM})
+		s.Player.Send2Client(&outer.Fail{Error: outer.ERROR_MAIL_REPEAT_RECV_ITEM})
 		return
 	}
 

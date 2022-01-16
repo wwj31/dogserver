@@ -6,7 +6,7 @@ import (
 	"github.com/wwj31/dogactor/expect"
 	"github.com/wwj31/dogactor/network"
 	"github.com/wwj31/dogactor/tools"
-	"server/proto/message"
+	"server/proto/outermsg/outer"
 	"time"
 )
 
@@ -18,7 +18,7 @@ type Client struct {
 	msgParser *tools.ProtoParser
 	UID       uint64
 	RID       uint64
-	mails     []*message.Mail
+	mails     []*outer.Mail
 }
 
 func (s *Client) OnInit() {
@@ -27,11 +27,11 @@ func (s *Client) OnInit() {
 	expect.Nil(s.cli.Start(false))
 
 	s.InitCmd()
-	s.msgParser = tools.NewProtoParser().Init("message", "MSG")
+	s.msgParser = tools.NewProtoParser().Init("outer", "MSG")
 
 	// 心跳
 	s.AddTimer(tools.UUID(), tools.NowTime()+int64(20*time.Second), func(dt int64) {
-		s.SendToServer(message.MSG_PING.Int32(), &message.Ping{})
+		s.SendToServer(outer.MSG_PING.Int32(), &outer.Ping{})
 	}, -1)
 }
 
@@ -46,34 +46,34 @@ func (s *Client) SendToServer(msgId int32, pb proto.Message) {
 
 func (s *Client) OnHandleMessage(sourceId, targetId string, v interface{}) {
 	switch msg := v.(type) {
-	case *message.Pong:
+	case *outer.Pong:
 		logger.Infow("aliving~")
-	case *message.Fail:
+	case *outer.Fail:
 		logger.Infow("msg respones fail", "err:", msg.String())
 	// 登录
-	case *message.LoginResp:
+	case *outer.LoginResp:
 		logger.Infow("login success!", "msg", msg.String())
 		s.UID = msg.UID
 		s.RID = msg.RID
 		s.enter()
-	case *message.EnterGameResp:
+	case *outer.EnterGameResp:
 		logger.Infow("EnterGameResp!", "msg", msg.String())
-	case *message.RoleInfoPush:
+	case *outer.RoleInfoPush:
 		logger.Infow("RoleInfoPush!", "msg", msg.String())
-	case *message.ItemInfoPush:
+	case *outer.ItemInfoPush:
 		logger.Infow("ItemInfoPush!", "msg", msg.String())
 	// 道具
-	case *message.UseItemResp:
+	case *outer.UseItemResp:
 		logger.Infow("UseItemResp!", "msg", msg.String())
-	case *message.ItemChangeNotify:
+	case *outer.ItemChangeNotify:
 		logger.Infow("ItemChangeNotify!", "msg", msg.String())
 	// 邮件
-	case *message.MailListResp:
+	case *outer.MailListResp:
 		s.mails = append(s.mails, msg.Mails...)
 		logger.Infow("MailListResp!", "msg", msg.String())
-	case *message.ReadMailResp:
+	case *outer.ReadMailResp:
 		logger.Infow("ReadMailResp!", "msg", msg.String())
-	case *message.ReceiveMailItemResp:
+	case *outer.ReceiveMailItemResp:
 		logger.Infow("ReceiveMailItemResp!", "msg", msg.String())
 
 	default:

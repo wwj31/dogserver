@@ -1,14 +1,16 @@
 package iface
 
-import "server/proto/message"
+import (
+	"server/proto/outermsg/outer"
+)
 
 type Mailer interface {
 	Modeler
 
-	Add(mail *message.Mail)
+	Add(mail *outer.Mail)
 	NewBuilder() MailBuilder
 
-	Mails(count, limit int32) []*message.Mail
+	Mails(count, limit int32) []*outer.Mail
 
 	Read(uuid uint64)
 	ReceiveItem(uuid uint64)

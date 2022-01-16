@@ -1,4 +1,4 @@
-package message
+package outer
 
 func (s MSG) Int32() int32 {
 	return int32(s)

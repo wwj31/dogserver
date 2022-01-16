@@ -5,7 +5,7 @@ import (
 	"server/common"
 	"server/common/log"
 	"server/db/table"
-	"server/proto/message"
+	"server/proto/outermsg/outer"
 	"server/service/game/iface"
 	"time"
 
@@ -57,7 +57,7 @@ func (s *AccountMgr) LoadAllAccount(loader iface.Loader) {
 	}
 }
 
-func (s *AccountMgr) Login(msg *message.LoginReq, saver iface.Saver) (acc *Account, new bool) {
+func (s *AccountMgr) Login(msg *outer.LoginReq, saver iface.Saver) (acc *Account, new bool) {
 	platformId := combine(msg.PlatformName, msg.PlatformUUID)
 	if acc = s.accountsByPlatformId[platformId]; acc != nil {
 		return acc, false

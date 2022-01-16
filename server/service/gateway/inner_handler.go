@@ -3,7 +3,7 @@ package gateway
 import (
 	"server/common"
 	"server/common/log"
-	"server/proto/inner/inner"
+	"server/proto/innermsg/inner"
 )
 
 // 处理其他服务向gateway发送的消息

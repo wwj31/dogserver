@@ -6,7 +6,7 @@ import (
 	"server/common"
 	"server/common/log"
 	"server/common/toml"
-	"server/proto/inner/inner"
+	"server/proto/innermsg/inner"
 
 	"github.com/wwj31/dogactor/actor"
 	"github.com/wwj31/dogactor/network"
@@ -36,7 +36,7 @@ func (s *GateWay) OnInit() {
 		func() network.NetSessionHandler { return &UserSession{gateway: s} },
 	)
 
-	s.msgParser = tools.NewProtoParser().Init("message", "MSG")
+	s.msgParser = tools.NewProtoParser().Init("outer", "MSG")
 
 	s.AddTimer(tools.UUID(), tools.NowTime()+int64(time.Hour), s.checkDeadSession, -1)
 

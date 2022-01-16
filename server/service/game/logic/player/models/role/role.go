@@ -4,7 +4,7 @@ import (
 	"github.com/wwj31/dogactor/expect"
 	"github.com/wwj31/dogactor/tools"
 	"server/db/table"
-	"server/proto/message"
+	"server/proto/outermsg/outer"
 	"server/service/game/logic/player/models"
 	"server/service/game/logic/player/models/role/typ"
 )
@@ -45,8 +45,8 @@ func (s *Role) OnLogout() {
 	s.save()
 }
 
-func (s *Role) roleInfoPush() *message.RoleInfoPush {
-	return &message.RoleInfoPush{
+func (s *Role) roleInfoPush() *outer.RoleInfoPush {
+	return &outer.RoleInfoPush{
 		UID:     s.tRole.UUId,
 		RID:     s.tRole.RoleId,
 		SId:     s.tRole.SId,

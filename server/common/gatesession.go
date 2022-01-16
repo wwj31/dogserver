@@ -8,7 +8,7 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/reflect/protoregistry"
 	"server/common/log"
-	"server/proto/inner/inner"
+	"server/proto/innermsg/inner"
 	"strings"
 )
 

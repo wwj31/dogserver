@@ -1,13 +1,13 @@
 package mail
 
 import (
-	"server/proto/message"
+	"server/proto/outermsg/outer"
 	"server/service/game/iface"
 )
 
 type Builder struct {
 	mailer iface.Mailer
-	mail   *message.Mail
+	mail   *outer.Mail
 }
 
 func (s *Builder) SetMailTitle(title string) iface.MailBuilder {

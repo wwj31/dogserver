@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"server/common"
 	"server/common/log"
-	"server/proto/inner/inner"
-	"server/proto/message"
+	"server/proto/innermsg/inner"
+	"server/proto/outermsg/outer"
 	"server/service/game/iface"
 	"server/service/login/account"
 
@@ -37,18 +37,18 @@ func (s *Login) OnHandleMessage(sourceId, targetId string, msg interface{}) {
 	v, gSession, err := common.UnwrapperGateMsg(msg)
 	expect.Nil(err)
 	switch msg := v.(type) {
-	case *message.LoginReq:
+	case *outer.LoginReq:
 		err = s.LoginReq(sourceId, gSession, msg)
 	default:
 		err = fmt.Errorf("undefined localmsg type %v", msg)
 	}
 
 	if err != nil {
-		log.Errorw("handle message error", "err", err)
+		log.Errorw("handle outer error", "err", err)
 	}
 }
 
-func (s *Login) LoginReq(sourceId string, gSession common.GSession, msg *message.LoginReq) error {
+func (s *Login) LoginReq(sourceId string, gSession common.GSession, msg *outer.LoginReq) error {
 	log.Debugf(msg.String())
 
 	if common.LoginChecksum(msg) != msg.Checksum {
@@ -74,7 +74,7 @@ func (s *Login) LoginReq(sourceId string, gSession common.GSession, msg *message
 	}
 
 	// 通知玩家登录成功
-	return s.Send2Client(gSession, &message.LoginResp{
+	return s.Send2Client(gSession, &outer.LoginResp{
 		UID: acc.UUId(),
 		RID: acc.LastRoleId(),
 	})

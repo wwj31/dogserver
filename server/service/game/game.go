@@ -10,8 +10,8 @@ import (
 	"server/common/log"
 	"server/common/toml"
 	"server/db"
-	"server/proto/inner/inner"
-	"server/proto/message"
+	"server/proto/innermsg/inner"
+	"server/proto/outermsg/outer"
 	"server/service/game/iface"
 	"server/service/game/logic/player"
 	"server/service/game/logic/player/localmsg"
@@ -47,7 +47,7 @@ func (s *Game) OnHandleMessage(sourceId, targetId string, msg interface{}) {
 	expect.Nil(err)
 
 	switch pbMsg := actMsg.(type) {
-	case *message.EnterGameReq:
+	case *outer.EnterGameReq:
 		s.enterGameReq(gSession, pbMsg)
 	case *inner.GT2GSessionClosed:
 		s.logout(pbMsg)
@@ -70,7 +70,7 @@ func (s *Game) PlayerMgr() iface.PlayerManager {
 }
 
 // player enter game
-func (s *Game) enterGameReq(gSession common.GSession, msg *message.EnterGameReq) {
+func (s *Game) enterGameReq(gSession common.GSession, msg *outer.EnterGameReq) {
 	log.Debugw("EnterGameReq", "msg", msg)
 
 	// warn:repeated login

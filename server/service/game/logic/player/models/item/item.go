@@ -6,8 +6,8 @@ import (
 	"server/common"
 	"server/common/log"
 	"server/db/table"
-	"server/proto/inner/inner"
-	"server/proto/message"
+	"server/proto/innermsg/inner"
+	"server/proto/outermsg/outer"
 	"server/service/game/logic/player/models"
 )
 
@@ -52,17 +52,17 @@ func (s *Item) Enough(items map[int64]int64) bool {
 	return true
 }
 
-func (s *Item) Use(items map[int64]int64) message.ERROR {
+func (s *Item) Use(items map[int64]int64) outer.ERROR {
 	if len(items) == 0 {
-		return message.ERROR_SUCCESS
+		return outer.ERROR_SUCCESS
 	}
 
 	if !s.Player.Item().Enough(items) {
-		return message.ERROR_ITEM_NOT_ENOUGH
+		return outer.ERROR_ITEM_NOT_ENOUGH
 	}
 
 	s.Player.Item().Add(items, true)
-	return message.ERROR_SUCCESS
+	return outer.ERROR_SUCCESS
 }
 
 func (s *Item) Add(items map[int64]int64, push ...bool) {
@@ -84,7 +84,7 @@ func (s *Item) Add(items map[int64]int64, push ...bool) {
 	}
 
 	if len(push) > 0 && len(items) > 0 {
-		s.Player.Send2Client(&message.ItemChangeNotify{
+		s.Player.Send2Client(&outer.ItemChangeNotify{
 			Items: items,
 		})
 	}
@@ -92,8 +92,8 @@ func (s *Item) Add(items map[int64]int64, push ...bool) {
 	s.save()
 }
 
-func (s *Item) itemInfoPush() *message.ItemInfoPush {
-	return &message.ItemInfoPush{
+func (s *Item) itemInfoPush() *outer.ItemInfoPush {
+	return &outer.ItemInfoPush{
 		Items: s.items.Items,
 	}
 }

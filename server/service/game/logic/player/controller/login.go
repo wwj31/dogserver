@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"server/proto/inner/inner"
-	"server/proto/message"
+	"server/proto/innermsg/inner"
+	"server/proto/outermsg/outer"
 	"server/service/game/iface"
 	"server/service/game/logic/player/localmsg"
 )
@@ -21,7 +21,7 @@ var _ = regist(MsgName(localmsg.Login{}), func(player iface.Player, v interface{
 
 	player.Login()
 
-	player.Send2Client(&message.EnterGameResp{
+	player.Send2Client(&outer.EnterGameResp{
 		NewPlayer: isNew,
 	})
 })
