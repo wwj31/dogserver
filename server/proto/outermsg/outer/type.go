@@ -1,5 +1,7 @@
 package outer
 
+//go:generate spawner
+
 func (s MSG) Int32() int32 {
 	return int32(s)
 }

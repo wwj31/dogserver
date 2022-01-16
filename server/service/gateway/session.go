@@ -78,7 +78,6 @@ func (s *UserSession) OnRecv(data []byte) {
 		log.Errorw("proto not find struct", "msgId", msgId)
 		return
 	}
-
 	gSession := common.GateSession(s.gateway.ID(), s.Id())
 	wrapperMsg := common.NewGateWrapperByBytes(data[4:], msgName, gSession)
 

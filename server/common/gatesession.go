@@ -4,11 +4,9 @@ import (
 	"fmt"
 	"github.com/golang/protobuf/proto"
 	"github.com/spf13/cast"
-	"github.com/wwj31/dogactor/tools"
-	"google.golang.org/protobuf/reflect/protoreflect"
-	"google.golang.org/protobuf/reflect/protoregistry"
 	"server/common/log"
 	"server/proto/innermsg/inner"
+	"server/proto/outermsg/outer"
 	"strings"
 )
 
@@ -45,13 +43,14 @@ func GateSession(gateId ActorId, sessionId uint32) GSession {
 	return GSession(fmt.Sprintf("%v:%v", gateId, sessionId))
 }
 
-func NewGateWrapperByPb(pb proto.Message, gateSession GSession) *inner.GateMsgWrapper {
+func NewGateWrapperByPb(pb proto.Message, msgName string, gateSession GSession) *inner.GateMsgWrapper {
 	data, err := proto.Marshal(pb)
 	if err != nil {
 		log.Errorw("marshal pb failed", "err", err)
 		return nil
 	}
-	return &inner.GateMsgWrapper{GateSession: gateSession.String(), MsgName: tools.MsgName(pb), Data: data}
+	//return &inner.GateMsgWrapper{GateSession: gateSession.String(), MsgName: tools.MsgName(pb), Data: data}
+	return &inner.GateMsgWrapper{GateSession: gateSession.String(), MsgName: msgName, Data: data}
 }
 
 // 网关封装的消息信息(避免一次序列化操作)
@@ -65,13 +64,18 @@ func UnwrapperGateMsg(msg interface{}) (interface{}, GSession, error) {
 		return msg, "", nil
 	}
 
-	tp, err := protoregistry.GlobalTypes.FindMessageByName(protoreflect.FullName(wrapper.MsgName))
-	if err != nil {
-		return nil, GSession(wrapper.GateSession), err
+	//tp, err := protoregistry.GlobalTypes.FindMessageByName(protoreflect.FullName(wrapper.MsgName))
+	//if err != nil {
+	//	return nil, GSession(wrapper.GateSession), err
+	//}
+	//
+	//actMsg := tp.New().Interface().(proto.Message)
+	v, ok := outer.Spawner(wrapper.MsgName)
+	if !ok {
+		return nil, GSession(wrapper.GateSession), fmt.Errorf("msg not found in outer Spawner %v", wrapper.MsgName)
 	}
-
-	actMsg := tp.New().Interface().(proto.Message)
-	err = proto.Unmarshal(wrapper.Data, actMsg.(proto.Message))
+	actMsg := v.(proto.Message)
+	err := proto.Unmarshal(wrapper.Data, actMsg)
 	if err != nil {
 		return nil, GSession(wrapper.GateSession), err
 	}

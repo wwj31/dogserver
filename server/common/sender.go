@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/golang/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
+	"github.com/wwj31/dogactor/tools"
+	"reflect"
 )
 
 // 封装发送用户和网关的sender
@@ -30,7 +32,12 @@ func (s SendTools) Send2Client(gSession GSession, pb proto.Message) error {
 	}
 
 	gateId, _ := gSession.Split()
-	wrap := NewGateWrapperByPb(pb, gSession)
+	tools.MsgName(pb)
+	str := reflect.TypeOf(pb).String()
+	if str[0] == '*' {
+		str = str[1:]
+	}
+	wrap := NewGateWrapperByPb(pb, str, gSession)
 	return s.sender.Send(gateId, wrap)
 }
 
