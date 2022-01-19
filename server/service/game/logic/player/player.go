@@ -66,6 +66,7 @@ func (s *Player) OnHandleMessage(sourceId, targetId string, msg interface{}) {
 		return
 	}
 	handle(s, msg)
+
 }
 
 func (s *Player) GateSession() common.GSession            { return s.gSession }

@@ -34,7 +34,8 @@ func (s *Login) OnInit() {
 }
 
 func (s *Login) OnHandleMessage(sourceId, targetId string, msg interface{}) {
-	v, gSession, err := common.UnwrapperGateMsg(msg)
+	v, _, gSession, err := common.UnwrapperGateMsg(msg)
+
 	expect.Nil(err)
 	switch msg := v.(type) {
 	case *outer.LoginReq:

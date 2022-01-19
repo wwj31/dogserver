@@ -30,7 +30,7 @@ configjson = "./root/internal/config/config_json"
     [server.all_1]
         actoraddr  = "127.0.0.1:8000"
         gateaddr   = "0.0.0.0:9001"
-        mysql      = "root:123456@tcp(127.0.0.1:3306)/%s?charset=utf8mb4&parseTime=True&loc=Local"
+        mysql      = "root:starunion@tcp(127.0.0.1:3306)/%s?charset=utf8mb4&parseTime=True&loc=Local"
         database   = "game"
 
     [server.client_1]
