@@ -65,12 +65,6 @@ func UnwrapperGateMsg(msg interface{}) (interface{}, string, GSession, error) {
 		return msg, "", "", nil
 	}
 
-	//tp, err := protoregistry.GlobalTypes.FindMessageByName(protoreflect.FullName(wrapper.MsgName))
-	//if err != nil {
-	//	return nil, GSession(wrapper.GateSession), err
-	//}
-	//
-	//actMsg := tp.New().Interface().(proto.Message)
 	v, ok := outer.Spawner(wrapper.MsgName)
 	if !ok {
 		return nil, "", GSession(wrapper.GateSession), fmt.Errorf("msg not found in outer Spawner %v", wrapper.MsgName)
