@@ -105,7 +105,6 @@ func (s *Game) enterGameReq(gSession common.GSession, msg *outer.EnterGameReq) {
 		log.Errorw("login send error", "rid", msg.RID, "err", err, "playerId", playerId)
 		return
 	}
-
 }
 
 // player offline
