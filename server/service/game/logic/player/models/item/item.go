@@ -30,6 +30,8 @@ func New(rid uint64, base models.Model) *Item {
 
 		err = proto.Unmarshal(tItem.Bytes, &item.items)
 		expect.Nil(err)
+	} else {
+		item.Add(map[int64]int64{123: 999})
 	}
 
 	return item
