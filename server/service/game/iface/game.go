@@ -10,7 +10,6 @@ type Gamer interface {
 	SaveLoader
 
 	SID() uint16
-	PlayerMgr() PlayerManager
 }
 
 type UuidGenerator interface {

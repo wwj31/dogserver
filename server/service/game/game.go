@@ -24,15 +24,15 @@ func New(serverId uint16) *Game {
 
 type Game struct {
 	actor.Base
-	sid uint16 // serverId
-	common.UID
+	sid     uint16 // serverId
+	genUUID common.UID
 	iface.SaveLoader
 	playerMgr iface.PlayerManager
 }
 
 func (s *Game) OnInit() {
 	s.SaveLoader = db.New(toml.Get("mysql"), toml.Get("database"))
-	s.UID = common.NewUID(s.sid)
+	s.genUUID = common.NewUID(s.sid)
 	s.playerMgr = player.NewMgr(s)
 
 	log.Debugf("game OnInit")
@@ -63,7 +63,7 @@ func (s *Game) SID() uint16 {
 }
 
 func (s *Game) GenUuid() uint64 {
-	return s.UID.GenUuid()
+	return s.genUUID.GenUuid()
 }
 
 func (s *Game) PlayerMgr() iface.PlayerManager {

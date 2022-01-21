@@ -3,7 +3,6 @@ package db
 import (
 	"database/sql"
 	"fmt"
-	"reflect"
 	"server/db/table"
 	"strconv"
 	"strings"
@@ -42,15 +41,11 @@ func New(addr, databaseAddr string) *DB {
 }
 
 func (s *DB) Save(datas ...table.Tabler) error {
-	if datas == nil {
+	if len(datas) == 0 {
 		return nil
 	}
 	transaction := s.dbIns.Begin()
 	for _, t := range datas {
-		if reflect.ValueOf(t).IsNil() {
-			continue
-		}
-
 		name := t.TableName()
 		if t.Count() > 1 {
 			name = name + strconv.Itoa(num(t.Key(), t.Count()))

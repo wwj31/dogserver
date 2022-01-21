@@ -2,6 +2,7 @@ package player
 
 import (
 	"reflect"
+	"server/db/table"
 	"time"
 
 	"github.com/golang/protobuf/proto"
@@ -113,18 +114,21 @@ func (s *Player) Mail() iface.Mailer { return s.models[modMail].(iface.Mailer) }
 // 回存数据
 func (s *Player) store() {
 	logFiled := []interface{}{"roleId", s.Role().RoleId()}
+	var tabs []table.Tabler
 	for _, mod := range s.models {
 		tab := mod.Table()
-		if tab == nil || reflect.ValueOf(tab).IsNil() {
+		if tab == nil {
 			continue
 		}
-		err := s.gamer.Save(tab)
+		tabs = append(tabs, tab)
 		mod.SetTable(nil)
-		if err != nil {
-			log.Errorw("player store err", "err", err)
-		} else {
-			logFiled = append(logFiled, "table", tab.TableName())
-		}
+		logFiled = append(logFiled, "table", tab.TableName())
 	}
+
+	err := s.gamer.Save(tabs...)
+	if err != nil {
+		log.Errorw("player store err", "err", err)
+	}
+
 	log.Infow("player stored model", logFiled...)
 }
