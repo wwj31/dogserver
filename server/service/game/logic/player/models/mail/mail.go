@@ -122,8 +122,9 @@ func (s *Mail) Delete(uuids ...uint64) {
 
 func (s *Mail) save() {
 	s.SetTable(&table.Mail{
-		RoleId: s.Player.Role().RoleId(),
-		Bytes:  s.marshal(&s.mailInfo),
+		RoleId:    s.Player.Role().RoleId(),
+		Bytes:     s.marshal(&s.mailInfo),
+		MailCount: len(s.mailInfo.Mails),
 	})
 }
 

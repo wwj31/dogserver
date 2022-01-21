@@ -4,8 +4,9 @@ import "reflect"
 
 // 玩家道具表
 type Item struct {
-	RoleId uint64 `gorm:"primary_key"` //角色ID
-	Items  []byte
+	RoleId    uint64 `gorm:"primary_key"` //角色ID
+	Bytes     []byte
+	ItemCount int
 }
 
 func init() {

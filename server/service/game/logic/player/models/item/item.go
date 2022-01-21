@@ -18,7 +18,7 @@ type Item struct {
 }
 
 func New(rid uint64, base models.Model) *Item {
-	role := &Item{
+	item := &Item{
 		Model: base,
 		items: inner.ItemMap{Items: make(map[int64]int64, 10)},
 	}
@@ -28,11 +28,11 @@ func New(rid uint64, base models.Model) *Item {
 		err := base.Player.Gamer().Load(&tItem)
 		expect.Nil(err)
 
-		err = proto.Unmarshal(tItem.Items, &role.items)
+		err = proto.Unmarshal(tItem.Bytes, &item.items)
 		expect.Nil(err)
 	}
 
-	return role
+	return item
 }
 
 func (s *Item) OnLogin() {
@@ -100,8 +100,9 @@ func (s *Item) itemInfoPush() *outer.ItemInfoPush {
 
 func (s *Item) save() {
 	s.SetTable(&table.Item{
-		RoleId: s.Player.Role().RoleId(),
-		Items:  s.marshal(&s.items),
+		RoleId:    s.Player.Role().RoleId(),
+		Bytes:     s.marshal(&s.items),
+		ItemCount: len(s.items.Items),
 	})
 }
 

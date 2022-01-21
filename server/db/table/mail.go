@@ -5,8 +5,9 @@ import (
 )
 
 type Mail struct {
-	RoleId uint64 `gorm:"primary_key"` //账号ID
-	Bytes  []byte
+	RoleId    uint64 `gorm:"primary_key"` //账号ID
+	Bytes     []byte
+	MailCount int
 }
 
 func init() {
