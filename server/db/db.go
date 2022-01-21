@@ -31,8 +31,8 @@ func New(addr, databaseAddr string) *DB {
 	})
 	expect.Nil(err)
 
-	// 检查表是否存在，不存在就创建
-	expect.Nil(checkTables(fmt.Sprintf(addr, databaseAddr), db))
+	// 创建不存在的表
+	expect.Nil(checkTables(db))
 
 	return &DB{
 		addr:         addr,
@@ -96,7 +96,7 @@ func checkDatabase(addr string, databaseName string) error {
 	return err
 }
 
-func checkTables(addr string, db *gorm.DB) error {
+func checkTables(db *gorm.DB) error {
 	db.Logger.LogMode(logger.Info)
 
 	sqlDB, errdb := db.DB()
