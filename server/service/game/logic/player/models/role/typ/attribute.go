@@ -1,7 +1,8 @@
-// Package typ go install golang.org/x/tools/cmd/stringer
-//go:generate stringer -type Attribute -linecomment
+//go install golang.org/x/tools/cmd/stringer
+
 package typ
 
+//go:generate stringer -type Attribute -linecomment
 type Attribute int64
 
 const (

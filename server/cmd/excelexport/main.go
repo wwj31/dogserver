@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"path/filepath"
 	"runtime/debug"
 )
 
@@ -17,27 +16,11 @@ var (
 
 func main() {
 	flag.Parse()
-	if *saveGoPath == "" || *readPath == "" || *goPackageName == "" || *saveJsonPath == "" || *tplPath == "" {
-		fmt.Println("SaveGoPath, ReadPath or allType is nil")
-		return
-	}
-
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Printf("panic recover %v:%v", r, string(debug.Stack()))
 		}
 	}()
-	fmt.Println("GoPath:")
-	fmt.Println(filepath.Abs(*saveGoPath))
-
-	fmt.Println("JsonPath:")
-	fmt.Println(filepath.Abs(*saveJsonPath))
-
-	fmt.Println("ExcelPath:")
-	fmt.Println(filepath.Abs(*readPath))
-
-	fmt.Println("TplPath:")
-	fmt.Println(filepath.Abs(*tplPath))
 
 	(&Generate{
 		SaveGoPath:   *saveGoPath,

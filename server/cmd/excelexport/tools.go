@@ -101,7 +101,7 @@ func (s *Generate) writeGolangFile(struType, sheetName, keyType, key, xlsxname s
 	}
 
 	newFile := path.Join(s.SaveGoPath, sheetName+".conf.go")
-	os.Mkdir(s.SaveGoPath, 0666)
+	os.MkdirAll(s.SaveGoPath, os.ModePerm)
 	fw, err := os.OpenFile(newFile, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0644)
 	defer func() {
 		fw.Close()
@@ -119,7 +119,7 @@ func (s *Generate) writeGolangFile(struType, sheetName, keyType, key, xlsxname s
 
 // 拼装好json写入新的.json 文件
 func (s *Generate) writeJsonFile(data, filename string) error {
-	os.Mkdir(s.SaveJsonPath, 0666)
+	os.MkdirAll(s.SaveJsonPath, os.ModePerm)
 	newFile := path.Join(s.SaveJsonPath, filename+".json")
 	if err := ioutil.WriteFile(newFile, []byte(data), 0644); err != nil {
 		return fmt.Errorf("writeJsonFile Write is err:%v", err)
