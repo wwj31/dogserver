@@ -7,6 +7,7 @@ import (
 	"server/common"
 	"server/common/log"
 	"server/common/toml"
+	"server/config/confgo"
 	"server/db"
 	"server/service/client"
 	"server/service/game"
@@ -37,6 +38,10 @@ func startup() {
 		log.Init(*logLevel, *logPath, logName, cast.ToBool(toml.Get("dispaly")))
 
 		// load config of excels
+		err := confgo.Load(toml.Get("configjson"))
+		if err != nil {
+			panic(err)
+		}
 		//err = config_go.Load(iniconfig.BaseString("configjson"))
 		//expect.Nil(err)
 		//common.RefactorConfig()

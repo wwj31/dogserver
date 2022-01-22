@@ -3,7 +3,7 @@ dispaly    = "true"
 logpath    = "./log"
 etcdprefix = "/actor/"
 etcdaddr   = "127.0.0.1:2379"
-configjson = "./root/internal/config/config_json"
+configjson = "../server/config/confjson"
 
 # 网关
 [server]
