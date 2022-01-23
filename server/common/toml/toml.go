@@ -41,3 +41,13 @@ func Get(k string) string {
 	}
 	return v.(string)
 }
+
+func GetB(k string) (string, bool) {
+	v, ok := Config[k]
+	if !ok {
+		if v, ok = BaseConfig[k]; !ok {
+			return "", false
+		}
+	}
+	return v.(string), true
+}

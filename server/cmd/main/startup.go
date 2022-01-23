@@ -38,15 +38,16 @@ func startup() {
 		log.Init(*logLevel, *logPath, logName, cast.ToBool(toml.Get("dispaly")))
 
 		// load config of excels
-		err := confgo.Load(toml.Get("configjson"))
-		if err != nil {
-			panic(err)
+		if path, ok := toml.GetB("configjson"); ok {
+			err := confgo.Load(path)
+			if err != nil {
+				panic(err)
+			}
+			common.RefactorConfig()
 		}
-		//err = config_go.Load(iniconfig.BaseString("configjson"))
-		//expect.Nil(err)
-		//common.RefactorConfig()
 
-		//monitor()
+		monitor()
+
 		system := run(*appName, int32(*appId))
 		<-osSignal
 		system.Stop()
@@ -100,10 +101,9 @@ func newGame(appId int32, system *actor.System) {
 
 func monitor() {
 	go func() {
-		tick := time.Tick(3 * time.Second)
+		tick := time.Tick(10 * time.Second)
 		for range tick {
 			tools.PrintMemUsage()
 		}
 	}()
-
 }
