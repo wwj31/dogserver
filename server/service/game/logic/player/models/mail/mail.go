@@ -56,7 +56,7 @@ func (s *Mail) Add(mail *outer.Mail) {
 	s.mailInfo.Mails[mail.Uuid] = mail
 	s.zSet.Add(cast.ToString(mail.Uuid), mail.CreateAt)
 	s.Player.Send2Client(&outer.AddMailNotify{Uuid: mail.Uuid})
-	log.Debugw("add mail ", "player", s.Player.Role().RoleId(), "mail", mail.Title, "items", mail.Items)
+	log.Debugw("add actormail ", "player", s.Player.Role().RoleId(), "actormail", mail.Title, "items", mail.Items)
 	s.save()
 }
 
@@ -79,7 +79,7 @@ func (s *Mail) Mails(count, limit int32) []*outer.Mail {
 		mailId := cast.ToUint64(key.Key)
 		mail, ok := s.mailInfo.Mails[mailId]
 		if !ok {
-			log.Warnw("can not found mail key:%v", mailId)
+			log.Warnw("can not found actormail key:%v", mailId)
 			continue
 		}
 		mails = append(mails, mail)
@@ -90,7 +90,7 @@ func (s *Mail) Mails(count, limit int32) []*outer.Mail {
 func (s *Mail) Read(uuid uint64) {
 	mail, ok := s.mailInfo.Mails[uuid]
 	if !ok {
-		log.Warnw("read mail can not find mail", "uuid", uuid, "roleId", s.Player.Role().RoleId())
+		log.Warnw("read actormail can not find actormail", "uuid", uuid, "roleId", s.Player.Role().RoleId())
 		return
 	}
 	mail.Status = 1
@@ -99,7 +99,7 @@ func (s *Mail) Read(uuid uint64) {
 func (s *Mail) ReceiveItem(uuid uint64) {
 	mail, ok := s.mailInfo.Mails[uuid]
 	if !ok {
-		log.Warnw("ReceiveItem can not find mail", "uuid", uuid, "roleId", s.Player.Role().RoleId())
+		log.Warnw("ReceiveItem can not find actormail", "uuid", uuid, "roleId", s.Player.Role().RoleId())
 		return
 	}
 	if mail.Status == 2 {

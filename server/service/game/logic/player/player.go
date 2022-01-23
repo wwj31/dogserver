@@ -44,6 +44,7 @@ type (
 
 		saveTimerId string
 		exitTimerId string
+		liveTime    int64
 	}
 )
 
@@ -56,6 +57,7 @@ func (s *Player) OnInit() {
 
 	s.saveTimerId = s.AddTimer(tools.UUID(), tools.NowTime()+int64(1*time.Minute), func(dt int64) {
 		s.store()
+		s.live()
 	}, -1)
 }
 
@@ -67,6 +69,7 @@ func (s *Player) OnHandleMessage(sourceId, targetId string, msg interface{}) {
 		return
 	}
 	handle(s, msg)
+	s.liveTime = tools.NowTime()
 }
 
 func (s *Player) GateSession() common.GSession            { return s.gSession }
@@ -130,4 +133,12 @@ func (s *Player) store() {
 	}
 
 	log.Infow("player stored model", logFiled...)
+}
+
+func (s Player) live() {
+	now := tools.NowTime()
+	duration := now - s.liveTime
+	if duration > int64(24*time.Hour) {
+		s.Exit()
+	}
 }

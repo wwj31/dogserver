@@ -21,7 +21,7 @@ var _ = regist(MsgName(&outer.ReadMailReq{}), func(player iface.Player, v interf
 
 	player.Mail().Read(msg.Uuid)
 	player.Send2Client(&outer.ReadMailResp{})
-	log.Debugw("player read mail ", "player", player.ID(), "mailId", msg.Uuid)
+	log.Debugw("player read actormail ", "player", player.ID(), "mailId", msg.Uuid)
 })
 
 // 领取邮件道具
@@ -30,7 +30,7 @@ var _ = regist(MsgName(&outer.ReceiveMailItemReq{}), func(player iface.Player, v
 
 	player.Mail().ReceiveItem(msg.Uuid)
 	player.Send2Client(&outer.ReadMailResp{})
-	log.Debugw("player recv mail item", "player", player.ID(), "mailId", msg.Uuid)
+	log.Debugw("player recv actormail item", "player", player.ID(), "mailId", msg.Uuid)
 })
 
 // 删除邮件
@@ -38,5 +38,5 @@ var _ = regist(MsgName(&outer.DeleteMailReq{}), func(player iface.Player, v inte
 	msg := v.(*outer.DeleteMailReq)
 
 	player.Mail().Delete(msg.Uuids...)
-	log.Debugw("player del mail", "player", player.ID(), "mailId", msg.Uuids)
+	log.Debugw("player del actormail", "player", player.ID(), "mailId", msg.Uuids)
 })
