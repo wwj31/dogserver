@@ -14,13 +14,14 @@ func Spawner(name string, newPool ...bool) (interface{}, bool) {
 
 var spawner = map[string]factory{
 	"inner.ItemMap":               func() interface{} { return &ItemMap{} },
+	"inner.G2LRoleOffline":        func() interface{} { return &G2LRoleOffline{} },
+	"inner.G2DGameStop":           func() interface{} { return &G2DGameStop{} },
 	"inner.L2GTSessionDisabled":   func() interface{} { return &L2GTSessionDisabled{} },
 	"inner.Error":                 func() interface{} { return &Error{} },
 	"inner.GateMsgWrapper":        func() interface{} { return &GateMsgWrapper{} },
-	"inner.G2LRoleOffline":        func() interface{} { return &G2LRoleOffline{} },
+	"inner.GameMsgWrapper":        func() interface{} { return &GameMsgWrapper{} },
 	"inner.GT2GSessionClosed":     func() interface{} { return &GT2GSessionClosed{} },
 	"inner.L2GTSessionAssignGame": func() interface{} { return &L2GTSessionAssignGame{} },
-	"inner.G2DGameStop":           func() interface{} { return &G2DGameStop{} },
 }
 
 func Put(name string, x interface{}) {}

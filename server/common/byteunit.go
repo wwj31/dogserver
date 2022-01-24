@@ -1,6 +1,6 @@
 package common
 
-// Package typ go install golang.org/x/tools/cmd/stringer
+// go install golang.org/x/tools/cmd/stringer
 
 //go:generate stringer -type ByteUnit
 type ByteUnit int64

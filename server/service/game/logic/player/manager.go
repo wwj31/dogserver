@@ -22,7 +22,7 @@ func NewMgr(g iface.Gamer) *Manager {
 	}
 }
 
-func (s *Manager) SetPlayer(gSession common.GSession, id common.ActorId) {
+func (s *Manager) AssociateSession(id common.ActorId, gSession common.GSession) {
 	s.playerByGSession[gSession] = id
 	s.gSessionByPlayer[id] = gSession
 }

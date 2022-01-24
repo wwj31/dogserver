@@ -1,9 +1,7 @@
 package game
 
 import (
-	"github.com/golang/protobuf/proto"
-	"github.com/wwj31/dogactor/actor"
-	"github.com/wwj31/dogactor/expect"
+	"reflect"
 	"server/common"
 	"server/common/log"
 	"server/common/toml"
@@ -13,6 +11,12 @@ import (
 	"server/service/game/iface"
 	"server/service/game/logic/player"
 	"server/service/game/logic/player/localmsg"
+
+	"github.com/spf13/cast"
+
+	"github.com/golang/protobuf/proto"
+	"github.com/wwj31/dogactor/actor"
+	"github.com/wwj31/dogactor/expect"
 )
 
 func New(serverId uint16) *Game {
@@ -58,7 +62,7 @@ func (s *Game) OnHandleMessage(sourceId, targetId string, msg interface{}) {
 
 func (s *Game) OnHandleEvent(event interface{}) {
 	switch ev := event.(type) {
-	case *actor.EvDelactor:
+	case actor.EvDelactor:
 		if common.IsActorOf(ev.ActorId, common.Player_Actor) {
 			s.inactivePlayers[ev.ActorId] = struct{}{}
 		}
@@ -106,7 +110,7 @@ func (s *Game) enterGameReq(gSession common.GSession, msg *outer.EnterGameReq) {
 	} else {
 		playerId = s.activatePlayer(msg.RID)
 	}
-	s.PlayerMgr().SetPlayer(gSession, playerId)
+	s.PlayerMgr().AssociateSession(playerId, gSession)
 
 	err := s.Send(playerId, localmsg.Login{GSession: gSession})
 	if err != nil {
@@ -132,6 +136,7 @@ func (s *Game) toPlayer(gSession common.GSession, msg interface{}) {
 		actorId common.ActorId
 		ok      bool
 	)
+
 	if gSession != "" {
 		actorId, ok = s.PlayerMgr().PlayerBySession(gSession)
 		if !ok {
@@ -139,7 +144,29 @@ func (s *Game) toPlayer(gSession common.GSession, msg interface{}) {
 			return
 		}
 	} else {
+		gameWrapper, ok := msg.(*inner.GameMsgWrapper)
+		if !ok {
+			log.Errorw("unknown msg type ", "msgType", reflect.TypeOf(msg).String())
+			return
+		}
+		v, exist := inner.Spawner(gameWrapper.MsgName)
+		if !exist {
+			log.Errorw("msg is not in inner msg", "msgName", gameWrapper.MsgName)
+			return
+		}
+		if err := proto.Unmarshal(gameWrapper.Data, v.(proto.Message)); err != nil {
+			log.Errorw("unmarshal failed", "msgName", gameWrapper.MsgName)
+			return
+		}
+		msg = v
+		actorId = common.PlayerId(gameWrapper.RID)
+	}
 
+	// 如果玩家actor已经关闭，需要重新激活
+	if _, ok := s.inactivePlayers[actorId]; !ok {
+		rid, err := cast.ToUint64E(common.AId(actorId, common.Player_Actor))
+		expect.Nil(err)
+		s.activatePlayer(rid)
 	}
 
 	err := s.Send(actorId, msg)

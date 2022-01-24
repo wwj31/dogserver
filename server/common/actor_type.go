@@ -3,6 +3,7 @@ package common
 import (
 	"fmt"
 	"regexp"
+	"strings"
 
 	"server/common/log"
 )
@@ -33,6 +34,15 @@ func WorldName(id int32) ActorId {
 
 func GatewayName(id int32) ActorId {
 	return fmt.Sprintf("%v%v_Actor", GateWay_Actor, id)
+}
+
+func AId(actorId ActorId, typ string) (str string) {
+	t := strings.Trim(actorId, typ)
+	s := strings.Split(t, "_")
+	if len(s) == 2 {
+		str = s[0]
+	}
+	return
 }
 
 // 匹配actor类型 按照固定格式匹配
