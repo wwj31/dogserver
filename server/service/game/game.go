@@ -33,11 +33,13 @@ type Game struct {
 }
 
 func (s *Game) OnInit() {
+
 	s.SaveLoader = db.New(toml.Get("mysql"), toml.Get("database"))
 	s.genUUID = common.NewUID(s.sid)
 	s.playerMgr = player.NewMgr(s)
 	s.inactivePlayers = make(map[common.ActorId]struct{}, 1000)
 
+	s.System().RegistEvent(s.ID(), actor.EvDelactor{})
 	log.Debugf("game OnInit")
 }
 
