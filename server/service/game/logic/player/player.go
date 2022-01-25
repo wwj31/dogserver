@@ -127,7 +127,7 @@ func (s *Player) store() {
 		logFiled = append(logFiled, "table", tab.TableName())
 	}
 
-	err := s.gamer.Save(tabs...)
+	err := s.Gamer().Save(tabs...)
 	if err != nil {
 		log.Errorw("player store err", "err", err)
 	}
