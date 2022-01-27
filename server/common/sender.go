@@ -2,9 +2,8 @@ package common
 
 import (
 	"fmt"
-	"github.com/golang/protobuf/proto"
+	"github.com/gogo/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
-	"github.com/wwj31/dogactor/tools"
 	"reflect"
 )
 
@@ -32,7 +31,6 @@ func (s SendTools) Send2Client(gSession GSession, pb proto.Message) error {
 	}
 
 	gateId, _ := gSession.Split()
-	tools.MsgName(pb)
 	str := reflect.TypeOf(pb).String()
 	if str[0] == '*' {
 		str = str[1:]
