@@ -1,9 +1,10 @@
 package iface
 
 import (
+	"server/common"
+
 	"github.com/golang/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
-	"server/common"
 )
 
 type (
@@ -24,7 +25,7 @@ type (
 )
 
 type PlayerManager interface {
-	SetPlayer(gSession common.GSession, id common.ActorId)
+	AssociateSession(id common.ActorId, gSession common.GSession)
 	PlayerBySession(gSession common.GSession) (common.ActorId, bool)
 	GSessionByPlayer(id common.ActorId) (common.GSession, bool)
 	DelGSession(gateSession common.GSession)
