@@ -1,2 +1,3 @@
-protoc -I=. -I=%GOPATH%/pkg/mod/github.com/gogo/protobuf@v1.3.2/protobuf --gogofaster_out=../inner_message/ -I=..\exec\  .\proto\*.proto
+protoc -I=. -I=%GOPATH%/pkg/mod/github.com/gogo/protobuf@v1.3.2/protobuf --gogofaster_out=./ -I=..\exec\  .\proto\*.proto
+go generate ./inner/type.go
 pause
