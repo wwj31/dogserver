@@ -9,7 +9,7 @@ etcdaddr   = "127.0.0.1:2379"
 [server]
     [server.login_1]
         actoraddr  = "127.0.0.1:8100"
-        mysql      = "root:123456@tcp(127.0.0.1:3306)/%s?charset=utf8mb4&parseTime=True&loc=Local"
+        mysql      = "root:starunion@tcp(127.0.0.1:3306)/%s?charset=utf8mb4&parseTime=True&loc=Local"
         luapath    = "./root/servers/gate/lua/main.lua"
         database   = "game"
         configjson = "../server/config/confjson"
@@ -24,7 +24,7 @@ etcdaddr   = "127.0.0.1:2379"
 
     [server.game_1]
         actoraddr  = "127.0.0.1:8201"
-        mysql      = "root:123456@tcp(127.0.0.1:3306)/%s?charset=utf8mb4&parseTime=True&loc=Local"
+        mysql      = "root:starunion@tcp(127.0.0.1:3306)/%s?charset=utf8mb4&parseTime=True&loc=Local"
         database   = "game"
         configjson = "../server/config/confjson"
 

@@ -1,13 +1,14 @@
 package gateway
 
 import (
-	"github.com/wwj31/dogactor/network"
-	"github.com/wwj31/dogactor/tools"
 	"server/common"
 	"server/common/log"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
 	"time"
+
+	"github.com/wwj31/dogactor/network"
+	"github.com/wwj31/dogactor/tools"
 )
 
 type UserSession struct {
@@ -61,9 +62,10 @@ func (s *UserSession) OnRecv(data []byte) {
 		}
 	}()
 
+	protoIndex := s.gateway.System().ProtoIndex()
 	// 心跳
 	if msgId == outer.MSG_PING.Int32() {
-		ping := network.NewBytesMessageParse(data, s.gateway.msgParser).Proto().(*outer.Ping)
+		ping := network.NewBytesMessageParse(data, protoIndex).Proto().(*outer.Ping)
 		pong := network.NewPbMessage(&outer.Pong{
 			ClientTimestamp: ping.ClientTimestamp,
 			ServerTimestamp: tools.Milliseconds(),
@@ -73,7 +75,7 @@ func (s *UserSession) OnRecv(data []byte) {
 		return
 	}
 
-	msgName, ok := s.gateway.msgParser.MsgIdToName(msgId)
+	msgName, ok := protoIndex.MsgIdToName(msgId)
 	if !ok {
 		log.Errorw("proto not find struct", "msgId", msgId)
 		return

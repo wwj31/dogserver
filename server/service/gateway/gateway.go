@@ -21,7 +21,7 @@ type GateWay struct {
 	sessions map[uint32]*UserSession
 
 	// 消息映射表
-	msgParser *tools.ProtoParser
+	protoIndex *tools.ProtoIndex
 }
 
 func New() *GateWay {
@@ -35,8 +35,6 @@ func (s *GateWay) OnInit() {
 		func() network.DecodeEncoder { return &network.StreamCode{MaxDecode: int(10 * common.KB)} },
 		func() network.NetSessionHandler { return &UserSession{gateway: s} },
 	)
-
-	s.msgParser = tools.NewProtoParser().Init("outer", "MSG")
 
 	s.AddTimer(tools.UUID(), tools.NowTime()+int64(time.Hour), s.checkDeadSession, -1)
 
@@ -81,7 +79,7 @@ func (s *GateWay) OnHandleMessage(sourceId, targetId string, v interface{}) {
 		}
 
 		log.Infow("server msg -> user", logInfo...)
-		msgId, _ := s.msgParser.MsgNameToId(msg.GetMsgName())
+		msgId, _ := s.System().ProtoIndex().MsgNameToId(msg.GetMsgName())
 		_ = userSessionHandler.SendMsg(network.CombineMsgWithId(msgId, msg.Data))
 
 	default:

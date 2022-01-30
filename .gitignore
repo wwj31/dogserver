@@ -2,3 +2,4 @@
 server/log
 bin/
 server/syslog
+client.log

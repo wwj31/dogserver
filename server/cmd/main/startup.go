@@ -9,6 +9,8 @@ import (
 	"server/common/toml"
 	"server/config/confgo"
 	"server/db"
+	"server/proto/innermsg/inner"
+	"server/proto/outermsg/outer"
 	"server/service/client"
 	"server/service/game"
 	"server/service/gateway"
@@ -64,6 +66,7 @@ func run(appType string, appId int32) *actor.System {
 		actor.WithCMD(cmd.New()),
 		cluster.WithRemote(toml.Get("etcdaddr"), toml.Get("etcdprefix")),
 		actor.Addr(toml.Get("actoraddr")),
+		actor.ProtoIndex(newProtoIndex()),
 	)
 
 	switch appType {
@@ -81,6 +84,18 @@ func run(appType string, appId int32) *actor.System {
 		newLogin(system)
 	}
 	return system
+}
+func newProtoIndex() *tools.ProtoIndex {
+	return tools.NewProtoIndex(func(name string) (v interface{}, ok bool) {
+		v, ok = inner.Spawner(name)
+		if !ok {
+			v, ok = outer.Spawner(name)
+		}
+		return
+	}, tools.EnumIdx{
+		PackageName: "outer",
+		Enum2Name:   outer.MSG_name,
+	})
 }
 
 func newLogin(system *actor.System) {

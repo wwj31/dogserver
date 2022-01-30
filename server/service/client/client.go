@@ -1,24 +1,24 @@
 package client
 
 import (
+	"server/proto/outermsg/outer"
+	"time"
+
 	"github.com/golang/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
 	"github.com/wwj31/dogactor/expect"
 	"github.com/wwj31/dogactor/network"
 	"github.com/wwj31/dogactor/tools"
-	"server/proto/outermsg/outer"
-	"time"
 )
 
 const addr = "127.0.0.1:9001"
 
 type Client struct {
 	actor.Base
-	cli       network.Client
-	msgParser *tools.ProtoParser
-	UID       uint64
-	RID       uint64
-	mails     []*outer.Mail
+	cli   network.Client
+	UID   uint64
+	RID   uint64
+	mails []*outer.Mail
 }
 
 func (s *Client) OnInit() {
@@ -27,7 +27,6 @@ func (s *Client) OnInit() {
 	expect.Nil(s.cli.Start(false))
 
 	s.InitCmd()
-	s.msgParser = tools.NewProtoParser().Init("outer", "MSG")
 
 	// 心跳
 	s.AddTimer(tools.UUID(), tools.NowTime()+int64(20*time.Second), func(dt int64) {
