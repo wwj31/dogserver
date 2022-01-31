@@ -1,10 +1,11 @@
 package gogotest
 
 import (
-	"github.com/gogo/protobuf/proto"
-	gogo "github.com/gogo/protobuf/proto"
 	"server/proto/innermsg/inner"
 	"testing"
+
+	gogo "github.com/gogo/protobuf/proto"
+	"github.com/golang/protobuf/proto"
 )
 
 func BenchmarkGoGoMarshal(b *testing.B) {
@@ -35,7 +36,7 @@ func BenchmarkGoGoUnmarshal(b *testing.B) {
 	pt.RID = 3432423
 	pt.UID = 12321321
 	pt.GateSession = "this is test"
-	bytes, _ := gogo.Marshal(&pt)
+	bytes, _ := proto.Marshal(&pt)
 	b.ReportAllocs()
 	b.ResetTimer()
 
