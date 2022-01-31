@@ -1,17 +1,18 @@
 package mail
 
 import (
-	"github.com/golang/protobuf/proto"
-	"github.com/spf13/cast"
-	"github.com/wwj31/dogactor/container/rank"
-	"github.com/wwj31/dogactor/expect"
-	"github.com/wwj31/dogactor/tools"
 	"server/common"
 	"server/common/log"
 	"server/db/table"
 	"server/proto/outermsg/outer"
 	"server/service/game/iface"
 	"server/service/game/logic/player/models"
+
+	"github.com/golang/protobuf/proto"
+	"github.com/spf13/cast"
+	"github.com/wwj31/dogactor/container/rank"
+	"github.com/wwj31/dogactor/expect"
+	"github.com/wwj31/dogactor/tools"
 )
 
 type Mail struct {
@@ -75,11 +76,11 @@ func (s *Mail) Mails(count, limit int32) []*outer.Mail {
 	var mails []*outer.Mail
 	keys := s.zSet.Get(int(count+1), int(count+limit))
 
-	for _, key := range keys {
-		mailId := cast.ToUint64(key.Key)
+	for _, k := range keys {
+		mailId := cast.ToUint64(k.Key)
 		mail, ok := s.mailInfo.Mails[mailId]
 		if !ok {
-			log.Warnw("can not found actormail key:%v", mailId)
+			log.Warnw("can not found actor mail key:%v", mailId)
 			continue
 		}
 		mails = append(mails, mail)
@@ -90,7 +91,7 @@ func (s *Mail) Mails(count, limit int32) []*outer.Mail {
 func (s *Mail) Read(uuid uint64) {
 	mail, ok := s.mailInfo.Mails[uuid]
 	if !ok {
-		log.Warnw("read actormail can not find actormail", "uuid", uuid, "roleId", s.Player.Role().RoleId())
+		log.Warnw("Read can not find mail", "uuid", uuid, "roleId", s.Player.Role().RoleId())
 		return
 	}
 	mail.Status = 1

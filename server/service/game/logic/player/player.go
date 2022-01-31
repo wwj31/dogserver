@@ -95,7 +95,7 @@ func (s *Player) Logout() {
 		mod.OnLogout()
 	}
 
-	exitAt := tools.NowTime() + 5*time.Minute.Nanoseconds()
+	exitAt := tools.NowTime() + 3*time.Minute.Nanoseconds()
 	s.exitTimerId = s.AddTimer(tools.UUID(), exitAt, func(dt int64) {
 		s.store()
 		s.Exit()
