@@ -33,16 +33,18 @@ message LoginReq
 
 message LoginResp
 {
-    uint64  UID         = 1;
-    uint64  RID         = 2;
-    string  cryptic     = 3;
+    uint64  UID          = 1;
+    uint64  RID          = 2;
+    bool    NewPlayer    = 3;
+    string  Checksum     = 4;
 }
 
 message EnterGameReq
 {
-    uint64  UID       = 1;
-    uint64  RID       = 2;
-    string  cryptic   = 3;
+    uint64  UID        = 1;
+    uint64  RID        = 2;
+    bool    NewPlayer  = 3;
+    string  Checksum   = 4;
 }
 
 message EnterGameResp

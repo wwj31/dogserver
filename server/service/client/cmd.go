@@ -2,11 +2,12 @@ package client
 
 import (
 	"fmt"
-	"github.com/spf13/cast"
 	"math/rand"
 	"server/common"
 	"server/proto/outermsg/outer"
 	"time"
+
+	"github.com/spf13/cast"
 )
 
 func (s *Client) InitCmd() {
@@ -51,8 +52,10 @@ func (s *Client) randLogin(arg ...string) {
 
 func (s *Client) enter(arg ...string) {
 	msg := &outer.EnterGameReq{
-		UID: s.UID,
-		RID: s.RID,
+		UID:       s.UID,
+		RID:       s.RID,
+		NewPlayer: s.NewPlayer,
+		Checksum:  common.LoginMD5(s.UID, s.RID, s.NewPlayer),
 	}
 	s.SendToServer(outer.MSG_ENTER_GAME_REQ.Int32(), msg)
 }
@@ -79,6 +82,7 @@ func (s *Client) listMail(arg ...string) {
 	}
 	s.SendToServer(outer.MSG_MAIL_LIST_REQ.Int32(), msg)
 }
+
 func (s *Client) readMail(arg ...string) {
 	if len(arg) != 1 {
 		return

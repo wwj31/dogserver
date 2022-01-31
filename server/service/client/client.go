@@ -15,10 +15,11 @@ const addr = "127.0.0.1:9001"
 
 type Client struct {
 	actor.Base
-	cli   network.Client
-	UID   uint64
-	RID   uint64
-	mails []*outer.Mail
+	cli       network.Client
+	UID       uint64
+	RID       uint64
+	NewPlayer bool
+	mails     []*outer.Mail
 }
 
 func (s *Client) OnInit() {
@@ -54,6 +55,7 @@ func (s *Client) OnHandleMessage(sourceId, targetId string, v interface{}) {
 		logger.Infow("login success!", "msg", msg.String())
 		s.UID = msg.UID
 		s.RID = msg.RID
+		s.NewPlayer = msg.NewPlayer
 		s.enter()
 	case *outer.EnterGameResp:
 		logger.Infow("EnterGameResp!", "msg", msg.String())

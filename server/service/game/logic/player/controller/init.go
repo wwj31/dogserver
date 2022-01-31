@@ -19,5 +19,9 @@ func regist(msgName string, fun Handle) bool {
 }
 
 func MsgName(v interface{}) string {
-	return reflect.TypeOf(v).String()
+	str := reflect.TypeOf(v).String()
+	if str[0] == '*' {
+		str = str[1:]
+	}
+	return str
 }

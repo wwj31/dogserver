@@ -56,9 +56,9 @@ func (s *Login) LoginReq(sourceId string, gSession common.GSession, msg *outer.L
 		return fmt.Errorf("login req checksum failed msg:%v", msg.String())
 	}
 
-	acc, _ := s.accountMgr.Login(msg, s.storer)
+	acc, newPlayer := s.accountMgr.Login(msg, s.storer)
 
-	// 新、旧sessio不相同做顶号处理
+	// 新、旧session不相同做顶号处理
 	if acc.GSession().Valid() && acc.GSession() != gSession {
 		oldId, _ := acc.GSession().Split()
 		_ = s.Send2Gate(oldId, &inner.L2GTSessionDisabled{GateSession: acc.GSession().String()})
@@ -74,9 +74,12 @@ func (s *Login) LoginReq(sourceId string, gSession common.GSession, msg *outer.L
 		return err
 	}
 
+	md5 := common.LoginMD5(acc.UUId(), acc.LastRoleId(), newPlayer)
 	// 通知玩家登录成功
 	return s.Send2Client(gSession, &outer.LoginResp{
-		UID: acc.UUId(),
-		RID: acc.LastRoleId(),
+		UID:       acc.UUId(),
+		RID:       acc.LastRoleId(),
+		NewPlayer: newPlayer,
+		Checksum:  md5,
 	})
 }

@@ -12,8 +12,6 @@ import (
 	"server/service/game/logic/player"
 	"server/service/game/logic/player/localmsg"
 
-	"github.com/spf13/cast"
-
 	"github.com/golang/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
 	"github.com/wwj31/dogactor/expect"
@@ -28,15 +26,13 @@ type Game struct {
 	sid     uint16 // serverId
 	genUUID common.UID
 	iface.SaveLoader
-	playerMgr       iface.PlayerManager
-	inactivePlayers map[common.ActorId]struct{}
+	playerMgr iface.PlayerManager
 }
 
 func (s *Game) OnInit() {
 	s.SaveLoader = db.New(toml.Get("mysql"), toml.Get("database"))
 	s.genUUID = common.NewUID(s.sid)
 	s.playerMgr = player.NewMgr(s)
-	s.inactivePlayers = make(map[common.ActorId]struct{}, 1000)
 
 	_ = s.System().RegistEvent(s.ID(), actor.EvDelactor{})
 	log.Debugf("game OnInit")
@@ -65,7 +61,6 @@ func (s *Game) OnHandleEvent(event interface{}) {
 	switch ev := event.(type) {
 	case actor.EvDelactor:
 		if common.IsActorOf(ev.ActorId, common.Player_Actor) {
-			s.inactivePlayers[ev.ActorId] = struct{}{}
 		}
 	}
 }
@@ -83,19 +78,24 @@ func (s *Game) PlayerMgr() iface.PlayerManager {
 	return s.playerMgr
 }
 
-func (s *Game) activatePlayer(rid uint64) common.ActorId {
+func (s *Game) activatePlayer(rid uint64, new bool) common.ActorId {
 	playerId := common.PlayerId(rid)
-	playerActor := actor.New(playerId, player.New(rid, s), actor.SetMailBoxSize(200), actor.SetLocalized())
-	err := s.System().Add(playerActor)
-	expect.Nil(err)
+	if ok := s.System().Exist(playerId); !ok || new {
+		playerActor := actor.New(playerId, player.New(rid, s), actor.SetMailBoxSize(200), actor.SetLocalized())
+		err := s.System().Add(playerActor)
+		expect.Nil(err)
+	}
 
-	delete(s.inactivePlayers, playerId)
 	return playerId
 }
 
 // player enter game
 func (s *Game) enterGameReq(gSession common.GSession, msg *outer.EnterGameReq) {
 	log.Debugw("EnterGameReq", "msg", msg)
+	if common.LoginMD5(msg.UID, msg.RID, msg.NewPlayer) != msg.Checksum {
+		log.Warnw("checksum md5 check faild", "msg", msg.String())
+		return
+	}
 
 	// warn:repeated login
 	if _, ok := s.PlayerMgr().PlayerBySession(gSession); ok {
@@ -109,7 +109,7 @@ func (s *Game) enterGameReq(gSession common.GSession, msg *outer.EnterGameReq) {
 	if oldSession, ok := s.PlayerMgr().GSessionByPlayer(playerId); ok {
 		s.PlayerMgr().DelGSession(oldSession)
 	} else {
-		playerId = s.activatePlayer(msg.RID)
+		playerId = s.activatePlayer(msg.RID, msg.NewPlayer)
 	}
 	s.PlayerMgr().AssociateSession(playerId, gSession)
 
@@ -161,13 +161,8 @@ func (s *Game) toPlayer(gSession common.GSession, msg interface{}) {
 		}
 		msg = v
 		actorId = common.PlayerId(gameWrapper.RID)
-	}
-
-	// 如果玩家actor已经关闭，需要重新激活
-	if _, ok := s.inactivePlayers[actorId]; !ok {
-		rid, err := cast.ToUint64E(common.AId(actorId, common.Player_Actor))
-		expect.Nil(err)
-		s.activatePlayer(rid)
+		// 如果玩家actor已经关闭，需要重新激活
+		s.activatePlayer(gameWrapper.RID, false)
 	}
 
 	err := s.Send(actorId, msg)
