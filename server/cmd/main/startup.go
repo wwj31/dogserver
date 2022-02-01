@@ -15,6 +15,7 @@ import (
 	"server/service/game"
 	"server/service/gateway"
 	"server/service/login"
+	"server/service/robot"
 	"syscall"
 	"time"
 
@@ -72,6 +73,8 @@ func run(appType string, appId int32) *actor.System {
 	switch appType {
 	case common.Client:
 		expect.Nil(system.Add(actor.New(common.Client, &client.Client{}, actor.SetLocalized())))
+	case common.Robot:
+		system.Add(actor.New(common.Robot, &robot.Robot{}, actor.SetLocalized()))
 	case common.GateWay_Actor:
 		newGateway(appId, system)
 	case common.Login_Actor:

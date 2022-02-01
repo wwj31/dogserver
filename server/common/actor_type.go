@@ -18,6 +18,7 @@ const (
 	GateWay_Actor = "gateway"
 
 	Client = "client"
+	Robot  = "robot"
 )
 
 func GameName(id int32) ActorId {

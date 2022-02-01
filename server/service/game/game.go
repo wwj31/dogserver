@@ -138,6 +138,8 @@ func (s *Game) toPlayer(gSession common.GSession, msg interface{}) {
 		ok      bool
 	)
 
+	// gSession != "" mean msg from client via gateway,otherwise
+	// msg from other actor wrap in inner.GameMsgWrapper
 	if gSession != "" {
 		actorId, ok = s.PlayerMgr().PlayerBySession(gSession)
 		if !ok {
@@ -164,7 +166,7 @@ func (s *Game) toPlayer(gSession common.GSession, msg interface{}) {
 		}
 		msg = v
 		actorId = common.PlayerId(gameWrapper.RID)
-		// 如果玩家actor已经关闭，需要重新激活
+		// try reactivate player actor if actor exit
 		s.activatePlayer(gameWrapper.RID, false)
 	}
 

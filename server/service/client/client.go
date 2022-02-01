@@ -20,6 +20,7 @@ type Client struct {
 	RID       uint64
 	NewPlayer bool
 	mails     []*outer.Mail
+	ACC       string
 }
 
 func (s *Client) OnInit() {
@@ -27,7 +28,12 @@ func (s *Client) OnInit() {
 	s.cli.AddLast(func() network.NetSessionHandler { return &SessionHandler{client: s} })
 	expect.Nil(s.cli.Start(false))
 
-	s.InitCmd()
+	if s.ACC != "" {
+		s.login(s.ACC)
+		s.listMail()
+	} else {
+		s.InitCmd()
+	}
 
 	// 心跳
 	s.AddTimer(tools.UUID(), tools.NowTime()+int64(20*time.Second), func(dt int64) {

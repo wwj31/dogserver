@@ -42,3 +42,5 @@ etcdaddr   = "127.0.0.1:2379"
         actoraddr  = "127.0.0.1:5002"
     [server.client_3]
         actoraddr  = "127.0.0.1:5003"
+    [server.robot_1]
+        actoraddr  = "127.0.0.1:5003"
