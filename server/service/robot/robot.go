@@ -7,10 +7,9 @@ import (
 	"server/service/client"
 	"time"
 
+	"github.com/wwj31/dogactor/actor"
 	"github.com/wwj31/dogactor/expect"
 	"github.com/wwj31/dogactor/tools"
-
-	"github.com/wwj31/dogactor/actor"
 )
 
 const goc = 1
