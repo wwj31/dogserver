@@ -1,6 +1,6 @@
 package outer
 
-//go install github.com/wwj31/spawner@v0.0.6
+//go install github.com/wwj31/spawner@v0.0.7
 //go:generate spawner -pool=true
 
 func (s MSG) Int32() int32 {

@@ -8,7 +8,7 @@ import (
 	"server/service/game/iface"
 	"server/service/game/logic/player/models"
 
-	"github.com/golang/protobuf/proto"
+	"github.com/gogo/protobuf/proto"
 	"github.com/spf13/cast"
 	"github.com/wwj31/dogactor/container/rank"
 	"github.com/wwj31/dogactor/expect"

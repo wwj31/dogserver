@@ -5,7 +5,7 @@ import (
 	"server/common/log"
 	"server/service/game/iface"
 
-	"github.com/golang/protobuf/proto"
+	"github.com/gogo/protobuf/proto"
 )
 
 type Manager struct {

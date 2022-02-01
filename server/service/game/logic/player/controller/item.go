@@ -1,11 +1,12 @@
 package controller
 
 import (
-	"github.com/golang/protobuf/proto"
 	"reflect"
 	"server/common/log"
 	"server/proto/outermsg/outer"
 	"server/service/game/iface"
+
+	"github.com/gogo/protobuf/proto"
 )
 
 var _ = regist(MsgName(&outer.UseItemReq{}), func(player iface.Player, v interface{}) {

@@ -3,7 +3,7 @@ package iface
 import (
 	"server/common"
 
-	"github.com/golang/protobuf/proto"
+	"github.com/gogo/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
 )
 

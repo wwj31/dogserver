@@ -89,7 +89,7 @@ func newProtoIndex() *tools.ProtoIndex {
 	return tools.NewProtoIndex(func(name string) (v interface{}, ok bool) {
 		v, ok = inner.Spawner(name)
 		if !ok {
-			v, ok = outer.Spawner(name)
+			v, ok = outer.Spawner(name, true)
 		}
 		return
 	}, tools.EnumIdx{

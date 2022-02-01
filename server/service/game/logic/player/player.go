@@ -3,9 +3,10 @@ package player
 import (
 	"reflect"
 	"server/db/table"
+	"server/proto/outermsg/outer"
 	"time"
 
-	"github.com/golang/protobuf/proto"
+	"github.com/gogo/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
 	"github.com/wwj31/dogactor/tools"
 
@@ -69,6 +70,11 @@ func (s *Player) OnHandleMessage(sourceId, targetId string, msg interface{}) {
 		return
 	}
 	handle(s, msg)
+	pt, ok := msg.(proto.Message)
+	if ok {
+		msgName := s.System().ProtoIndex().MsgName(pt)
+		outer.Put(msgName, msg)
+	}
 	s.liveTime = tools.NowTime()
 }
 

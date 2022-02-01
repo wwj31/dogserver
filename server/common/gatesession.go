@@ -7,7 +7,7 @@ import (
 	"server/proto/outermsg/outer"
 	"strings"
 
-	"github.com/golang/protobuf/proto"
+	"github.com/gogo/protobuf/proto"
 	"github.com/spf13/cast"
 )
 
@@ -71,7 +71,7 @@ func UnwrapperGateMsg(msg interface{}) (interface{}, string, GSession, error) {
 	//}
 	//
 	//actMsg := tp.New().Interface().(proto.Message)
-	v, ok := outer.Spawner(wrapper.MsgName)
+	v, ok := outer.Spawner(wrapper.MsgName, true)
 	if !ok {
 		return nil, "", GSession(wrapper.GateSession), fmt.Errorf("msg not found in outer Spawner %v", wrapper.MsgName)
 	}

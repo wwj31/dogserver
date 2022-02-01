@@ -16,20 +16,20 @@ import (
 type Login struct {
 	actor.Base
 	common.SendTools
-	storer     iface.SaveLoader
+	storage    iface.SaveLoader
 	accountMgr account.AccountMgr
 }
 
 func New(s iface.SaveLoader) *Login {
 	return &Login{
-		storer: s,
+		storage: s,
 	}
 }
 
 func (s *Login) OnInit() {
 	s.SendTools = common.NewSendTools(s)
 	s.accountMgr = account.NewAccountMgr()
-	s.accountMgr.LoadAllAccount(s.storer)
+	s.accountMgr.LoadAllAccount(s.storage)
 	log.Debugf("login OnInit")
 }
 
@@ -56,7 +56,7 @@ func (s *Login) LoginReq(sourceId string, gSession common.GSession, msg *outer.L
 		return fmt.Errorf("login req checksum failed msg:%v", msg.String())
 	}
 
-	acc, newPlayer := s.accountMgr.Login(msg, s.storer)
+	acc, newPlayer := s.accountMgr.Login(msg, s.storage)
 
 	// 新、旧session不相同做顶号处理
 	if acc.GSession().Valid() && acc.GSession() != gSession {

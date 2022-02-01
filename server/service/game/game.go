@@ -12,7 +12,7 @@ import (
 	"server/service/game/logic/player"
 	"server/service/game/logic/player/localmsg"
 
-	"github.com/golang/protobuf/proto"
+	"github.com/gogo/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
 	"github.com/wwj31/dogactor/expect"
 )
@@ -152,8 +152,11 @@ func (s *Game) toPlayer(gSession common.GSession, msg interface{}) {
 		}
 		v, exist := inner.Spawner(gameWrapper.MsgName)
 		if !exist {
-			log.Errorw("msg is not in inner msg", "msgName", gameWrapper.MsgName)
-			return
+			v, exist = outer.Spawner(gameWrapper.MsgName, true)
+			if !exist {
+				log.Errorw("msg is not in inner msg", "msgName", gameWrapper.MsgName)
+				return
+			}
 		}
 		if err := proto.Unmarshal(gameWrapper.Data, v.(proto.Message)); err != nil {
 			log.Errorw("unmarshal failed", "msgName", gameWrapper.MsgName)
