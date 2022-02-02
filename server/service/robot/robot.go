@@ -3,8 +3,8 @@ package robot
 import (
 	"fmt"
 	"math/rand"
-	"server/common"
 	"server/service/client"
+	"sync"
 	"time"
 
 	"github.com/wwj31/dogactor/actor"
@@ -12,26 +12,27 @@ import (
 	"github.com/wwj31/dogactor/tools"
 )
 
-const goc = 1
+const goc = 100
 
 type Robot struct {
 	actor.Base
-	clients map[string]*client.Client
+	clients sync.Map
 }
 
 func (s *Robot) OnInit() {
-	s.clients = make(map[string]*client.Client, 100)
 	for i := 0; i < goc; i++ {
-		randtime := rand.Int63n(10) * int64(time.Second)
+		randtime := rand.Int63n(10000)*int64(time.Millisecond) + int64(i)
 		s.AddTimer(tools.UUID(), tools.NowTime()+randtime, func(dt int64) {
 			acc := fmt.Sprintf("robot_%v", time.Now().Nanosecond())
-			if _, ok := s.clients[acc]; ok {
-				return
-			}
-			s.clients[acc] = &client.Client{ACC: acc}
-			expect.Nil(s.System().Add(actor.New(common.Client, s.clients[acc], actor.SetLocalized())))
+			v, _ := s.clients.LoadOrStore(acc, &client.Client{ACC: acc})
+			cli := v.(*client.Client)
+			expect.Nil(s.System().Add(actor.New(cli.ACC, cli, actor.SetLocalized())))
 			s.AddTimer(tools.UUID(), tools.NowTime()+int64(5*time.Second), func(dt int64) {
-				s.clients[acc].Exit()
+				cli.Exit()
+				nextReloginTime := rand.Int63n(10000) * int64(time.Millisecond)
+				s.AddTimer(tools.UUID(), tools.NowTime()+nextReloginTime, func(dt int64) {
+					expect.Nil(s.System().Add(actor.New(cli.ACC, cli, actor.SetLocalized())))
+				})
 			})
 		})
 	}

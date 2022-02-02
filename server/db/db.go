@@ -44,34 +44,25 @@ func (s *DB) Save(datas ...table.Tabler) error {
 	if len(datas) == 0 {
 		return nil
 	}
-	transaction := s.dbIns.Begin()
 	for _, t := range datas {
 		name := t.TableName()
 		if t.Count() > 1 {
 			name = name + strconv.Itoa(num(t.Key(), t.Count()))
 		}
-		transaction.Table(name).Save(t)
+		s.dbIns.Table(name).Save(t)
 	}
-
-	err := transaction.Commit().Error
-	if err != nil {
-		transaction.Rollback()
-	}
-
-	return err
+	return nil
 }
 
 func (s *DB) Load(datas ...table.Tabler) error {
-	transaction := s.dbIns.Begin()
 	for _, t := range datas {
 		name := t.TableName()
 		if t.Count() > 1 {
 			name = name + strconv.Itoa(num(t.Key(), t.Count()))
 		}
-		transaction.Table(name).First(t)
+		s.dbIns.Table(name).First(t)
 	}
-
-	return transaction.Commit().Error
+	return nil
 }
 
 func (s *DB) LoadAll(tableName string, arr interface{}) error {
