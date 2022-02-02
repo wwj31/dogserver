@@ -40,11 +40,11 @@ func New(addr, databaseAddr string) *DB {
 	}
 }
 
-func (s *DB) Save(datas ...table.Tabler) error {
-	if len(datas) == 0 {
+func (s *DB) Save(tablers ...table.Tabler) error {
+	if len(tablers) == 0 {
 		return nil
 	}
-	for _, t := range datas {
+	for _, t := range tablers {
 		name := t.TableName()
 		if t.Count() > 1 {
 			name = name + strconv.Itoa(num(t.Key(), t.Count()))
@@ -54,8 +54,8 @@ func (s *DB) Save(datas ...table.Tabler) error {
 	return nil
 }
 
-func (s *DB) Load(datas ...table.Tabler) error {
-	for _, t := range datas {
+func (s *DB) Load(tablers ...table.Tabler) error {
+	for _, t := range tablers {
 		name := t.TableName()
 		if t.Count() > 1 {
 			name = name + strconv.Itoa(num(t.Key(), t.Count()))
