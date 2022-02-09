@@ -36,7 +36,7 @@ func New(base models.Model) *Mail {
 			mail.zSet.Add(cast.ToString(m.Uuid), m.CreateAt)
 		}
 	} else {
-		mail.mailInfo.Mails = make(map[uint64]*inner.Mail, 0)
+		mail.mailInfo.Mails = make(map[uint64]*inner.Mail, 4)
 		mail.NewBuilder().
 			SetMailTitle("welcome to dog game!").
 			SetSender(0).
