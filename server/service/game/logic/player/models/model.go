@@ -15,6 +15,6 @@ func New(player iface.Player) Model {
 	return model
 }
 
+func (s *Model) OnSave()   {}
 func (s *Model) OnLogin()  {}
 func (s *Model) OnLogout() {}
-func (s *Model) OnSave()   {}

@@ -118,9 +118,11 @@ func (s *Player) Logout() {
 		mod.OnLogout()
 	}
 }
+func (s *Player) Online() bool {
+	return s.Role().LoginAt() > s.Role().LogoutAt()
+}
 
 func (s *Player) OnStop() bool {
-	s.Logout()
 	return true
 }
 
@@ -149,7 +151,7 @@ func (s *Player) store() {
 func (s Player) live() {
 	now := tools.NowTime()
 	duration := now - s.liveTime
-	if duration > int64(24*time.Hour) {
+	if duration > int64(24*time.Hour) && !s.Online() {
 		s.Exit()
 	}
 }
