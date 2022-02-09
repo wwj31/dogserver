@@ -10,8 +10,22 @@ import (
 var _ = regist(MsgName(&outer.MailListReq{}), func(player iface.Player, v interface{}) {
 	msg := v.(*outer.MailListReq)
 
+	var msgMails []*outer.Mail
 	mails := player.Mail().Mails(msg.Count, 10)
-	player.Send2Client(&outer.MailListResp{Mails: mails})
+
+	for _, mail := range mails {
+		msgMails = append(msgMails, &outer.Mail{
+			Uuid:         mail.Uuid,
+			CreateAt:     mail.CreateAt,
+			SenderRoleId: mail.SenderRoleId,
+			Name:         mail.Name,
+			Title:        mail.Title,
+			Content:      mail.Content,
+			Items:        mail.Items,
+			Status:       mail.Status,
+		})
+	}
+	player.Send2Client(&outer.MailListResp{Mails: msgMails})
 	log.Debugw("player request mails ", "player", player.ID(), "mails", mails)
 })
 
@@ -20,7 +34,7 @@ var _ = regist(MsgName(&outer.ReadMailReq{}), func(player iface.Player, v interf
 	msg := v.(*outer.ReadMailReq)
 
 	player.Mail().Read(msg.Uuid)
-	player.Send2Client(&outer.ReadMailResp{})
+	player.Send2Client(&outer.ReadMailResp{Uuid: msg.Uuid})
 	log.Debugw("player read actormail ", "player", player.ID(), "mailId", msg.Uuid)
 })
 
@@ -29,7 +43,7 @@ var _ = regist(MsgName(&outer.ReceiveMailItemReq{}), func(player iface.Player, v
 	msg := v.(*outer.ReceiveMailItemReq)
 
 	player.Mail().ReceiveItem(msg.Uuid)
-	player.Send2Client(&outer.ReadMailResp{})
+	player.Send2Client(&outer.ReceiveMailItemResp{Uuid: msg.Uuid})
 	log.Debugw("player recv actormail item", "player", player.ID(), "mailId", msg.Uuid)
 })
 

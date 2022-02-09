@@ -10,6 +10,8 @@ const (
 	Level           // 等级
 	Exp             // 经验
 	Glod            // 金币
+
+	Attribute_max
 )
 
 func (s Attribute) Int64() int64 {

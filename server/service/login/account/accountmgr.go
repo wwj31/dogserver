@@ -5,6 +5,7 @@ import (
 	"server/common"
 	"server/common/log"
 	"server/db/table"
+	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
 	"server/service/game/iface"
 	"time"
@@ -69,14 +70,13 @@ func (s *AccountMgr) Login(msg *outer.LoginReq, saver iface.Saver) (acc *Account
 	newAcc.table.OS = msg.OS
 	newAcc.table.ClientVersion = msg.ClientVersion
 
-	newRole := &table.Role{
+	newRole := &inner.RoleInfo{
 		UUId:     newAcc.table.UUId,
 		RoleId:   s.uuidGen.GenUuid(),
 		SId:      1,
 		Name:     fmt.Sprintf("player_%v", newAcc.table.UUId),
 		Icon:     "Avatar",
 		Country:  "中国",
-		IsDelete: false,
 		CreateAt: time.Now().Unix(),
 		LoginAt:  0,
 		LogoutAt: 0,
@@ -86,7 +86,7 @@ func (s *AccountMgr) Login(msg *outer.LoginReq, saver iface.Saver) (acc *Account
 	newAcc.serverId = common.GameName(int32(newRole.SId))
 
 	// 回存db
-	if err := saver.Save(&newAcc.table, newRole); err != nil {
+	if err := saver.Save(&newAcc.table); err != nil {
 		log.Errorw("save failed", "err", err)
 		return nil, false
 	}

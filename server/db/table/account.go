@@ -13,7 +13,7 @@ type Account struct {
 	//最近一次登录角色Id
 	LastRoleId uint64
 
-	// map[Role.RoleId]*Role 一个玩家可以拥有多个角色
+	// 一个玩家可以拥有多个角色
 	Roles RoleMap `gorm:"type:json"`
 
 	// 客户端版本号

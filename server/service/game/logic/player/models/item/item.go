@@ -3,7 +3,6 @@ package item
 import (
 	"server/common"
 	"server/common/log"
-	"server/db/table"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
 	"server/service/game/logic/player/models"
@@ -15,27 +14,23 @@ import (
 type Item struct {
 	models.Model
 
-	items inner.ItemMap
+	items inner.ItemInfo
 }
 
-func New(rid uint64, base models.Model) *Item {
-	item := &Item{
+func New(base models.Model) *Item {
+	mod := &Item{
 		Model: base,
-		items: inner.ItemMap{Items: make(map[int64]int64, 10)},
+		items: inner.ItemInfo{Items: make(map[int64]int64, 10)},
 	}
 
 	if !base.Player.IsNewRole() {
-		tItem := table.Item{RoleId: rid}
-		err := base.Player.Gamer().Load(&tItem)
-		expect.Nil(err)
-
-		err = proto.Unmarshal(tItem.Bytes, &item.items)
+		err := proto.Unmarshal(base.Player.PlayerData().ItemBytes, &mod.items)
 		expect.Nil(err)
 	} else {
-		item.Add(map[int64]int64{123: 999})
+		mod.Add(map[int64]int64{123: 999})
 	}
 
-	return item
+	return mod
 }
 
 func (s *Item) OnLogin() {
@@ -102,17 +97,14 @@ func (s *Item) itemInfoPush() *outer.ItemInfoPush {
 }
 
 func (s *Item) save() {
-	s.SetTable(&table.Item{
-		RoleId:    s.Player.Role().RoleId(),
-		Bytes:     s.marshal(&s.items),
-		ItemCount: len(s.items.Items),
-	})
+	s.Player.PlayerData().ItemBytes = common.ProtoMarshal(&s.items)
 }
 
 func (s *Item) marshal(msg proto.Message) []byte {
 	bytes, err := proto.Marshal(msg)
 	if err != nil {
 		log.Errorw("proto marshal error", "err", err)
+		return nil
 	}
 	return bytes
 }

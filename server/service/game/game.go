@@ -78,10 +78,10 @@ func (s *Game) PlayerMgr() iface.PlayerManager {
 	return s.playerMgr
 }
 
-func (s *Game) activatePlayer(rid uint64, new bool) common.ActorId {
+func (s *Game) activatePlayer(rid uint64, firstLogin bool) common.ActorId {
 	playerId := common.PlayerId(rid)
-	if ok := s.System().Exist(playerId); !ok || new {
-		playerActor := actor.New(playerId, player.New(rid, s), actor.SetMailBoxSize(200), actor.SetLocalized())
+	if ok := s.System().Exist(playerId); !ok || firstLogin {
+		playerActor := actor.New(playerId, player.New(rid, s, firstLogin), actor.SetMailBoxSize(200), actor.SetLocalized())
 		err := s.System().Add(playerActor)
 		expect.Nil(err)
 	}

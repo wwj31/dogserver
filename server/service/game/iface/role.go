@@ -12,9 +12,7 @@ type Role interface {
 	Name() string
 	Icon() string
 	Country() string
-	IsDelete() bool
 	CreateAt() int64
-	IsNewRole() bool
 	LoginAt() int64
 	LogoutAt() int64
 	Attribute(typ typ.Attribute) int64

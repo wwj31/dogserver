@@ -19,5 +19,5 @@ func (s SessionHandler) OnSessionClosed() {
 func (s SessionHandler) OnRecv(bytes []byte) {
 	msgType := int32(network.Byte4ToUint32(bytes[:4]))
 	pb := s.client.System().ProtoIndex().UnmarshalPbMsg(msgType, bytes[4:])
-	log.Infow("recv msg", "msgType", msgType, "pb", pb.String())
+	log.Debugw("recv msg", "msgType", msgType, "pb", pb.String())
 }

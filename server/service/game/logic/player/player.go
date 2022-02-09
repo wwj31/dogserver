@@ -24,10 +24,11 @@ import (
 // 聚合之间通过聚合根关联引用，聚合之间相互访问需先访问聚合根，在导航到相关功能
 // 解决玩家复杂的功能模块相互引用带来的混乱问题，功能模块化，模块间解耦
 
-func New(roleId uint64, gamer iface.Gamer) *Player {
+func New(roleId uint64, gamer iface.Gamer, firstLogin bool) *Player {
 	p := &Player{
-		roleId: roleId,
-		gamer:  gamer,
+		roleId:     roleId,
+		gamer:      gamer,
+		firstLogin: firstLogin,
 	}
 	return p
 }
@@ -37,11 +38,13 @@ type (
 		actor.Base
 		gamer iface.Gamer
 
-		roleId   uint64
-		gSession common.GSession // 网络session
-		sender   common.SendTools
+		roleId     uint64
+		firstLogin bool
+		gSession   common.GSession // 网络session
+		sender     common.SendTools
 
-		models [all]iface.Modeler // 玩家所有功能模块
+		playerData table.Player
+		models     [all]iface.Modeler // 玩家所有功能模块
 
 		saveTimerId string
 		exitTimerId string
@@ -51,15 +54,22 @@ type (
 
 func (s *Player) OnInit() {
 	s.sender = common.NewSendTools(s)
+	s.playerData.RoleId = s.roleId
+	// 不是首次登录，加载数据
+	if !s.firstLogin {
+		err := s.gamer.Load(&s.playerData)
+		if err != nil {
+			log.Errorw("load player data failed", "err", err)
+			return
+		}
+	} else {
+		defer s.store()
+	}
 
-	s.models[modRole] = role.New(s.roleId, models.New(s)) // 角色
-	s.models[modItem] = item.New(s.roleId, models.New(s)) // 道具
-	s.models[modMail] = mail.New(s.roleId, models.New(s)) // 邮件
+	s.models[modRole] = role.New(models.New(s)) // 角色
+	s.models[modItem] = item.New(models.New(s)) // 道具
+	s.models[modMail] = mail.New(models.New(s)) // 邮件
 
-	s.saveTimerId = s.AddTimer(tools.UUID(), tools.NowTime()+int64(1*time.Minute), func(dt int64) {
-		s.store()
-		s.live()
-	}, -1)
 }
 
 func (s *Player) OnHandleMessage(sourceId, targetId string, msg interface{}) {
@@ -93,6 +103,13 @@ func (s *Player) Login() {
 	for _, mod := range s.models {
 		mod.OnLogin()
 	}
+
+	// 定时回存
+	s.saveTimerId = s.AddTimer(tools.UUID(), tools.NowTime()+int64(1*time.Minute), func(dt int64) {
+		s.store()
+		s.live()
+	}, -1)
+
 	s.CancelTimer(s.exitTimerId)
 }
 
@@ -100,6 +117,8 @@ func (s *Player) Logout() {
 	for _, mod := range s.models {
 		mod.OnLogout()
 	}
+
+	s.CancelTimer(s.saveTimerId)
 
 	exitAt := tools.NowTime() + 3*time.Minute.Nanoseconds()
 	s.exitTimerId = s.AddTimer(tools.UUID(), exitAt, func(dt int64) {
@@ -113,32 +132,22 @@ func (s *Player) OnStop() bool {
 	return true
 }
 
-func (s *Player) IsNewRole() bool    { return s.Role().IsNewRole() }
-func (s *Player) Gamer() iface.Gamer { return s.gamer }
-func (s *Player) Role() iface.Role   { return s.models[modRole].(iface.Role) }
-func (s *Player) Item() iface.Item   { return s.models[modItem].(iface.Item) }
-func (s *Player) Mail() iface.Mailer { return s.models[modMail].(iface.Mailer) }
+func (s *Player) IsNewRole() bool           { return s.firstLogin }
+func (s *Player) Gamer() iface.Gamer        { return s.gamer }
+func (s *Player) PlayerData() *table.Player { return &s.playerData }
+func (s *Player) Role() iface.Role          { return s.models[modRole].(iface.Role) }
+func (s *Player) Item() iface.Item          { return s.models[modItem].(iface.Item) }
+func (s *Player) Mail() iface.Mailer        { return s.models[modMail].(iface.Mailer) }
 
 // 回存数据
 func (s *Player) store() {
-	logFiled := []interface{}{"roleId", s.Role().RoleId()}
-	var tabs []table.Tabler
-	for _, mod := range s.models {
-		tab := mod.Table()
-		if tab == nil {
-			continue
-		}
-		tabs = append(tabs, tab)
-		mod.SetTable(nil)
-		logFiled = append(logFiled, "table", tab.TableName())
-	}
-
-	err := s.Gamer().Save(tabs...)
+	err := s.Gamer().Save(&s.playerData)
 	if err != nil {
 		log.Errorw("player store err", "err", err)
+		return
 	}
 
-	log.Infow("player stored model", logFiled...)
+	log.Infow("player stored model", "RID", s.roleId)
 }
 
 func (s Player) live() {

@@ -1,61 +1,60 @@
 package role
 
 import (
-	"github.com/wwj31/dogactor/expect"
-	"github.com/wwj31/dogactor/tools"
-	"server/db/table"
+	"server/common"
+	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
 	"server/service/game/logic/player/models"
 	"server/service/game/logic/player/models/role/typ"
+
+	"github.com/gogo/protobuf/proto"
+
+	"github.com/wwj31/dogactor/expect"
+	"github.com/wwj31/dogactor/tools"
 )
 
 type Role struct {
 	models.Model
-
-	tRole table.Role
+	role inner.RoleInfo
 }
 
-func New(rid uint64, base models.Model) *Role {
-	role := &Role{
-		Model: base,
-		tRole: table.Role{
-			RoleId:     rid,
-			Attributes: make(table.AttributeMap),
-		},
-	}
-	err := base.Player.Gamer().Load(&role.tRole)
-	expect.Nil(err)
+func New(base models.Model) *Role {
+	mod := &Role{Model: base}
 
-	if role.IsNewRole() {
-		role.SetAttribute(typ.Level, 1)
-		role.SetAttribute(typ.Exp, 0)
-		role.SetAttribute(typ.Glod, 0)
+	if !base.Player.IsNewRole() {
+		err := proto.Unmarshal(base.Player.PlayerData().RoleBytes, &mod.role)
+		expect.Nil(err)
+	} else {
+		mod.SetAttribute(typ.Level, 1)
+		mod.SetAttribute(typ.Exp, 0)
+		mod.SetAttribute(typ.Glod, 0)
+		mod.save()
 	}
-	return role
+	return mod
 }
 
 func (s *Role) OnLogin() {
-	s.tRole.LoginAt = tools.Milliseconds()
+	s.role.LoginAt = tools.Milliseconds()
 	s.Player.Send2Client(s.roleInfoPush())
 	s.save()
 }
 
 func (s *Role) OnLogout() {
-	s.tRole.LogoutAt = tools.Milliseconds()
+	s.role.LogoutAt = tools.Milliseconds()
 	s.save()
 }
 
 func (s *Role) roleInfoPush() *outer.RoleInfoPush {
 	return &outer.RoleInfoPush{
-		UID:     s.tRole.UUId,
-		RID:     s.tRole.RoleId,
-		SId:     s.tRole.SId,
-		Name:    s.tRole.Name,
-		Icon:    s.tRole.Icon,
-		Country: s.tRole.Country,
+		UID:     s.role.UUId,
+		RID:     s.role.RoleId,
+		SId:     s.role.SId,
+		Name:    s.role.Name,
+		Icon:    s.role.Icon,
+		Country: s.role.Country,
 	}
 }
 
 func (s *Role) save() {
-	s.SetTable(&s.tRole)
+	s.Player.PlayerData().RoleBytes = common.ProtoMarshal(&s.role)
 }

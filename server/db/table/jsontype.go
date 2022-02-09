@@ -3,6 +3,7 @@ package table
 import (
 	"database/sql/driver"
 	"encoding/json"
+	"server/proto/innermsg/inner"
 )
 
 /*
@@ -15,8 +16,7 @@ import (
 		gorm的 mssql.JSON 定义
 */
 type (
-	RoleMap      map[uint64]*Role
-	AttributeMap map[int64]int64
+	RoleMap map[uint64]*inner.RoleInfo
 )
 
 // RoleMap
@@ -25,14 +25,5 @@ func (s RoleMap) Value() (driver.Value, error) {
 }
 
 func (s *RoleMap) Scan(input interface{}) error {
-	return json.Unmarshal(input.([]byte), s)
-}
-
-// AttributeMap
-func (s AttributeMap) Value() (driver.Value, error) {
-	return json.Marshal(s)
-}
-
-func (s *AttributeMap) Scan(input interface{}) error {
 	return json.Unmarshal(input.([]byte), s)
 }

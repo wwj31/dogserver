@@ -2,6 +2,7 @@ package iface
 
 import (
 	"server/common"
+	"server/db/table"
 
 	"github.com/gogo/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
@@ -16,6 +17,8 @@ type (
 		Login()
 		Logout()
 		IsNewRole() bool
+
+		PlayerData() *table.Player
 
 		Gamer() Gamer
 		Role() Role
