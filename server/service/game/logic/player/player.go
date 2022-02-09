@@ -117,14 +117,6 @@ func (s *Player) Logout() {
 	for _, mod := range s.models {
 		mod.OnLogout()
 	}
-
-	s.CancelTimer(s.saveTimerId)
-
-	exitAt := tools.NowTime() + 3*time.Minute.Nanoseconds()
-	s.exitTimerId = s.AddTimer(tools.UUID(), exitAt, func(dt int64) {
-		s.store()
-		s.Exit()
-	})
 }
 
 func (s *Player) OnStop() bool {
@@ -141,6 +133,10 @@ func (s *Player) Mail() iface.Mailer        { return s.models[modMail].(iface.Ma
 
 // 回存数据
 func (s *Player) store() {
+	for _, mod := range s.models {
+		mod.OnSave()
+	}
+
 	err := s.Gamer().Save(&s.playerData)
 	if err != nil {
 		log.Errorw("player store err", "err", err)

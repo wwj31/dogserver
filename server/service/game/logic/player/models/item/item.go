@@ -2,7 +2,6 @@ package item
 
 import (
 	"server/common"
-	"server/common/log"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
 	"server/service/game/logic/player/models"
@@ -13,8 +12,8 @@ import (
 
 type Item struct {
 	models.Model
-
-	items inner.ItemInfo
+	items  inner.ItemInfo
+	modify bool
 }
 
 func New(base models.Model) *Item {
@@ -29,7 +28,6 @@ func New(base models.Model) *Item {
 	} else {
 		mod.Add(map[int64]int64{123: 999})
 	}
-
 	return mod
 }
 
@@ -38,7 +36,15 @@ func (s *Item) OnLogin() {
 }
 
 func (s *Item) OnLogout() {
-	s.save()
+
+}
+
+func (s *Item) OnSave() {
+	if s.modify {
+		s.Player.PlayerData().ItemBytes = common.ProtoMarshal(&s.items)
+	} else {
+		s.Player.PlayerData().ItemBytes = nil
+	}
 }
 
 func (s *Item) Enough(items map[int64]int64) bool {
@@ -64,6 +70,8 @@ func (s *Item) Use(items map[int64]int64) outer.ERROR {
 }
 
 func (s *Item) Add(items map[int64]int64, push ...bool) {
+	defer func() { s.modify = true }()
+
 	for id, count := range items {
 		val, ok := s.items.Items[id]
 		if ok {
@@ -86,25 +94,10 @@ func (s *Item) Add(items map[int64]int64, push ...bool) {
 			Items: items,
 		})
 	}
-
-	s.save()
 }
 
 func (s *Item) itemInfoPush() *outer.ItemInfoPush {
 	return &outer.ItemInfoPush{
 		Items: s.items.Items,
 	}
-}
-
-func (s *Item) save() {
-	s.Player.PlayerData().ItemBytes = common.ProtoMarshal(&s.items)
-}
-
-func (s *Item) marshal(msg proto.Message) []byte {
-	bytes, err := proto.Marshal(msg)
-	if err != nil {
-		log.Errorw("proto marshal error", "err", err)
-		return nil
-	}
-	return bytes
 }

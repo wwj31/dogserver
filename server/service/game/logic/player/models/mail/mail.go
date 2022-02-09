@@ -48,12 +48,20 @@ func New(base models.Model) *Mail {
 	return mail
 }
 
+func (s *Mail) OnSave() {
+	data, err := common.GZip(common.ProtoMarshal(&s.mailInfo))
+	if err != nil {
+		log.Errorw("mail zip failed", "err", err)
+		return
+	}
+	s.Player.PlayerData().MailBytes = data
+}
+
 func (s *Mail) Add(mail *inner.Mail) {
 	s.mailInfo.Mails[mail.Uuid] = mail
 	s.zSet.Add(cast.ToString(mail.Uuid), mail.CreateAt)
 	s.Player.Send2Client(&outer.AddMailNotify{Uuid: mail.Uuid})
 	log.Debugw("add actormail ", "player", s.Player.Role().RoleId(), "actormail", mail.Title, "items", mail.Items)
-	s.save()
 }
 
 func (s *Mail) NewBuilder() iface.MailBuilder {
@@ -105,7 +113,6 @@ func (s *Mail) ReceiveItem(uuid uint64) {
 
 	s.Player.Item().Add(mail.Items, true)
 	mail.Status = 2
-	s.save()
 }
 
 func (s *Mail) Delete(uuids ...uint64) {
@@ -113,14 +120,4 @@ func (s *Mail) Delete(uuids ...uint64) {
 		s.zSet.Del(cast.ToString(uuid))
 		delete(s.mailInfo.Mails, uuid)
 	}
-	s.save()
-}
-
-func (s *Mail) save() {
-	data, err := common.GZip(common.ProtoMarshal(&s.mailInfo))
-	if err != nil {
-		log.Errorw("mail zip failed", "err", err)
-		return
-	}
-	s.Player.PlayerData().MailBytes = data
 }

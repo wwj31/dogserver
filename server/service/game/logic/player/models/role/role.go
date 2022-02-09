@@ -28,20 +28,21 @@ func New(base models.Model) *Role {
 		mod.SetAttribute(typ.Level, 1)
 		mod.SetAttribute(typ.Exp, 0)
 		mod.SetAttribute(typ.Glod, 0)
-		mod.save()
 	}
 	return mod
+}
+
+func (s *Role) OnSave() {
+	s.Player.PlayerData().RoleBytes = common.ProtoMarshal(&s.role)
 }
 
 func (s *Role) OnLogin() {
 	s.role.LoginAt = tools.Milliseconds()
 	s.Player.Send2Client(s.roleInfoPush())
-	s.save()
 }
 
 func (s *Role) OnLogout() {
 	s.role.LogoutAt = tools.Milliseconds()
-	s.save()
 }
 
 func (s *Role) roleInfoPush() *outer.RoleInfoPush {
@@ -53,8 +54,4 @@ func (s *Role) roleInfoPush() *outer.RoleInfoPush {
 		Icon:    s.role.Icon,
 		Country: s.role.Country,
 	}
-}
-
-func (s *Role) save() {
-	s.Player.PlayerData().RoleBytes = common.ProtoMarshal(&s.role)
 }
