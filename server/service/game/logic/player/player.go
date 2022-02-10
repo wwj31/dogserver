@@ -65,7 +65,7 @@ func (s *Player) OnInit() {
 			return
 		}
 	} else {
-		defer s.store()
+		defer s.store(true)
 	}
 
 	s.models[modRole] = role.New(models.New(s), data.RoleBytes) // 角色
@@ -135,13 +135,18 @@ func (s *Player) Item() iface.Item   { return s.models[modItem].(iface.Item) }
 func (s *Player) Mail() iface.Mailer { return s.models[modMail].(iface.Mailer) }
 
 // 回存数据
-func (s *Player) store() {
+func (s *Player) store(new ...bool) {
 	data := table.Player{RoleId: s.roleId}
 	for _, mod := range s.models {
 		mod.OnSave(&data)
 	}
 
-	err := s.Gamer().Save(&data)
+	var insert bool
+	if len(new) > 0 && new[0] {
+		insert = true
+	}
+
+	err := s.Gamer().Store(insert, &data)
 	if err != nil {
 		log.Errorw("player store err", "err", err)
 		return

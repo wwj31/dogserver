@@ -7,7 +7,7 @@ import (
 type Gamer interface {
 	actor.Actor
 	UuidGenerator
-	SaveLoader
+	StoreLoader
 
 	SID() uint16
 }

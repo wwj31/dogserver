@@ -25,12 +25,12 @@ type Game struct {
 	actor.Base
 	sid     uint16 // serverId
 	genUUID common.UID
-	iface.SaveLoader
+	iface.StoreLoader
 	playerMgr iface.PlayerManager
 }
 
 func (s *Game) OnInit() {
-	s.SaveLoader = db.New(toml.Get("mysql"), toml.Get("database"))
+	s.StoreLoader = db.New(toml.Get("mysql"), toml.Get("database"))
 	s.genUUID = common.NewUID(s.sid)
 	s.playerMgr = player.NewMgr(s)
 

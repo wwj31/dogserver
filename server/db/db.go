@@ -40,7 +40,7 @@ func New(addr, databaseAddr string) *DB {
 	}
 }
 
-func (s *DB) Save(tablers ...table.Tabler) error {
+func (s *DB) Store(insert bool, tablers ...table.Tabler) error {
 	if len(tablers) == 0 {
 		return nil
 	}
@@ -49,7 +49,13 @@ func (s *DB) Save(tablers ...table.Tabler) error {
 		if t.Count() > 1 {
 			name = name + strconv.Itoa(num(t.Key(), t.Count()))
 		}
-		s.dbIns.Table(name).Save(t)
+
+		// Save和Updates的区别 https://learnku.com/docs/gorm/v2/update/9734
+		if insert {
+			s.dbIns.Table(name).Save(t)
+		} else {
+			s.dbIns.Table(name).Updates(t)
+		}
 	}
 	return nil
 }

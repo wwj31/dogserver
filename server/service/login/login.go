@@ -16,11 +16,11 @@ import (
 type Login struct {
 	actor.Base
 	common.SendTools
-	storage    iface.SaveLoader
+	storage    iface.StoreLoader
 	accountMgr account.AccountMgr
 }
 
-func New(s iface.SaveLoader) *Login {
+func New(s iface.StoreLoader) *Login {
 	return &Login{
 		storage: s,
 	}

@@ -2,13 +2,13 @@ package iface
 
 import "server/db/table"
 
-type SaveLoader interface {
-	Saver
+type StoreLoader interface {
+	Storer
 	Loader
 }
 
-type Saver interface {
-	Save(data ...table.Tabler) error
+type Storer interface {
+	Store(insert bool, tablers ...table.Tabler) error
 }
 
 type Loader interface {

@@ -1,18 +1,19 @@
 package actormail
 
 import (
-	"github.com/wwj31/dogactor/actor"
 	"server/common/log"
 	"server/service/game/iface"
+
+	"github.com/wwj31/dogactor/actor"
 )
 
-func New(serverId uint16, storage iface.SaveLoader) *ActorMail {
+func New(serverId uint16, storage iface.StoreLoader) *ActorMail {
 	return &ActorMail{sid: serverId, storage: storage}
 }
 
 type ActorMail struct {
 	actor.Base
-	storage iface.SaveLoader
+	storage iface.StoreLoader
 	sid     uint16 // serverId
 }
 
