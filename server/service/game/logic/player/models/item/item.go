@@ -2,7 +2,6 @@ package item
 
 import (
 	"server/common"
-	"server/common/log"
 	"server/db/table"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
@@ -45,7 +44,6 @@ func (s *Item) OnSave(data *table.Player) {
 		data.ItemBytes = common.ProtoMarshal(&s.items)
 	}
 	s.modify = false
-	log.Debugw("")
 }
 
 func (s *Item) Enough(items map[int64]int64) bool {
