@@ -1,6 +1,7 @@
 package player
 
 import (
+	"math/rand"
 	"reflect"
 	"server/db/table"
 	"server/proto/outermsg/outer"
@@ -55,9 +56,10 @@ type (
 func (s *Player) OnInit() {
 	s.sender = common.NewSendTools(s)
 	s.playerData.RoleId = s.roleId
+	data := table.Player{RoleId: s.roleId}
 	// 不是首次登录，加载数据
 	if !s.firstLogin {
-		err := s.gamer.Load(&s.playerData)
+		err := s.gamer.Load(&data)
 		if err != nil {
 			log.Errorw("load player data failed", "err", err)
 			return
@@ -66,10 +68,9 @@ func (s *Player) OnInit() {
 		defer s.store()
 	}
 
-	s.models[modRole] = role.New(models.New(s)) // 角色
-	s.models[modItem] = item.New(models.New(s)) // 道具
-	s.models[modMail] = mail.New(models.New(s)) // 邮件
-
+	s.models[modRole] = role.New(models.New(s), data.RoleBytes) // 角色
+	s.models[modItem] = item.New(models.New(s), data.ItemBytes) // 道具
+	s.models[modMail] = mail.New(models.New(s), data.MailBytes) // 邮件
 }
 
 func (s *Player) OnHandleMessage(sourceId, targetId string, msg interface{}) {
@@ -105,7 +106,8 @@ func (s *Player) Login() {
 	}
 
 	// 定时回存
-	s.saveTimerId = s.AddTimer(tools.UUID(), tools.NowTime()+int64(1*time.Minute), func(dt int64) {
+	randTime := tools.NowTime() + int64(1*time.Second) + rand.Int63n(int64(time.Second*30))
+	s.saveTimerId = s.AddTimer(tools.UUID(), randTime, func(dt int64) {
 		s.store()
 		s.live()
 	}, -1)
@@ -126,20 +128,20 @@ func (s *Player) OnStop() bool {
 	return true
 }
 
-func (s *Player) IsNewRole() bool           { return s.firstLogin }
-func (s *Player) Gamer() iface.Gamer        { return s.gamer }
-func (s *Player) PlayerData() *table.Player { return &s.playerData }
-func (s *Player) Role() iface.Role          { return s.models[modRole].(iface.Role) }
-func (s *Player) Item() iface.Item          { return s.models[modItem].(iface.Item) }
-func (s *Player) Mail() iface.Mailer        { return s.models[modMail].(iface.Mailer) }
+func (s *Player) IsNewRole() bool    { return s.firstLogin }
+func (s *Player) Gamer() iface.Gamer { return s.gamer }
+func (s *Player) Role() iface.Role   { return s.models[modRole].(iface.Role) }
+func (s *Player) Item() iface.Item   { return s.models[modItem].(iface.Item) }
+func (s *Player) Mail() iface.Mailer { return s.models[modMail].(iface.Mailer) }
 
 // 回存数据
 func (s *Player) store() {
+	data := table.Player{RoleId: s.roleId}
 	for _, mod := range s.models {
-		mod.OnSave()
+		mod.OnSave(&data)
 	}
 
-	err := s.Gamer().Save(&s.playerData)
+	err := s.Gamer().Save(&data)
 	if err != nil {
 		log.Errorw("player store err", "err", err)
 		return

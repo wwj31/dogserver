@@ -1,6 +1,7 @@
 package models
 
 import (
+	"server/db/table"
 	"server/service/game/iface"
 )
 
@@ -15,6 +16,6 @@ func New(player iface.Player) Model {
 	return model
 }
 
-func (s *Model) OnSave()   {}
-func (s *Model) OnLogin()  {}
-func (s *Model) OnLogout() {}
+func (s *Model) OnSave(data *table.Player) {}
+func (s *Model) OnLogin()                  {}
+func (s *Model) OnLogout()                 {}

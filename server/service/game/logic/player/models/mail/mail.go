@@ -3,12 +3,12 @@ package mail
 import (
 	"server/common"
 	"server/common/log"
+	"server/db/table"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
 	"server/service/game/iface"
 	"server/service/game/logic/player/models"
 
-	"github.com/gogo/protobuf/proto"
 	"github.com/spf13/cast"
 	"github.com/wwj31/dogactor/container/rank"
 	"github.com/wwj31/dogactor/expect"
@@ -22,14 +22,16 @@ type Mail struct {
 	mailInfo inner.MailInfo
 }
 
-func New(base models.Model) *Mail {
+func New(base models.Model, bytes []byte) *Mail {
 	mail := &Mail{
 		Model: base,
 		zSet:  *rank.New(),
 	}
 
-	if !base.Player.IsNewRole() {
-		err := proto.Unmarshal(base.Player.PlayerData().MailBytes, &mail.mailInfo)
+	if bytes != nil {
+		by, err := common.UnGZip(bytes)
+		expect.Nil(err)
+		err = mail.mailInfo.Unmarshal(by)
 		expect.Nil(err)
 
 		for _, m := range mail.mailInfo.Mails {
@@ -48,13 +50,13 @@ func New(base models.Model) *Mail {
 	return mail
 }
 
-func (s *Mail) OnSave() {
-	data, err := common.GZip(common.ProtoMarshal(&s.mailInfo))
+func (s *Mail) OnSave(data *table.Player) {
+	bytes, err := common.GZip(common.ProtoMarshal(&s.mailInfo))
 	if err != nil {
 		log.Errorw("mail zip failed", "err", err)
 		return
 	}
-	s.Player.PlayerData().MailBytes = data
+	data.MailBytes = bytes
 }
 
 func (s *Mail) Add(mail *inner.Mail) {

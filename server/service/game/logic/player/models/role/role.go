@@ -2,12 +2,11 @@ package role
 
 import (
 	"server/common"
+	"server/db/table"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
 	"server/service/game/logic/player/models"
 	"server/service/game/logic/player/models/role/typ"
-
-	"github.com/gogo/protobuf/proto"
 
 	"github.com/wwj31/dogactor/expect"
 	"github.com/wwj31/dogactor/tools"
@@ -18,11 +17,11 @@ type Role struct {
 	role inner.RoleInfo
 }
 
-func New(base models.Model) *Role {
+func New(base models.Model, bytes []byte) *Role {
 	mod := &Role{Model: base}
 
-	if !base.Player.IsNewRole() {
-		err := proto.Unmarshal(base.Player.PlayerData().RoleBytes, &mod.role)
+	if bytes != nil {
+		err := mod.role.Unmarshal(bytes)
 		expect.Nil(err)
 	} else {
 		mod.SetAttribute(typ.Level, 1)
@@ -32,8 +31,8 @@ func New(base models.Model) *Role {
 	return mod
 }
 
-func (s *Role) OnSave() {
-	s.Player.PlayerData().RoleBytes = common.ProtoMarshal(&s.role)
+func (s *Role) OnSave(data *table.Player) {
+	data.RoleBytes = common.ProtoMarshal(&s.role)
 }
 
 func (s *Role) OnLogin() {

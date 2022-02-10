@@ -1,7 +1,9 @@
 package iface
 
+import "server/db/table"
+
 type Modeler interface {
-	OnSave()
+	OnSave(data *table.Player)
 	OnLogin()
 	OnLogout()
 }
