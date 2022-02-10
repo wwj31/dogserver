@@ -58,7 +58,7 @@ func (s *AccountMgr) LoadAllAccount(loader iface.Loader) {
 	}
 }
 
-func (s *AccountMgr) Login(msg *outer.LoginReq, saver iface.Saver) (acc *Account, new bool) {
+func (s *AccountMgr) Login(msg *outer.LoginReq, storer iface.Storer) (acc *Account, new bool) {
 	platformId := combine(msg.PlatformName, msg.PlatformUUID)
 	if acc = s.accountsByPlatformId[platformId]; acc != nil {
 		return acc, false
@@ -86,7 +86,7 @@ func (s *AccountMgr) Login(msg *outer.LoginReq, saver iface.Saver) (acc *Account
 	newAcc.serverId = common.GameName(int32(newRole.SId))
 
 	// 回存db
-	if err := saver.Save(&newAcc.table); err != nil {
+	if err := storer.Store(true, &newAcc.table); err != nil {
 		log.Errorw("save failed", "err", err)
 		return nil, false
 	}
