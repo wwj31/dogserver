@@ -21,6 +21,7 @@ import (
 	"server/service/game/logic/player/models/role"
 )
 
+// 引用DDD 实体、聚合概念
 // model作为功能聚合，player作为聚合根，roleId为聚合根ID
 // 聚合之间通过聚合根关联引用，聚合之间相互访问需先访问聚合根，在导航到相关功能
 // 解决玩家复杂的功能模块相互引用带来的混乱问题，功能模块化，模块间解耦
@@ -45,19 +46,23 @@ type (
 		sender     common.SendTools
 
 		playerData table.Player
-		models     [all]iface.Modeler // 玩家所有功能模块
+		models     [allmod]iface.Modeler // 玩家所有功能模块
 
 		saveTimerId string
 		exitTimerId string
-		liveTime    int64
+		keepAlive   int64
 	}
 )
 
 func (s *Player) OnInit() {
+	var v interface{}
+	v = func() { print("hello") }
+	_ = v
 	s.sender = common.NewSendTools(s)
 	s.playerData.RoleId = s.roleId
 	data := table.Player{RoleId: s.roleId}
-	// 不是首次登录，加载数据
+
+	// load data if not first login
 	if !s.firstLogin {
 		err := s.gamer.Load(&data)
 		if err != nil {
@@ -71,6 +76,13 @@ func (s *Player) OnInit() {
 	s.models[modRole] = role.New(models.New(s), data.RoleBytes) // 角色
 	s.models[modItem] = item.New(models.New(s), data.ItemBytes) // 道具
 	s.models[modMail] = mail.New(models.New(s), data.MailBytes) // 邮件
+
+	// 定时回存
+	randTime := tools.NowTime() + int64(1*time.Second) + rand.Int63n(int64(time.Second*30))
+	s.saveTimerId = s.AddTimer(tools.UUID(), randTime, func(dt int64) {
+		s.store()
+		s.live()
+	}, -1)
 }
 
 func (s *Player) OnHandleMessage(sourceId, targetId string, msg interface{}) {
@@ -86,7 +98,7 @@ func (s *Player) OnHandleMessage(sourceId, targetId string, msg interface{}) {
 		msgName := s.System().ProtoIndex().MsgName(pt)
 		outer.Put(msgName, msg)
 	}
-	s.liveTime = tools.NowTime()
+	s.keepAlive = tools.NowTime()
 }
 
 func (s *Player) GateSession() common.GSession            { return s.gSession }
@@ -104,13 +116,6 @@ func (s *Player) Login() {
 	for _, mod := range s.models {
 		mod.OnLogin()
 	}
-
-	// 定时回存
-	randTime := tools.NowTime() + int64(1*time.Second) + rand.Int63n(int64(time.Second*30))
-	s.saveTimerId = s.AddTimer(tools.UUID(), randTime, func(dt int64) {
-		s.store()
-		s.live()
-	}, -1)
 
 	s.CancelTimer(s.exitTimerId)
 }
@@ -157,7 +162,7 @@ func (s *Player) store(new ...bool) {
 
 func (s Player) live() {
 	now := tools.NowTime()
-	duration := now - s.liveTime
+	duration := now - s.keepAlive
 	if duration > int64(24*time.Hour) && !s.Online() {
 		s.Exit()
 	}

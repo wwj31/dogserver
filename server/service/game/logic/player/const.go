@@ -5,5 +5,5 @@ const (
 	modItem
 	modMail
 
-	all
+	allmod
 )
