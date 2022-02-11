@@ -30,7 +30,8 @@ func (s *Client) OnInit() {
 
 	if s.ACC != "" {
 		s.login(s.ACC)
-		s.listMail()
+		s.listMail("0")
+		s.item("123", "1")
 	} else {
 		s.InitCmd()
 	}

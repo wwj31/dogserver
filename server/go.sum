@@ -357,8 +357,8 @@ github.com/tklauser/go-sysconf v0.3.9 h1:JeUVdAOWhhxVcU6Eqr/ATFHgXk/mmiItdKeJPev
 github.com/tklauser/go-sysconf v0.3.9/go.mod h1:11DU/5sG7UexIrp/O6g35hrWzu0JxlwQ3LSFUzyeuhs=
 github.com/tklauser/numcpus v0.3.0 h1:ILuRUQBtssgnxw0XXIjKUC56fgnOrFoQQ/4+DeU2biQ=
 github.com/tklauser/numcpus v0.3.0/go.mod h1:yFGUr7TUHQRAhyqBcEg0Ge34zDBAsIvJJcyE6boqnA8=
-github.com/wwj31/dogactor v1.2.9 h1:k6hrzSAFhOpED7rw/l7U+5oAmk+UTG4t32ldx/WRoY8=
-github.com/wwj31/dogactor v1.2.9/go.mod h1:v2pfKJnUV/4caOsX36zGxxIoCtkoiMe+HfiQmmViixA=
+github.com/wwj31/dogactor v1.2.12 h1:/eSTXLvU7DAmxnpJUh7LqeGvyUizKe19cJs+jdm2Cvc=
+github.com/wwj31/dogactor v1.2.12/go.mod h1:v2pfKJnUV/4caOsX36zGxxIoCtkoiMe+HfiQmmViixA=
 github.com/wwj31/jtimer v1.1.8 h1:drgp6ryooE5n6lYRg+aEG9hz9d7qjHkKGT1rn7nEPIY=
 github.com/wwj31/jtimer v1.1.8/go.mod h1:QLwajJ1KFxWhYOUOtUfr9V7EkH/wPhDfqGmIMBpqH6k=
 github.com/yuin/goldmark v1.1.25/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
