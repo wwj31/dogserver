@@ -39,6 +39,7 @@ func (s *Game) OnInit() {
 }
 
 func (s *Game) OnStop() bool {
+	s.System().CancelAll(s.ID())
 	log.Infof("stop game")
 	return true
 }
