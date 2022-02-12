@@ -24,6 +24,7 @@ func (s *Robot) OnInit() {
 	for i := 0; i < goc; i++ {
 		acc := fmt.Sprintf("robot_%v", time.Now().Nanosecond())
 		s.stateLogin(acc)
+		time.Sleep(time.Microsecond)
 	}
 }
 
@@ -31,7 +32,7 @@ var i int32
 
 func (s *Robot) stateLogin(acc string) {
 	// 随机randtime时间后，开启actor执行游戏
-	randtime := (rand.Int63n(10000)+100)*int64(time.Millisecond) + int64(atomic.AddInt32(&i, 1))
+	randtime := (rand.Int63n(100000)+100)*int64(time.Millisecond) + int64(atomic.AddInt32(&i, 1))
 	s.AddTimer(tools.UUID(), tools.NowTime()+randtime, func(dt int64) {
 		v, _ := s.clients.LoadOrStore(acc, &client.Client{ACC: acc})
 		cli := v.(*client.Client)

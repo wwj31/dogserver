@@ -104,12 +104,12 @@ func newProtoIndex() *tools.ProtoIndex {
 func newLogin(system *actor.System) {
 	dbIns := db.New(toml.Get("mysql"), toml.Get("database"))
 	loginActor := login.New(dbIns)
-	expect.Nil(system.Add(actor.New(common.Login_Actor, loginActor)))
+	expect.Nil(system.Add(actor.New(common.Login_Actor, loginActor, actor.SetMailBoxSize(1000))))
 }
 
 func newGateway(appId int32, system *actor.System) {
 	loginActor := gateway.New()
-	expect.Nil(system.Add(actor.New(common.GatewayName(appId), loginActor)))
+	expect.Nil(system.Add(actor.New(common.GatewayName(appId), loginActor, actor.SetMailBoxSize(2000))))
 }
 
 func newGame(appId int32, system *actor.System) {

@@ -78,7 +78,7 @@ func (s *Player) OnInit() {
 	s.models[modMail] = mail.New(models.New(s), data.MailBytes) // 邮件
 
 	// 定时回存
-	randTime := tools.NowTime() + int64(1*time.Second) + rand.Int63n(int64(time.Second*30))
+	randTime := tools.NowTime() + int64(5*time.Minute) + rand.Int63n(int64(time.Second*30))
 	s.saveTimerId = s.AddTimer(tools.UUID(), randTime, func(dt int64) {
 		s.store()
 		s.live()
