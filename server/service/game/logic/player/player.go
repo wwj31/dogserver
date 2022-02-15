@@ -55,9 +55,6 @@ type (
 )
 
 func (s *Player) OnInit() {
-	var v interface{}
-	v = func() { print("hello") }
-	_ = v
 	s.sender = common.NewSendTools(s)
 	s.playerData.RoleId = s.roleId
 	data := table.Player{RoleId: s.roleId}
@@ -81,7 +78,7 @@ func (s *Player) OnInit() {
 	randTime := tools.NowTime() + int64(5*time.Minute) + rand.Int63n(int64(time.Second*30))
 	s.saveTimerId = s.AddTimer(tools.UUID(), randTime, func(dt int64) {
 		s.store()
-		s.live()
+		s.checkAlive()
 	}, -1)
 }
 
@@ -160,7 +157,7 @@ func (s *Player) store(new ...bool) {
 	log.Infow("player stored model", "RID", s.roleId)
 }
 
-func (s Player) live() {
+func (s Player) checkAlive() {
 	now := tools.NowTime()
 	duration := now - s.keepAlive
 	if duration > int64(24*time.Hour) && !s.Online() {

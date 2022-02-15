@@ -114,7 +114,7 @@ func newGateway(appId int32, system *actor.System) {
 
 func newGame(appId int32, system *actor.System) {
 	gameActor := game.New(uint16(appId))
-	expect.Nil(system.Add(actor.New(common.GameName(appId), gameActor, actor.SetMailBoxSize(1000))))
+	expect.Nil(system.Add(actor.New(common.GameName(appId), gameActor, actor.SetMailBoxSize(4000))))
 }
 
 func monitor() {

@@ -16,16 +16,16 @@ import (
 )
 
 type DB struct {
-	addr         string
-	databaseAddr string
-	dbIns        *gorm.DB
+	addr   string
+	dbName string
+	dbIns  *gorm.DB
 }
 
-func New(addr, databaseAddr string) *DB {
+func New(addr, databaseName string) *DB {
 	// 检查库是否存在，不存在就创建
-	expect.Nil(checkDatabase(fmt.Sprintf(addr, ""), databaseAddr))
+	expect.Nil(checkDatabase(fmt.Sprintf(addr, ""), databaseName))
 
-	db, err := gorm.Open(mysql.Open(fmt.Sprintf(addr, databaseAddr)), &gorm.Config{
+	db, err := gorm.Open(mysql.Open(fmt.Sprintf(addr, databaseName)), &gorm.Config{
 		NamingStrategy: schema.NamingStrategy{SingularTable: true},
 	})
 	expect.Nil(err)
@@ -34,9 +34,9 @@ func New(addr, databaseAddr string) *DB {
 	expect.Nil(checkTables(db))
 
 	return &DB{
-		addr:         addr,
-		databaseAddr: databaseAddr,
-		dbIns:        db,
+		addr:   addr,
+		dbName: databaseName,
+		dbIns:  db,
 	}
 }
 
