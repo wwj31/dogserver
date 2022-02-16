@@ -66,8 +66,6 @@ func (s *Player) OnInit() {
 			log.Errorw("load player data failed", "err", err)
 			return
 		}
-	} else {
-		defer s.store(true)
 	}
 
 	s.models[modRole] = role.New(models.New(s), data.RoleBytes) // 角色

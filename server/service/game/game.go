@@ -23,15 +23,16 @@ func New(serverId uint16) *Game {
 
 type Game struct {
 	actor.Base
-	sid     uint16 // serverId
-	genUUID common.UID
+	common.UID
 	iface.StoreLoader
+
+	sid       uint16 // serverId
 	playerMgr iface.PlayerManager
 }
 
 func (s *Game) OnInit() {
 	s.StoreLoader = db.New(toml.Get("mysql"), toml.Get("database"))
-	s.genUUID = common.NewUID(s.sid)
+	s.UID = common.NewUID(s.sid)
 	s.playerMgr = player.NewMgr(s)
 
 	_ = s.System().RegistEvent(s.ID(), actor.EvDelactor{})
@@ -69,10 +70,6 @@ func (s *Game) OnHandleEvent(event interface{}) {
 // SID serverId
 func (s *Game) SID() uint16 {
 	return s.sid
-}
-
-func (s *Game) GenUuid() uint64 {
-	return s.genUUID.GenUuid()
 }
 
 func (s *Game) PlayerMgr() iface.PlayerManager {
@@ -167,7 +164,7 @@ func (s *Game) toPlayer(gSession common.GSession, msg interface{}) {
 		}
 		msg = v
 		actorId = common.PlayerId(gameWrapper.RID)
-		// try reactivate player actor if actor exit
+		// try reactivate player actor if actor has exited
 		s.activatePlayer(gameWrapper.RID, false)
 	}
 
