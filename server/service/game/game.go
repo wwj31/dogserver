@@ -102,7 +102,7 @@ func (s *Game) MsgToPlayer(rid uint64, sid uint16, msg gogo.Message) {
 	s.toPlayer("", wrapper)
 }
 
-func (s *Game) activatePlayer(rid uint64, firstLogin bool) common.ActorId {
+func (s *Game) checkAndActivatePlayer(rid uint64, firstLogin bool) common.ActorId {
 	playerId := common.PlayerId(rid)
 	if ok := s.System().Exist(playerId); !ok || firstLogin {
 		playerActor := actor.New(playerId, player.New(rid, s, firstLogin), actor.SetMailBoxSize(200), actor.SetLocalized())
@@ -116,6 +116,7 @@ func (s *Game) activatePlayer(rid uint64, firstLogin bool) common.ActorId {
 // player enter game
 func (s *Game) enterGameReq(gSession common.GSession, msg *outer.EnterGameReq) {
 	log.Debugw("EnterGameReq", "msg", msg)
+	// check sign
 	if common.LoginMD5(msg.UID, msg.RID, msg.NewPlayer) != msg.Checksum {
 		log.Warnw("checksum md5 check faild", "msg", msg.String())
 		return
@@ -127,13 +128,12 @@ func (s *Game) enterGameReq(gSession common.GSession, msg *outer.EnterGameReq) {
 		return
 	}
 
-	// todo .. decrypt
 	var playerId = common.PlayerId(msg.RID)
 
 	if oldSession, ok := s.onlineMgr.GSessionByPlayer(playerId); ok {
 		s.onlineMgr.DelGSession(oldSession)
 	} else {
-		playerId = s.activatePlayer(msg.RID, msg.NewPlayer)
+		playerId = s.checkAndActivatePlayer(msg.RID, msg.NewPlayer)
 	}
 	s.onlineMgr.AssociateSession(playerId, gSession)
 
@@ -194,7 +194,7 @@ func (s *Game) toPlayer(gSession common.GSession, msg interface{}) {
 		msg = v
 		actorId = common.PlayerId(gameWrapper.RID)
 		// try reactivate player actor if actor has exited
-		s.activatePlayer(gameWrapper.RID, false)
+		s.checkAndActivatePlayer(gameWrapper.RID, false)
 	}
 
 	err := s.Send(actorId, msg)
