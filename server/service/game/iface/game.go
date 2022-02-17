@@ -10,6 +10,7 @@ type Gamer interface {
 	StoreLoader
 
 	SID() uint16
+	MsgToPlayer(rid uint64, sid uint16, msg interface{})
 }
 
 type UuidGenerator interface {

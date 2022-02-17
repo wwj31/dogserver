@@ -1,8 +1,6 @@
 package player
 
 import (
-	"math/rand"
-	"reflect"
 	"server/db/table"
 	"server/proto/outermsg/outer"
 	"time"
@@ -66,6 +64,8 @@ func (s *Player) OnInit() {
 			log.Errorw("load player data failed", "err", err)
 			return
 		}
+	} else {
+		defer s.store(true)
 	}
 
 	s.models[modRole] = role.New(models.New(s), data.RoleBytes) // 角色
@@ -73,11 +73,13 @@ func (s *Player) OnInit() {
 	s.models[modMail] = mail.New(models.New(s), data.MailBytes) // 邮件
 
 	// 定时回存
-	randTime := tools.NowTime() + int64(5*time.Minute) + rand.Int63n(int64(time.Second*30))
+	//randTime := tools.NowTime() + int64(5*time.Minute) + rand.Int63n(int64(time.Second*30))
+	randTime := tools.NowTime() + int64(1*time.Second)
 	s.saveTimerId = s.AddTimer(tools.UUID(), randTime, func(dt int64) {
 		s.store()
 		s.checkAlive()
 	}, -1)
+	log.Infow("player actor activated", "id", s.ID(), "firstLogin", s.firstLogin)
 }
 
 func (s *Player) OnHandleMessage(sourceId, targetId string, msg interface{}) {
@@ -99,7 +101,7 @@ func (s *Player) OnHandleMessage(sourceId, targetId string, msg interface{}) {
 func (s *Player) GateSession() common.GSession            { return s.gSession }
 func (s *Player) SetGateSession(gSession common.GSession) { s.gSession = gSession }
 func (s *Player) Send2Client(pb proto.Message) {
-	if pb == nil || reflect.ValueOf(pb).IsNil() {
+	if pb == nil || !s.Online() {
 		return
 	}
 	if err := s.sender.Send2Client(s.gSession, pb); err != nil {
@@ -155,10 +157,11 @@ func (s *Player) store(new ...bool) {
 	log.Infow("player stored model", "RID", s.roleId)
 }
 
+const aliveDuration = 5 * time.Second // 24*time.Hour
 func (s Player) checkAlive() {
 	now := tools.NowTime()
 	duration := now - s.keepAlive
-	if duration > int64(24*time.Hour) && !s.Online() {
+	if duration > int64(aliveDuration) && !s.Online() {
 		s.Exit()
 	}
 }

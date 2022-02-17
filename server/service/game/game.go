@@ -11,8 +11,11 @@ import (
 	"server/service/game/iface"
 	"server/service/game/logic/player"
 	"server/service/game/logic/player/localmsg"
+	"time"
 
-	"github.com/gogo/protobuf/proto"
+	"github.com/wwj31/dogactor/tools"
+
+	gogo "github.com/gogo/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
 	"github.com/wwj31/dogactor/expect"
 )
@@ -27,13 +30,13 @@ type Game struct {
 	iface.StoreLoader
 
 	sid       uint16 // serverId
-	playerMgr iface.PlayerManager
+	onlineMgr onlineMgr
 }
 
 func (s *Game) OnInit() {
 	s.StoreLoader = db.New(toml.Get("mysql"), toml.Get("database"))
 	s.UID = common.NewUID(s.sid)
-	s.playerMgr = player.NewMgr(s)
+	s.onlineMgr = newMgr(s)
 
 	_ = s.System().RegistEvent(s.ID(), actor.EvDelactor{})
 	log.Debugf("game OnInit")
@@ -72,8 +75,31 @@ func (s *Game) SID() uint16 {
 	return s.sid
 }
 
-func (s *Game) PlayerMgr() iface.PlayerManager {
-	return s.playerMgr
+// MsgToPlayer send msg to player actor
+func (s *Game) MsgToPlayer(rid uint64, sid uint16, msg interface{}) {
+	actorId := common.PlayerId(rid)
+	gSession, ok := s.onlineMgr.GSessionByPlayer(actorId)
+	if ok {
+		s.toPlayer(gSession, msg)
+		return
+	}
+
+	bytes := common.ProtoMarshal(msg.(gogo.Message))
+	wrapper := &inner.GameMsgWrapper{
+		RID:     rid,
+		MsgName: common.ProtoType(msg),
+		Data:    bytes,
+	}
+
+	if s.SID() != sid {
+		err := s.Send(common.GameName(int32(sid)), wrapper)
+		if err != nil {
+			log.Errorw("msg to player from other game send failed", "err", err)
+			return
+		}
+	}
+
+	s.toPlayer("", wrapper)
 }
 
 func (s *Game) activatePlayer(rid uint64, firstLogin bool) common.ActorId {
@@ -96,7 +122,7 @@ func (s *Game) enterGameReq(gSession common.GSession, msg *outer.EnterGameReq) {
 	}
 
 	// warn:repeated login
-	if _, ok := s.PlayerMgr().PlayerBySession(gSession); ok {
+	if _, ok := s.onlineMgr.PlayerBySession(gSession); ok {
 		log.Warnw("player repeated enter game", "gSession", gSession, "localmsg", msg.RID)
 		return
 	}
@@ -104,29 +130,32 @@ func (s *Game) enterGameReq(gSession common.GSession, msg *outer.EnterGameReq) {
 	// todo .. decrypt
 	var playerId = common.PlayerId(msg.RID)
 
-	if oldSession, ok := s.PlayerMgr().GSessionByPlayer(playerId); ok {
-		s.PlayerMgr().DelGSession(oldSession)
+	if oldSession, ok := s.onlineMgr.GSessionByPlayer(playerId); ok {
+		s.onlineMgr.DelGSession(oldSession)
 	} else {
 		playerId = s.activatePlayer(msg.RID, msg.NewPlayer)
 	}
-	s.PlayerMgr().AssociateSession(playerId, gSession)
+	s.onlineMgr.AssociateSession(playerId, gSession)
 
 	err := s.Send(playerId, localmsg.Login{GSession: gSession})
 	if err != nil {
 		log.Errorw("login send error", "rid", msg.RID, "err", err, "playerId", playerId)
 		return
 	}
+	s.AddTimer("", tools.NowTime()+int64(10*time.Second), func(dt int64) {
+		s.MsgToPlayer(msg.RID, s.sid, &outer.UseItemReq{Items: map[int64]int64{123: 1}})
+	}, -1)
 }
 
 // player offline
-func (s *Game) logout(msg *inner.GT2GSessionClosed) proto.Message {
+func (s *Game) logout(msg *inner.GT2GSessionClosed) gogo.Message {
 	gSession := common.GSession(msg.GateSession)
-	playerId, ok := s.PlayerMgr().PlayerBySession(gSession)
+	playerId, ok := s.onlineMgr.PlayerBySession(gSession)
 	if ok {
 		_ = s.Send(playerId, msg)
 	}
 
-	s.PlayerMgr().DelGSession(gSession)
+	s.onlineMgr.DelGSession(gSession)
 	return nil
 }
 
@@ -139,7 +168,7 @@ func (s *Game) toPlayer(gSession common.GSession, msg interface{}) {
 	// gSession != "" mean msg from client via gateway,otherwise
 	// msg from other actor wrap in inner.GameMsgWrapper
 	if gSession != "" {
-		actorId, ok = s.PlayerMgr().PlayerBySession(gSession)
+		actorId, ok = s.onlineMgr.PlayerBySession(gSession)
 		if !ok {
 			log.Warnw("msg to player,but can not found player by gSession", "gSession", gSession)
 			return
@@ -158,7 +187,7 @@ func (s *Game) toPlayer(gSession common.GSession, msg interface{}) {
 				return
 			}
 		}
-		if err := proto.Unmarshal(gameWrapper.Data, v.(proto.Message)); err != nil {
+		if err := gogo.Unmarshal(gameWrapper.Data, v.(gogo.Message)); err != nil {
 			log.Errorw("unmarshal failed", "msgName", gameWrapper.MsgName)
 			return
 		}

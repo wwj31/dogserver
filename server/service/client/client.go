@@ -1,6 +1,7 @@
 package client
 
 import (
+	"reflect"
 	"server/proto/outermsg/outer"
 	"time"
 
@@ -85,6 +86,6 @@ func (s *Client) OnHandleMessage(sourceId, targetId string, v interface{}) {
 		logger.Infow("ReceiveMailItemResp!", "msg", msg.String())
 
 	default:
-		logger.Infow("unknown type!", "msg", msg)
+		logger.Infow("unknown type!", "type", reflect.TypeOf(msg).String(), "msg", msg)
 	}
 }

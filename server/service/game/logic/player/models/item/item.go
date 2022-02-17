@@ -84,7 +84,6 @@ func (s *Item) Add(items map[int64]int64, push ...bool) {
 		} else {
 			val = common.Max(0, count)
 		}
-
 		s.items.Items[id] = val
 	}
 
