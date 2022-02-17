@@ -76,7 +76,7 @@ func (s *Game) SID() uint16 {
 }
 
 // MsgToPlayer send msg to player actor
-func (s *Game) MsgToPlayer(rid uint64, sid uint16, msg interface{}) {
+func (s *Game) MsgToPlayer(rid uint64, sid uint16, msg gogo.Message) {
 	actorId := common.PlayerId(rid)
 	gSession, ok := s.onlineMgr.GSessionByPlayer(actorId)
 	if ok {
@@ -84,7 +84,7 @@ func (s *Game) MsgToPlayer(rid uint64, sid uint16, msg interface{}) {
 		return
 	}
 
-	bytes := common.ProtoMarshal(msg.(gogo.Message))
+	bytes := common.ProtoMarshal(msg)
 	wrapper := &inner.GameMsgWrapper{
 		RID:     rid,
 		MsgName: common.ProtoType(msg),

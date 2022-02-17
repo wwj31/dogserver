@@ -1,6 +1,7 @@
 package iface
 
 import (
+	gogo "github.com/gogo/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
 )
 
@@ -10,7 +11,7 @@ type Gamer interface {
 	StoreLoader
 
 	SID() uint16
-	MsgToPlayer(rid uint64, sid uint16, msg interface{})
+	MsgToPlayer(rid uint64, sid uint16, msg gogo.Message)
 }
 
 type UuidGenerator interface {
