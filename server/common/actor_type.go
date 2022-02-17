@@ -5,6 +5,8 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/spf13/cast"
+
 	"server/common/log"
 )
 
@@ -22,19 +24,19 @@ const (
 )
 
 func GameName(id int32) ActorId {
-	return fmt.Sprintf("%v%v_Actor", Game_Actor, id)
+	return fmt.Sprintf("%v_%v_Actor", Game_Actor, id)
 }
 
 func PlayerId(id uint64) ActorId {
-	return fmt.Sprintf("%v%v_Actor", Player_Actor, id)
+	return fmt.Sprintf("%v_%v_Actor", Player_Actor, id)
 }
 
 func WorldName(id int32) ActorId {
-	return fmt.Sprintf("%v%v_Actor", World_Actor, id)
+	return fmt.Sprintf("%v_%v_Actor", World_Actor, id)
 }
 
 func GatewayName(id int32) ActorId {
-	return fmt.Sprintf("%v%v_Actor", GateWay_Actor, id)
+	return fmt.Sprintf("%v_%v_Actor", GateWay_Actor, id)
 }
 
 func AId(actorId ActorId, typ string) (str string) {
@@ -44,6 +46,15 @@ func AId(actorId ActorId, typ string) (str string) {
 		str = s[0]
 	}
 	return
+}
+
+// NumAndType get actor's number and type of actor
+func NumAndType(actorId ActorId) (int, string) {
+	str := strings.Split(actorId, "_")
+	if len(str) != 3 {
+		return -1, ""
+	}
+	return cast.ToInt(str[1]), str[0]
 }
 
 // 匹配actor类型 按照固定格式匹配
