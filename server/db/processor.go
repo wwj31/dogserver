@@ -1,6 +1,7 @@
 package db
 
 import (
+	"fmt"
 	"reflect"
 	"server/common/log"
 	"server/db/table"
@@ -32,20 +33,28 @@ func (s *processor) OnInit() {
 }
 
 func (s *processor) OnHandleMessage(sourceId, targetId string, msg interface{}) {
-	newOper, ok := msg.(operatorTable)
+	newOpera, ok := msg.(operatorTable)
 	if !ok {
 		log.Errorw("processor receive invalid data", "type", reflect.TypeOf(msg).String())
 		return
 	}
 
-	for index, oper := range s.list {
+	var repeated bool
+	for index, opera := range s.list {
 		// 相同数据执行替换操作
-		if oper.t.TableName() == newOper.t.TableName() && oper.t.Key() == newOper.t.Key() {
-			s.list[index] = newOper
+		if opera.t.TableName() == newOpera.t.TableName() &&
+			opera.t.Key() == newOpera.t.Key() &&
+			opera.status == newOpera.status {
+
+			s.list[index] = newOpera
+			repeated = true
+			break
 		}
 	}
 
-	s.list = append(s.list, newOper)
+	if !repeated {
+		s.list = append(s.list, newOpera)
+	}
 
 	if s.nextExecTime == "" {
 		s.nextExecTime = s.AddTimer("", tools.NowTime()+int64(500*time.Millisecond), func(dt int64) {
@@ -56,5 +65,8 @@ func (s *processor) OnHandleMessage(sourceId, targetId string, msg interface{}) 
 }
 
 func (s *processor) execute() {
-
+	for _, v := range s.list {
+		fmt.Println("exec ", v.t.TableName(), v.t.Key())
+	}
+	s.list = s.list[:0]
 }
