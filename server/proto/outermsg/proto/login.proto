@@ -27,8 +27,8 @@ message LoginReq
     string OS            = 3;
     // 版本号
     string ClientVersion = 4;
-    // 校验和
-    string Checksum      = 5;
+    // 签名token
+    string Token         = 5;
 }
 
 message LoginResp
@@ -36,7 +36,7 @@ message LoginResp
     uint64  UID          = 1;
     uint64  RID          = 2;
     bool    NewPlayer    = 3;
-    string  Checksum     = 4;
+    string  Token        = 4;
 }
 
 message EnterGameReq

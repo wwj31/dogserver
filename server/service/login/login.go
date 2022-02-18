@@ -52,8 +52,8 @@ func (s *Login) OnHandleMessage(sourceId, targetId string, msg interface{}) {
 func (s *Login) LoginReq(sourceId string, gSession common.GSession, msg *outer.LoginReq) error {
 	log.Debugf(msg.String())
 
-	if common.LoginChecksum(msg) != msg.Checksum {
-		return fmt.Errorf("login req checksum failed msg:%v", msg.String())
+	if common.LoginToken(msg) != msg.Token {
+		return fmt.Errorf("login req token failed msg:%v", msg.String())
 	}
 
 	acc, newPlayer := s.accountMgr.Login(msg, s.storage)
@@ -80,6 +80,6 @@ func (s *Login) LoginReq(sourceId string, gSession common.GSession, msg *outer.L
 		UID:       acc.UUId(),
 		RID:       acc.LastRoleId(),
 		NewPlayer: newPlayer,
-		Checksum:  md5,
+		Token:     md5,
 	})
 }

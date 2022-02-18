@@ -33,8 +33,8 @@ func (s *Client) login(arg ...string) {
 		PlatformName: "test",
 		OS:           "test",
 	}
-	checksum := common.LoginChecksum(logReq)
-	logReq.Checksum = checksum
+	token := common.LoginToken(logReq)
+	logReq.Token = token
 	s.SendToServer(outer.MSG_LOGIN_REQ.Int32(), logReq)
 }
 
