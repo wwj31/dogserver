@@ -59,7 +59,7 @@ func NumAndType(actorId ActorId) (int, string) {
 
 // 匹配actor类型 按照固定格式匹配
 func IsActorOf(actorId, typ string) bool {
-	str := typ + "([0-9]+)_Actor"
+	str := typ + "_([0-9]+)_Actor"
 	match, e := regexp.MatchString(str, actorId)
 	if e != nil {
 		log.Errorw("IsActorOf regexp error", "err", e)

@@ -15,32 +15,34 @@ import (
 	"gorm.io/gorm/schema"
 )
 
-type DB struct {
+type DataCenter struct {
 	addr   string
 	dbName string
 	dbIns  *gorm.DB
 }
 
-func New(addr, databaseName string) *DB {
+func New(addr, databaseName string) *DataCenter {
 	// 检查库是否存在，不存在就创建
 	expect.Nil(checkDatabase(fmt.Sprintf(addr, ""), databaseName))
 
 	db, err := gorm.Open(mysql.Open(fmt.Sprintf(addr, databaseName)), &gorm.Config{
-		NamingStrategy: schema.NamingStrategy{SingularTable: true},
+		NamingStrategy:         schema.NamingStrategy{SingularTable: true},
+		SkipDefaultTransaction: true,
+		PrepareStmt:            true,
 	})
+
 	expect.Nil(err)
 
 	// 创建不存在的表
 	expect.Nil(checkTables(db))
-
-	return &DB{
+	return &DataCenter{
 		addr:   addr,
 		dbName: databaseName,
 		dbIns:  db,
 	}
 }
 
-func (s *DB) Store(insert bool, tablers ...table.Tabler) error {
+func (s *DataCenter) Store(insert bool, tablers ...table.Tabler) error {
 	if len(tablers) == 0 {
 		return nil
 	}
@@ -60,7 +62,7 @@ func (s *DB) Store(insert bool, tablers ...table.Tabler) error {
 	return nil
 }
 
-func (s *DB) Load(tablers ...table.Tabler) error {
+func (s *DataCenter) Load(tablers ...table.Tabler) error {
 	for _, t := range tablers {
 		name := t.TableName()
 		if t.Count() > 1 {
@@ -71,7 +73,7 @@ func (s *DB) Load(tablers ...table.Tabler) error {
 	return nil
 }
 
-func (s *DB) LoadAll(tableName string, arr interface{}) error {
+func (s *DataCenter) LoadAll(tableName string, arr interface{}) error {
 	tableName = strings.ToLower(tableName)
 	return s.dbIns.Table(tableName).Find(arr).Error
 }
