@@ -31,32 +31,32 @@ const process = "process1"
 func TestProcessor(t *testing.T) {
 	sys, _ := actor.NewSystem()
 	_ = sys.Add(actor.New("process1", &processor{}))
-	_ = sys.Send("", process, "", operatorTable{
+	_ = sys.Send("", process, "", operator{
 		status: 1,
-		t:      fakeTable{key: 1, tableName: "table1"},
+		tab:    fakeTable{key: 1, tableName: "table1"},
 	})
 
-	_ = sys.Send("", process, "", operatorTable{
+	_ = sys.Send("", process, "", operator{
 		status: 0,
-		t:      fakeTable{key: 4, tableName: "table1"},
+		tab:    fakeTable{key: 4, tableName: "table1"},
 	})
 
-	_ = sys.Send("", process, "", operatorTable{
+	_ = sys.Send("", process, "", operator{
 		status: 0,
-		t:      fakeTable{key: 2, tableName: "table1"},
+		tab:    fakeTable{key: 2, tableName: "table1"},
 	})
 
-	_ = sys.Send("", process, "", operatorTable{
+	_ = sys.Send("", process, "", operator{
 		status: 2,
-		t:      fakeTable{key: 1, tableName: "table1"},
+		tab:    fakeTable{key: 1, tableName: "table1"},
 	})
 
 	go func() {
 		for {
 			time.Sleep(time.Millisecond)
-			_ = sys.Send("", process, "", operatorTable{
+			_ = sys.Send("", process, "", operator{
 				status: 0,
-				t:      fakeTable{key: uint64(tools.Randx_y(1, 5)), tableName: "table1"},
+				tab:    fakeTable{key: uint64(tools.Randx_y(1, 5)), tableName: "table1"},
 			})
 		}
 	}()
