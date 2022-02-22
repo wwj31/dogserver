@@ -74,9 +74,9 @@ func (s *processor) OnHandleMessage(sourceId, targetId string, msg interface{}) 
 						return
 					}
 				}
-			} else { // 同表不同key的优化
+			} else {
 				if newOpera.status == _INSERT && opera.status == _INSERT {
-					// todo ..合并insert操作
+					// 同表不同key，合并insert操作
 					opera.inserts = append(opera.inserts, newOpera.tab)
 					break
 				}
