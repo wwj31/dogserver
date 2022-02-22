@@ -3,11 +3,11 @@ package table
 var AllTable = make(map[string]Tabler)
 
 type Tabler interface {
-	TableName() string
+	ModelName() string
 	Count() int
 	Key() uint64
 }
 
 func RegisterTable(table Tabler) {
-	AllTable[table.TableName()] = table
+	AllTable[table.ModelName()] = table
 }

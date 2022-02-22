@@ -41,7 +41,7 @@ func TestDBLoadAll(t *testing.T) {
 	)
 
 	var all []table.Account
-	tbName := (&table.Account{}).TableName()
+	tbName := (&table.Account{}).ModelName()
 	dbIns.LoadAll(tbName, &all)
 	for _, v := range all {
 		fmt.Println(v)

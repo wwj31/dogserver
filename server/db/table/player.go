@@ -15,7 +15,7 @@ func init() {
 	RegisterTable(&Player{})
 }
 
-func (s *Player) TableName() string {
+func (s *Player) ModelName() string {
 	return reflect.TypeOf(s).Elem().Name()
 }
 

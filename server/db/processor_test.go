@@ -14,7 +14,7 @@ type fakeTable struct {
 	tableName string
 }
 
-func (f fakeTable) TableName() string {
+func (f fakeTable) ModelName() string {
 	return f.tableName
 }
 

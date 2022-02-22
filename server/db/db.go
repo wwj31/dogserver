@@ -47,7 +47,7 @@ func (s *DataCenter) Store(insert bool, tablers ...table.Tabler) error {
 		return nil
 	}
 	for _, t := range tablers {
-		name := t.TableName()
+		name := t.ModelName()
 		if t.Count() > 1 {
 			name = name + strconv.Itoa(num(t.Key(), t.Count()))
 		}
@@ -64,7 +64,7 @@ func (s *DataCenter) Store(insert bool, tablers ...table.Tabler) error {
 
 func (s *DataCenter) Load(tablers ...table.Tabler) error {
 	for _, t := range tablers {
-		name := t.TableName()
+		name := t.ModelName()
 		if t.Count() > 1 {
 			name = name + strconv.Itoa(num(t.Key(), t.Count()))
 		}
@@ -105,21 +105,21 @@ func checkTables(db *gorm.DB) error {
 	var creatErr error
 	for _, t := range table.AllTable {
 		database := db.Set("gorm:table_options", "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4")
-		if t.Count() <= 1 {
-			creatErr = database.AutoMigrate(t)
+		for i := 1; i <= t.Count(); i++ {
+			creatErr = database.Table(tableName(t.ModelName(), i)).AutoMigrate(t)
 			if creatErr != nil {
 				return creatErr
-			}
-		} else {
-			for i := 1; i <= t.Count(); i++ {
-				creatErr = database.Table(t.TableName() + strconv.Itoa(i)).AutoMigrate(t)
-				if creatErr != nil {
-					return creatErr
-				}
 			}
 		}
 	}
 	return nil
+}
+
+func tableName(name string, count int) string {
+	if count == 0 {
+		return name
+	}
+	return name + strconv.Itoa(count)
 }
 
 func num(key uint64, count int) int {

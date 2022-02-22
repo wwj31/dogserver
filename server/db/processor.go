@@ -14,6 +14,8 @@ import (
 
 type op int
 
+const maxCount = 100 // 一次最多处理次数
+
 const (
 	_INSERT op = iota + 1
 	_UPDATE
@@ -46,10 +48,9 @@ func (s *processor) OnHandleMessage(sourceId, targetId string, msg interface{}) 
 		return
 	}
 
-	var repeated bool
 	for i := len(s.list) - 1; i >= 0; i-- {
 		opera := s.list[i]
-		if opera.tab.TableName() != newOpera.tab.TableName() {
+		if tableName(opera.tab.ModelName(), opera.tab.Count()) != tableName(newOpera.tab.ModelName(), newOpera.tab.Count()) {
 			continue
 		}
 		batches := append([]table.Tabler{opera.tab}, opera.inserts...)
@@ -61,14 +62,17 @@ func (s *processor) OnHandleMessage(sourceId, targetId string, msg interface{}) 
 				case _INSERT, _UPDATE:
 					if opera.status == newOpera.status {
 						s.list[i] = newOpera
-						repeated = true
-						break
+						return
 					}
 				case _LOAD:
 					switch opera.status {
 					case _INSERT, _UPDATE:
 						newOpera.tab = opera.tab
 						if newOpera.finish != nil {
+							if cap(newOpera.finish) == 0 {
+								log.Warnw("operator _LOAD finish cap == 0 can't push", "status", newOpera.status, "tab name", newOpera.tab.ModelName())
+								return
+							}
 							newOpera.finish <- struct{}{}
 						}
 						return
@@ -78,15 +82,13 @@ func (s *processor) OnHandleMessage(sourceId, targetId string, msg interface{}) 
 				if newOpera.status == _INSERT && opera.status == _INSERT {
 					// 同表不同key，合并insert操作
 					opera.inserts = append(opera.inserts, newOpera.tab)
-					break
+					return
 				}
 			}
 		}
 	}
-	if !repeated {
-		s.list = append(s.list, newOpera)
-	}
 
+	s.list = append(s.list, newOpera)
 	if s.nextExecTime == "" && len(s.list) > 0 {
 		if s.list[0].status == _LOAD {
 			s.execute()
@@ -103,12 +105,10 @@ func (s *processor) delayExec() {
 	})
 }
 
-const maxCount = 100
-
 func (s *processor) execute() {
 	for i, v := range s.list {
-		fmt.Println("exec ", v.tab.TableName(), v.tab.Key())
-		db := s.session.Table(v.tab.TableName())
+		fmt.Println("exec ", tableName(v.tab.ModelName(), v.tab.Count()), v.tab.Key())
+		db := s.session.Table(v.tab.ModelName())
 		if v.status == _INSERT {
 			inserts := append([]table.Tabler{v.tab}, v.inserts...)
 			db.Create(inserts)
