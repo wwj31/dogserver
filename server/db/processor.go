@@ -5,21 +5,25 @@ import (
 	"reflect"
 	"server/common/log"
 	"server/db/table"
-	"time"
+	"sync/atomic"
+
+	"github.com/spf13/cast"
 
 	"github.com/wwj31/dogactor/actor"
-	"github.com/wwj31/dogactor/tools"
 	"gorm.io/gorm"
 )
 
 type op int
 
-const maxCount = 100 // 一次最多处理次数
-
 const (
 	_INSERT op = iota + 1
 	_UPDATE
 	_LOAD
+)
+
+const (
+	STOP = iota + 1
+	RUNING
 )
 
 type (
@@ -31,25 +35,32 @@ type (
 	}
 	processor struct {
 		actor.Base
-		session      *gorm.DB
-		list         []operator
-		nextExecTime string
+		session *gorm.DB
+		set     []operator
+		state   atomic.Value
 	}
 )
 
 func (s *processor) OnInit() {
-	s.list = make([]operator, 0, 100)
+	s.state.Store(STOP)
+	s.set = make([]operator, 0, 100)
 }
 
 func (s *processor) OnHandleMessage(sourceId, targetId string, msg interface{}) {
+	exec, ok := msg.(string)
+	if ok && exec == "exec" {
+		s.cas()
+		return
+	}
+
 	newOpera, ok := msg.(operator)
 	if !ok {
 		log.Errorw("processor receive invalid data", "type", reflect.TypeOf(msg).String())
 		return
 	}
-
-	for i := len(s.list) - 1; i >= 0; i-- {
-		opera := s.list[i]
+	add := true
+	for i := len(s.set) - 1; i >= 0; i-- {
+		opera := s.set[i]
 		if tableName(opera.tab.ModelName(), opera.tab.Count()) != tableName(newOpera.tab.ModelName(), newOpera.tab.Count()) {
 			continue
 		}
@@ -61,8 +72,9 @@ func (s *processor) OnHandleMessage(sourceId, targetId string, msg interface{}) 
 				switch newOpera.status {
 				case _INSERT, _UPDATE:
 					if opera.status == newOpera.status {
-						s.list[i] = newOpera
-						return
+						s.set[i] = newOpera
+						add = false
+						break
 					}
 				case _LOAD:
 					switch opera.status {
@@ -70,60 +82,67 @@ func (s *processor) OnHandleMessage(sourceId, targetId string, msg interface{}) 
 						newOpera.tab = opera.tab
 						if newOpera.finish != nil {
 							if cap(newOpera.finish) == 0 {
-								log.Warnw("operator _LOAD finish cap == 0 can't push", "status", newOpera.status, "tab name", newOpera.tab.ModelName())
-								return
+								add = false
+								log.Warnw("operator _LOAD finish cap == 0 can't push", "state", newOpera.status, "tab name", newOpera.tab.ModelName())
+								break
 							}
 							newOpera.finish <- struct{}{}
 						}
-						return
+						add = false
+						break
 					}
 				}
 			} else {
 				if newOpera.status == _INSERT && opera.status == _INSERT {
 					// 同表不同key，合并insert操作
 					opera.inserts = append(opera.inserts, newOpera.tab)
-					return
+					add = false
+					break
 				}
 			}
 		}
-	}
-
-	s.list = append(s.list, newOpera)
-	if s.nextExecTime == "" && len(s.list) > 0 {
-		if s.list[0].status == _LOAD {
-			s.execute()
-			return
+		if !add {
+			break
 		}
-		s.delayExec()
+	}
+	if add {
+		s.set = append(s.set, newOpera)
+	}
+	s.cas()
+}
+
+func (s *processor) cas() {
+	if s.state.CompareAndSwap(STOP, RUNING) {
+		arr := make([]operator, len(s.set))
+		copy(arr, s.set)
+		s.set = s.set[:0]
+		go func() {
+			//fmt.Println("start processor ", s.ID(), "arr len ", len(arr))
+			for _, v := range arr {
+				s.execute(v)
+			}
+			s.state.Store(STOP)
+			s.Send(s.ID(), "exec")
+		}()
 	}
 }
 
-func (s *processor) delayExec() {
-	s.nextExecTime = s.AddTimer("", tools.NowTime()+int64(500*time.Millisecond), func(dt int64) {
-		s.nextExecTime = ""
-		s.execute()
-	})
-}
-
-func (s *processor) execute() {
-	for i, v := range s.list {
-		fmt.Println("exec ", tableName(v.tab.ModelName(), v.tab.Count()), v.tab.Key())
-		db := s.session.Table(v.tab.ModelName())
-		if v.status == _INSERT {
-			inserts := append([]table.Tabler{v.tab}, v.inserts...)
-			db.Create(inserts)
-		} else if v.status == _UPDATE {
-			db.Updates(v.tab)
-		} else if v.status == _LOAD {
-			db.Take(v.tab)
-		}
-
-		count := i + 1
-		if count == maxCount && count < len(s.list) {
-			s.list = s.list[i+1:]
-			s.delayExec()
-			return
-		}
+func (s *processor) execute(op operator) {
+	tn := op.tab.ModelName()
+	if op.tab.Count() > 0 {
+		tn = tn + cast.ToString(op.tab.Count())
 	}
-	s.list = s.list[:0]
+	db := s.session.Table(op.tab.ModelName())
+	if op.status == _INSERT {
+		inserts := append([]table.Tabler{op.tab}, op.inserts...)
+		for _, v := range inserts {
+			fmt.Println("insert", v.Key())
+			db.Create(v) // todo create 不支持 接口切片 怎么处理批量插入？？？？
+		}
+	} else if op.status == _UPDATE {
+		fmt.Println("update", op.tab.Key())
+		db.Updates(op.tab)
+	} else if op.status == _LOAD {
+		db.Take(op.tab)
+	}
 }
