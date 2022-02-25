@@ -1,6 +1,7 @@
 package db
 
 import (
+	"fmt"
 	"server/db/table"
 	"testing"
 	"time"
@@ -42,18 +43,29 @@ func TestProcessor(t *testing.T) {
 		for i := 0; i < 100000; i++ {
 			id := total[tools.Randx_y(0, len(total))]
 			var opera op
+			var finish chan struct{}
 			if !insertMap[id] {
 				opera = _INSERT
 				insertMap[id] = true
 			} else {
 				opera = op(tools.Randx_y(2, 4))
 				data = "table:" + cast.ToString(tools.NowTime())
+				if opera == _LOAD {
+					finish = make(chan struct{}, 1)
+				}
 			}
-
-			operaArr = append(operaArr, operator{
+			oper := operator{
 				status: opera,
 				tab:    &table.Fake{Id: id, Data: data},
-			})
+				finish: finish,
+			}
+			if oper.finish != nil {
+				go func() {
+					<-finish
+					fmt.Println("load success", oper.tab.Key())
+				}()
+			}
+			operaArr = append(operaArr, oper)
 		}
 
 		for _, opera := range operaArr {
