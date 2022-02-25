@@ -1,7 +1,6 @@
 package db
 
 import (
-	"fmt"
 	"server/db/table"
 	"testing"
 	"time"
@@ -28,7 +27,7 @@ func TestProcessor(t *testing.T) {
 	db.Set("gorm:table_options", "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4").AutoMigrate(&table.Fake{})
 	sys, _ := actor.NewSystem()
 
-	_ = sys.Add(actor.New(process, &processor{session: db.Session(&gorm.Session{})}, actor.SetMailBoxSize(1000)))
+	_ = sys.Add(actor.New(process, &processor{session: db.Session(&gorm.Session{})}, actor.SetMailBoxSize(10000)))
 
 	var total []uint64
 	for i := 0; i < 1000; i++ {
@@ -62,14 +61,14 @@ func TestProcessor(t *testing.T) {
 			if oper.finish != nil {
 				go func() {
 					<-finish
-					fmt.Println("load success", oper.tab.Key())
+					//fmt.Println("load success", oper.tab.Key())
 				}()
 			}
 			operaArr = append(operaArr, oper)
 		}
 
 		for _, opera := range operaArr {
-			time.Sleep(time.Duration(tools.Randx_y(10000, 1000000)))
+			time.Sleep(time.Duration(tools.Randx_y(60000, 100000)))
 			_ = sys.Send("", process, "", opera)
 		}
 	}()

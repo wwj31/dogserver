@@ -38,14 +38,14 @@ type (
 	processor struct {
 		actor.Base
 		session *gorm.DB
-		set     []operator
+		set     map[string]operator
 		state   atomic.Value
 	}
 )
 
 func (s *processor) OnInit() {
 	s.state.Store(STOP)
-	s.set = make([]operator, 0, 100)
+	s.set = make(map[string]operator, 10)
 }
 
 func (s *processor) OnHandleMessage(sourceId, targetId string, msg interface{}) {
@@ -57,69 +57,58 @@ func (s *processor) OnHandleMessage(sourceId, targetId string, msg interface{}) 
 		return
 	}
 
-	newOpera, ok := msg.(operator)
-	if !ok {
+	newOpera, ex := msg.(operator)
+	if !ex {
 		log.Errorw("processor receive invalid data", "type", reflect.TypeOf(msg).String())
 		return
 	}
-	add := true
-	for i := len(s.set) - 1; i >= 0; i-- {
-		opera := &s.set[i]
-		if tableName(opera.tab.ModelName(), opera.tab.Count()) != tableName(newOpera.tab.ModelName(), newOpera.tab.Count()) {
-			continue
-		}
-		batches := append([]table.Tabler{opera.tab}, opera.inserts...)
-		for _, tab := range batches {
-			// 1.相同数据store操作执行替换
-			// 2.load操作优先从队列里取,取不到再读库
-			if tab.Key() == newOpera.tab.Key() {
-				switch newOpera.status {
-				case _INSERT, _UPDATE:
-					if opera.status == newOpera.status {
-						s.set[i] = newOpera
-						add = false
-						break
-					}
-				case _LOAD:
-					switch opera.status {
-					case _INSERT, _UPDATE:
-						newOpera.tab = opera.tab
-						if newOpera.finish != nil {
-							if cap(newOpera.finish) == 0 {
-								add = false
-								log.Warnw("operator _LOAD finish cap == 0 can't push", "state", newOpera.status, "tab name", newOpera.tab.ModelName())
-								break
-							}
-							newOpera.finish <- struct{}{}
-						}
-						add = false
-						break
-					}
-				}
+	s.merageAndCover(newOpera)
+	s.store()
+}
+
+func (s *processor) merageAndCover(newOpera operator) {
+	newTableName := tableName(newOpera.tab.ModelName(), newOpera.tab.Count())
+	tableNameKey := newTableName + "_" + cast.ToString(newOpera.tab.Key())
+	if oldOpera, ok := s.set[tableNameKey]; !ok {
+		s.set[tableNameKey] = newOpera
+	} else {
+		// 1.相同key的数据store操作执行替换
+		// 2.load操作优先从队列里取,取不到再读库
+		switch newOpera.status {
+		case _INSERT:
+			log.Errorw("exception error operation before insert", "op", oldOpera.status, "tab", oldOpera.tab.Key())
+		case _UPDATE:
+			if oldOpera.status == newOpera.status {
+				oldOpera.tab = newOpera.tab // cover
 			} else {
-				if newOpera.status == _INSERT && opera.status == _INSERT {
-					// 同表不同key，合并insert操作
-					opera.inserts = append(opera.inserts, newOpera.tab)
-					add = false
-					break
+				s.set[tableNameKey] = newOpera
+			}
+		case _LOAD:
+			switch oldOpera.status {
+			case _INSERT, _UPDATE:
+				newOpera.tab = oldOpera.tab
+				if newOpera.finish != nil {
+					if cap(newOpera.finish) == 0 {
+						log.Warnw("operator _LOAD finish cap == 0 can't push", "state", newOpera.status, "tab name", newOpera.tab.ModelName())
+						return
+					}
+					newOpera.finish <- struct{}{}
 				}
+			case _LOAD:
+				s.set[tableNameKey] = newOpera
 			}
 		}
-		if !add {
-			break
-		}
 	}
-	if add {
-		s.set = append(s.set, newOpera)
-	}
-	s.store()
+	return
 }
 
 func (s *processor) store() {
 	if s.state.CompareAndSwap(STOP, RUNING) {
-		arr := make([]operator, len(s.set))
-		copy(arr, s.set)
-		s.set = s.set[:0]
+		arr := make([]operator, 0, len(s.set))
+		for _, v := range s.set {
+			arr = append(arr, v)
+		}
+		s.set = make(map[string]operator, 10)
 		go func() {
 			for _, v := range arr {
 				s.execute(v)
