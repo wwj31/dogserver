@@ -30,10 +30,10 @@ const notify = "check"
 
 type (
 	operator struct {
-		status  op
-		tab     table.Tabler
-		inserts []table.Tabler
-		finish  chan<- struct{}
+		status    op
+		tab       table.Tabler
+		extrOpera *operator
+		finish    chan<- struct{}
 	}
 	processor struct {
 		actor.Base
@@ -78,15 +78,20 @@ func (s *processor) merageAndCover(newOpera operator) {
 		case _INSERT:
 			log.Errorw("exception error operation before insert", "op", oldOpera.status, "tab", oldOpera.tab.Key())
 		case _UPDATE:
-			if oldOpera.status == newOpera.status {
+			switch oldOpera.status {
+			case _UPDATE:
 				oldOpera.tab = newOpera.tab // cover
-			} else {
-				s.set[tableNameKey] = newOpera
+			case _INSERT:
+				oldOpera.extrOpera = &newOpera // insert with update
 			}
 		case _LOAD:
 			switch oldOpera.status {
 			case _INSERT, _UPDATE:
-				newOpera.tab = oldOpera.tab
+				if oldOpera.extrOpera == nil {
+					newOpera.tab = oldOpera.tab
+				} else {
+					newOpera.tab = oldOpera.extrOpera.tab
+				}
 				if newOpera.finish != nil {
 					if cap(newOpera.finish) == 0 {
 						log.Warnw("operator _LOAD finish cap == 0 can't push", "state", newOpera.status, "tab name", newOpera.tab.ModelName())
@@ -126,12 +131,13 @@ func (s *processor) execute(op operator) {
 	}
 	db := s.session.Table(op.tab.ModelName())
 	if op.status == _INSERT {
-		inserts := append([]table.Tabler{op.tab}, op.inserts...)
-		fmt.Println("insert", len(inserts))
-		for _, v := range inserts {
-			db.Create(v) // todo create 不支持 接口切片 怎么处理批量插入？？？？
+		fmt.Println("insert")
+		db.Create(op.tab) // todo create 不支持 接口切片 怎么处理批量插入？？？？
+		if op.extrOpera != nil {
+			db.Updates(op.extrOpera.tab)
 		}
 	} else if op.status == _UPDATE {
+		fmt.Println("update")
 		db.Updates(op.tab)
 	} else if op.status == _LOAD {
 		db.Take(op.tab)

@@ -1,6 +1,7 @@
 package db
 
 import (
+	"fmt"
 	"server/db/table"
 	"testing"
 	"time"
@@ -61,7 +62,7 @@ func TestProcessor(t *testing.T) {
 			if oper.finish != nil {
 				go func() {
 					<-finish
-					//fmt.Println("load success", oper.tab.Key())
+					fmt.Println("                             load success", oper.tab.Key())
 				}()
 			}
 			operaArr = append(operaArr, oper)
