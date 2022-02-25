@@ -26,6 +26,8 @@ const (
 	RUNING
 )
 
+const notify = "check"
+
 type (
 	operator struct {
 		status  op
@@ -47,9 +49,11 @@ func (s *processor) OnInit() {
 }
 
 func (s *processor) OnHandleMessage(sourceId, targetId string, msg interface{}) {
-	exec, ok := msg.(string)
-	if ok && exec == "exec" {
-		s.cas()
+	check, ok := msg.(string)
+	if ok && check == notify {
+		if len(s.set) != 0 {
+			s.store()
+		}
 		return
 	}
 
@@ -60,7 +64,7 @@ func (s *processor) OnHandleMessage(sourceId, targetId string, msg interface{}) 
 	}
 	add := true
 	for i := len(s.set) - 1; i >= 0; i-- {
-		opera := s.set[i]
+		opera := &s.set[i]
 		if tableName(opera.tab.ModelName(), opera.tab.Count()) != tableName(newOpera.tab.ModelName(), newOpera.tab.Count()) {
 			continue
 		}
@@ -108,21 +112,20 @@ func (s *processor) OnHandleMessage(sourceId, targetId string, msg interface{}) 
 	if add {
 		s.set = append(s.set, newOpera)
 	}
-	s.cas()
+	s.store()
 }
 
-func (s *processor) cas() {
+func (s *processor) store() {
 	if s.state.CompareAndSwap(STOP, RUNING) {
 		arr := make([]operator, len(s.set))
 		copy(arr, s.set)
 		s.set = s.set[:0]
 		go func() {
-			//fmt.Println("start processor ", s.ID(), "arr len ", len(arr))
 			for _, v := range arr {
 				s.execute(v)
 			}
 			s.state.Store(STOP)
-			s.Send(s.ID(), "exec")
+			s.Send(s.ID(), notify)
 		}()
 	}
 }
@@ -135,12 +138,11 @@ func (s *processor) execute(op operator) {
 	db := s.session.Table(op.tab.ModelName())
 	if op.status == _INSERT {
 		inserts := append([]table.Tabler{op.tab}, op.inserts...)
+		fmt.Println("insert", len(inserts))
 		for _, v := range inserts {
-			fmt.Println("insert", v.Key())
 			db.Create(v) // todo create 不支持 接口切片 怎么处理批量插入？？？？
 		}
 	} else if op.status == _UPDATE {
-		fmt.Println("update", op.tab.Key())
 		db.Updates(op.tab)
 	} else if op.status == _LOAD {
 		db.Take(op.tab)

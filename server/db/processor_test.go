@@ -1,14 +1,11 @@
 package db
 
 import (
-	"fmt"
 	"server/db/table"
 	"testing"
 	"time"
 
 	"github.com/spf13/cast"
-
-	"github.com/wwj31/dogactor/expect"
 
 	"github.com/wwj31/dogactor/tools"
 
@@ -30,10 +27,10 @@ func TestProcessor(t *testing.T) {
 	db.Set("gorm:table_options", "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4").AutoMigrate(&table.Fake{})
 	sys, _ := actor.NewSystem()
 
-	_ = sys.Add(actor.New(process, &processor{session: db.Session(&gorm.Session{})}, actor.SetMailBoxSize(200)))
+	_ = sys.Add(actor.New(process, &processor{session: db.Session(&gorm.Session{})}, actor.SetMailBoxSize(1000)))
 
 	var total []uint64
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 1000; i++ {
 		r := tools.Randx_y(1, 99999)
 		total = append(total, uint64(r))
 	}
@@ -41,8 +38,8 @@ func TestProcessor(t *testing.T) {
 	insertMap := make(map[uint64]bool)
 	data := "table"
 	go func() {
-		for i := 0; i < 10; i++ {
-			time.Sleep(time.Microsecond)
+		var operaArr []operator
+		for i := 0; i < 100000; i++ {
 			id := total[tools.Randx_y(0, len(total))]
 			var opera op
 			if !insertMap[id] {
@@ -53,14 +50,15 @@ func TestProcessor(t *testing.T) {
 				data = "table:" + cast.ToString(tools.NowTime())
 			}
 
-			err := sys.Send("", process, "", operator{
+			operaArr = append(operaArr, operator{
 				status: opera,
 				tab:    &table.Fake{Id: id, Data: data},
 			})
-			expect.Nil(err)
-			if err == nil {
-				fmt.Println("send success", id, opera, data)
-			}
+		}
+
+		for _, opera := range operaArr {
+			time.Sleep(time.Duration(tools.Randx_y(10000, 1000000)))
+			_ = sys.Send("", process, "", opera)
 		}
 	}()
 	<-sys.CStop
