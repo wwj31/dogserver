@@ -30,10 +30,13 @@ const notify = "check"
 
 type (
 	operator struct {
-		status    op
-		tab       table.Tabler
+		state op
+		tab   table.Tabler
+
+		// 当state 为 INSERT时，extrOpera用于存储update，insert和update无法合并，因为update使用gorm的update()，结构体零值不会保存
 		extrOpera *operator
-		finish    chan<- struct{}
+
+		finish chan<- struct{}
 	}
 	processor struct {
 		actor.Base
@@ -74,18 +77,18 @@ func (s *processor) merageAndCover(newOpera operator) {
 	} else {
 		// 1.相同key的数据store操作执行替换
 		// 2.load操作优先从队列里取,取不到再读库
-		switch newOpera.status {
+		switch newOpera.state {
 		case _INSERT:
-			log.Errorw("exception error operation before insert", "op", oldOpera.status, "tab", oldOpera.tab.Key())
+			log.Errorw("exception error operation before insert", "op", oldOpera.state, "tab", oldOpera.tab.Key())
 		case _UPDATE:
-			switch oldOpera.status {
+			switch oldOpera.state {
 			case _UPDATE:
 				oldOpera.tab = newOpera.tab // cover
 			case _INSERT:
 				oldOpera.extrOpera = &newOpera // insert with update
 			}
 		case _LOAD:
-			switch oldOpera.status {
+			switch oldOpera.state {
 			case _INSERT, _UPDATE:
 				if oldOpera.extrOpera == nil {
 					newOpera.tab = oldOpera.tab
@@ -94,7 +97,7 @@ func (s *processor) merageAndCover(newOpera operator) {
 				}
 				if newOpera.finish != nil {
 					if cap(newOpera.finish) == 0 {
-						log.Warnw("operator _LOAD finish cap == 0 can't push", "state", newOpera.status, "tab name", newOpera.tab.ModelName())
+						log.Warnw("operator _LOAD finish cap == 0 can't push", "state", newOpera.state, "tab name", newOpera.tab.ModelName())
 						return
 					}
 					newOpera.finish <- struct{}{}
@@ -119,7 +122,7 @@ func (s *processor) store() {
 				s.execute(v)
 			}
 			s.state.Store(STOP)
-			s.Send(s.ID(), notify)
+			_ = s.Send(s.ID(), notify)
 		}()
 	}
 }
@@ -130,16 +133,16 @@ func (s *processor) execute(op operator) {
 		tn = tn + cast.ToString(op.tab.Count())
 	}
 	db := s.session.Table(op.tab.ModelName())
-	if op.status == _INSERT {
+	if op.state == _INSERT {
 		fmt.Println("insert")
 		db.Create(op.tab) // todo create 不支持 接口切片 怎么处理批量插入？？？？
 		if op.extrOpera != nil {
 			db.Updates(op.extrOpera.tab)
 		}
-	} else if op.status == _UPDATE {
+	} else if op.state == _UPDATE {
 		fmt.Println("update")
 		db.Updates(op.tab)
-	} else if op.status == _LOAD {
+	} else if op.state == _LOAD {
 		db.Take(op.tab)
 	}
 }

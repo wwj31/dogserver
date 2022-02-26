@@ -55,7 +55,7 @@ func TestProcessor(t *testing.T) {
 				}
 			}
 			oper := operator{
-				status: opera,
+				state:  opera,
 				tab:    &table.Fake{Id: id, Data: data},
 				finish: finish,
 			}
