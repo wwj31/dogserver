@@ -102,7 +102,7 @@ func newProtoIndex() *tools.ProtoIndex {
 }
 
 func newLogin(system *actor.System) {
-	dbIns := db.New(toml.Get("mysql"), toml.Get("database"))
+	dbIns := db.New(toml.Get("mysql"), toml.Get("database"), system)
 	loginActor := login.New(dbIns)
 	expect.Nil(system.Add(actor.New(common.Login_Actor, loginActor, actor.SetMailBoxSize(1000))))
 }

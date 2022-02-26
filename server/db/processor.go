@@ -132,7 +132,7 @@ func (s *processor) execute(op operator) {
 	if op.tab.Count() > 0 {
 		tn = tn + cast.ToString(op.tab.Count())
 	}
-	db := s.session.Table(op.tab.ModelName())
+	db := s.session.Table(tn)
 	if op.state == _INSERT {
 		fmt.Println("insert")
 		db.Create(op.tab) // todo create 不支持 接口切片 怎么处理批量插入？？？？

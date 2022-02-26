@@ -10,10 +10,9 @@ import (
 	"time"
 
 	"github.com/spf13/cast"
-
 	"github.com/wwj31/dogactor/actor"
-
 	"github.com/wwj31/dogactor/expect"
+
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -48,7 +47,7 @@ func New(addr, databaseName string, sys *actor.System) *DataCenter {
 
 	// 创建processor
 	var ids []common.ActorId
-	for i := 0; i < process_count; i++ {
+	for i := 1; i <= process_count; i++ {
 		processActor := actor.New(process+cast.ToString(i), &processor{session: db.Session(&gorm.Session{})})
 		expect.Nil(sys.Add(processActor))
 		ids = append(ids)

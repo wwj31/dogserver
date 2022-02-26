@@ -34,7 +34,7 @@ type Game struct {
 }
 
 func (s *Game) OnInit() {
-	s.StoreLoader = db.New(toml.Get("mysql"), toml.Get("database"))
+	s.StoreLoader = db.New(toml.Get("mysql"), toml.Get("database"), s.System())
 	s.UID = common.NewUID(s.sid)
 	s.onlineMgr = newMgr(s)
 
