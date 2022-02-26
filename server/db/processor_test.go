@@ -17,8 +17,6 @@ import (
 	"gorm.io/gorm/schema"
 )
 
-const process = "process1"
-
 func TestProcessor(t *testing.T) {
 	db, _ := gorm.Open(mysql.Open("root:starunion@tcp(127.0.0.1:3306)/game?charset=utf8mb4&parseTime=True&loc=Local"), &gorm.Config{
 		NamingStrategy:         schema.NamingStrategy{SingularTable: true},
