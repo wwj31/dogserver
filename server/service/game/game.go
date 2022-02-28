@@ -1,6 +1,9 @@
 package game
 
 import (
+	gogo "github.com/gogo/protobuf/proto"
+	"github.com/wwj31/dogactor/actor"
+	"github.com/wwj31/dogactor/expect"
 	"reflect"
 	"server/common"
 	"server/common/log"
@@ -11,13 +14,6 @@ import (
 	"server/service/game/iface"
 	"server/service/game/logic/player"
 	"server/service/game/logic/player/localmsg"
-	"time"
-
-	"github.com/wwj31/dogactor/tools"
-
-	gogo "github.com/gogo/protobuf/proto"
-	"github.com/wwj31/dogactor/actor"
-	"github.com/wwj31/dogactor/expect"
 )
 
 func New(serverId uint16) *Game {
@@ -142,9 +138,6 @@ func (s *Game) enterGameReq(gSession common.GSession, msg *outer.EnterGameReq) {
 		log.Errorw("login send error", "rid", msg.RID, "err", err, "playerId", playerId)
 		return
 	}
-	s.AddTimer("", tools.NowTime()+int64(10*time.Second), func(dt int64) {
-		s.MsgToPlayer(msg.RID, s.sid, &outer.UseItemReq{Items: map[int64]int64{123: 1}})
-	}, -1)
 }
 
 // player offline
