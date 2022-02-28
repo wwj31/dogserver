@@ -48,7 +48,7 @@ func New(addr, databaseName string, sys *actor.System) *DataCenter {
 	// 创建processor
 	var ids []common.ActorId
 	for i := 1; i <= process_count; i++ {
-		processActor := actor.New(process+cast.ToString(i), &processor{session: db.Session(&gorm.Session{})})
+		processActor := actor.New(process+cast.ToString(i), &processor{session: db.Session(&gorm.Session{})}, actor.SetLocalized(), actor.SetMailBoxSize(500))
 		expect.Nil(sys.Add(processActor))
 		ids = append(ids)
 	}
