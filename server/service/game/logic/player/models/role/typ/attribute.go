@@ -11,7 +11,7 @@ const (
 	Exp             // 经验
 	Glod            // 金币
 
-	Attribute_max
+	AttributeMax
 )
 
 func (s Attribute) Int64() int64 {

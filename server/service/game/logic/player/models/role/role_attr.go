@@ -15,7 +15,7 @@ func (s *Role) LoginAt() int64  { return s.role.LoginAt }
 func (s *Role) LogoutAt() int64 { return s.role.LogoutAt }
 
 func newAtrributeMap() map[int64]int64 {
-	return make(map[int64]int64, typ.Attribute_max)
+	return make(map[int64]int64, typ.AttributeMax)
 }
 
 func (s *Role) Attribute(typ typ.Attribute) int64 {
