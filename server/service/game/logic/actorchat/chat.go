@@ -50,6 +50,11 @@ func (s *ActorChat) OnHandleMessage(sourceId, targetId string, v interface{}) {
 		if channel, ok := s.channels[msg.Channel]; ok {
 			channel.Leave(msg.ActorId)
 		}
+	case *inner.MessageToChannel:
+		if channel, ok := s.channels[msg.Channel]; ok {
+			bmsg := common.ProtoUnmarshal(msg.Channel, msg.Data)
+			channel.Broadcast(bmsg)
+		}
 	}
 }
 func (s *ActorChat) OnHandleRequest(sourceId, targetId, requestId string, msg interface{}) (respErr error) {

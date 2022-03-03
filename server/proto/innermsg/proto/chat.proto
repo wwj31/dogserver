@@ -24,3 +24,16 @@ message LeaveChatChannel
     // 玩家actorId
     string ActorId     = 2;
 }
+
+// 频道广播消息
+message MessageToChannel
+{
+    // 频道key
+    string Channel     = 1;
+
+    // 消息名称
+    string Msgname     = 2;
+
+    // proto 消息体
+    bytes Data         = 3;
+}
