@@ -23,12 +23,15 @@ const (
 type ActorChat struct {
 	actor.Base
 
+	sender   common.Sender
 	channels map[CHANNEL_TYPE]*Channel
 }
 
 func (s *ActorChat) OnInit() {
+	s.sender = common.NewSendTools(s)
 	s.channels = make(map[CHANNEL_TYPE]*Channel)
-	s.channels[WORLD] = NewChannel()
+	s.channels[WORLD] = NewChannel(s.sender)
+
 	log.Debugf("chat server OnInit %v", s.ID())
 }
 
