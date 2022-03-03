@@ -18,6 +18,7 @@ const (
 	Game_Actor    = "game"
 	Player_Actor  = "player"
 	GateWay_Actor = "gateway"
+	Chat_Actor    = "chat"
 
 	Client = "client"
 	Robot  = "robot"
@@ -37,6 +38,9 @@ func WorldName(id int32) ActorId {
 
 func GatewayName(id int32) ActorId {
 	return fmt.Sprintf("%v_%v_Actor", GateWay_Actor, id)
+}
+func ChatName(id int32) ActorId {
+	return fmt.Sprintf("%v_%v_Actor", Chat_Actor, id)
 }
 
 func AId(actorId ActorId, typ string) (str string) {
