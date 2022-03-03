@@ -1,0 +1,26 @@
+syntax = "proto3";
+package inner;
+option  go_package = "/inner";
+
+// 加入频道
+message JoinChatChannel
+{
+    // 频道key
+    string Channel     = 1;
+
+    // 玩家actorId
+    string ActorId     = 2;
+
+    // 玩家网关session
+    string GSession    = 3;
+}
+
+// 离开频道
+message LeaveChatChannel
+{
+    // 频道key
+    string Channel     = 1;
+
+    // 玩家actorId
+    string ActorId     = 2;
+}
