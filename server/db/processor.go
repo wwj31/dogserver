@@ -55,7 +55,7 @@ func (s *processor) OnHandleMessage(sourceId, targetId string, msg interface{}) 
 	check, ok := msg.(string)
 	if ok && check == notify {
 		if len(s.set) != 0 {
-			s.store()
+			s.processing()
 		}
 		return
 	}
@@ -66,7 +66,7 @@ func (s *processor) OnHandleMessage(sourceId, targetId string, msg interface{}) 
 		return
 	}
 	s.merageAndCover(newOpera)
-	s.store()
+	s.processing()
 }
 
 func (s *processor) merageAndCover(newOpera operator) {
@@ -110,7 +110,7 @@ func (s *processor) merageAndCover(newOpera operator) {
 	return
 }
 
-func (s *processor) store() {
+func (s *processor) processing() {
 	if s.state.CompareAndSwap(STOP, RUNING) {
 		arr := make([]operator, 0, len(s.set))
 		for _, v := range s.set {
@@ -143,6 +143,10 @@ func (s *processor) execute(op operator) {
 		fmt.Println("update")
 		db.Updates(op.tab)
 	} else if op.state == _LOAD {
-		db.Take(op.tab)
+		err := db.Take(op.tab).Error
+		if err != nil {
+			log.Errorw("load faild ", "tab", op.tab.ModelName(), "key", op.tab.Key())
+		}
+		op.finish <- struct{}{}
 	}
 }
