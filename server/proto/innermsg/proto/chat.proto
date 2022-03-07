@@ -3,7 +3,7 @@ package inner;
 option  go_package = "/inner";
 
 // 加入频道
-message JoinChatChannel
+message JoinChatChannelReq
 {
     // 频道key
     string Channel     = 1;
@@ -15,8 +15,14 @@ message JoinChatChannel
     string GSession    = 3;
 }
 
+// 加入频道反馈
+message JoinChatChannelResp
+{
+    int32 error = 1;
+}
+
 // 离开频道
-message LeaveChatChannel
+message LeaveChatChannelReq
 {
     // 频道key
     string Channel     = 1;

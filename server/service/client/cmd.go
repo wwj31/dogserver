@@ -22,6 +22,8 @@ func (s *Client) InitCmd() {
 	s.RegistCmd("readmail", s.readMail, "")
 	s.RegistCmd("recvmail", s.recvMail, "")
 	s.RegistCmd("delmail", s.delMail, "")
+
+	s.RegistCmd("chat", s.chat, "")
 }
 
 func (s *Client) login(arg ...string) {
@@ -114,4 +116,16 @@ func (s *Client) delMail(arg ...string) {
 		Uuids: []uint64{mailId},
 	}
 	s.SendToServer(outer.MSG_DELETE_MAIL_REQ.Int32(), msg)
+}
+
+func (s *Client) chat(arg ...string) {
+	if len(arg) != 1 {
+		return
+	}
+	content := arg[0]
+	msg := &outer.ChatReq{
+		Content:     content,
+		ChannelType: 1,
+	}
+	s.SendToServer(outer.MSG_CHAT_REQ.Int32(), msg)
 }

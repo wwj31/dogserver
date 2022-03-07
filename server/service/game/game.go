@@ -1,9 +1,6 @@
 package game
 
 import (
-	gogo "github.com/gogo/protobuf/proto"
-	"github.com/wwj31/dogactor/actor"
-	"github.com/wwj31/dogactor/expect"
 	"reflect"
 	"server/common"
 	"server/common/log"
@@ -14,6 +11,10 @@ import (
 	"server/service/game/iface"
 	"server/service/game/logic/player"
 	"server/service/game/logic/player/localmsg"
+
+	gogo "github.com/gogo/protobuf/proto"
+	"github.com/wwj31/dogactor/actor"
+	"github.com/wwj31/dogactor/expect"
 )
 
 func New(serverId uint16) *Game {
@@ -133,7 +134,7 @@ func (s *Game) enterGameReq(gSession common.GSession, msg *outer.EnterGameReq) {
 	}
 	s.onlineMgr.AssociateSession(playerId, gSession)
 
-	err := s.Send(playerId, localmsg.Login{GSession: gSession})
+	err := s.Send(playerId, localmsg.Login{GSession: gSession, RId: msg.RID, UId: msg.UID})
 	if err != nil {
 		log.Errorw("login send error", "rid", msg.RID, "err", err, "playerId", playerId)
 		return

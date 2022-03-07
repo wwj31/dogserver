@@ -12,6 +12,8 @@ var _ = regist(MsgName(localmsg.Login{}), func(player iface.Player, v interface{
 	msg := v.(localmsg.Login)
 	player.SetGateSession(msg.GSession)
 	isNew := player.IsNewRole()
+	player.Role().SetRoleId(msg.RId)
+	player.Role().SetUUId(msg.UId)
 
 	player.Login()
 	player.Send2Client(&outer.EnterGameResp{

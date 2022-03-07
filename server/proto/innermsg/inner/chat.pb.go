@@ -23,7 +23,7 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // 加入频道
-type JoinChatChannel struct {
+type JoinChatChannelReq struct {
 	// 频道key
 	Channel string `protobuf:"bytes,1,opt,name=Channel,proto3" json:"Channel,omitempty"`
 	// 玩家actorId
@@ -32,18 +32,18 @@ type JoinChatChannel struct {
 	GSession string `protobuf:"bytes,3,opt,name=GSession,proto3" json:"GSession,omitempty"`
 }
 
-func (m *JoinChatChannel) Reset()         { *m = JoinChatChannel{} }
-func (m *JoinChatChannel) String() string { return proto.CompactTextString(m) }
-func (*JoinChatChannel) ProtoMessage()    {}
-func (*JoinChatChannel) Descriptor() ([]byte, []int) {
+func (m *JoinChatChannelReq) Reset()         { *m = JoinChatChannelReq{} }
+func (m *JoinChatChannelReq) String() string { return proto.CompactTextString(m) }
+func (*JoinChatChannelReq) ProtoMessage()    {}
+func (*JoinChatChannelReq) Descriptor() ([]byte, []int) {
 	return fileDescriptor_ed7e7dde45555b7d, []int{0}
 }
-func (m *JoinChatChannel) XXX_Unmarshal(b []byte) error {
+func (m *JoinChatChannelReq) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *JoinChatChannel) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *JoinChatChannelReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_JoinChatChannel.Marshal(b, m, deterministic)
+		return xxx_messageInfo_JoinChatChannelReq.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -53,59 +53,56 @@ func (m *JoinChatChannel) XXX_Marshal(b []byte, deterministic bool) ([]byte, err
 		return b[:n], nil
 	}
 }
-func (m *JoinChatChannel) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_JoinChatChannel.Merge(m, src)
+func (m *JoinChatChannelReq) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_JoinChatChannelReq.Merge(m, src)
 }
-func (m *JoinChatChannel) XXX_Size() int {
+func (m *JoinChatChannelReq) XXX_Size() int {
 	return m.Size()
 }
-func (m *JoinChatChannel) XXX_DiscardUnknown() {
-	xxx_messageInfo_JoinChatChannel.DiscardUnknown(m)
+func (m *JoinChatChannelReq) XXX_DiscardUnknown() {
+	xxx_messageInfo_JoinChatChannelReq.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_JoinChatChannel proto.InternalMessageInfo
+var xxx_messageInfo_JoinChatChannelReq proto.InternalMessageInfo
 
-func (m *JoinChatChannel) GetChannel() string {
+func (m *JoinChatChannelReq) GetChannel() string {
 	if m != nil {
 		return m.Channel
 	}
 	return ""
 }
 
-func (m *JoinChatChannel) GetActorId() string {
+func (m *JoinChatChannelReq) GetActorId() string {
 	if m != nil {
 		return m.ActorId
 	}
 	return ""
 }
 
-func (m *JoinChatChannel) GetGSession() string {
+func (m *JoinChatChannelReq) GetGSession() string {
 	if m != nil {
 		return m.GSession
 	}
 	return ""
 }
 
-// 离开频道
-type LeaveChatChannel struct {
-	// 频道key
-	Channel string `protobuf:"bytes,1,opt,name=Channel,proto3" json:"Channel,omitempty"`
-	// 玩家actorId
-	ActorId string `protobuf:"bytes,2,opt,name=ActorId,proto3" json:"ActorId,omitempty"`
+// 加入频道反馈
+type JoinChatChannelResp struct {
+	Error int32 `protobuf:"varint,1,opt,name=error,proto3" json:"error,omitempty"`
 }
 
-func (m *LeaveChatChannel) Reset()         { *m = LeaveChatChannel{} }
-func (m *LeaveChatChannel) String() string { return proto.CompactTextString(m) }
-func (*LeaveChatChannel) ProtoMessage()    {}
-func (*LeaveChatChannel) Descriptor() ([]byte, []int) {
+func (m *JoinChatChannelResp) Reset()         { *m = JoinChatChannelResp{} }
+func (m *JoinChatChannelResp) String() string { return proto.CompactTextString(m) }
+func (*JoinChatChannelResp) ProtoMessage()    {}
+func (*JoinChatChannelResp) Descriptor() ([]byte, []int) {
 	return fileDescriptor_ed7e7dde45555b7d, []int{1}
 }
-func (m *LeaveChatChannel) XXX_Unmarshal(b []byte) error {
+func (m *JoinChatChannelResp) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *LeaveChatChannel) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *JoinChatChannelResp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_LeaveChatChannel.Marshal(b, m, deterministic)
+		return xxx_messageInfo_JoinChatChannelResp.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -115,26 +112,74 @@ func (m *LeaveChatChannel) XXX_Marshal(b []byte, deterministic bool) ([]byte, er
 		return b[:n], nil
 	}
 }
-func (m *LeaveChatChannel) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_LeaveChatChannel.Merge(m, src)
+func (m *JoinChatChannelResp) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_JoinChatChannelResp.Merge(m, src)
 }
-func (m *LeaveChatChannel) XXX_Size() int {
+func (m *JoinChatChannelResp) XXX_Size() int {
 	return m.Size()
 }
-func (m *LeaveChatChannel) XXX_DiscardUnknown() {
-	xxx_messageInfo_LeaveChatChannel.DiscardUnknown(m)
+func (m *JoinChatChannelResp) XXX_DiscardUnknown() {
+	xxx_messageInfo_JoinChatChannelResp.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_LeaveChatChannel proto.InternalMessageInfo
+var xxx_messageInfo_JoinChatChannelResp proto.InternalMessageInfo
 
-func (m *LeaveChatChannel) GetChannel() string {
+func (m *JoinChatChannelResp) GetError() int32 {
+	if m != nil {
+		return m.Error
+	}
+	return 0
+}
+
+// 离开频道
+type LeaveChatChannelReq struct {
+	// 频道key
+	Channel string `protobuf:"bytes,1,opt,name=Channel,proto3" json:"Channel,omitempty"`
+	// 玩家actorId
+	ActorId string `protobuf:"bytes,2,opt,name=ActorId,proto3" json:"ActorId,omitempty"`
+}
+
+func (m *LeaveChatChannelReq) Reset()         { *m = LeaveChatChannelReq{} }
+func (m *LeaveChatChannelReq) String() string { return proto.CompactTextString(m) }
+func (*LeaveChatChannelReq) ProtoMessage()    {}
+func (*LeaveChatChannelReq) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ed7e7dde45555b7d, []int{2}
+}
+func (m *LeaveChatChannelReq) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *LeaveChatChannelReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_LeaveChatChannelReq.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *LeaveChatChannelReq) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_LeaveChatChannelReq.Merge(m, src)
+}
+func (m *LeaveChatChannelReq) XXX_Size() int {
+	return m.Size()
+}
+func (m *LeaveChatChannelReq) XXX_DiscardUnknown() {
+	xxx_messageInfo_LeaveChatChannelReq.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_LeaveChatChannelReq proto.InternalMessageInfo
+
+func (m *LeaveChatChannelReq) GetChannel() string {
 	if m != nil {
 		return m.Channel
 	}
 	return ""
 }
 
-func (m *LeaveChatChannel) GetActorId() string {
+func (m *LeaveChatChannelReq) GetActorId() string {
 	if m != nil {
 		return m.ActorId
 	}
@@ -155,7 +200,7 @@ func (m *MessageToChannel) Reset()         { *m = MessageToChannel{} }
 func (m *MessageToChannel) String() string { return proto.CompactTextString(m) }
 func (*MessageToChannel) ProtoMessage()    {}
 func (*MessageToChannel) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ed7e7dde45555b7d, []int{2}
+	return fileDescriptor_ed7e7dde45555b7d, []int{3}
 }
 func (m *MessageToChannel) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -206,31 +251,34 @@ func (m *MessageToChannel) GetData() []byte {
 }
 
 func init() {
-	proto.RegisterType((*JoinChatChannel)(nil), "inner.JoinChatChannel")
-	proto.RegisterType((*LeaveChatChannel)(nil), "inner.LeaveChatChannel")
+	proto.RegisterType((*JoinChatChannelReq)(nil), "inner.JoinChatChannelReq")
+	proto.RegisterType((*JoinChatChannelResp)(nil), "inner.JoinChatChannelResp")
+	proto.RegisterType((*LeaveChatChannelReq)(nil), "inner.LeaveChatChannelReq")
 	proto.RegisterType((*MessageToChannel)(nil), "inner.MessageToChannel")
 }
 
 func init() { proto.RegisterFile("proto/chat.proto", fileDescriptor_ed7e7dde45555b7d) }
 
 var fileDescriptor_ed7e7dde45555b7d = []byte{
-	// 201 bytes of a gzipped FileDescriptorProto
+	// 230 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x12, 0x28, 0x28, 0xca, 0x2f,
 	0xc9, 0xd7, 0x4f, 0xce, 0x48, 0x2c, 0xd1, 0x03, 0x33, 0x85, 0x58, 0x33, 0xf3, 0xf2, 0x52, 0x8b,
-	0x94, 0x12, 0xb9, 0xf8, 0xbd, 0xf2, 0x33, 0xf3, 0x9c, 0x33, 0x12, 0x4b, 0x9c, 0x33, 0x12, 0xf3,
-	0xf2, 0x52, 0x73, 0x84, 0x24, 0xb8, 0xd8, 0xa1, 0x4c, 0x09, 0x46, 0x05, 0x46, 0x0d, 0xce, 0x20,
-	0x76, 0x24, 0x19, 0xc7, 0xe4, 0x92, 0xfc, 0x22, 0xcf, 0x14, 0x09, 0x26, 0x88, 0x0c, 0x94, 0x2b,
-	0x24, 0xc5, 0xc5, 0xe1, 0x1e, 0x9c, 0x5a, 0x5c, 0x9c, 0x99, 0x9f, 0x27, 0xc1, 0x0c, 0x96, 0x82,
-	0xf3, 0x95, 0xdc, 0xb8, 0x04, 0x7c, 0x52, 0x13, 0xcb, 0x52, 0x29, 0xb4, 0x43, 0x29, 0x8a, 0x4b,
-	0xc0, 0x37, 0xb5, 0xb8, 0x38, 0x31, 0x3d, 0x35, 0x24, 0x9f, 0x28, 0x73, 0x7c, 0x8b, 0xd3, 0xf3,
-	0x12, 0x73, 0x53, 0x61, 0xe6, 0x40, 0xb9, 0x42, 0x42, 0x5c, 0x2c, 0x2e, 0x89, 0x25, 0x89, 0x60,
-	0x77, 0xf2, 0x04, 0x81, 0xd9, 0x4e, 0x0a, 0x27, 0x1e, 0xc9, 0x31, 0x5e, 0x78, 0x24, 0xc7, 0xf8,
-	0xe0, 0x91, 0x1c, 0xe3, 0x84, 0xc7, 0x72, 0x0c, 0x17, 0x1e, 0xcb, 0x31, 0xdc, 0x78, 0x2c, 0xc7,
-	0x10, 0xc5, 0xa6, 0x0f, 0x0e, 0xa8, 0x24, 0x36, 0x70, 0xb0, 0x19, 0x03, 0x02, 0x00, 0x00, 0xff,
-	0xff, 0xa7, 0x57, 0x69, 0x24, 0x4a, 0x01, 0x00, 0x00,
+	0x94, 0x52, 0xb8, 0x84, 0xbc, 0xf2, 0x33, 0xf3, 0x9c, 0x33, 0x12, 0x4b, 0x9c, 0x33, 0x12, 0xf3,
+	0xf2, 0x52, 0x73, 0x82, 0x52, 0x0b, 0x85, 0x24, 0xb8, 0xd8, 0xa1, 0x3c, 0x09, 0x46, 0x05, 0x46,
+	0x0d, 0xce, 0x20, 0x18, 0x17, 0x24, 0xe3, 0x98, 0x5c, 0x92, 0x5f, 0xe4, 0x99, 0x22, 0xc1, 0x04,
+	0x91, 0x81, 0x72, 0x85, 0xa4, 0xb8, 0x38, 0xdc, 0x83, 0x53, 0x8b, 0x8b, 0x33, 0xf3, 0xf3, 0x24,
+	0x98, 0xc1, 0x52, 0x70, 0xbe, 0x92, 0x36, 0x97, 0x30, 0x86, 0x2d, 0xc5, 0x05, 0x42, 0x22, 0x5c,
+	0xac, 0xa9, 0x45, 0x45, 0xf9, 0x45, 0x60, 0x4b, 0x58, 0x83, 0x20, 0x1c, 0x25, 0x4f, 0x2e, 0x61,
+	0x9f, 0xd4, 0xc4, 0xb2, 0x54, 0xca, 0xdd, 0xa4, 0x14, 0xc5, 0x25, 0xe0, 0x9b, 0x5a, 0x5c, 0x9c,
+	0x98, 0x9e, 0x1a, 0x92, 0x8f, 0xa4, 0x1a, 0xb7, 0x39, 0xbe, 0xc5, 0xe9, 0x79, 0x89, 0xb9, 0xa9,
+	0x30, 0x73, 0xa0, 0x5c, 0x21, 0x21, 0x2e, 0x16, 0x97, 0xc4, 0x92, 0x44, 0xb0, 0xbf, 0x78, 0x82,
+	0xc0, 0x6c, 0x27, 0x85, 0x13, 0x8f, 0xe4, 0x18, 0x2f, 0x3c, 0x92, 0x63, 0x7c, 0xf0, 0x48, 0x8e,
+	0x71, 0xc2, 0x63, 0x39, 0x86, 0x0b, 0x8f, 0xe5, 0x18, 0x6e, 0x3c, 0x96, 0x63, 0x88, 0x62, 0xd3,
+	0x07, 0x87, 0x6d, 0x12, 0x1b, 0x38, 0xa4, 0x8d, 0x01, 0x01, 0x00, 0x00, 0xff, 0xff, 0xe1, 0xad,
+	0x5f, 0x4d, 0x7d, 0x01, 0x00, 0x00,
 }
 
-func (m *JoinChatChannel) Marshal() (dAtA []byte, err error) {
+func (m *JoinChatChannelReq) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -240,12 +288,12 @@ func (m *JoinChatChannel) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *JoinChatChannel) MarshalTo(dAtA []byte) (int, error) {
+func (m *JoinChatChannelReq) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *JoinChatChannel) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *JoinChatChannelReq) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -274,7 +322,7 @@ func (m *JoinChatChannel) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *LeaveChatChannel) Marshal() (dAtA []byte, err error) {
+func (m *JoinChatChannelResp) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -284,12 +332,40 @@ func (m *LeaveChatChannel) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *LeaveChatChannel) MarshalTo(dAtA []byte) (int, error) {
+func (m *JoinChatChannelResp) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *LeaveChatChannel) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *JoinChatChannelResp) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Error != 0 {
+		i = encodeVarintChat(dAtA, i, uint64(m.Error))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *LeaveChatChannelReq) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *LeaveChatChannelReq) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *LeaveChatChannelReq) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -366,7 +442,7 @@ func encodeVarintChat(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *JoinChatChannel) Size() (n int) {
+func (m *JoinChatChannelReq) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -387,7 +463,19 @@ func (m *JoinChatChannel) Size() (n int) {
 	return n
 }
 
-func (m *LeaveChatChannel) Size() (n int) {
+func (m *JoinChatChannelResp) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Error != 0 {
+		n += 1 + sovChat(uint64(m.Error))
+	}
+	return n
+}
+
+func (m *LeaveChatChannelReq) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -431,7 +519,7 @@ func sovChat(x uint64) (n int) {
 func sozChat(x uint64) (n int) {
 	return sovChat(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *JoinChatChannel) Unmarshal(dAtA []byte) error {
+func (m *JoinChatChannelReq) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -454,10 +542,10 @@ func (m *JoinChatChannel) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: JoinChatChannel: wiretype end group for non-group")
+			return fmt.Errorf("proto: JoinChatChannelReq: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: JoinChatChannel: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: JoinChatChannelReq: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -577,7 +665,7 @@ func (m *JoinChatChannel) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *LeaveChatChannel) Unmarshal(dAtA []byte) error {
+func (m *JoinChatChannelResp) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -600,10 +688,79 @@ func (m *LeaveChatChannel) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: LeaveChatChannel: wiretype end group for non-group")
+			return fmt.Errorf("proto: JoinChatChannelResp: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: LeaveChatChannel: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: JoinChatChannelResp: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Error", wireType)
+			}
+			m.Error = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowChat
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Error |= int32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipChat(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthChat
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *LeaveChatChannelReq) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowChat
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: LeaveChatChannelReq: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: LeaveChatChannelReq: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:

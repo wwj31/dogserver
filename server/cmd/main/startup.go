@@ -13,6 +13,7 @@ import (
 	"server/proto/outermsg/outer"
 	"server/service/client"
 	"server/service/game"
+	"server/service/game/logic/chat"
 	"server/service/gateway"
 	"server/service/login"
 	"server/service/robot"
@@ -114,7 +115,9 @@ func newGateway(appId int32, system *actor.System) {
 
 func newGame(appId int32, system *actor.System) {
 	gameActor := game.New(uint16(appId))
+	chat := chat.New()
 	expect.Nil(system.Add(actor.New(common.GameName(appId), gameActor, actor.SetMailBoxSize(4000))))
+	expect.Nil(system.Add(actor.New(common.ChatName(uint16(appId)), chat, actor.SetMailBoxSize(1000))))
 }
 
 func monitor() {

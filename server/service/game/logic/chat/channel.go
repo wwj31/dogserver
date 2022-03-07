@@ -1,7 +1,8 @@
-package actorchat
+package chat
 
 import (
 	"server/common"
+	"server/common/log"
 
 	"github.com/wwj31/dogactor/expect"
 
@@ -22,10 +23,12 @@ type Channel struct {
 
 func (s *Channel) Join(playerId common.ActorId, gs common.GSession) {
 	s.id2Session[playerId] = gs
+	log.Infow("channel Join ", "player", playerId, "gs", gs)
 }
 
 func (s *Channel) Leave(playerId common.ActorId) {
 	delete(s.id2Session, playerId)
+	log.Infow("channel Leave ", "player", playerId)
 }
 
 func (s *Channel) Broadcast(msg proto.Message) {

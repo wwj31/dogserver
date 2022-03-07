@@ -19,5 +19,6 @@ type (
 		Role() Role
 		Item() Item
 		Mail() Mailer
+		Chat() Chat
 	}
 )
