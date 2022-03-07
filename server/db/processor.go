@@ -140,7 +140,6 @@ func (s *processor) execute(op operator) {
 			db.Updates(op.extrOpera.tab)
 		}
 	} else if op.state == _UPDATE {
-		fmt.Println("update")
 		db.Updates(op.tab)
 	} else if op.state == _LOAD {
 		err := db.Take(op.tab).Error
