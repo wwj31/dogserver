@@ -1,4 +1,4 @@
-package chat
+package channel
 
 import (
 	"server/common"
