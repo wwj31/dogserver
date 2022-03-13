@@ -1,10 +1,9 @@
 package player
 
 import (
-	"math/rand"
-	"reflect"
 	"server/db/table"
 	"server/proto/outermsg/outer"
+	"server/service/game/logic/player/models/chat"
 	"time"
 
 	"github.com/gogo/protobuf/proto"
@@ -55,9 +54,6 @@ type (
 )
 
 func (s *Player) OnInit() {
-	var v interface{}
-	v = func() { print("hello") }
-	_ = v
 	s.sender = common.NewSendTools(s)
 	s.playerData.RoleId = s.roleId
 	data := table.Player{RoleId: s.roleId}
@@ -76,13 +72,16 @@ func (s *Player) OnInit() {
 	s.models[modRole] = role.New(models.New(s), data.RoleBytes) // 角色
 	s.models[modItem] = item.New(models.New(s), data.ItemBytes) // 道具
 	s.models[modMail] = mail.New(models.New(s), data.MailBytes) // 邮件
+	s.models[modChat] = chat.New(models.New(s))                 // 聊天
 
 	// 定时回存
-	randTime := tools.NowTime() + int64(5*time.Minute) + rand.Int63n(int64(time.Second*30))
+	//randTime := tools.NowTime() + int64(5*time.Minute) + rand.Int63n(int64(time.Second*30))
+	randTime := tools.NowTime() + int64(1*time.Second)
 	s.saveTimerId = s.AddTimer(tools.UUID(), randTime, func(dt int64) {
 		s.store()
-		s.live()
+		s.checkAlive()
 	}, -1)
+	log.Infow("player actor activated", "id", s.ID(), "firstLogin", s.firstLogin)
 }
 
 func (s *Player) OnHandleMessage(sourceId, targetId string, msg interface{}) {
@@ -104,7 +103,7 @@ func (s *Player) OnHandleMessage(sourceId, targetId string, msg interface{}) {
 func (s *Player) GateSession() common.GSession            { return s.gSession }
 func (s *Player) SetGateSession(gSession common.GSession) { s.gSession = gSession }
 func (s *Player) Send2Client(pb proto.Message) {
-	if pb == nil || reflect.ValueOf(pb).IsNil() {
+	if pb == nil || !s.Online() {
 		return
 	}
 	if err := s.sender.Send2Client(s.gSession, pb); err != nil {
@@ -138,6 +137,7 @@ func (s *Player) Gamer() iface.Gamer { return s.gamer }
 func (s *Player) Role() iface.Role   { return s.models[modRole].(iface.Role) }
 func (s *Player) Item() iface.Item   { return s.models[modItem].(iface.Item) }
 func (s *Player) Mail() iface.Mailer { return s.models[modMail].(iface.Mailer) }
+func (s *Player) Chat() iface.Chat   { return s.models[modChat].(iface.Chat) }
 
 // 回存数据
 func (s *Player) store(new ...bool) {
@@ -160,10 +160,11 @@ func (s *Player) store(new ...bool) {
 	log.Infow("player stored model", "RID", s.roleId)
 }
 
-func (s Player) live() {
+const aliveDuration = 5 * time.Second // 24*time.Hour
+func (s Player) checkAlive() {
 	now := tools.NowTime()
 	duration := now - s.keepAlive
-	if duration > int64(24*time.Hour) && !s.Online() {
+	if duration > int64(aliveDuration) && !s.Online() {
 		s.Exit()
 	}
 }

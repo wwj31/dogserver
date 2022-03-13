@@ -15,13 +15,17 @@ func Spawner(name string, newPool ...bool) (interface{}, bool) {
 func Put(name string, x interface{}) {}
 
 var spawner = map[string]factory{
-	"inner.L2GTSessionAssignGame": func() interface{} { return &L2GTSessionAssignGame{} },
-	"inner.GateMsgWrapper":        func() interface{} { return &GateMsgWrapper{} },
-	"inner.G2DGameStop":           func() interface{} { return &G2DGameStop{} },
-	"inner.GT2GSessionClosed":     func() interface{} { return &GT2GSessionClosed{} },
-	"inner.G2LRoleOffline":        func() interface{} { return &G2LRoleOffline{} },
+	"inner.JoinChatChannelReq":    func() interface{} { return &JoinChatChannelReq{} },
+	"inner.JoinChatChannelResp":   func() interface{} { return &JoinChatChannelResp{} },
+	"inner.LeaveChatChannelReq":   func() interface{} { return &LeaveChatChannelReq{} },
+	"inner.MessageToChannel":      func() interface{} { return &MessageToChannel{} },
 	"inner.Error":                 func() interface{} { return &Error{} },
+	"inner.G2LRoleOffline":        func() interface{} { return &G2LRoleOffline{} },
+	"inner.GateMsgWrapper":        func() interface{} { return &GateMsgWrapper{} },
+	"inner.GT2GSessionClosed":     func() interface{} { return &GT2GSessionClosed{} },
 	"inner.GameMsgWrapper":        func() interface{} { return &GameMsgWrapper{} },
+	"inner.L2GTSessionAssignGame": func() interface{} { return &L2GTSessionAssignGame{} },
+	"inner.G2DGameStop":           func() interface{} { return &G2DGameStop{} },
 	"inner.L2GTSessionDisabled":   func() interface{} { return &L2GTSessionDisabled{} },
 	"inner.RoleInfo":              func() interface{} { return &RoleInfo{} },
 	"inner.ItemInfo":              func() interface{} { return &ItemInfo{} },

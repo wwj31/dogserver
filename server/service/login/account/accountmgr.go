@@ -37,12 +37,12 @@ func (s *AccountMgr) LoadAllAccount(loader iface.Loader) {
 	if tb.Count() > 1 {
 		for i := 1; i <= tb.Count(); i++ {
 			var ret []table.Account
-			err := loader.LoadAll((tb).TableName()+cast.ToString(i), &ret)
+			err := loader.LoadAll((tb).ModelName()+cast.ToString(i), &ret)
 			expect.Nil(err)
 			all = append(all, ret...)
 		}
 	} else {
-		err := loader.LoadAll((tb).TableName(), &all)
+		err := loader.LoadAll((tb).ModelName(), &all)
 		expect.Nil(err)
 	}
 

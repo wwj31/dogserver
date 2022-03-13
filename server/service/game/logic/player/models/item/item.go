@@ -48,7 +48,7 @@ func (s *Item) OnSave(data *table.Player) {
 
 func (s *Item) Enough(items map[int64]int64) bool {
 	for id, need := range items {
-		if s.items.Items[id] < common.Abs(need) {
+		if s.items.Items[id] < common.Abs64(need) {
 			return false
 		}
 	}
@@ -77,14 +77,13 @@ func (s *Item) Add(items map[int64]int64, push ...bool) {
 			if count > 0 {
 				val += count
 			} else if count < 0 {
-				val -= common.Min(val, common.Abs(count))
+				val -= common.Min64(val, common.Abs64(count))
 			} else {
 				continue
 			}
 		} else {
-			val = common.Max(0, count)
+			val = common.Max64(0, count)
 		}
-
 		s.items.Items[id] = val
 	}
 

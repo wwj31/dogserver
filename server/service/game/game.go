@@ -14,7 +14,7 @@ import (
 	"server/service/game/logic/player"
 	"server/service/game/logic/player/localmsg"
 
-	"github.com/gogo/protobuf/proto"
+	gogo "github.com/gogo/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
 	"github.com/wwj31/dogactor/expect"
 )
@@ -25,16 +25,17 @@ func New(serverId uint16) *Game {
 
 type Game struct {
 	actor.Base
-	sid     uint16 // serverId
-	genUUID common.UID
+	common.UID
 	iface.StoreLoader
-	playerMgr iface.PlayerManager
+
+	sid       uint16 // serverId
+	onlineMgr onlineMgr
 }
 
 func (s *Game) OnInit() {
-	s.StoreLoader = db.New(toml.Get("mysql"), toml.Get("database"))
-	s.genUUID = common.NewUID(s.sid)
-	s.playerMgr = player.NewMgr(s)
+	s.StoreLoader = db.New(toml.Get("mysql"), toml.Get("database"), s.System())
+	s.UID = common.NewUID(s.sid)
+	s.onlineMgr = newMgr(s)
 
 	_ = s.System().RegistEvent(s.ID(), actor.EvDelactor{})
 	log.Debugf("game OnInit")
@@ -73,15 +74,34 @@ func (s *Game) SID() uint16 {
 	return s.sid
 }
 
-func (s *Game) GenUuid() uint64 {
-	return s.genUUID.GenUuid()
+// MsgToPlayer send msg to player actor
+func (s *Game) MsgToPlayer(rid uint64, sid uint16, msg gogo.Message) {
+	actorId := common.PlayerId(rid)
+	gSession, ok := s.onlineMgr.GSessionByPlayer(actorId)
+	if ok {
+		s.toPlayer(gSession, msg)
+		return
+	}
+
+	bytes := common.ProtoMarshal(msg)
+	wrapper := &inner.GameMsgWrapper{
+		RID:     rid,
+		MsgName: common.ProtoType(msg),
+		Data:    bytes,
+	}
+
+	if s.SID() != sid {
+		err := s.Send(common.GameName(int32(sid)), wrapper)
+		if err != nil {
+			log.Errorw("msg to player from other game send failed", "err", err)
+			return
+		}
+	}
+
+	s.toPlayer("", wrapper)
 }
 
-func (s *Game) PlayerMgr() iface.PlayerManager {
-	return s.playerMgr
-}
-
-func (s *Game) activatePlayer(rid uint64, firstLogin bool) common.ActorId {
+func (s *Game) checkAndActivatePlayer(rid uint64, firstLogin bool) common.ActorId {
 	playerId := common.PlayerId(rid)
 	if ok := s.System().Exist(playerId); !ok || firstLogin {
 		playerActor := actor.New(playerId, player.New(rid, s, firstLogin), actor.SetMailBoxSize(200), actor.SetLocalized())
@@ -99,28 +119,28 @@ func (s *Game) activatePlayer(rid uint64, firstLogin bool) common.ActorId {
 // player enter game
 func (s *Game) enterGameReq(gSession common.GSession, msg *outer.EnterGameReq) {
 	log.Debugw("EnterGameReq", "msg", msg)
+	// check sign
 	if common.LoginMD5(msg.UID, msg.RID, msg.NewPlayer) != msg.Checksum {
 		log.Warnw("checksum md5 check faild", "msg", msg.String())
 		return
 	}
 
 	// warn:repeated login
-	if _, ok := s.PlayerMgr().PlayerBySession(gSession); ok {
+	if _, ok := s.onlineMgr.PlayerBySession(gSession); ok {
 		log.Warnw("player repeated enter game", "gSession", gSession, "localmsg", msg.RID)
 		return
 	}
 
-	// todo .. decrypt
 	var playerId = common.PlayerId(msg.RID)
 
-	if oldSession, ok := s.PlayerMgr().GSessionByPlayer(playerId); ok {
-		s.PlayerMgr().DelGSession(oldSession)
+	if oldSession, ok := s.onlineMgr.GSessionByPlayer(playerId); ok {
+		s.onlineMgr.DelGSession(oldSession)
 	} else {
-		playerId = s.activatePlayer(msg.RID, msg.NewPlayer)
+		playerId = s.checkAndActivatePlayer(msg.RID, msg.NewPlayer)
 	}
-	s.PlayerMgr().AssociateSession(playerId, gSession)
+	s.onlineMgr.AssociateSession(playerId, gSession)
 
-	err := s.Send(playerId, localmsg.Login{GSession: gSession})
+	err := s.Send(playerId, localmsg.Login{GSession: gSession, RId: msg.RID, UId: msg.UID})
 	if err != nil {
 		log.Errorw("login send error", "rid", msg.RID, "err", err, "playerId", playerId)
 		return
@@ -128,14 +148,14 @@ func (s *Game) enterGameReq(gSession common.GSession, msg *outer.EnterGameReq) {
 }
 
 // player offline
-func (s *Game) logout(msg *inner.GT2GSessionClosed) proto.Message {
+func (s *Game) logout(msg *inner.GT2GSessionClosed) gogo.Message {
 	gSession := common.GSession(msg.GateSession)
-	playerId, ok := s.PlayerMgr().PlayerBySession(gSession)
+	playerId, ok := s.onlineMgr.PlayerBySession(gSession)
 	if ok {
 		_ = s.Send(playerId, msg)
 	}
 
-	s.PlayerMgr().DelGSession(gSession)
+	s.onlineMgr.DelGSession(gSession)
 	return nil
 }
 
@@ -148,7 +168,7 @@ func (s *Game) toPlayer(gSession common.GSession, msg interface{}) {
 	// gSession != "" mean msg from client via gateway,otherwise
 	// msg from other actor wrap in inner.GameMsgWrapper
 	if gSession != "" {
-		actorId, ok = s.PlayerMgr().PlayerBySession(gSession)
+		actorId, ok = s.onlineMgr.PlayerBySession(gSession)
 		if !ok {
 			log.Warnw("msg to player,but can not found player by gSession", "gSession", gSession)
 			return
@@ -167,14 +187,14 @@ func (s *Game) toPlayer(gSession common.GSession, msg interface{}) {
 				return
 			}
 		}
-		if err := proto.Unmarshal(gameWrapper.Data, v.(proto.Message)); err != nil {
+		if err := gogo.Unmarshal(gameWrapper.Data, v.(gogo.Message)); err != nil {
 			log.Errorw("unmarshal failed", "msgName", gameWrapper.MsgName)
 			return
 		}
 		msg = v
 		actorId = common.PlayerId(gameWrapper.RID)
-		// try reactivate player actor if actor exit
-		s.activatePlayer(gameWrapper.RID, false)
+		// try reactivate player actor if actor has exited
+		s.checkAndActivatePlayer(gameWrapper.RID, false)
 	}
 
 	err := s.Send(actorId, msg)

@@ -26,7 +26,7 @@ func init() {
 	RegisterTable(&Account{})
 }
 
-func (s *Account) TableName() string {
+func (s *Account) ModelName() string {
 	return reflect.TypeOf(s).Elem().Name()
 }
 

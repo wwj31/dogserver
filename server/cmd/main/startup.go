@@ -13,6 +13,7 @@ import (
 	"server/proto/outermsg/outer"
 	"server/service/client"
 	"server/service/game"
+	"server/service/game/logic/channel"
 	"server/service/gateway"
 	"server/service/login"
 	"server/service/robot"
@@ -102,7 +103,7 @@ func newProtoIndex() *tools.ProtoIndex {
 }
 
 func newLogin(system *actor.System) {
-	dbIns := db.New(toml.Get("mysql"), toml.Get("database"))
+	dbIns := db.New(toml.Get("mysql"), toml.Get("database"), system)
 	loginActor := login.New(dbIns)
 	expect.Nil(system.Add(actor.New(common.Login_Actor, loginActor, actor.SetMailBoxSize(1000))))
 }
@@ -114,7 +115,9 @@ func newGateway(appId int32, system *actor.System) {
 
 func newGame(appId int32, system *actor.System) {
 	gameActor := game.New(uint16(appId))
-	expect.Nil(system.Add(actor.New(common.GameName(appId), gameActor, actor.SetMailBoxSize(1000))))
+	ch := channel.New()
+	expect.Nil(system.Add(actor.New(common.GameName(appId), gameActor, actor.SetMailBoxSize(4000))))
+	expect.Nil(system.Add(actor.New(common.ChatName(uint16(appId)), ch, actor.SetMailBoxSize(1000))))
 }
 
 func monitor() {

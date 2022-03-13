@@ -1,16 +1,41 @@
 package common
 
 import (
+	"reflect"
 	"server/common/log"
+	"server/proto/outermsg/outer"
 
-	"github.com/gogo/protobuf/proto"
+	gogo "github.com/gogo/protobuf/proto"
 )
 
-func ProtoMarshal(msg proto.Message) []byte {
-	bytes, err := proto.Marshal(msg)
+func ProtoMarshal(msg gogo.Message) []byte {
+	bytes, err := gogo.Marshal(msg)
 	if err != nil {
 		log.Errorw("proto marshal error", "err", err)
 		return nil
 	}
 	return bytes
+}
+
+func ProtoUnmarshal(msgType string, bytes []byte) gogo.Message {
+	v, ok := outer.Spawner(msgType)
+	if !ok {
+		log.Errorw("ProtoUnmarshal outer msg no found", "msgType", msgType)
+		return nil
+	}
+	msg := v.(gogo.Message)
+	err := gogo.Unmarshal(bytes, msg)
+	if err != nil {
+		log.Errorw("proto marshal error", "err", err)
+		return nil
+	}
+	return msg
+}
+
+func ProtoType(msg interface{}) string {
+	str := reflect.TypeOf(msg).String()
+	if str[0] == '*' {
+		str = str[1:]
+	}
+	return str
 }

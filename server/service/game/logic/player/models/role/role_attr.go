@@ -4,18 +4,20 @@ import (
 	"server/service/game/logic/player/models/role/typ"
 )
 
-func (s *Role) RoleId() uint64  { return s.role.RoleId }
-func (s *Role) UUId() uint64    { return s.role.UUId }
-func (s *Role) SId() uint64     { return s.role.SId }
-func (s *Role) Name() string    { return s.role.Name }
-func (s *Role) Icon() string    { return s.role.Icon }
-func (s *Role) Country() string { return s.role.Country }
-func (s *Role) CreateAt() int64 { return s.role.CreateAt }
-func (s *Role) LoginAt() int64  { return s.role.LoginAt }
-func (s *Role) LogoutAt() int64 { return s.role.LogoutAt }
+func (s *Role) RoleId() uint64     { return s.role.RoleId }
+func (s *Role) SetRoleId(v uint64) { s.role.RoleId = v }
+func (s *Role) UUId() uint64       { return s.role.UUId }
+func (s *Role) SetUUId(v uint64)   { s.role.UUId = v }
+func (s *Role) SId() uint64        { return s.role.SId }
+func (s *Role) Name() string       { return s.role.Name }
+func (s *Role) Icon() string       { return s.role.Icon }
+func (s *Role) Country() string    { return s.role.Country }
+func (s *Role) CreateAt() int64    { return s.role.CreateAt }
+func (s *Role) LoginAt() int64     { return s.role.LoginAt }
+func (s *Role) LogoutAt() int64    { return s.role.LogoutAt }
 
 func newAtrributeMap() map[int64]int64 {
-	return make(map[int64]int64, typ.Attribute_max)
+	return make(map[int64]int64, typ.AttributeMax)
 }
 
 func (s *Role) Attribute(typ typ.Attribute) int64 {

@@ -12,6 +12,6 @@ type Storer interface {
 }
 
 type Loader interface {
-	Load(data ...table.Tabler) error
+	Load(data table.Tabler) error
 	LoadAll(tableName string, arr interface{}) error
 }

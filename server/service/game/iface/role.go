@@ -7,7 +7,10 @@ import (
 type Role interface {
 	Modeler
 	RoleId() uint64
+	SetRoleId(v uint64)
 	UUId() uint64
+	SetUUId(v uint64)
+
 	SId() uint64
 	Name() string
 	Icon() string

@@ -1,6 +1,7 @@
 package client
 
 import (
+	"reflect"
 	"server/proto/outermsg/outer"
 	"time"
 
@@ -70,11 +71,13 @@ func (s *Client) OnHandleMessage(sourceId, targetId string, v interface{}) {
 		logger.Infow("RoleInfoPush!", "msg", msg.String())
 	case *outer.ItemInfoPush:
 		logger.Infow("ItemInfoPush!", "msg", msg.String())
+
 	// 道具
 	case *outer.UseItemResp:
 		logger.Infow("UseItemResp!", "msg", msg.String())
 	case *outer.ItemChangeNotify:
 		logger.Infow("ItemChangeNotify!", "msg", msg.String())
+
 	// 邮件
 	case *outer.MailListResp:
 		s.mails = append(s.mails, msg.Mails...)
@@ -84,7 +87,11 @@ func (s *Client) OnHandleMessage(sourceId, targetId string, v interface{}) {
 	case *outer.ReceiveMailItemResp:
 		logger.Infow("ReceiveMailItemResp!", "msg", msg.String())
 
+		// 聊天
+	case *outer.ChatNotify:
+		logger.Infow("ChatNotify!", "msg", msg.String())
+
 	default:
-		logger.Infow("unknown type!", "msg", msg)
+		logger.Infow("unknown type!", "type", reflect.TypeOf(msg).String(), "msg", msg)
 	}
 }

@@ -51,6 +51,9 @@ enum MSG
     RECEIVE_MAIL_ITEM_RESP = 300407; // ReceiveMailItemResp
     DELETE_MAIL_REQ        = 300408; // DeleteMailReq
 
+    // 聊天
+    CHAT_REQ               = 301000; // 请求世界发言
+    CHAT_NOTIFY            = 301001; // 收到世界聊天
     // 消息段end
     GAME_SEGMENT_END = 310000;
 }
