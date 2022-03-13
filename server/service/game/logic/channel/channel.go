@@ -11,7 +11,7 @@ import (
 	"github.com/wwj31/dogactor/actor"
 )
 
-type ChannelMap map[common.ActorId]common.GSession
+type id2SessionMap map[common.ActorId]common.GSession
 
 func New() *Channel {
 	return &Channel{}
@@ -21,13 +21,13 @@ type Channel struct {
 	actor.Base
 
 	sender   common.Sender
-	channels map[common.CHANNEL_TYPE]ChannelMap
+	channels map[common.CHANNEL_TYPE]id2SessionMap
 }
 
 func (s *Channel) OnInit() {
 	s.sender = common.NewSendTools(s)
-	s.channels = make(map[common.CHANNEL_TYPE]ChannelMap)
-	s.channels[common.WORLD] = ChannelMap{}
+	s.channels = make(map[common.CHANNEL_TYPE]id2SessionMap)
+	s.channels[common.WORLD] = id2SessionMap{}
 
 	log.Debugf("chat server OnInit %v", s.ID())
 }
@@ -58,7 +58,7 @@ func (s *Channel) OnHandleRequest(sourceId, targetId, requestId string, v interf
 
 func (s *Channel) join(typ common.CHANNEL_TYPE, playerId common.ActorId, gs common.GSession) bool {
 	var (
-		channel ChannelMap
+		channel id2SessionMap
 		ok      bool
 	)
 
@@ -74,34 +74,34 @@ func (s *Channel) join(typ common.CHANNEL_TYPE, playerId common.ActorId, gs comm
 
 func (s *Channel) leave(typ common.CHANNEL_TYPE, playerId common.ActorId) {
 	var (
-		channel ChannelMap
-		ok      bool
+		smap id2SessionMap
+		ok   bool
 	)
 
-	defer log.Infow("channel leave ", "player", playerId)
+	defer log.Infow("smap leave ", "player", playerId)
 
-	channel, ok = s.channels[typ]
+	smap, ok = s.channels[typ]
 	if !ok {
 		return
 	}
 
-	delete(channel, playerId)
+	delete(smap, playerId)
 }
 
 func (s *Channel) broadcast(typ common.CHANNEL_TYPE, msg proto.Message) {
 	var (
-		channel ChannelMap
-		ok      bool
+		smap id2SessionMap
+		ok   bool
 	)
 
-	defer log.Infow("channel broadcast ", "msg", msg.String())
+	defer log.Infow("smap broadcast ", "msg", msg.String())
 
-	channel, ok = s.channels[typ]
+	smap, ok = s.channels[typ]
 	if !ok {
 		return
 	}
 
-	for _, gSession := range channel {
+	for _, gSession := range smap {
 		err := s.sender.Send2Client(gSession, msg)
 		expect.Nil(err)
 	}
