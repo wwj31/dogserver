@@ -1,6 +1,8 @@
 package game
 
 import (
+	"errors"
+	"github.com/wwj31/dogactor/actor/actorerr"
 	"reflect"
 	"server/common"
 	"server/common/log"
@@ -84,6 +86,10 @@ func (s *Game) activatePlayer(rid uint64, firstLogin bool) common.ActorId {
 	if ok := s.System().Exist(playerId); !ok || firstLogin {
 		playerActor := actor.New(playerId, player.New(rid, s, firstLogin), actor.SetMailBoxSize(200), actor.SetLocalized())
 		err := s.System().Add(playerActor)
+		if errors.Is(err, actorerr.RegisterActorSameIdErr) {
+			log.Errorw("actor add err", "err", err)
+			return playerId
+		}
 		expect.Nil(err)
 	}
 
