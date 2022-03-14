@@ -1,2 +1,7 @@
-protoc -I=. -I=$GOPATH/pkg/mod/github.com/gogo/protobuf@v1.3.2/protobuf --gogofaster_out=../innermsg/ -I=../exec/  ./proto/*.proto
+export PATH=$PATH:../exec/
+
+protoc -I=$GOPATH/pkg/mod/github.com/gogo/protobuf@v1.3.2/protobuf\
+  -I=./proto\
+  --gogofaster_out=../innermsg/ ./proto/*.proto
+
 go generate ./inner/type.go

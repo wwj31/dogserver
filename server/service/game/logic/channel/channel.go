@@ -39,7 +39,7 @@ func (s *Channel) OnStop() bool {
 
 func (s *Channel) OnHandleMessage(sourceId, targetId string, v interface{}) {
 	switch msg := v.(type) {
-	case *inner.LeaveChatChannelReq:
+	case *inner.LeaveChannelReq:
 		s.leave(msg.Channel, msg.ActorId)
 	case *inner.MessageToChannel:
 		bmsg := common.ProtoUnmarshal(msg.Msgname, msg.Data)
@@ -49,9 +49,9 @@ func (s *Channel) OnHandleMessage(sourceId, targetId string, v interface{}) {
 
 func (s *Channel) OnHandleRequest(sourceId, targetId, requestId string, v interface{}) (respErr error) {
 	switch msg := v.(type) {
-	case *inner.JoinChatChannelReq:
+	case *inner.JoinChannelReq:
 		s.join(msg.Channel, msg.ActorId, common.GSession(msg.GSession))
-		_ = s.Response(requestId, &inner.JoinChatChannelResp{Error: 0})
+		_ = s.Response(requestId, &inner.JoinChannelResp{Error: 0})
 	}
 	return nil
 }

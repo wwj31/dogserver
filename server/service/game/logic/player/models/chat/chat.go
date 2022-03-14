@@ -41,7 +41,7 @@ func (s *Chat) SendToChannel(channel string, msg gogo.Message) {
 }
 
 func (s *Chat) joinWorld() bool {
-	msg := &inner.JoinChatChannelReq{
+	msg := &inner.JoinChannelReq{
 		Channel:  common.WORLD,
 		ActorId:  s.Player.ID(),
 		GSession: s.Player.GateSession().String(),
@@ -49,12 +49,12 @@ func (s *Chat) joinWorld() bool {
 	result, err := s.Player.RequestWait(common.ChatName(s.Player.Gamer().SID()), msg)
 	expect.Nil(err)
 
-	resp := result.(*inner.JoinChatChannelResp)
+	resp := result.(*inner.JoinChannelResp)
 	return resp.Error == 0
 }
 
 func (s *Chat) leaveWorld() {
-	msg := &inner.LeaveChatChannelReq{
+	msg := &inner.LeaveChannelReq{
 		Channel: common.WORLD,
 		ActorId: s.Player.ID(),
 	}
