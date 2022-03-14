@@ -5,6 +5,7 @@ import (
 	"github.com/wwj31/dogactor/actor/actorerr"
 	"reflect"
 	"server/common"
+	"server/common/actortype"
 	"server/common/log"
 	"server/common/toml"
 	"server/db"
@@ -64,7 +65,7 @@ func (s *Game) OnHandleMessage(sourceId, targetId string, msg interface{}) {
 func (s *Game) OnHandleEvent(event interface{}) {
 	switch ev := event.(type) {
 	case actor.EvDelactor:
-		if common.IsActorOf(ev.ActorId, common.Player_Actor) {
+		if actortype.IsActorOf(ev.ActorId, actortype.Player_Actor) {
 		}
 	}
 }
@@ -76,7 +77,7 @@ func (s *Game) SID() uint16 {
 
 // MsgToPlayer send msg to player actor
 func (s *Game) MsgToPlayer(rid uint64, sid uint16, msg gogo.Message) {
-	actorId := common.PlayerId(rid)
+	actorId := actortype.PlayerId(rid)
 	gSession, ok := s.onlineMgr.GSessionByPlayer(actorId)
 	if ok {
 		s.toPlayer(gSession, msg)
@@ -91,7 +92,7 @@ func (s *Game) MsgToPlayer(rid uint64, sid uint16, msg gogo.Message) {
 	}
 
 	if s.SID() != sid {
-		err := s.Send(common.GameName(int32(sid)), wrapper)
+		err := s.Send(actortype.GameName(int32(sid)), wrapper)
 		if err != nil {
 			log.Errorw("msg to player from other game send failed", "err", err)
 			return
@@ -101,8 +102,8 @@ func (s *Game) MsgToPlayer(rid uint64, sid uint16, msg gogo.Message) {
 	s.toPlayer("", wrapper)
 }
 
-func (s *Game) checkAndActivatePlayer(rid uint64, firstLogin bool) common.ActorId {
-	playerId := common.PlayerId(rid)
+func (s *Game) checkAndActivatePlayer(rid uint64, firstLogin bool) actortype.ActorId {
+	playerId := actortype.PlayerId(rid)
 	if ok := s.System().Exist(playerId); !ok || firstLogin {
 		playerActor := actor.New(playerId, player.New(rid, s, firstLogin), actor.SetMailBoxSize(200), actor.SetLocalized())
 		err := s.System().Add(playerActor)
@@ -131,7 +132,7 @@ func (s *Game) enterGameReq(gSession common.GSession, msg *outer.EnterGameReq) {
 		return
 	}
 
-	var playerId = common.PlayerId(msg.RID)
+	var playerId = actortype.PlayerId(msg.RID)
 
 	if oldSession, ok := s.onlineMgr.GSessionByPlayer(playerId); ok {
 		s.onlineMgr.DelGSession(oldSession)
@@ -161,7 +162,7 @@ func (s *Game) logout(msg *inner.GT2GSessionClosed) gogo.Message {
 
 func (s *Game) toPlayer(gSession common.GSession, msg interface{}) {
 	var (
-		actorId common.ActorId
+		actorId actortype.ActorId
 		ok      bool
 	)
 
@@ -192,7 +193,7 @@ func (s *Game) toPlayer(gSession common.GSession, msg interface{}) {
 			return
 		}
 		msg = v
-		actorId = common.PlayerId(gameWrapper.RID)
+		actorId = actortype.PlayerId(gameWrapper.RID)
 		// try reactivate player actor if actor has exited
 		s.checkAndActivatePlayer(gameWrapper.RID, false)
 	}

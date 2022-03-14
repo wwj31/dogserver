@@ -2,6 +2,7 @@ package chat
 
 import (
 	"server/common"
+	"server/common/actortype"
 	"server/proto/innermsg/inner"
 	"server/service/game/logic/player/models"
 
@@ -36,7 +37,7 @@ func (s *Chat) SendToChannel(channel string, msg gogo.Message) {
 		Msgname: common.ProtoType(msg),
 		Data:    common.ProtoMarshal(msg),
 	}
-	err := s.Player.Send(common.ChatName(s.Player.Gamer().SID()), msg2Chan)
+	err := s.Player.Send(actortype.ChatName(s.Player.Gamer().SID()), msg2Chan)
 	expect.Nil(err)
 }
 
@@ -46,7 +47,7 @@ func (s *Chat) joinWorld() bool {
 		ActorId:  s.Player.ID(),
 		GSession: s.Player.GateSession().String(),
 	}
-	result, err := s.Player.RequestWait(common.ChatName(s.Player.Gamer().SID()), msg)
+	result, err := s.Player.RequestWait(actortype.ChatName(s.Player.Gamer().SID()), msg)
 	expect.Nil(err)
 
 	resp := result.(*inner.JoinChannelResp)
@@ -58,7 +59,7 @@ func (s *Chat) leaveWorld() {
 		Channel: common.WORLD,
 		ActorId: s.Player.ID(),
 	}
-	err := s.Player.Send(common.ChatName(s.Player.Gamer().SID()), msg)
+	err := s.Player.Send(actortype.ChatName(s.Player.Gamer().SID()), msg)
 	expect.Nil(err)
 
 }

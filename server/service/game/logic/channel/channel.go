@@ -2,6 +2,7 @@ package channel
 
 import (
 	"server/common"
+	"server/common/actortype"
 	"server/common/log"
 	"server/proto/innermsg/inner"
 
@@ -11,7 +12,7 @@ import (
 	"github.com/wwj31/dogactor/actor"
 )
 
-type id2SessionMap map[common.ActorId]common.GSession
+type id2SessionMap map[actortype.ActorId]common.GSession
 
 func New() *Channel {
 	return &Channel{}
@@ -56,7 +57,7 @@ func (s *Channel) OnHandleRequest(sourceId, targetId, requestId string, v interf
 	return nil
 }
 
-func (s *Channel) join(typ common.CHANNEL_TYPE, playerId common.ActorId, gs common.GSession) bool {
+func (s *Channel) join(typ common.CHANNEL_TYPE, playerId actortype.ActorId, gs common.GSession) bool {
 	var (
 		channel id2SessionMap
 		ok      bool
@@ -72,7 +73,7 @@ func (s *Channel) join(typ common.CHANNEL_TYPE, playerId common.ActorId, gs comm
 	return true
 }
 
-func (s *Channel) leave(typ common.CHANNEL_TYPE, playerId common.ActorId) {
+func (s *Channel) leave(typ common.CHANNEL_TYPE, playerId actortype.ActorId) {
 	var (
 		smap id2SessionMap
 		ok   bool

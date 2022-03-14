@@ -2,6 +2,7 @@ package common
 
 import (
 	"fmt"
+	"server/common/actortype"
 
 	gogo "github.com/gogo/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
@@ -11,7 +12,7 @@ import (
 
 type Sender interface {
 	Send2Client(gSession GSession, pb gogo.Message) error
-	Send2Gate(id ActorId, pb gogo.Message) error
+	Send2Gate(id actortype.ActorId, pb gogo.Message) error
 }
 
 type SendTools struct {
@@ -36,8 +37,8 @@ func (s SendTools) Send2Client(gSession GSession, pb gogo.Message) error {
 }
 
 // 发送至网关
-func (s SendTools) Send2Gate(id ActorId, pb gogo.Message) error {
-	if !IsActorOf(id, GateWay_Actor) {
+func (s SendTools) Send2Gate(id actortype.ActorId, pb gogo.Message) error {
+	if !actortype.IsActorOf(id, actortype.GateWay_Actor) {
 		return fmt.Errorf("send to gate, but type is not gate id:%v", id)
 	}
 
