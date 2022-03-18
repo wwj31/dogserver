@@ -23,3 +23,39 @@ func TestGZip(t *testing.T) {
 	data, _ := UnGZip(compress)
 	fmt.Println(string(data))
 }
+
+var zipdata []byte
+
+func init() {
+	testData := []byte("abcdefe")
+	zipdata, _ = GZip(testData)
+}
+
+func BenchmarkGZip(b *testing.B) {
+	b.ReportAllocs()
+	testData := []byte("abcdefe")
+	for i := 0; i < b.N; i++ {
+		_, _ = GZip(testData)
+	}
+}
+
+func BenchmarkTestGZip(b *testing.B) {
+	b.ReportAllocs()
+	testData := []byte("abcdefe")
+	for i := 0; i < b.N; i++ {
+		_, _ = testGZip(testData)
+	}
+}
+
+func BenchmarkUnGZip(b *testing.B) {
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		_, _ = UnGZip(zipdata)
+	}
+}
+func BenchmarkTestUnGZip(b *testing.B) {
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		_, _ = testUnGZip(zipdata)
+	}
+}
