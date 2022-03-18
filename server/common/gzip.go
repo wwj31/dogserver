@@ -5,6 +5,7 @@ import (
 	"compress/gzip"
 	"io/ioutil"
 	"sync"
+	"unsafe"
 )
 
 var (
@@ -52,7 +53,19 @@ func testGZip(data []byte) ([]byte, error) {
 func UnGZip(data []byte) ([]byte, error) {
 	zip := zipReaderPool.Get().(*gzip.Reader)
 	defer zipReaderPool.Put(zip)
-	err := zip.Reset(bytes.NewBuffer(data))
+
+	buf := bytesBufferPool.Get().(*bytes.Buffer)
+	defer func() {
+		buf.Reset()
+		bytesBufferPool.Put(buf)
+	}()
+
+	// use to assign buf of bytes.Buffer
+	ptr := unsafe.Pointer(buf)
+	t := (*struct{ buf []byte })(ptr)
+	t.buf = data
+
+	err := zip.Reset(buf)
 	if err != nil {
 		return nil, err
 	}
@@ -66,4 +79,14 @@ func testUnGZip(data []byte) ([]byte, error) {
 		return nil, err
 	}
 	return ioutil.ReadAll(gz)
+}
+func testUnGZip2(data []byte) ([]byte, error) {
+	zip := zipReaderPool.Get().(*gzip.Reader)
+	defer zipReaderPool.Put(zip)
+	err := zip.Reset(bytes.NewBuffer(data))
+	if err != nil {
+		return nil, err
+	}
+	data, err = ioutil.ReadAll(zip)
+	return data, err
 }
