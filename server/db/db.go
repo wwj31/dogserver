@@ -3,7 +3,7 @@ package db
 import (
 	"database/sql"
 	"fmt"
-	"server/common"
+	"server/common/actortype"
 	"server/db/table"
 	"strconv"
 	"strings"
@@ -27,7 +27,7 @@ type DataCenter struct {
 	dbName    string
 	dbIns     *gorm.DB
 	sys       *actor.System
-	processId []common.ActorId
+	processId []actortype.ActorId
 }
 
 func New(addr, databaseName string, sys *actor.System) *DataCenter {
@@ -46,7 +46,7 @@ func New(addr, databaseName string, sys *actor.System) *DataCenter {
 	expect.Nil(checkTables(db))
 
 	// 创建processor
-	var ids []common.ActorId
+	var ids []actortype.ActorId
 	for i := 1; i <= process_count; i++ {
 		processActor := actor.New(process+cast.ToString(i), &processor{session: db.Session(&gorm.Session{})}, actor.SetLocalized(), actor.SetMailBoxSize(500))
 		expect.Nil(sys.Add(processActor))

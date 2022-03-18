@@ -2,6 +2,7 @@ package channel
 
 import (
 	"server/common"
+	"server/common/actortype"
 	"server/common/log"
 	"server/proto/innermsg/inner"
 
@@ -11,7 +12,7 @@ import (
 	"github.com/wwj31/dogactor/actor"
 )
 
-type id2SessionMap map[common.ActorId]common.GSession
+type id2SessionMap map[actortype.ActorId]common.GSession
 
 func New() *Channel {
 	return &Channel{}
@@ -39,7 +40,7 @@ func (s *Channel) OnStop() bool {
 
 func (s *Channel) OnHandleMessage(sourceId, targetId string, v interface{}) {
 	switch msg := v.(type) {
-	case *inner.LeaveChatChannelReq:
+	case *inner.LeaveChannelReq:
 		s.leave(msg.Channel, msg.ActorId)
 	case *inner.MessageToChannel:
 		bmsg := common.ProtoUnmarshal(msg.Msgname, msg.Data)
@@ -49,14 +50,14 @@ func (s *Channel) OnHandleMessage(sourceId, targetId string, v interface{}) {
 
 func (s *Channel) OnHandleRequest(sourceId, targetId, requestId string, v interface{}) (respErr error) {
 	switch msg := v.(type) {
-	case *inner.JoinChatChannelReq:
+	case *inner.JoinChannelReq:
 		s.join(msg.Channel, msg.ActorId, common.GSession(msg.GSession))
-		_ = s.Response(requestId, &inner.JoinChatChannelResp{Error: 0})
+		_ = s.Response(requestId, &inner.JoinChannelResp{Error: 0})
 	}
 	return nil
 }
 
-func (s *Channel) join(typ common.CHANNEL_TYPE, playerId common.ActorId, gs common.GSession) bool {
+func (s *Channel) join(typ common.CHANNEL_TYPE, playerId actortype.ActorId, gs common.GSession) bool {
 	var (
 		channel id2SessionMap
 		ok      bool
@@ -72,7 +73,7 @@ func (s *Channel) join(typ common.CHANNEL_TYPE, playerId common.ActorId, gs comm
 	return true
 }
 
-func (s *Channel) leave(typ common.CHANNEL_TYPE, playerId common.ActorId) {
+func (s *Channel) leave(typ common.CHANNEL_TYPE, playerId actortype.ActorId) {
 	var (
 		smap id2SessionMap
 		ok   bool

@@ -2,6 +2,7 @@ package common
 
 import (
 	"fmt"
+	"server/common/actortype"
 	"server/common/log"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
@@ -13,7 +14,7 @@ import (
 
 type GSession string
 
-func (s GSession) Split() (gateId ActorId, sessionId uint32) {
+func (s GSession) Split() (gateId actortype.ActorId, sessionId uint32) {
 	strs := strings.Split(string(s), ":")
 	if len(strs) != 2 {
 		log.Errorw("split failed", "gateSession", s)
@@ -40,7 +41,7 @@ func (s GSession) Valid() bool {
 	return s != ""
 }
 
-func GateSession(gateId ActorId, sessionId uint32) GSession {
+func GateSession(gateId actortype.ActorId, sessionId uint32) GSession {
 	return GSession(fmt.Sprintf("%v:%v", gateId, sessionId))
 }
 

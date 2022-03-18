@@ -2,6 +2,7 @@ package gateway
 
 import (
 	"server/common"
+	"server/common/actortype"
 	"server/common/log"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
@@ -13,7 +14,7 @@ import (
 
 type UserSession struct {
 	gateway   *GateWay
-	GameId    common.ActorId // 处理当前session的game
+	GameId    actortype.ActorId // 处理当前session的game
 	LeaseTime int64
 	network.NetSession
 }
@@ -84,7 +85,7 @@ func (s *UserSession) OnRecv(data []byte) {
 	wrapperMsg := common.NewGateWrapperByBytes(data[4:], msgName, gSession)
 
 	if outer.MSG_LOGIN_SEGMENT_BEGIN.Int32() <= msgId && msgId <= outer.MSG_LOGIN_SEGMENT_END.Int32() {
-		err = s.gateway.Send(common.Login_Actor, wrapperMsg)
+		err = s.gateway.Send(actortype.Login_Actor, wrapperMsg)
 	} else if outer.MSG_GAME_SEGMENT_BEGIN.Int32() <= msgId && msgId <= outer.MSG_GAME_SEGMENT_END.Int32() {
 		if s.GameId == "" {
 			return

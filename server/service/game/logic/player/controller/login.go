@@ -8,7 +8,7 @@ import (
 )
 
 // 玩家登录
-var _ = regist(MsgName(localmsg.Login{}), func(player iface.Player, v interface{}) {
+var _ = regist(&localmsg.Login{}, func(player iface.Player, v interface{}) {
 	msg := v.(localmsg.Login)
 	player.SetGateSession(msg.GSession)
 	isNew := player.IsNewRole()
@@ -21,6 +21,6 @@ var _ = regist(MsgName(localmsg.Login{}), func(player iface.Player, v interface{
 	})
 })
 
-var _ = regist(MsgName(&inner.GT2GSessionClosed{}), func(player iface.Player, v interface{}) {
+var _ = regist(&inner.GT2GSessionClosed{}, func(player iface.Player, v interface{}) {
 	player.Logout()
 })

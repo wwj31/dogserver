@@ -2,9 +2,17 @@ package main
 
 import (
 	"fmt"
+	"github.com/spf13/cast"
+	"github.com/wwj31/dogactor/actor"
+	"github.com/wwj31/dogactor/actor/cluster"
+	"github.com/wwj31/dogactor/actor/cmd"
+	"github.com/wwj31/dogactor/expect"
+	"github.com/wwj31/dogactor/l"
+	"github.com/wwj31/dogactor/tools"
 	"os"
 	"os/signal"
 	"server/common"
+	"server/common/actortype"
 	"server/common/log"
 	"server/common/toml"
 	"server/config/confgo"
@@ -18,15 +26,6 @@ import (
 	"server/service/login"
 	"server/service/robot"
 	"syscall"
-	"time"
-
-	"github.com/spf13/cast"
-	"github.com/wwj31/dogactor/actor"
-	"github.com/wwj31/dogactor/actor/cluster"
-	"github.com/wwj31/dogactor/actor/cmd"
-	"github.com/wwj31/dogactor/expect"
-	"github.com/wwj31/dogactor/l"
-	"github.com/wwj31/dogactor/tools"
 )
 
 func startup() {
@@ -50,7 +49,7 @@ func startup() {
 			common.RefactorConfig()
 		}
 
-		monitor()
+		monitor(*logPath, logName+"mo")
 
 		system := run(*appName, int32(*appId))
 		<-osSignal
@@ -72,15 +71,15 @@ func run(appType string, appId int32) *actor.System {
 	)
 
 	switch appType {
-	case common.Client:
-		expect.Nil(system.Add(actor.New(common.Client, &client.Client{}, actor.SetLocalized())))
-	case common.Robot:
-		system.Add(actor.New(common.Robot, &robot.Robot{}, actor.SetLocalized()))
-	case common.GateWay_Actor:
+	case actortype.Client:
+		expect.Nil(system.Add(actor.New(actortype.Client, &client.Client{}, actor.SetLocalized())))
+	case actortype.Robot:
+		system.Add(actor.New(actortype.Robot, &robot.Robot{}, actor.SetLocalized()))
+	case actortype.GateWay_Actor:
 		newGateway(appId, system)
-	case common.Login_Actor:
+	case actortype.Login_Actor:
 		newLogin(system)
-	case common.Game_Actor:
+	case actortype.Game_Actor:
 		newGame(appId, system)
 	case "all":
 		newGateway(appId, system)
@@ -105,26 +104,17 @@ func newProtoIndex() *tools.ProtoIndex {
 func newLogin(system *actor.System) {
 	dbIns := db.New(toml.Get("mysql"), toml.Get("database"), system)
 	loginActor := login.New(dbIns)
-	expect.Nil(system.Add(actor.New(common.Login_Actor, loginActor, actor.SetMailBoxSize(1000))))
+	expect.Nil(system.Add(actor.New(actortype.Login_Actor, loginActor, actor.SetMailBoxSize(1000))))
 }
 
 func newGateway(appId int32, system *actor.System) {
 	loginActor := gateway.New()
-	expect.Nil(system.Add(actor.New(common.GatewayName(appId), loginActor, actor.SetMailBoxSize(2000))))
+	expect.Nil(system.Add(actor.New(actortype.GatewayName(appId), loginActor, actor.SetMailBoxSize(2000))))
 }
 
 func newGame(appId int32, system *actor.System) {
 	gameActor := game.New(uint16(appId))
 	ch := channel.New()
-	expect.Nil(system.Add(actor.New(common.GameName(appId), gameActor, actor.SetMailBoxSize(4000))))
-	expect.Nil(system.Add(actor.New(common.ChatName(uint16(appId)), ch, actor.SetMailBoxSize(1000))))
-}
-
-func monitor() {
-	go func() {
-		tick := time.Tick(10 * time.Second)
-		for range tick {
-			tools.PrintMemUsage()
-		}
-	}()
+	expect.Nil(system.Add(actor.New(actortype.GameName(appId), gameActor, actor.SetMailBoxSize(4000))))
+	expect.Nil(system.Add(actor.New(actortype.ChatName(uint16(appId)), ch, actor.SetMailBoxSize(1000))))
 }

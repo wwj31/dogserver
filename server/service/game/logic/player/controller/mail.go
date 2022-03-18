@@ -7,7 +7,7 @@ import (
 )
 
 // 前端请求邮件列表，msg.Count 前端已有的邮件数量
-var _ = regist(MsgName(&outer.MailListReq{}), func(player iface.Player, v interface{}) {
+var _ = regist(&outer.MailListReq{}, func(player iface.Player, v interface{}) {
 	msg := v.(*outer.MailListReq)
 
 	var msgMails []*outer.Mail
@@ -30,7 +30,7 @@ var _ = regist(MsgName(&outer.MailListReq{}), func(player iface.Player, v interf
 })
 
 // 已读操作
-var _ = regist(MsgName(&outer.ReadMailReq{}), func(player iface.Player, v interface{}) {
+var _ = regist(&outer.ReadMailReq{}, func(player iface.Player, v interface{}) {
 	msg := v.(*outer.ReadMailReq)
 
 	player.Mail().Read(msg.Uuid)
@@ -39,7 +39,7 @@ var _ = regist(MsgName(&outer.ReadMailReq{}), func(player iface.Player, v interf
 })
 
 // 领取邮件道具
-var _ = regist(MsgName(&outer.ReceiveMailItemReq{}), func(player iface.Player, v interface{}) {
+var _ = regist(&outer.ReceiveMailItemReq{}, func(player iface.Player, v interface{}) {
 	msg := v.(*outer.ReceiveMailItemReq)
 
 	player.Mail().ReceiveItem(msg.Uuid)
@@ -48,7 +48,7 @@ var _ = regist(MsgName(&outer.ReceiveMailItemReq{}), func(player iface.Player, v
 })
 
 // 删除邮件
-var _ = regist(MsgName(&outer.DeleteMailReq{}), func(player iface.Player, v interface{}) {
+var _ = regist(&outer.DeleteMailReq{}, func(player iface.Player, v interface{}) {
 	msg := v.(*outer.DeleteMailReq)
 
 	player.Mail().Delete(msg.Uuids...)

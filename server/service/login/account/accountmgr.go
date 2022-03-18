@@ -3,6 +3,7 @@ package account
 import (
 	"fmt"
 	"server/common"
+	"server/common/actortype"
 	"server/common/log"
 	"server/db/table"
 	"server/proto/innermsg/inner"
@@ -53,7 +54,7 @@ func (s *AccountMgr) LoadAllAccount(loader iface.Loader) {
 		lastLoginRole := account.table.Roles[account.table.LastRoleId]
 		if lastLoginRole != nil {
 			s.accountsByName[lastLoginRole.Name] = account
-			account.serverId = common.GameName(int32(lastLoginRole.SId))
+			account.serverId = actortype.GameName(int32(lastLoginRole.SId))
 		}
 	}
 }
@@ -83,7 +84,7 @@ func (s *AccountMgr) Login(msg *outer.LoginReq, storer iface.Storer) (acc *Accou
 	}
 	newAcc.table.Roles = table.RoleMap{newRole.RoleId: newRole}
 	newAcc.table.LastRoleId = newRole.RoleId
-	newAcc.serverId = common.GameName(int32(newRole.SId))
+	newAcc.serverId = actortype.GameName(int32(newRole.SId))
 
 	// 回存db
 	if err := storer.Store(true, &newAcc.table); err != nil {

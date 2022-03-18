@@ -64,6 +64,12 @@ func (s *Item) Use(items map[int64]int64) outer.ERROR {
 		return outer.ERROR_ITEM_NOT_ENOUGH
 	}
 
+	for _, v := range items {
+		if v > 0 {
+			return outer.ERROR_ITEM_USE_POSITIVE_NUM
+		}
+	}
+
 	s.Player.Item().Add(items, true)
 	return outer.ERROR_SUCCESS
 }

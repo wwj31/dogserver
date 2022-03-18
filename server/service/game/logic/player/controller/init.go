@@ -10,9 +10,10 @@ type Handle func(player iface.Player, v interface{})
 
 var MsgRouter = map[string]func(player iface.Player, v interface{}){}
 
-func regist(msgName string, fun Handle) bool {
+func regist(msg interface{}, fun Handle) bool {
+	msgName := MsgName(msg)
 	if _, ok := MsgRouter[msgName]; ok {
-		panic(fmt.Errorf("%v repeated ", msgName))
+		panic(fmt.Errorf("%v repeated ", msg))
 	}
 	MsgRouter[msgName] = fun
 	return true
