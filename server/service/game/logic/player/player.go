@@ -77,7 +77,7 @@ func (s *Player) OnInit() {
 	// 定时回存
 	//randTime := tools.NowTime() + int64(5*time.Minute) + rand.Int63n(int64(time.Second*30))
 	randTime := tools.NowTime() + int64(1*time.Second)
-	s.saveTimerId = s.AddTimer(tools.UUID(), randTime, func(dt int64) {
+	s.saveTimerId = s.AddTimer(tools.XUID(), randTime, func(dt int64) {
 		s.store()
 		s.checkAlive()
 	}, -1)
@@ -100,8 +100,6 @@ func (s *Player) OnHandleMessage(sourceId, targetId string, msg interface{}) {
 	s.keepAlive = tools.NowTime()
 }
 
-func (s *Player) GateSession() common.GSession            { return s.gSession }
-func (s *Player) SetGateSession(gSession common.GSession) { s.gSession = gSession }
 func (s *Player) Send2Client(pb proto.Message) {
 	if pb == nil || !s.Online() {
 		return
@@ -124,20 +122,16 @@ func (s *Player) Logout() {
 		mod.OnLogout()
 	}
 }
-func (s *Player) Online() bool {
-	return s.Role().LoginAt() > s.Role().LogoutAt()
-}
 
-func (s *Player) OnStop() bool {
-	return true
-}
-
-func (s *Player) IsNewRole() bool    { return s.firstLogin }
-func (s *Player) Gamer() iface.Gamer { return s.gamer }
-func (s *Player) Role() iface.Role   { return s.models[modRole].(iface.Role) }
-func (s *Player) Item() iface.Item   { return s.models[modItem].(iface.Item) }
-func (s *Player) Mail() iface.Mailer { return s.models[modMail].(iface.Mailer) }
-func (s *Player) Chat() iface.Chat   { return s.models[modChat].(iface.Chat) }
+func (s *Player) GateSession() common.GSession            { return s.gSession }
+func (s *Player) SetGateSession(gSession common.GSession) { s.gSession = gSession }
+func (s *Player) Online() bool                            { return s.Role().LoginAt() > s.Role().LogoutAt() }
+func (s *Player) IsNewRole() bool                         { return s.firstLogin }
+func (s *Player) Gamer() iface.Gamer                      { return s.gamer }
+func (s *Player) Role() iface.Role                        { return s.models[modRole].(iface.Role) }
+func (s *Player) Item() iface.Item                        { return s.models[modItem].(iface.Item) }
+func (s *Player) Mail() iface.Mailer                      { return s.models[modMail].(iface.Mailer) }
+func (s *Player) Chat() iface.Chat                        { return s.models[modChat].(iface.Chat) }
 
 // 回存数据
 func (s *Player) store(new ...bool) {

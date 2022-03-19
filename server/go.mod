@@ -7,13 +7,14 @@ require (
 	github.com/gogo/protobuf v1.3.2
 	github.com/golang/mock v1.6.0
 	github.com/golang/protobuf v1.5.2
+	github.com/shirou/gopsutil v3.21.10+incompatible
 	github.com/smartystreets/goconvey v1.7.2
 	github.com/sony/sonyflake v1.0.0
 	github.com/spf13/cast v1.4.1
 	github.com/spf13/viper v1.9.0
 	github.com/stretchr/testify v1.7.0
 	github.com/tealeg/xlsx v1.0.5
-	github.com/wwj31/dogactor v1.2.12
+	github.com/wwj31/dogactor v1.2.13
 	gorm.io/driver/mysql v1.1.3
 	gorm.io/gorm v1.22.3
 )
@@ -36,8 +37,8 @@ require (
 	github.com/orcaman/concurrent-map v0.0.0-20210501183033-44dafcb38ecc // indirect
 	github.com/pelletier/go-toml v1.9.4 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/rs/xid v1.3.0 // indirect
 	github.com/satori/go.uuid v1.2.0 // indirect
-	github.com/shirou/gopsutil v3.21.10+incompatible // indirect
 	github.com/smartystreets/assertions v1.2.0 // indirect
 	github.com/spf13/afero v1.6.0 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
