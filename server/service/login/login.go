@@ -63,7 +63,7 @@ func (s *Login) LoginReq(sourceId string, gSession common.GSession, msg *outer.L
 		oldId, _ := acc.GSession().Split()
 		_ = s.Send2Gate(oldId, &inner.L2GTSessionDisabled{GateSession: acc.GSession().String()})
 	}
-	acc.SetgSession(gSession)
+	acc.SetGSession(gSession)
 
 	// 通知gate绑定角色服务器
 	err := s.Send2Gate(sourceId, &inner.L2GTSessionAssignGame{
