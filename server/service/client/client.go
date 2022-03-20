@@ -38,7 +38,7 @@ func (s *Client) OnInit() {
 	}
 
 	// 心跳
-	s.AddTimer(tools.UUID(), tools.NowTime()+int64(20*time.Second), func(dt int64) {
+	s.AddTimer(tools.XUID(), tools.NowTime()+int64(20*time.Second), func(dt int64) {
 		s.SendToServer(outer.MSG_PING.Int32(), &outer.Ping{})
 	}, -1)
 }

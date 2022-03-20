@@ -13,6 +13,7 @@ type (
 		Send2Client(pb proto.Message)
 		Login()
 		Logout()
+		Online() bool
 		IsNewRole() bool
 
 		Gamer() Gamer

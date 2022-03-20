@@ -36,7 +36,7 @@ func (s *GateWay) OnInit() {
 		func() network.NetSessionHandler { return &UserSession{gateway: s} },
 	)
 
-	s.AddTimer(tools.UUID(), tools.NowTime()+int64(time.Hour), s.checkDeadSession, -1)
+	s.AddTimer(tools.XUID(), tools.NowTime()+int64(time.Hour), s.checkDeadSession, -1)
 
 	if err := s.listener.Start(); err != nil {
 		log.Errorw("gateway listener start failed", "err", err, "addr", toml.Get("gateaddr"))
