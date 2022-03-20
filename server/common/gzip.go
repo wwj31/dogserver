@@ -38,7 +38,7 @@ func GZip(data []byte) ([]byte, error) {
 	return zipData, nil
 }
 
-// to compared with GZip for benchmark
+// testGZip to compared with GZip for benchmark
 func testGZip(data []byte) ([]byte, error) {
 	buf := bytes.NewBuffer(data)
 	w := gzip.NewWriter(buf)
@@ -60,6 +60,7 @@ func UnGZip(data []byte) ([]byte, error) {
 	return data, err
 }
 
+// testUnGZip to compared with UnGZip for benchmark
 func testUnGZip(data []byte) ([]byte, error) {
 	gz, err := gzip.NewReader(bytes.NewBuffer(data))
 	if err != nil {
