@@ -36,7 +36,7 @@ func (s *GateWay) OnInit() {
 		func() network.NetSessionHandler { return &UserSession{gateway: s} },
 	)
 
-	s.AddTimer(tools.XUID(), tools.NowTime()+int64(time.Hour), s.checkDeadSession, -1)
+	s.AddTimer(tools.XUID(), tools.Now().Add(time.Hour), s.checkDeadSession, -1)
 
 	if err := s.listener.Start(); err != nil {
 		log.Errorw("gateway listener start failed", "err", err, "addr", toml.Get("gateaddr"))
@@ -46,7 +46,7 @@ func (s *GateWay) OnInit() {
 }
 
 // 定期检查并清理死链接
-func (s *GateWay) checkDeadSession(dt int64) {
+func (s *GateWay) checkDeadSession(dt time.Duration) {
 	for id, session := range s.sessions {
 		if time.Now().UnixMilli()-session.LeaseTime > int64(time.Hour) {
 			session.Stop()
