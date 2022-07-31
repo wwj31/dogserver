@@ -18,7 +18,7 @@ type GateWay struct {
 
 	// 管理所有对外的玩家tcp连接
 	listener network.Listener
-	sessions map[uint32]*UserSession
+	sessions map[uint64]*UserSession
 
 	// 消息映射表
 	protoIndex *tools.ProtoIndex
@@ -29,7 +29,7 @@ func New() *GateWay {
 }
 
 func (s *GateWay) OnInit() {
-	s.sessions = make(map[uint32]*UserSession)
+	s.sessions = make(map[uint64]*UserSession)
 
 	s.listener = network.StartTcpListen(toml.Get("gateaddr"),
 		func() network.DecodeEncoder { return &network.StreamCode{MaxDecode: int(10 * common.KB)} },

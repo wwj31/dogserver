@@ -26,7 +26,7 @@ type Client struct {
 
 func (s *Client) OnInit() {
 	s.cli = network.NewTcpClient(addr, func() network.DecodeEncoder { return &network.StreamCode{} })
-	s.cli.AddLast(func() network.NetSessionHandler { return &SessionHandler{client: s} })
+	s.cli.AddHandler(func() network.NetSessionHandler { return &SessionHandler{client: s} })
 	expect.Nil(s.cli.Start(false))
 
 	if s.ACC != "" {

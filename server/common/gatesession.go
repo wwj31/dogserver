@@ -14,14 +14,14 @@ import (
 
 type GSession string
 
-func (s GSession) Split() (gateId actortype.ActorId, sessionId uint32) {
+func (s GSession) Split() (gateId actortype.ActorId, sessionId uint64) {
 	strs := strings.Split(string(s), ":")
 	if len(strs) != 2 {
 		log.Errorw("split failed", "gateSession", s)
 		panic(nil)
 	}
 	gateId = strs[0]
-	sint, e := cast.ToUint32E(strs[1])
+	sint, e := cast.ToUint64E(strs[1])
 	if e != nil {
 		log.Errorw("split failed", "gateSession", s)
 		panic(nil)
@@ -41,7 +41,7 @@ func (s GSession) Valid() bool {
 	return s != ""
 }
 
-func GateSession(gateId actortype.ActorId, sessionId uint32) GSession {
+func GateSession(gateId actortype.ActorId, sessionId uint64) GSession {
 	return GSession(fmt.Sprintf("%v:%v", gateId, sessionId))
 }
 

@@ -11,19 +11,19 @@ import (
 )
 
 func (s *Client) InitCmd() {
-	s.RegistCmd("login", s.login, "login <uid>")
-	s.RegistCmd("rlogin", s.randLogin, "")
+	s.RegistryCmd("login", s.login, "login <uid>")
+	s.RegistryCmd("rlogin", s.randLogin, "")
 
-	s.RegistCmd("enter", s.enter, "enter game")
+	s.RegistryCmd("enter", s.enter, "enter game")
 
-	s.RegistCmd("item", s.item, "")
+	s.RegistryCmd("item", s.item, "")
 
-	s.RegistCmd("listmail", s.listMail, "")
-	s.RegistCmd("readmail", s.readMail, "")
-	s.RegistCmd("recvmail", s.recvMail, "")
-	s.RegistCmd("delmail", s.delMail, "")
+	s.RegistryCmd("listmail", s.listMail, "")
+	s.RegistryCmd("readmail", s.readMail, "")
+	s.RegistryCmd("recvmail", s.recvMail, "")
+	s.RegistryCmd("delmail", s.delMail, "")
 
-	s.RegistCmd("chat", s.chat, "")
+	s.RegistryCmd("chat", s.chat, "")
 }
 
 func (s *Client) login(arg ...string) {
