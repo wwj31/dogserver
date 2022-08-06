@@ -1,7 +1,7 @@
 [base]
 dispaly    = "true"
 logpath    = "./log"
-etcdprefix = "/actor/"
+etcdprefix = "dog"
 etcdaddr   = "127.0.0.1:2379"
 
 
