@@ -10,11 +10,11 @@ require (
 	github.com/shirou/gopsutil v3.21.10+incompatible
 	github.com/smartystreets/goconvey v1.7.2
 	github.com/sony/sonyflake v1.0.0
-	github.com/spf13/cast v1.4.1
+	github.com/spf13/cast v1.5.0
 	github.com/spf13/viper v1.9.0
 	github.com/stretchr/testify v1.7.0
 	github.com/tealeg/xlsx v1.0.5
-	github.com/wwj31/dogactor v1.2.16
+	github.com/wwj31/dogactor v1.2.19
 	gorm.io/driver/mysql v1.1.3
 	gorm.io/gorm v1.22.3
 )

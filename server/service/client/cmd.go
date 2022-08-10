@@ -10,21 +10,21 @@ import (
 	"github.com/spf13/cast"
 )
 
-func (s *Client) InitCmd() {
-	s.RegistryCmd("login", s.login, "login <uid>")
-	s.RegistryCmd("rlogin", s.randLogin, "")
-
-	s.RegistryCmd("enter", s.enter, "enter game")
-
-	s.RegistryCmd("item", s.item, "")
-
-	s.RegistryCmd("listmail", s.listMail, "")
-	s.RegistryCmd("readmail", s.readMail, "")
-	s.RegistryCmd("recvmail", s.recvMail, "")
-	s.RegistryCmd("delmail", s.delMail, "")
-
-	s.RegistryCmd("chat", s.chat, "")
-}
+//func (s *Client) InitCmd() {
+//	s.RegistryCmd("login", s.login, "login <uid>")
+//	s.RegistryCmd("rlogin", s.randLogin, "")
+//
+//	s.RegistryCmd("enter", s.enter, "enter game")
+//
+//	s.RegistryCmd("item", s.item, "")
+//
+//	s.RegistryCmd("listmail", s.listMail, "")
+//	s.RegistryCmd("readmail", s.readMail, "")
+//	s.RegistryCmd("recvmail", s.recvMail, "")
+//	s.RegistryCmd("delmail", s.delMail, "")
+//
+//	s.RegistryCmd("chat", s.chat, "")
+//}
 
 func (s *Client) login(arg ...string) {
 	if len(arg) != 1 {

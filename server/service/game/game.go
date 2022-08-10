@@ -104,7 +104,7 @@ func (s *Game) MsgToPlayer(rid uint64, sid uint16, msg gogo.Message) {
 
 func (s *Game) checkAndActivatePlayer(rid uint64, firstLogin bool) actortype.ActorId {
 	playerId := actortype.PlayerId(rid)
-	if ok := s.System().Exist(playerId); !ok || firstLogin {
+	if act := s.System().LocalActor(playerId); act == nil || firstLogin {
 		playerActor := actor.New(playerId, player.New(rid, s, firstLogin), actor.SetMailBoxSize(200), actor.SetLocalized())
 		err := s.System().Add(playerActor)
 		if errors.Is(err, actorerr.RegisterActorSameIdErr) {
