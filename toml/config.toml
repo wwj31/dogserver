@@ -5,7 +5,6 @@ etcdprefix = "dog"
 etcdaddr   = "127.0.0.1:2379"
 
 
-# 网关
 [server]
     [server.login_1]
         actoraddr  = "127.0.0.1:8100"
