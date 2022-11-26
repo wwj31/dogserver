@@ -13,7 +13,7 @@ import (
 	"github.com/wwj31/dogactor/tools"
 )
 
-const goc = 1000
+const goc = 1
 
 type Robot struct {
 	actor.Base
