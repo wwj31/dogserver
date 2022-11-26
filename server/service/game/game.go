@@ -100,7 +100,13 @@ func (s *Game) MsgToPlayer(rid uint64, sid uint16, msg gogo.Message) {
 func (s *Game) checkAndActivatePlayer(rid uint64, firstLogin bool) actortype.ActorId {
 	playerId := actortype.PlayerId(rid)
 	if act := s.System().LocalActor(playerId); act == nil || firstLogin {
-		playerActor := actor.New(playerId, player.New(rid, s, firstLogin), actor.SetMailBoxSize(200), actor.SetLocalized())
+		playerActor := actor.New(
+			playerId,
+			player.New(rid, s, firstLogin),
+			actor.SetMailBoxSize(200),
+			actor.SetLocalized(),
+		)
+
 		err := s.System().Add(playerActor)
 		if errors.Is(err, actorerr.RegisterActorSameIdErr) {
 			log.Errorw("actor add err", "err", err)
@@ -189,7 +195,7 @@ func (s *Game) toPlayer(gSession common.GSession, msg interface{}) {
 		}
 		msg = v
 		actorId = actortype.PlayerId(gameWrapper.RID)
-		// try reactivate player actor if actor has exited
+		// try to reactivate player's actor if actor has exited
 		s.checkAndActivatePlayer(gameWrapper.RID, false)
 	}
 
