@@ -83,12 +83,14 @@ func (s *Player) OnHandleMessage(sourceId, targetId string, msg interface{}) {
 		log.Errorw("player undefined route ", "name", name)
 		return
 	}
+
 	handle(s, msg)
 	pt, ok := msg.(proto.Message)
 	if ok {
 		msgName := s.System().ProtoIndex().MsgName(pt)
 		outer.Put(msgName, msg)
 	}
+
 	s.keepAlive = tools.NowTime()
 }
 
@@ -119,11 +121,6 @@ func (s *Player) GateSession() common.GSession            { return s.gSession }
 func (s *Player) SetGateSession(gSession common.GSession) { s.gSession = gSession }
 func (s *Player) Online() bool                            { return s.Role().LoginAt() > s.Role().LogoutAt() }
 func (s *Player) IsNewRole() bool                         { return s.firstLogin }
-func (s *Player) Gamer() iface.Gamer                      { return s.gamer }
-func (s *Player) Role() iface.Role                        { return s.models[modRole].(iface.Role) }
-func (s *Player) Item() iface.Item                        { return s.models[modItem].(iface.Item) }
-func (s *Player) Mail() iface.Mailer                      { return s.models[modMail].(iface.Mailer) }
-func (s *Player) Chat() iface.Chat                        { return s.models[modChat].(iface.Chat) }
 
 // 回存数据
 func (s *Player) store(new ...bool) {

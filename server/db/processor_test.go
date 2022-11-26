@@ -54,13 +54,13 @@ func TestProcessor(t *testing.T) {
 			}
 			oper := operator{
 				state:  opera,
-				tab:    &table.Fake{Id: id, Data: data},
+				tabler: &table.Fake{Id: id, Data: data},
 				finish: finish,
 			}
 			if oper.finish != nil {
 				go func() {
 					<-finish
-					fmt.Println("                             load success", oper.tab.Key())
+					fmt.Println("                             load success", oper.tabler.Key())
 				}()
 			}
 			operaArr = append(operaArr, oper)

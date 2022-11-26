@@ -23,17 +23,18 @@ const (
 
 const (
 	STOP = iota + 1
-	RUNING
+	RUNNING
 )
 
 const notify = "check"
 
 type (
 	operator struct {
-		state op
-		tab   table.Tabler
+		state  op
+		tabler table.Tabler
 
-		// 当state 为 INSERT时，extrOpera用于存储update，insert和update无法合并，因为update使用gorm的update()，结构体零值不会保存
+		// 当state为INSERT时，extrOpera用于存储update，
+		// insert和update无法合并，因为update使用gorm的update()结构体零值不会保存
 		extrOpera *operator
 
 		finish chan<- struct{}
@@ -65,13 +66,14 @@ func (s *processor) OnHandleMessage(sourceId, targetId string, msg interface{}) 
 		log.Errorw("processor receive invalid data", "type", reflect.TypeOf(msg).String())
 		return
 	}
-	s.merageAndCover(newOpera)
+
+	s.mergeAndCover(newOpera)
 	s.processing()
 }
 
-func (s *processor) merageAndCover(newOpera operator) {
-	newTableName := tableName(newOpera.tab.ModelName(), newOpera.tab.Count())
-	tableNameKey := newTableName + "_" + cast.ToString(newOpera.tab.Key())
+func (s *processor) mergeAndCover(newOpera operator) {
+	newTableName := tableName(newOpera.tabler.ModelName(), newOpera.tabler.Count())
+	tableNameKey := newTableName + "_" + cast.ToString(newOpera.tabler.Key())
 	if oldOpera, ok := s.set[tableNameKey]; !ok {
 		s.set[tableNameKey] = newOpera
 	} else {
@@ -79,11 +81,11 @@ func (s *processor) merageAndCover(newOpera operator) {
 		// 2.load操作优先从队列里取,取不到再读库
 		switch newOpera.state {
 		case _INSERT:
-			log.Errorw("exception error operation before insert", "op", oldOpera.state, "tab", oldOpera.tab.Key())
+			log.Errorw("exception error operation before insert", "op", oldOpera.state, "tabler", oldOpera.tabler.Key())
 		case _UPDATE:
 			switch oldOpera.state {
 			case _UPDATE:
-				oldOpera.tab = newOpera.tab // cover
+				oldOpera.tabler = newOpera.tabler // cover
 			case _INSERT:
 				oldOpera.extrOpera = &newOpera // insert with update
 			}
@@ -91,16 +93,20 @@ func (s *processor) merageAndCover(newOpera operator) {
 			switch oldOpera.state {
 			case _INSERT, _UPDATE:
 				if oldOpera.extrOpera == nil {
-					newOpera.tab = oldOpera.tab
+					newOpera.tabler = oldOpera.tabler
 				} else {
-					newOpera.tab = oldOpera.extrOpera.tab
+					newOpera.tabler = oldOpera.extrOpera.tabler
 				}
 				if newOpera.finish != nil {
 					if cap(newOpera.finish) == 0 {
-						log.Warnw("operator _LOAD finish cap == 0 can't push", "state", newOpera.state, "tab name", newOpera.tab.ModelName())
+						log.Warnw("operator _LOAD finish cap == 0 can't push", "state", newOpera.state, "tabler name", newOpera.tabler.ModelName())
 						return
 					}
-					newOpera.finish <- struct{}{}
+
+					select {
+					case newOpera.finish <- struct{}{}:
+					default:
+					}
 				}
 			case _LOAD:
 				s.set[tableNameKey] = newOpera
@@ -111,7 +117,7 @@ func (s *processor) merageAndCover(newOpera operator) {
 }
 
 func (s *processor) processing() {
-	if s.state.CompareAndSwap(STOP, RUNING) {
+	if s.state.CompareAndSwap(STOP, RUNNING) {
 		arr := make([]operator, 0, len(s.set))
 		for _, v := range s.set {
 			arr = append(arr, v)
@@ -128,24 +134,28 @@ func (s *processor) processing() {
 }
 
 func (s *processor) execute(op operator) {
-	tn := op.tab.ModelName()
-	if op.tab.Count() > 0 {
-		tn = tn + cast.ToString(op.tab.Count())
+	tn := op.tabler.ModelName()
+	if op.tabler.Count() > 0 {
+		tn = tn + cast.ToString(op.tabler.Count())
 	}
 	db := s.session.Table(tn)
 	if op.state == _INSERT {
 		fmt.Println("insert")
-		db.Create(op.tab) // todo create 不支持 接口切片 怎么处理批量插入？？？？
+		db.Create(op.tabler) // todo create 不支持 接口切片 怎么处理批量插入？？？？
 		if op.extrOpera != nil {
-			db.Updates(op.extrOpera.tab)
+			db.Updates(op.extrOpera.tabler)
 		}
 	} else if op.state == _UPDATE {
-		db.Updates(op.tab)
+		db.Updates(op.tabler)
 	} else if op.state == _LOAD {
-		err := db.Take(op.tab).Error
+		err := db.Take(op.tabler).Error
 		if err != nil {
-			log.Errorw("load faild ", "tab", op.tab.ModelName(), "key", op.tab.Key())
+			log.Errorw("load faild ", "tabler", op.tabler.ModelName(), "key", op.tabler.Key())
 		}
-		op.finish <- struct{}{}
+
+		select {
+		case op.finish <- struct{}{}:
+		default:
+		}
 	}
 }

@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"github.com/spf13/cast"
 	"github.com/wwj31/dogactor/actor"
-	"github.com/wwj31/dogactor/actor/cluster/fullmesh"
+	"github.com/wwj31/dogactor/actor/cluster/mq"
+	"github.com/wwj31/dogactor/actor/cluster/mq/nats"
 	"github.com/wwj31/dogactor/expect"
 	"github.com/wwj31/dogactor/logger"
 	"github.com/wwj31/dogactor/tools"
@@ -63,7 +64,8 @@ func startup() {
 func run(appType string, appId int32) *actor.System {
 	// startup the system of actor
 	system, _ := actor.NewSystem(
-		fullmesh.WithRemote(toml.Get("etcdaddr"), toml.Get("etcdprefix")),
+		//fullmesh.WithRemote(toml.Get("etcdaddr"), toml.Get("etcdprefix")),
+		mq.WithRemote(toml.Get("natsurl"), nats.New()),
 		actor.Addr(toml.Get("actoraddr")),
 		actor.ProtoIndex(newProtoIndex()),
 	)
@@ -86,6 +88,7 @@ func run(appType string, appId int32) *actor.System {
 	}
 	return system
 }
+
 func newProtoIndex() *tools.ProtoIndex {
 	return tools.NewProtoIndex(func(name string) (v interface{}, ok bool) {
 		v, ok = inner.Spawner(name)

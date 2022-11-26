@@ -3,6 +3,7 @@ dispaly    = "true"
 logpath    = "./log"
 etcdprefix = "dog"
 etcdaddr   = "127.0.0.1:2379"
+natsurl   = "nats://localhost:4222"
 
 
 [server]

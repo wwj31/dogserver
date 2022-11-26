@@ -19,7 +19,7 @@ import (
 	"gorm.io/gorm/schema"
 )
 
-const process_count = 4
+const processCount = 4
 const process = "process_"
 
 type DataCenter struct {
@@ -47,7 +47,7 @@ func New(addr, databaseName string, sys *actor.System) *DataCenter {
 
 	// 创建processor
 	var ids []actortype.ActorId
-	for i := 1; i <= process_count; i++ {
+	for i := 1; i <= processCount; i++ {
 		processActor := actor.New(process+cast.ToString(i), &processor{session: db.Session(&gorm.Session{})}, actor.SetLocalized(), actor.SetMailBoxSize(500))
 		expect.Nil(sys.Add(processActor))
 		ids = append(ids)
@@ -75,8 +75,8 @@ func (s *DataCenter) Store(insert bool, tablers ...table.Tabler) error {
 		}
 
 		opera := operator{
-			state: state,
-			tab:   t,
+			state:  state,
+			tabler: t,
 		}
 
 		err := s.sys.Send("", processId(t), "", opera)
@@ -91,7 +91,7 @@ func (s *DataCenter) Load(t table.Tabler) error {
 	f := make(chan struct{}, 1)
 	opera := operator{
 		state:  _LOAD,
-		tab:    t,
+		tabler: t,
 		finish: f,
 	}
 
@@ -105,7 +105,7 @@ func (s *DataCenter) Load(t table.Tabler) error {
 	case <-f:
 		return nil
 	case <-timer.C:
-		return fmt.Errorf("DataCenter load timeout", "table", t.ModelName(), "key", t.Key())
+		return fmt.Errorf("DataCenter load timeout table:%v key:%v", t.ModelName(), t.Key())
 	}
 }
 
@@ -152,7 +152,7 @@ func checkTables(db *gorm.DB) error {
 }
 
 func processId(t table.Tabler) string {
-	hash := num(t.Key(), process_count)
+	hash := num(t.Key(), processCount)
 	return process + cast.ToString(hash)
 }
 
