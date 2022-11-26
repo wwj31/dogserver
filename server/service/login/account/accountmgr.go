@@ -15,7 +15,7 @@ import (
 	"github.com/wwj31/dogactor/expect"
 )
 
-type AccountMgr struct {
+type Mgr struct {
 	accountsByUId        map[uint64]*Account
 	accountsByPlatformId map[string]*Account
 	accountsByName       map[string]*Account
@@ -23,8 +23,8 @@ type AccountMgr struct {
 	uuidGen common.UID
 }
 
-func NewAccountMgr() AccountMgr {
-	return AccountMgr{
+func NewAccountMgr() Mgr {
+	return Mgr{
 		accountsByUId:        make(map[uint64]*Account),
 		accountsByPlatformId: make(map[string]*Account),
 		accountsByName:       make(map[string]*Account),
@@ -32,7 +32,7 @@ func NewAccountMgr() AccountMgr {
 	}
 }
 
-func (s *AccountMgr) LoadAllAccount(loader iface.Loader) {
+func (s *Mgr) LoadAllAccount(loader iface.Loader) {
 	var all []table.Account
 	tb := &table.Account{}
 	if tb.Count() > 1 {
@@ -59,7 +59,7 @@ func (s *AccountMgr) LoadAllAccount(loader iface.Loader) {
 	}
 }
 
-func (s *AccountMgr) Login(msg *outer.LoginReq, storer iface.Storer) (acc *Account, new bool) {
+func (s *Mgr) Login(msg *outer.LoginReq, store iface.Storer) (acc *Account, new bool) {
 	platformId := combine(msg.PlatformName, msg.PlatformUUID)
 	if acc = s.accountsByPlatformId[platformId]; acc != nil {
 		return acc, false
@@ -87,7 +87,7 @@ func (s *AccountMgr) Login(msg *outer.LoginReq, storer iface.Storer) (acc *Accou
 	newAcc.serverId = actortype.GameName(int32(newRole.SId))
 
 	// 回存db
-	if err := storer.Store(true, &newAcc.table); err != nil {
+	if err := store.Store(true, &newAcc.table); err != nil {
 		log.Errorw("save failed", "err", err)
 		return nil, false
 	}
