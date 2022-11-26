@@ -17,7 +17,6 @@ var (
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
-
 	flag.Usage = func() { fmt.Println("flag param error") }
 	flag.Parse()
 

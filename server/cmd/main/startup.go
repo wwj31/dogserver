@@ -2,15 +2,18 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
+
 	"github.com/spf13/cast"
 	"github.com/wwj31/dogactor/actor"
 	"github.com/wwj31/dogactor/actor/cluster/mq"
 	"github.com/wwj31/dogactor/actor/cluster/mq/nats"
 	"github.com/wwj31/dogactor/expect"
+	syslog "github.com/wwj31/dogactor/log"
 	"github.com/wwj31/dogactor/logger"
 	"github.com/wwj31/dogactor/tools"
-	"os"
-	"os/signal"
 	"server/common"
 	"server/common/actortype"
 	"server/common/log"
@@ -25,7 +28,6 @@ import (
 	"server/service/gateway"
 	"server/service/login"
 	"server/service/robot"
-	"syscall"
 )
 
 func startup() {
@@ -33,6 +35,7 @@ func startup() {
 		osSignal := make(chan os.Signal)
 		signal.Notify(osSignal, syscall.SIGKILL, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
 
+		syslog.SysLog = nil
 		// init toml file
 		toml.Init(*tomlPath, *appName, *appId)
 
