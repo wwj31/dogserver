@@ -38,7 +38,10 @@ func (s *Game) OnInit() {
 	s.UID = common.NewUID(s.sid)
 	s.onlineMgr = newMgr(s)
 
-	_ = s.System().RegistEvent(s.ID(), actor.EvDelActor{})
+	s.System().OnEvent(s.ID(), func(event actor.EvDelActor) {
+		if actortype.IsActorOf(event.ActorId, actortype.Player_Actor) {
+		}
+	})
 	log.Debugf("game OnInit")
 }
 
@@ -59,14 +62,6 @@ func (s *Game) OnHandleMessage(sourceId, targetId string, msg interface{}) {
 		s.logout(pbMsg)
 	default:
 		s.toPlayer(gSession, actMsg)
-	}
-}
-
-func (s *Game) OnHandleEvent(event interface{}) {
-	switch ev := event.(type) {
-	case actor.EvDelActor:
-		if actortype.IsActorOf(ev.ActorId, actortype.Player_Actor) {
-		}
 	}
 }
 

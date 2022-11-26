@@ -1,14 +1,14 @@
 package log
 
 import (
-	"github.com/wwj31/dogactor/l"
+	"github.com/wwj31/dogactor/logger"
 )
 
-var gLogger *l.Logger
+var gLogger *logger.Logger
 
 func Init(lv int, path, fileName string, dispay bool) {
-	gLogger = l.New(l.Option{
-		Level:          l.Level(lv),
+	gLogger = logger.New(logger.Option{
+		Level:          logger.Level(lv),
 		LogPath:        path,
 		FileName:       fileName,
 		FileMaxAge:     5,
@@ -20,45 +20,45 @@ func Init(lv int, path, fileName string, dispay bool) {
 }
 
 func Debugf(msg string, args ...interface{}) {
-	gLogger.Color(l.Green)
+	gLogger.Color(logger.Green)
 	gLogger.Debugf(msg, args...)
 }
 
 func Infof(msg string, args ...interface{}) {
-	gLogger.Color(l.Gray)
+	gLogger.Color(logger.Gray)
 	gLogger.Infof(msg, args...)
 }
 
 func Warnf(msg string, args ...interface{}) {
-	gLogger.Color(l.Yellow)
+	gLogger.Color(logger.Yellow)
 	gLogger.Warnf(msg, args...)
 	gLogger.CleanColor()
 }
 
 func Errorf(msg string, args ...interface{}) {
-	gLogger.Color(l.Red)
+	gLogger.Color(logger.Red)
 	gLogger.Errorf(msg, args...)
 	gLogger.CleanColor()
 }
 
 func Debugw(msg string, args ...interface{}) {
-	gLogger.Color(l.Green)
+	gLogger.Color(logger.Green)
 	gLogger.Debugw(msg, args...)
 }
 
 func Infow(msg string, args ...interface{}) {
-	gLogger.Color(l.Gray)
+	gLogger.Color(logger.Gray)
 	gLogger.Infow(msg, args...)
 }
 
 func Warnw(msg string, args ...interface{}) {
-	gLogger.Color(l.Yellow)
+	gLogger.Color(logger.Yellow)
 	gLogger.Warnw(msg, args...)
 	gLogger.CleanColor()
 }
 
 func Errorw(msg string, args ...interface{}) {
-	gLogger.Color(l.Red)
+	gLogger.Color(logger.Red)
 	gLogger.Errorw(msg, args...)
 	gLogger.CleanColor()
 }

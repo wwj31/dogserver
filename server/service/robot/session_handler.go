@@ -10,7 +10,7 @@ type SessionHandler struct {
 	client *Robot
 }
 
-func (s SessionHandler) OnSessionCreated(session network.NetSession) {
+func (s SessionHandler) OnSessionCreated(session network.Session) {
 }
 
 func (s SessionHandler) OnSessionClosed() {

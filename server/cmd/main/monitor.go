@@ -1,16 +1,16 @@
 package main
 
 import (
-	"github.com/wwj31/dogactor/l"
+	"github.com/wwj31/dogactor/logger"
 	"server/common"
 	"time"
 )
 
-var monitorLog *l.Logger
+var monitorLog *logger.Logger
 
 func monitor(path, fileName string) {
-	monitorLog = l.New(l.Option{
-		Level:          l.Level(0),
+	monitorLog = logger.New(logger.Option{
+		Level:          logger.Level(0),
 		LogPath:        path,
 		FileName:       fileName,
 		FileMaxAge:     5,

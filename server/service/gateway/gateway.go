@@ -32,8 +32,8 @@ func (s *GateWay) OnInit() {
 	s.sessions = make(map[uint64]*UserSession)
 
 	s.listener = network.StartTcpListen(toml.Get("gateaddr"),
-		func() network.DecodeEncoder { return &network.StreamCode{MaxDecode: int(10 * common.KB)} },
-		func() network.NetSessionHandler { return &UserSession{gateway: s} },
+		func() network.DecodeEncoder { return &network.StreamCode{MaxDecode: uint64(10 * tools.KB)} },
+		func() network.SessionHandler { return &UserSession{gateway: s} },
 	)
 
 	s.AddTimer(tools.XUID(), tools.Now().Add(time.Hour), s.checkDeadSession, -1)

@@ -1,11 +1,11 @@
 package client
 
 import (
-	"github.com/wwj31/dogactor/l"
+	log "github.com/wwj31/dogactor/logger"
 )
 
-var logger = l.New(l.Option{
-	Level:          l.DebugLevel,
+var logger = log.New(log.Option{
+	Level:          log.DebugLevel,
 	LogPath:        "./",
 	FileName:       "client.log",
 	FileMaxAge:     3,

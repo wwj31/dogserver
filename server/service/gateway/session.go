@@ -16,11 +16,11 @@ type UserSession struct {
 	gateway   *GateWay
 	GameId    actortype.ActorId // 处理当前session的game
 	LeaseTime int64
-	network.NetSession
+	network.Session
 }
 
-func (s *UserSession) OnSessionCreated(sess network.NetSession) {
-	s.NetSession = sess
+func (s *UserSession) OnSessionCreated(sess network.Session) {
+	s.Session = sess
 	s.LeaseTime = time.Now().UnixMilli()
 
 	// 这里只做session映射，等待客户端请求登录
