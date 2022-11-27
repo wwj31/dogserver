@@ -32,7 +32,7 @@ func (s *GateWay) OnInit() {
 	s.sessions = make(map[uint64]*UserSession)
 
 	s.listener = network.StartTcpListen(toml.Get("gateaddr"),
-		func() network.DecodeEncoder { return &network.StreamCode{MaxDecode: uint64(10 * tools.KB)} },
+		func() network.DecodeEncoder { return &network.StreamCode{MaxDecode: 100 * tools.KB} },
 		func() network.SessionHandler { return &UserSession{gateway: s} },
 	)
 
@@ -48,7 +48,7 @@ func (s *GateWay) OnInit() {
 // 定期检查并清理死链接
 func (s *GateWay) checkDeadSession(dt time.Duration) {
 	for id, session := range s.sessions {
-		if time.Now().UnixMilli()-session.LeaseTime > int64(time.Hour) {
+		if time.Now().Sub(session.KeepLive) > time.Hour {
 			session.Stop()
 			delete(s.sessions, id)
 			log.Warnw(" find dead session", "sesion", id)
@@ -56,7 +56,7 @@ func (s *GateWay) checkDeadSession(dt time.Duration) {
 	}
 }
 
-// 所有消息，直接转发给用户
+// OnHandleMessage 主要转发消息至玩家client，少量内部消息处理
 func (s *GateWay) OnHandleMessage(sourceId, targetId string, v interface{}) {
 	switch msg := v.(type) {
 	case *inner.GateMsgWrapper:

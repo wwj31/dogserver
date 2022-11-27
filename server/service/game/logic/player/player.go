@@ -148,6 +148,6 @@ func (s Player) checkAlive() {
 	now := tools.NowTime()
 	duration := now - s.keepAlive
 	if duration > int64(aliveDuration) && !s.Online() {
-		s.Exit()
+		//s.Exit()
 	}
 }

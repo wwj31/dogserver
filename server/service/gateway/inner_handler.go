@@ -9,7 +9,7 @@ import (
 // 处理其他服务向gateway发送的消息
 func (s *GateWay) InnerHandler(sourceId string, v interface{}) bool {
 	switch msg := v.(type) {
-	case *inner.L2GTSessionAssignGame: // login分配游戏服，通知gate绑定用户gameActor
+	case *inner.L2GTSessionAssignGame: // login分配游戏服，通知gate绑定用户分配的game
 		s.L2GTSessionAssignGame(msg)
 	case *inner.L2GTSessionDisabled: // login通知gate 用户旧session失效
 		s.L2GTSessionDisabled(sourceId, msg)

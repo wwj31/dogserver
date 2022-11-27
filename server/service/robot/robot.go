@@ -23,6 +23,7 @@ type Robot struct {
 func (s *Robot) OnInit() {
 	for i := 0; i < goc; i++ {
 		acc := fmt.Sprintf("robot_%v", time.Now().Nanosecond())
+		acc = "robot_8760"
 		s.stateLogin(acc)
 		time.Sleep(time.Microsecond)
 	}
@@ -45,7 +46,6 @@ func (s *Robot) stateLogin(acc string) {
 			s.stateExit(acc)
 		})
 	})
-
 }
 
 func (s *Robot) stateExit(acc string) {

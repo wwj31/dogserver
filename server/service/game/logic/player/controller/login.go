@@ -21,6 +21,9 @@ var _ = regist(&localmsg.Login{}, func(player iface.Player, v interface{}) {
 	})
 })
 
+// 玩家离线
 var _ = regist(&inner.GT2GSessionClosed{}, func(player iface.Player, v interface{}) {
 	player.Logout()
+	err := player.Send(player.Gamer().ID(), v)
+	assert(err == nil)
 })

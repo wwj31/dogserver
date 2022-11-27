@@ -34,8 +34,8 @@ func startup() {
 	tools.Try(func() {
 		osSignal := make(chan os.Signal)
 		signal.Notify(osSignal, syscall.SIGKILL, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
+		syslog.SysLog.Level(logger.WarnLevel)
 
-		syslog.SysLog = nil
 		// init toml file
 		toml.Init(*tomlPath, *appName, *appId)
 

@@ -13,15 +13,16 @@ import (
 )
 
 type UserSession struct {
-	gateway   *GateWay
-	GameId    actortype.ActorId // 处理当前session的game
-	LeaseTime int64
+	gateway  *GateWay
+	PlayerId actortype.ActorId // 关联的player
+	GameId   actortype.ActorId // 关联的player所在game
+	KeepLive time.Time
 	network.Session
 }
 
 func (s *UserSession) OnSessionCreated(sess network.Session) {
 	s.Session = sess
-	s.LeaseTime = time.Now().UnixMilli()
+	s.KeepLive = time.Now()
 
 	// 这里只做session映射，等待客户端请求登录
 	_ = s.gateway.Send(s.gateway.ID(), func() {
@@ -38,10 +39,10 @@ func (s *UserSession) OnSessionCreated(sess network.Session) {
 }
 
 func (s *UserSession) OnSessionClosed() {
-	if s.GameId != "" {
-		// 连接断开，通知game
+	if s.PlayerId != "" {
+		// 通知player
 		gSession := common.GateSession(s.gateway.ID(), s.Id())
-		_ = s.gateway.Send(s.GameId, &inner.GT2GSessionClosed{GateSession: gSession.String()})
+		_ = s.gateway.Send(s.PlayerId, &inner.GT2GSessionClosed{GateSession: gSession.String()})
 	}
 
 	_ = s.gateway.Send(s.gateway.ID(), func() {
@@ -72,7 +73,7 @@ func (s *UserSession) OnRecv(data []byte) {
 			ServerTimestamp: tools.Milliseconds(),
 		}, outer.MSG_PONG.Int32())
 		err = s.SendMsg(pong.Buffer())
-		s.LeaseTime = time.Now().UnixMilli()
+		s.KeepLive = time.Now()
 		return
 	}
 
@@ -87,11 +88,30 @@ func (s *UserSession) OnRecv(data []byte) {
 	if outer.MSG_LOGIN_SEGMENT_BEGIN.Int32() <= msgId && msgId <= outer.MSG_LOGIN_SEGMENT_END.Int32() {
 		err = s.gateway.Send(actortype.Login_Actor, wrapperMsg)
 	} else if outer.MSG_GAME_SEGMENT_BEGIN.Int32() <= msgId && msgId <= outer.MSG_GAME_SEGMENT_END.Int32() {
-		if s.GameId == "" {
+		if msgId == outer.MSG_ENTER_GAME_REQ.Int32() {
+			if s.GameId == "" {
+				log.Errorw("enter game msg can't send to the game",
+					"session", s.Id(),
+					"player", s.PlayerId,
+				)
+			}
+
+			err = s.gateway.Send(s.GameId, wrapperMsg)
 			return
 		}
-		err = s.gateway.Send(s.GameId, wrapperMsg)
+
+		if s.PlayerId == "" {
+			log.Errorw("msg can't send to the player",
+				"session", s.Id(),
+				"game", s.GameId,
+				"player", s.PlayerId,
+			)
+			return
+		}
+
+		err = s.gateway.Send(s.PlayerId, wrapperMsg)
 	}
+
 	log.Infow("user msg -> server",
 		"msgId", msgId,
 		"msgName", msgName,

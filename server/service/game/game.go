@@ -104,7 +104,7 @@ func (s *Game) checkAndActivatePlayer(rid uint64, firstLogin bool) actortype.Act
 			playerId,
 			player.New(rid, s, firstLogin),
 			actor.SetMailBoxSize(200),
-			actor.SetLocalized(),
+			//actor.SetLocalized(),
 		)
 
 		err := s.System().Add(playerActor)
@@ -150,15 +150,8 @@ func (s *Game) enterGameReq(gSession common.GSession, msg *outer.EnterGameReq) {
 }
 
 // player offline
-func (s *Game) logout(msg *inner.GT2GSessionClosed) gogo.Message {
-	gSession := common.GSession(msg.GateSession)
-	playerId, ok := s.onlineMgr.PlayerBySession(gSession)
-	if ok {
-		_ = s.Send(playerId, msg)
-	}
-
-	s.onlineMgr.DelGSession(gSession)
-	return nil
+func (s *Game) logout(msg *inner.GT2GSessionClosed) {
+	s.onlineMgr.DelGSession(common.GSession(msg.GateSession))
 }
 
 func (s *Game) toPlayer(gSession common.GSession, msg interface{}) {
