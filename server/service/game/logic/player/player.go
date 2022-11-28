@@ -15,11 +15,6 @@ import (
 	"server/service/game/logic/player/controller"
 )
 
-// 引用DDD 实体、聚合概念
-// model作为功能聚合，player作为聚合根，roleId为聚合根ID
-// 聚合之间通过聚合根关联引用，聚合之间相互访问需先访问聚合根，在导航到相关功能
-// 解决玩家复杂的功能模块相互引用带来的混乱问题，功能模块化，模块间解耦
-
 func New(roleId uint64, gamer iface.Gamer, firstLogin bool) *Player {
 	p := &Player{
 		roleId:     roleId,

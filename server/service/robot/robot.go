@@ -13,7 +13,7 @@ import (
 	"github.com/wwj31/dogactor/tools"
 )
 
-const goc = 1
+const goc = 10
 
 type Robot struct {
 	actor.Base
@@ -22,8 +22,7 @@ type Robot struct {
 
 func (s *Robot) OnInit() {
 	for i := 0; i < goc; i++ {
-		acc := fmt.Sprintf("robot_%v", time.Now().Nanosecond())
-		acc = "robot_8760"
+		acc := fmt.Sprintf("robot_%v", i)
 		s.stateLogin(acc)
 		time.Sleep(time.Microsecond)
 	}

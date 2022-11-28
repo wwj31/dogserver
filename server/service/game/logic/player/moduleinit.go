@@ -10,6 +10,15 @@ import (
 	"server/service/game/logic/player/models/role"
 )
 
+const (
+	modRole = iota
+	modItem
+	modMail
+	modChat
+
+	allmod
+)
+
 func (s *Player) initModule(data *table.Player) {
 	s.models[modRole] = role.New(models.New(s), data.RoleBytes) // 角色
 	s.models[modItem] = item.New(models.New(s), data.ItemBytes) // 道具
