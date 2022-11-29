@@ -57,15 +57,16 @@ func (s *GateWay) checkDeadSession(dt time.Duration) {
 }
 
 // OnHandleMessage 主要转发消息至玩家client，少量内部消息处理
-func (s *GateWay) OnHandleMessage(sourceId, targetId string, v interface{}) {
-	switch msg := v.(type) {
+func (s *GateWay) OnHandle(m actor.Message) {
+	rawMsg := m.RawMsg()
+	switch msg := rawMsg.(type) {
 	case *inner.GateMsgWrapper:
 		// 用户消息直接转发前端
 		actorId, sessionId := common.GSession(msg.GateSession).Split()
 		logInfo := []interface{}{
 			"own", s.ID(),
 			"gSession", msg.GateSession,
-			"sourceId", sourceId,
+			"sourceId", m.GetSourceId(),
 			"msgName", msg.MsgName}
 
 		if s.ID() != actorId {
@@ -83,6 +84,6 @@ func (s *GateWay) OnHandleMessage(sourceId, targetId string, v interface{}) {
 		_ = userSessionHandler.SendMsg(network.CombineMsgWithId(msgId, msg.Data))
 
 	default:
-		s.InnerHandler(sourceId, v) // 内部消息，单独处理
+		s.InnerHandler(m.GetSourceId(), rawMsg) // 内部消息，单独处理
 	}
 }

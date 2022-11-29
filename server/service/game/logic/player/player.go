@@ -71,19 +71,21 @@ func (s *Player) OnInit() {
 	log.Infow("player actor activated", "id", s.ID(), "firstLogin", s.firstLogin)
 }
 
-func (s *Player) OnHandleMessage(sourceId, targetId string, msg interface{}) {
-	name := controller.MsgName(msg)
+func (s *Player) OnHandle(msg actor.Message) {
+	rawMsg := msg.RawMsg()
+	name := controller.MsgName(rawMsg)
 	handle, ok := controller.MsgRouter[name]
 	if !ok {
 		log.Errorw("player undefined route ", "name", name)
 		return
 	}
 
-	handle(s, msg)
-	pt, ok := msg.(proto.Message)
+	handle(s, rawMsg)
+
+	pt, ok := rawMsg.(proto.Message)
 	if ok {
 		msgName := s.System().ProtoIndex().MsgName(pt)
-		outer.Put(msgName, msg)
+		outer.Put(msgName, rawMsg)
 	}
 
 	s.keepAlive = tools.NowTime()

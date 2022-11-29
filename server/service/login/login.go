@@ -33,13 +33,14 @@ func (s *Login) OnInit() {
 	log.Debugf("login OnInit")
 }
 
-func (s *Login) OnHandleMessage(sourceId, targetId string, msg interface{}) {
-	v, _, gSession, err := common.UnwrapperGateMsg(msg)
+func (s *Login) OnHandle(m actor.Message) {
+	rawMsg := m.RawMsg()
+	v, _, gSession, err := common.UnwrapperGateMsg(rawMsg)
 
 	expect.Nil(err)
 	switch msg := v.(type) {
 	case *outer.LoginReq:
-		err = s.LoginReq(sourceId, gSession, msg)
+		err = s.LoginReq(m.GetSourceId(), gSession, msg)
 	default:
 		err = fmt.Errorf("undefined localmsg type %v", msg)
 	}

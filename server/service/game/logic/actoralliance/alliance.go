@@ -24,9 +24,6 @@ func (s *ActorAlliance) OnStop() bool {
 	return true
 }
 
-func (s *ActorAlliance) OnHandleMessage(sourceId, targetId string, msg interface{}) {
+func (s *ActorAlliance) OnHandle(msg actor.Message) {
 
-}
-func (s *ActorAlliance) OnHandleRequest(sourceId, targetId, requestId string, msg interface{}) (respErr error) {
-	return nil
 }

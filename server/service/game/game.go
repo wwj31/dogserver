@@ -51,8 +51,8 @@ func (s *Game) OnStop() bool {
 	return true
 }
 
-func (s *Game) OnHandleMessage(sourceId, targetId string, msg interface{}) {
-	actMsg, _, gSession, err := common.UnwrapperGateMsg(msg)
+func (s *Game) OnHandle(msg actor.Message) {
+	actMsg, _, gSession, err := common.UnwrapperGateMsg(msg.RawMsg())
 	expect.Nil(err)
 
 	switch pbMsg := actMsg.(type) {

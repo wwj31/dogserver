@@ -27,9 +27,6 @@ func (s *ActorMail) OnStop() bool {
 	return true
 }
 
-func (s *ActorMail) OnHandleMessage(sourceId, targetId string, msg interface{}) {
+func (s *ActorMail) OnHandle(msg actor.Message) {
 
-}
-func (s *ActorMail) OnHandleRequest(sourceId, targetId, requestId string, msg interface{}) (respErr error) {
-	return nil
 }

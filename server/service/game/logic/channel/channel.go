@@ -38,23 +38,19 @@ func (s *Channel) OnStop() bool {
 	return true
 }
 
-func (s *Channel) OnHandleMessage(sourceId, targetId string, v interface{}) {
-	switch msg := v.(type) {
+func (s *Channel) OnHandle(m actor.Message) {
+	switch msg := m.RawMsg().(type) {
 	case *inner.LeaveChannelReq:
 		s.leave(msg.Channel, msg.ActorId)
+
 	case *inner.MessageToChannel:
 		bmsg := common.ProtoUnmarshal(msg.Msgname, msg.Data)
 		s.broadcast(msg.Channel, bmsg)
-	}
-}
 
-func (s *Channel) OnHandleRequest(sourceId, targetId, requestId string, v interface{}) (respErr error) {
-	switch msg := v.(type) {
 	case *inner.JoinChannelReq:
 		s.join(msg.Channel, msg.ActorId, common.GSession(msg.GSession))
-		_ = s.Response(requestId, &inner.JoinChannelResp{Error: 0})
+		_ = s.Response(m.GetRequestId(), &inner.JoinChannelResp{})
 	}
-	return nil
 }
 
 func (s *Channel) join(typ common.CHANNEL_TYPE, playerId actortype.ActorId, gs common.GSession) bool {

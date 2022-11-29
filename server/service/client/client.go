@@ -48,8 +48,8 @@ func (s *Client) SendToServer(msgId int32, pb proto.Message) {
 	expect.Nil(err)
 }
 
-func (s *Client) OnHandleMessage(sourceId, targetId string, v interface{}) {
-	switch msg := v.(type) {
+func (s *Client) OnHandle(m actor.Message) {
+	switch msg := m.RawMsg().(type) {
 	case *outer.Pong:
 		logger.Infow("aliving~")
 	case *outer.Fail:

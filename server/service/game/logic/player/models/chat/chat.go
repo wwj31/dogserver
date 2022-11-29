@@ -55,11 +55,11 @@ func (s *Chat) joinWorld() bool {
 }
 
 func (s *Chat) leaveWorld() {
-	msg := &inner.LeaveChannelReq{
+	chatId := actortype.ChatName(s.Player.Gamer().SID())
+	err := s.Player.Send(chatId, &inner.LeaveChannelReq{
 		Channel: common.WORLD,
 		ActorId: s.Player.ID(),
-	}
-	err := s.Player.Send(actortype.ChatName(s.Player.Gamer().SID()), msg)
+	})
 	expect.Nil(err)
 
 }

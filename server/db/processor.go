@@ -52,8 +52,9 @@ func (s *processor) OnInit() {
 	s.set = make(map[string]operator, 10)
 }
 
-func (s *processor) OnHandleMessage(sourceId, targetId string, msg interface{}) {
-	check, ok := msg.(string)
+func (s *processor) OnHandle(m actor.Message) {
+	rawMsg := m.RawMsg()
+	check, ok := rawMsg.(string)
 	if ok && check == notify {
 		if len(s.set) != 0 {
 			s.processing()
@@ -61,9 +62,9 @@ func (s *processor) OnHandleMessage(sourceId, targetId string, msg interface{}) 
 		return
 	}
 
-	newOpera, ex := msg.(operator)
+	newOpera, ex := rawMsg.(operator)
 	if !ex {
-		log.Errorw("processor receive invalid data", "type", reflect.TypeOf(msg).String())
+		log.Errorw("processor receive invalid data", "type", reflect.TypeOf(rawMsg).String())
 		return
 	}
 
