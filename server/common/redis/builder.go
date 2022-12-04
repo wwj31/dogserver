@@ -1,6 +1,8 @@
 package redis
 
 import (
+	"context"
+	"fmt"
 	redisv8 "github.com/go-redis/redis/v8"
 	"github.com/go-redsync/redsync/v4"
 	"github.com/go-redsync/redsync/v4/redis/goredis/v8"
@@ -32,7 +34,7 @@ func Builder() *builder {
 	}
 }
 
-func (b *builder) OK() {
+func (b *builder) Connect() (err error) {
 	once.Do(func() {
 		var client Client
 		if b.clusterMode {
@@ -46,10 +48,15 @@ func (b *builder) OK() {
 		if b.onConnectHande != nil {
 			b.onConnectHande()
 		}
+		ping := client.Ping(context.Background())
+		if ping.Err() != nil {
+			err = fmt.Errorf("redis connect ping err:%v", ping.Err())
+		}
 
 		Ins = client
 		rs = redsync.New(goredis.NewPool(Ins))
 	})
+	return
 }
 
 func (b *builder) Addr(addr ...string) *builder {

@@ -8,7 +8,7 @@ import (
 func TestScript(t *testing.T) {
 	Builder().OnConnect(func() {
 		fmt.Println("redis connect success")
-	}).OK()
+	}).Connect()
 
 	Ins.Set(Ins.Context(), "abc", "123", 0)
 
