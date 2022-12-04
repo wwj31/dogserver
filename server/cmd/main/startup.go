@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"server/common/redis"
 	"server/db/dbmysql"
 	"syscall"
 
@@ -42,6 +43,12 @@ func startup() {
 		// init log file
 		logName := *appName + cast.ToString(appId)
 		log.Init(*logLevel, *logPath, logName, cast.ToBool(toml.Get("dispaly")))
+
+		// init redis
+		if err := redis.Builder().Addr(toml.Get("redisaddr", "localhost:9001")).
+			Connect(); err != nil {
+			panic(err)
+		}
 
 		// load config of excels
 		if path, ok := toml.GetB("configjson"); ok {
