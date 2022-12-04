@@ -1,4 +1,4 @@
-package db
+package dbmysql
 
 import (
 	"database/sql"
@@ -141,7 +141,7 @@ func checkTables(db *gorm.DB) error {
 	var creatErr error
 	for _, t := range table.AllTable {
 		database := db.Set("gorm:table_options", "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4")
-		for i := 1; i <= t.Count(); i++ {
+		for i := 1; i <= t.SplitNum(); i++ {
 			creatErr = database.Table(tableName(t.ModelName(), i)).AutoMigrate(t)
 			if creatErr != nil {
 				return creatErr

@@ -31,7 +31,7 @@ func (s *Account) ModelName() string {
 }
 
 // 分表数量
-func (s *Account) Count() int {
+func (s *Account) SplitNum() int {
 	return split
 }
 

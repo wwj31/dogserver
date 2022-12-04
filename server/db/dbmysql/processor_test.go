@@ -1,4 +1,4 @@
-package db
+package dbmysql
 
 import (
 	"fmt"
@@ -71,5 +71,5 @@ func TestProcessor(t *testing.T) {
 			_ = sys.Send("", process, "", opera)
 		}
 	}()
-	<-sys.CStop
+	<-sys.Stopped
 }

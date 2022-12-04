@@ -8,7 +8,7 @@ import (
 	"server/common/actortype"
 	"server/common/log"
 	"server/common/toml"
-	"server/db"
+	"server/db/dbmysql"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
 	"server/service/game/iface"
@@ -34,7 +34,7 @@ type Game struct {
 }
 
 func (s *Game) OnInit() {
-	s.StoreLoader = db.New(toml.Get("mysql"), toml.Get("database"), s.System())
+	s.StoreLoader = dbmysql.New(toml.Get("mysql"), toml.Get("database"), s.System())
 	s.UID = common.NewUID(s.sid)
 	s.onlineMgr = newMgr(s)
 

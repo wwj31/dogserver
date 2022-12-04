@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"server/db/dbmysql"
 	"syscall"
 
 	"github.com/spf13/cast"
@@ -19,7 +20,6 @@ import (
 	"server/common/log"
 	"server/common/toml"
 	"server/config/confgo"
-	"server/db"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
 	"server/service/client"
@@ -106,7 +106,7 @@ func newProtoIndex() *tools.ProtoIndex {
 }
 
 func newLogin(system *actor.System) {
-	dbIns := db.New(toml.Get("mysql"), toml.Get("database"), system)
+	dbIns := dbmysql.New(toml.Get("mysql"), toml.Get("database"), system)
 	loginActor := login.New(dbIns)
 	expect.Nil(system.Add(actor.New(actortype.Login_Actor, loginActor, actor.SetMailBoxSize(1000))))
 }

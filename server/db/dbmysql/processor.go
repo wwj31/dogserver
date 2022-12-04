@@ -1,4 +1,4 @@
-package db
+package dbmysql
 
 import (
 	"fmt"
@@ -73,7 +73,7 @@ func (s *processor) OnHandle(m actor.Message) {
 }
 
 func (s *processor) mergeAndCover(newOpera operator) {
-	newTableName := tableName(newOpera.tabler.ModelName(), newOpera.tabler.Count())
+	newTableName := tableName(newOpera.tabler.ModelName(), newOpera.tabler.SplitNum())
 	tableNameKey := newTableName + "_" + cast.ToString(newOpera.tabler.Key())
 	if oldOpera, ok := s.set[tableNameKey]; !ok {
 		s.set[tableNameKey] = newOpera
@@ -136,8 +136,8 @@ func (s *processor) processing() {
 
 func (s *processor) execute(op operator) {
 	tn := op.tabler.ModelName()
-	if op.tabler.Count() > 0 {
-		tn = tn + cast.ToString(op.tabler.Count())
+	if op.tabler.SplitNum() > 0 {
+		tn = tn + cast.ToString(op.tabler.SplitNum())
 	}
 	db := s.session.Table(tn)
 	if op.state == _INSERT {

@@ -35,8 +35,8 @@ func NewAccountMgr() Mgr {
 func (s *Mgr) LoadAllAccount(loader iface.Loader) {
 	var all []table.Account
 	tb := &table.Account{}
-	if tb.Count() > 1 {
-		for i := 1; i <= tb.Count(); i++ {
+	if tb.SplitNum() > 1 {
+		for i := 1; i <= tb.SplitNum(); i++ {
 			var ret []table.Account
 			err := loader.LoadAll((tb).ModelName()+cast.ToString(i), &ret)
 			expect.Nil(err)

@@ -11,7 +11,7 @@ func (f Fake) ModelName() string {
 	return reflect.TypeOf(f).Name()
 }
 
-func (f Fake) Count() int {
+func (f Fake) SplitNum() int {
 	return 0
 }
 

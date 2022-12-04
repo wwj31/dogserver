@@ -4,7 +4,7 @@ var AllTable = make(map[string]Tabler)
 
 type Tabler interface {
 	ModelName() string
-	Count() int
+	SplitNum() int
 	Key() uint64
 }
 

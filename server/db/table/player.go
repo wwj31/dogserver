@@ -20,7 +20,7 @@ func (s *Player) ModelName() string {
 }
 
 // 分表数量
-func (s *Player) Count() int {
+func (s *Player) SplitNum() int {
 	return split
 }
 
