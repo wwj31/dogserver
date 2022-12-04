@@ -27,16 +27,14 @@ func New(roleId uint64, gamer iface.Gamer, firstLogin bool) *Player {
 type (
 	Player struct {
 		actor.Base
-		gamer iface.Gamer
-
-		roleId     uint64
-		firstLogin bool
+		gamer      iface.Gamer
 		gSession   common.GSession // 网络session
 		sender     common.SendTools
-
 		playerData table.Player
 		models     [allmod]iface.Modeler // 玩家所有功能模块
 
+		roleId      uint64
+		firstLogin  bool
 		saveTimerId string
 		exitTimerId string
 		keepAlive   int64
