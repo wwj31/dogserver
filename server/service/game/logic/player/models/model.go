@@ -1,6 +1,7 @@
 package models
 
 import (
+	gogo "github.com/gogo/protobuf/proto"
 	"server/service/game/iface"
 )
 
@@ -15,6 +16,8 @@ func New(player iface.Player) Model {
 	return model
 }
 
-func (s *Model) OnSave()   {}
-func (s *Model) OnLogin()  {}
-func (s *Model) OnLogout() {}
+func (s *Model) Data() gogo.Message { return nil }
+
+func (s *Model) OnLoaded()          {}
+func (s *Model) OnLogin(first bool) {}
+func (s *Model) OnLogout()          {}

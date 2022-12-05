@@ -11,13 +11,12 @@ import (
 var _ = regist(&localmsg.Login{}, func(player iface.Player, v interface{}) {
 	msg := v.(localmsg.Login)
 	player.SetGateSession(msg.GSession)
-	isNew := player.IsNewRole()
 	player.Role().SetRoleId(msg.RId)
 	player.Role().SetUId(msg.UId)
 
-	player.Login()
+	player.Login(msg.First)
 	player.Send2Client(&outer.EnterGameResp{
-		NewPlayer: isNew,
+		NewPlayer: msg.First,
 	})
 })
 

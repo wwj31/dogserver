@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/stretchr/testify/assert"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"testing"
 )
@@ -25,15 +26,20 @@ func TestMongo(t *testing.T) {
 		Name string
 		Val  int
 	}
+	id := primitive.NewObjectID().Hex()
 	result, err := Ins.Collection("testColl").InsertOne(context.Background(), &TestColl{
-		Id:   primitive.NewObjectID().Hex(),
+		Id:   id,
 		Name: "fegh",
 		Val:  999,
 	})
+
+	test := &TestColl{}
+	Ins.Collection("testColl").FindOne(context.Background(), bson.M{"_id": id}).Decode(test)
 
 	if err != nil {
 		assert.NoError(t, err)
 		return
 	}
 	fmt.Println(result)
+	fmt.Println("find", test)
 }

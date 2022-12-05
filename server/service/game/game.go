@@ -95,12 +95,12 @@ func (s *Game) MsgToPlayer(rid string, sid uint16, msg gogo.Message) {
 	s.toPlayer("", wrapper)
 }
 
-func (s *Game) checkAndActivatePlayer(rid string, firstLogin bool) actortype.ActorId {
+func (s *Game) checkAndActivatePlayer(rid string) actortype.ActorId {
 	playerId := actortype.PlayerId(rid)
-	if act := s.System().LocalActor(playerId); act == nil || firstLogin {
+	if act := s.System().LocalActor(playerId); act == nil {
 		playerActor := actor.New(
 			playerId,
-			player.New(rid, s, firstLogin),
+			player.New(rid, s),
 			actor.SetMailBoxSize(200),
 			//actor.SetLocalized(),
 		)
@@ -136,11 +136,16 @@ func (s *Game) enterGameReq(gSession common.GSession, msg *outer.EnterGameReq) {
 	if oldSession, ok := s.onlineMgr.GSessionByPlayer(playerId); ok {
 		s.onlineMgr.DelGSession(oldSession)
 	} else {
-		playerId = s.checkAndActivatePlayer(msg.RID, msg.NewPlayer)
+		playerId = s.checkAndActivatePlayer(msg.RID)
 	}
 	s.onlineMgr.AssociateSession(playerId, gSession)
 
-	err := s.Send(playerId, localmsg.Login{GSession: gSession, RId: msg.RID, UId: msg.UID})
+	err := s.Send(playerId, localmsg.Login{
+		GSession: gSession,
+		RId:      msg.RID,
+		UId:      msg.UID,
+		First:    msg.NewPlayer,
+	})
 	if err != nil {
 		log.Errorw("login send error", "rid", msg.RID, "err", err, "playerId", playerId)
 		return
@@ -187,7 +192,7 @@ func (s *Game) toPlayer(gSession common.GSession, msg interface{}) {
 		msg = v
 		actorId = actortype.PlayerId(gameWrapper.RID)
 		// try to reactivate player's actor if actor has exited
-		s.checkAndActivatePlayer(gameWrapper.RID, false)
+		s.checkAndActivatePlayer(gameWrapper.RID)
 	}
 
 	err := s.Send(actorId, msg)

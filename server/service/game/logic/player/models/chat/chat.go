@@ -23,7 +23,7 @@ func New(base models.Model) *Chat {
 	return mod
 }
 
-func (s *Chat) OnLogin() {
+func (s *Chat) OnLogin(first bool) {
 	s.joinWorld()
 }
 

@@ -11,10 +11,9 @@ type (
 		Session
 
 		Send2Client(pb proto.Message)
-		Login()
+		Login(first bool)
 		Logout()
 		Online() bool
-		IsNewRole() bool
 
 		Gamer() Gamer
 		Role() Role

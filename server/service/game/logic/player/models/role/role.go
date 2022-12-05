@@ -2,12 +2,11 @@ package role
 
 import (
 	gogo "github.com/gogo/protobuf/proto"
+	"github.com/wwj31/dogactor/tools"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
 	"server/service/game/logic/player/models"
 	"server/service/game/logic/player/models/role/typ"
-
-	"github.com/wwj31/dogactor/tools"
 )
 
 type Role struct {
@@ -17,19 +16,21 @@ type Role struct {
 
 func New(base models.Model) *Role {
 	mod := &Role{Model: base}
-
-	//first
-	mod.SetAttribute(typ.Level, 1)
-	mod.SetAttribute(typ.Exp, 0)
-	mod.SetAttribute(typ.Glod, 0)
 	return mod
 }
 
-func (s *Role) OnSave() gogo.Message {
+func (s *Role) Data() gogo.Message {
 	return s.role
 }
 
-func (s *Role) OnLogin() {
+func (s *Role) OnLogin(first bool) {
+	if first {
+		//first
+		s.SetAttribute(typ.Level, 1)
+		s.SetAttribute(typ.Exp, 0)
+		s.SetAttribute(typ.Glod, 0)
+	}
+
 	s.role.LoginAt = tools.Milliseconds()
 	s.Player.Send2Client(s.roleInfoPush())
 }

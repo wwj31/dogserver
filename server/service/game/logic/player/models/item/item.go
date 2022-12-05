@@ -20,16 +20,18 @@ func New(base models.Model) *Item {
 		items: &inner.ItemInfo{Items: make(map[int64]int64, 10)},
 	}
 
-	//first
-	mod.Add(map[int64]int64{123: 999})
 	return mod
 }
 
-func (s *Item) OnSave() gogo.Message {
+func (s *Item) Data() gogo.Message {
 	return s.items
 }
 
-func (s *Item) OnLogin() {
+func (s *Item) OnLogin(first bool) {
+	if first {
+		s.Add(map[int64]int64{123: 999})
+	}
+
 	s.Player.Send2Client(s.itemInfoPush())
 }
 

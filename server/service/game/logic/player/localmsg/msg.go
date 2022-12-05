@@ -7,5 +7,6 @@ type (
 		GSession common.GSession
 		RId      string
 		UId      string
+		First    bool
 	}
 )

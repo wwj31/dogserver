@@ -3,26 +3,26 @@ package player
 import (
 	"context"
 	"reflect"
-	"server/common/mongodb"
-	"server/proto/outermsg/outer"
 	"strings"
 	"time"
 
 	"github.com/gogo/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
 	"github.com/wwj31/dogactor/tools"
+	"go.mongodb.org/mongo-driver/bson"
 
 	"server/common"
 	"server/common/log"
+	"server/common/mongodb"
+	"server/proto/outermsg/outer"
 	"server/service/game/iface"
 	"server/service/game/logic/player/controller"
 )
 
-func New(roleId string, gamer iface.Gamer, firstLogin bool) *Player {
+func New(roleId string, gamer iface.Gamer) *Player {
 	p := &Player{
-		roleId:     roleId,
-		gamer:      gamer,
-		firstLogin: firstLogin,
+		roleId: roleId,
+		gamer:  gamer,
 	}
 	return p
 }
@@ -36,7 +36,6 @@ type (
 		models   [allmod]iface.Modeler // 玩家所有功能模块
 
 		roleId      string
-		firstLogin  bool
 		saveTimerId string
 		exitTimerId string
 		keepAlive   int64
@@ -45,12 +44,10 @@ type (
 
 func (s *Player) OnInit() {
 	s.sender = common.NewSendTools(s)
-	if s.firstLogin {
-		defer s.store()
-	}
 
 	// 初始化玩家所有功能模块
 	s.initModule()
+	s.load()
 
 	// 定时回存
 	randTime := tools.Now().Add(time.Second)
@@ -58,7 +55,7 @@ func (s *Player) OnInit() {
 		s.store()
 		s.checkAlive()
 	}, -1)
-	log.Infow("player actor activated", "id", s.ID(), "firstLogin", s.firstLogin)
+	log.Infow("player actor activated", "id", s.ID())
 }
 
 func (s *Player) OnHandle(msg actor.Message) {
@@ -90,9 +87,9 @@ func (s *Player) Send2Client(pb proto.Message) {
 	}
 }
 
-func (s *Player) Login() {
+func (s *Player) Login(first bool) {
 	for _, mod := range s.models {
-		mod.OnLogin()
+		mod.OnLogin(first)
 	}
 
 	s.CancelTimer(s.exitTimerId)
@@ -107,22 +104,45 @@ func (s *Player) Logout() {
 func (s *Player) GateSession() common.GSession            { return s.gSession }
 func (s *Player) SetGateSession(gSession common.GSession) { s.gSession = gSession }
 func (s *Player) Online() bool                            { return s.Role().LoginAt().After(s.Role().LogoutAt()) }
-func (s *Player) IsNewRole() bool                         { return s.firstLogin }
 
-// 回存数据
-func (s *Player) store() {
+func (s *Player) load() {
 	for _, mod := range s.models {
-		doc := mod.OnSave()
+		doc := mod.Data()
 		if doc != nil {
-			str := strings.Split(s.gamer.System().ProtoIndex().MsgName(doc), ".")
+			str := strings.Split(controller.MsgName(doc), ".")
 			if len(str) < 2 {
 				log.Errorw("msg name get failed", "type", reflect.TypeOf(doc).String())
 				continue
 			}
 
-			name := str[1]
-			if _, err := mongodb.Ins.Collection(name).InsertOne(context.Background(), doc); err != nil {
-				log.Errorw("player store failed", "collection", name, "doc", doc.String())
+			result := mongodb.Ins.Collection(str[1]).FindOne(context.Background(), bson.M{"_id": s.roleId})
+			if result.Err() != nil {
+				log.Errorw("player store failed", "collection", str[1], "doc", doc.String())
+				return
+			}
+
+			if err := result.Decode(doc); err != nil {
+				log.Errorw("player store failed", "collection", str[1], "doc", doc.String())
+				return
+			}
+		}
+		mod.OnLoaded()
+	}
+	log.Infow("player loaded model", "RID", s.roleId)
+}
+
+func (s *Player) store() {
+	for _, mod := range s.models {
+		doc := mod.Data()
+		if doc != nil {
+			str := strings.Split(controller.MsgName(doc), ".")
+			if len(str) < 2 {
+				log.Errorw("msg name get failed", "type", reflect.TypeOf(doc).String())
+				continue
+			}
+
+			if _, err := mongodb.Ins.Collection(str[1]).InsertOne(context.Background(), doc); err != nil {
+				log.Errorw("player store failed", "collection", str[1], "doc", doc.String())
 			}
 		}
 	}

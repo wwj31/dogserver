@@ -25,35 +25,33 @@ func New(base models.Model) *Mail {
 		Model: base,
 		zSet:  *rank.New(),
 	}
-
-	// load
-	//by, err := common.UnGZip(bytes)
-	//expect.Nil(err)
-	//err = mail.mailInfo.Unmarshal(by)
-	//expect.Nil(err)
-	//
-	//for _, m := range mail.mailInfo.Mails {
-	//	mail.zSet.Add(m.GetUUID(), m.CreateAt)
-	//}
-
-	// first
-	mail.mailInfo.Mails = make(map[string]*inner.Mail, 4)
-	mail.NewBuilder().
-		SetMailTitle("welcome to dog game!").
-		SetContent("best wish for you !").
-		SetItems(map[int64]int64{10001: 1, 10002: 10}).
-		Build()
-
 	return mail
 }
 
-func (s *Mail) OnSave() gogo.Message {
+func (s *Mail) OnLoaded() {
+	for _, m := range s.mailInfo.Mails {
+		s.zSet.Add(m.GetUUID(), m.CreateAt)
+	}
+}
+
+func (s *Mail) Data() gogo.Message {
 	//_, err := common.GZip(common.ProtoMarshal(&s.mailInfo))
 	//if err != nil {
 	//	log.Errorw("mail zip failed", "err", err)
 	//	return nil
 	//}
 	return s.mailInfo
+}
+
+func (s *Mail) OnLogin(first bool) {
+	if first {
+		s.mailInfo.Mails = make(map[string]*inner.Mail, 4)
+		s.NewBuilder().
+			SetMailTitle("welcome to dog game!").
+			SetContent("best wish for you !").
+			SetItems(map[int64]int64{10001: 1, 10002: 10}).
+			Build()
+	}
 }
 
 func (s *Mail) Add(mail *inner.Mail) {

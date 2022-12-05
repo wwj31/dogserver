@@ -4,13 +4,12 @@ option  go_package = "/inner";
 
 import "gogo.proto";
 
-option (gogoproto.unmarshaler_all) = true;
-option (gogoproto.marshaler_all) = true;
+
 
 message RoleInfo
 {
     string RID     = 1 [(gogoproto.moretags) = "bson:\"_id\""];
-    string UID     = 2;
+    string UID     = 2 ;
     uint64 SId     = 3;
     string Name    = 4;
     string Icon    = 5;
@@ -23,7 +22,8 @@ message RoleInfo
 
 message ItemInfo
 {
-    map<int64,int64> Items = 1;
+    string RID     = 1 [(gogoproto.moretags) = "bson:\"_id\""];
+    map<int64,int64> Items = 2;
 }
 
 message Mail
@@ -40,5 +40,6 @@ message Mail
 
 message MailInfo
 {
-    map<string,Mail> Mails = 1; // 所有邮件
+    string RID             = 1 [(gogoproto.moretags) = "bson:\"_id\""];
+    map<string,Mail> Mails = 2; // 所有邮件
 }
