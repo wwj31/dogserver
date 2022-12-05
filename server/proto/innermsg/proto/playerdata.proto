@@ -2,10 +2,14 @@ syntax = "proto3";
 package inner;
 option  go_package = "/inner";
 
+import "gogo.proto";
+
+option (gogoproto.unmarshaler_all) = true;
+option (gogoproto.marshaler_all) = true;
 
 message RoleInfo
 {
-    string RID     = 1;
+    string RID     = 1 [(gogoproto.moretags) = "bson:\"_id\""];
     string UID     = 2;
     uint64 SId     = 3;
     string Name    = 4;

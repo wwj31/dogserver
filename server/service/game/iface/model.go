@@ -1,7 +1,9 @@
 package iface
 
+import gogo "github.com/gogo/protobuf/proto"
+
 type Modeler interface {
-	OnSave()
+	OnSave() gogo.Message
 	OnLogin()
 	OnLogout()
 }

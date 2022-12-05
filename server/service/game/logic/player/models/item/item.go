@@ -1,6 +1,7 @@
 package item
 
 import (
+	gogo "github.com/gogo/protobuf/proto"
 	"server/common"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
@@ -9,14 +10,14 @@ import (
 
 type Item struct {
 	models.Model
-	items  inner.ItemInfo
+	items  *inner.ItemInfo
 	modify bool
 }
 
 func New(base models.Model) *Item {
 	mod := &Item{
 		Model: base,
-		items: inner.ItemInfo{Items: make(map[int64]int64, 10)},
+		items: &inner.ItemInfo{Items: make(map[int64]int64, 10)},
 	}
 
 	//first
@@ -24,14 +25,15 @@ func New(base models.Model) *Item {
 	return mod
 }
 
+func (s *Item) OnSave() gogo.Message {
+	return s.items
+}
+
 func (s *Item) OnLogin() {
 	s.Player.Send2Client(s.itemInfoPush())
 }
 
 func (s *Item) OnLogout() {
-}
-
-func (s *Item) OnSave() {
 }
 
 func (s *Item) Enough(items map[int64]int64) bool {

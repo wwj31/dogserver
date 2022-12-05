@@ -1,7 +1,11 @@
 package player
 
 import (
+	"context"
+	"reflect"
+	"server/common/mongodb"
 	"server/proto/outermsg/outer"
+	"strings"
 	"time"
 
 	"github.com/gogo/protobuf/proto"
@@ -102,13 +106,25 @@ func (s *Player) Logout() {
 
 func (s *Player) GateSession() common.GSession            { return s.gSession }
 func (s *Player) SetGateSession(gSession common.GSession) { s.gSession = gSession }
-func (s *Player) Online() bool                            { return s.Role().LoginAt() > s.Role().LogoutAt() }
+func (s *Player) Online() bool                            { return s.Role().LoginAt().After(s.Role().LogoutAt()) }
 func (s *Player) IsNewRole() bool                         { return s.firstLogin }
 
 // 回存数据
 func (s *Player) store() {
 	for _, mod := range s.models {
-		mod.OnSave()
+		doc := mod.OnSave()
+		if doc != nil {
+			str := strings.Split(s.gamer.System().ProtoIndex().MsgName(doc), ".")
+			if len(str) < 2 {
+				log.Errorw("msg name get failed", "type", reflect.TypeOf(doc).String())
+				continue
+			}
+
+			name := str[1]
+			if _, err := mongodb.Ins.Collection(name).InsertOne(context.Background(), doc); err != nil {
+				log.Errorw("player store failed", "collection", name, "doc", doc.String())
+			}
+		}
 	}
 	log.Infow("player stored model", "RID", s.roleId)
 }

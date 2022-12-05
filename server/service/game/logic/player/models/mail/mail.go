@@ -1,7 +1,7 @@
 package mail
 
 import (
-	"server/common"
+	gogo "github.com/gogo/protobuf/proto"
 	"server/common/log"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
@@ -17,7 +17,7 @@ type Mail struct {
 	models.Model
 
 	zSet     rank.Rank
-	mailInfo inner.MailInfo
+	mailInfo *inner.MailInfo
 }
 
 func New(base models.Model) *Mail {
@@ -47,12 +47,13 @@ func New(base models.Model) *Mail {
 	return mail
 }
 
-func (s *Mail) OnSave() {
-	_, err := common.GZip(common.ProtoMarshal(&s.mailInfo))
-	if err != nil {
-		log.Errorw("mail zip failed", "err", err)
-		return
-	}
+func (s *Mail) OnSave() gogo.Message {
+	//_, err := common.GZip(common.ProtoMarshal(&s.mailInfo))
+	//if err != nil {
+	//	log.Errorw("mail zip failed", "err", err)
+	//	return nil
+	//}
+	return s.mailInfo
 }
 
 func (s *Mail) Add(mail *inner.Mail) {

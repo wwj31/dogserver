@@ -2,6 +2,7 @@ package iface
 
 import (
 	"server/service/game/logic/player/models/role/typ"
+	"time"
 )
 
 type Role interface {
@@ -15,9 +16,9 @@ type Role interface {
 	Name() string
 	Icon() string
 	Country() string
-	CreateAt() int64
-	LoginAt() int64
-	LogoutAt() int64
+	CreateAt() time.Time
+	LoginAt() time.Time
+	LogoutAt() time.Time
 	Attribute(typ typ.Attribute) int64
 	SetAttribute(typ typ.Attribute, val int64)
 }

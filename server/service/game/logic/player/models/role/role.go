@@ -1,6 +1,7 @@
 package role
 
 import (
+	gogo "github.com/gogo/protobuf/proto"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
 	"server/service/game/logic/player/models"
@@ -24,7 +25,8 @@ func New(base models.Model) *Role {
 	return mod
 }
 
-func (s *Role) OnSave() {
+func (s *Role) OnSave() gogo.Message {
+	return s.role
 }
 
 func (s *Role) OnLogin() {
