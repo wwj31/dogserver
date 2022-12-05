@@ -2,7 +2,7 @@ package dbmysql
 
 import (
 	"fmt"
-	"server/db/table"
+	"server/db/dbmysql/table"
 	"testing"
 	"time"
 

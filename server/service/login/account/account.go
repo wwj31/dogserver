@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"server/common"
 	"server/common/actortype"
-	"server/db/table"
+	"server/db/dbmysql/table"
 )
 
 type Account struct {

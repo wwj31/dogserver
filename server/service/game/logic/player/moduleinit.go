@@ -1,7 +1,7 @@
 package player
 
 import (
-	"server/db/table"
+	"server/db/dbmysql/table"
 	"server/service/game/iface"
 	"server/service/game/logic/player/models"
 	"server/service/game/logic/player/models/chat"

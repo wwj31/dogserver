@@ -3,7 +3,7 @@ package mail
 import (
 	"server/common"
 	"server/common/log"
-	"server/db/table"
+	"server/db/dbmysql/table"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
 	"server/service/game/iface"

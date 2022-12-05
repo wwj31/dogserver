@@ -1,7 +1,7 @@
 package player
 
 import (
-	"server/db/table"
+	"server/db/dbmysql/table"
 	"server/proto/outermsg/outer"
 	"time"
 

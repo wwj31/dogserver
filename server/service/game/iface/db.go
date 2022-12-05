@@ -1,6 +1,8 @@
 package iface
 
-import "server/db/table"
+import (
+	"server/db/dbmysql/table"
+)
 
 type StoreLoader interface {
 	Storer

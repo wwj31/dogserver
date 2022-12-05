@@ -1,7 +1,7 @@
 package models
 
 import (
-	"server/db/table"
+	"server/db/dbmysql/table"
 	"server/service/game/iface"
 )
 

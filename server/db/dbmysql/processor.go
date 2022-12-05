@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"reflect"
 	"server/common/log"
-	"server/db/table"
+	"server/db/dbmysql/table"
 	"sync/atomic"
 
 	"github.com/spf13/cast"

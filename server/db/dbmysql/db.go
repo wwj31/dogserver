@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"server/common/actortype"
-	"server/db/table"
+	"server/db/dbmysql/table"
 	"strconv"
 	"strings"
 	"time"

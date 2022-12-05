@@ -2,7 +2,7 @@ package item
 
 import (
 	"server/common"
-	"server/db/table"
+	"server/db/dbmysql/table"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
 	"server/service/game/logic/player/models"

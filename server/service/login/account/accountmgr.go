@@ -5,7 +5,7 @@ import (
 	"server/common"
 	"server/common/actortype"
 	"server/common/log"
-	"server/db/table"
+	table2 "server/db/dbmysql/table"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
 	"server/service/game/iface"
@@ -33,11 +33,11 @@ func NewAccountMgr() Mgr {
 }
 
 func (s *Mgr) LoadAllAccount(loader iface.Loader) {
-	var all []table.Account
-	tb := &table.Account{}
+	var all []table2.Account
+	tb := &table2.Account{}
 	if tb.SplitNum() > 1 {
 		for i := 1; i <= tb.SplitNum(); i++ {
-			var ret []table.Account
+			var ret []table2.Account
 			err := loader.LoadAll((tb).ModelName()+cast.ToString(i), &ret)
 			expect.Nil(err)
 			all = append(all, ret...)
@@ -82,7 +82,7 @@ func (s *Mgr) Login(msg *outer.LoginReq, store iface.Storer) (acc *Account, new 
 		LoginAt:  0,
 		LogoutAt: 0,
 	}
-	newAcc.table.Roles = table.RoleMap{newRole.RoleId: newRole}
+	newAcc.table.Roles = table2.RoleMap{newRole.RoleId: newRole}
 	newAcc.table.LastRoleId = newRole.RoleId
 	newAcc.serverId = actortype.GameName(int32(newRole.SId))
 
