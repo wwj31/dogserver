@@ -6,12 +6,12 @@ type ModelB struct {
 	name string
 }
 
-func New() *ModelB {
+func New(n string) *ModelB {
 	return &ModelB{
-		name: "B",
+		name: n,
 	}
 }
 
-func (s *ModelB)FB()  {
+func (s *ModelB) FB() {
 	fmt.Println(s.name)
 }

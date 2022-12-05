@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/google/wire"
 	"server/a"
 	"server/b"
@@ -8,20 +9,22 @@ import (
 	"server/iface"
 )
 
-
-
 var MySet = wire.NewSet(
-	wire.Bind(new(iface.A), new(*a.ModelA)),
-	//wire.Bind(new(iface.B), new(*b.ModelB)),
+	wire.Bind(new(iface.A), new(*a.ModelA2)),
+	wire.Bind(new(iface.B), new(*b.ModelB)),
 	//wire.Struct(a.ModelA{}),
 	//wire.Struct(new(b.ModelB)),
 	a.NewA,
 	a.NewA2,
 	b.New,
 	c.New,
-	)
+)
 
-func main()  {
+func main() {
 	modelC := InitModelC()
 	modelC.Print()
+	modelB := InitModelB("abc")
+	fmt.Println(modelB)
+	modelB = InitModelB("abc")
+	fmt.Println(modelB)
 }

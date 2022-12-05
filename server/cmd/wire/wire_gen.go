@@ -8,13 +8,19 @@ package main
 
 import (
 	"server/a"
+	"server/b"
 	"server/c"
 )
 
 // Injectors from wire.go:
 
 func InitModelC() *c.ModelC {
-	modelA := &a.ModelA{}
-	modelC := c.New(modelA)
+	modelA2 := a.NewA2()
+	modelC := c.New(modelA2)
 	return modelC
+}
+
+func InitModelB(str string) *b.ModelB {
+	modelB := b.New(str)
+	return modelB
 }

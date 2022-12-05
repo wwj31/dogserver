@@ -1,22 +1,22 @@
 package c
 
 import (
-	"server/a"
+	"server/iface"
 )
 
 type ModelC struct {
-	a *a.ModelA
+	a iface.A
 	//b *b.ModelB
 }
 
-func New(a *a.ModelA) *ModelC {
+func New(a iface.A) *ModelC {
 	return &ModelC{
-		a:a,
+		a: a,
 		//b:b,
 	}
 }
 
-func (s *ModelC)Print()  {
+func (s *ModelC) Print() {
 	s.a.FA()
 	//s.b.FB()
 }

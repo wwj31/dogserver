@@ -12,19 +12,20 @@ func NewA() *ModelA {
 	}
 }
 
-func (s *ModelA)FA()  {
+func (s *ModelA) FA() {
 	fmt.Println(s.Name)
 }
 
 type ModelA2 struct {
 	name string
 }
+
 func NewA2() *ModelA2 {
 	return &ModelA2{
 		name: "A2",
 	}
 }
 
-func (s *ModelA2)FA()  {
+func (s *ModelA2) FA() {
 	fmt.Println(s.name)
 }
