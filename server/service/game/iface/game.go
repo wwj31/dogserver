@@ -7,13 +7,7 @@ import (
 
 type Gamer interface {
 	actor.Actor
-	UuidGenerator
-	StoreLoader
 
 	SID() uint16
-	MsgToPlayer(rid uint64, sid uint16, msg gogo.Message)
-}
-
-type UuidGenerator interface {
-	GenUuid() uint64
+	MsgToPlayer(rid string, sid uint16, msg gogo.Message)
 }

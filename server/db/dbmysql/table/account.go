@@ -11,7 +11,7 @@ type Account struct {
 	PlatformUUId string `gorm:"index"`       //平台Id
 
 	//最近一次登录角色Id
-	LastRoleId uint64
+	LastRoleId string
 
 	// 一个玩家可以拥有多个角色
 	Roles RoleMap `gorm:"type:json"`

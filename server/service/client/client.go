@@ -17,8 +17,8 @@ const addr = "127.0.0.1:9001"
 type Client struct {
 	actor.Base
 	cli       network.Client
-	UID       uint64
-	RID       uint64
+	UID       string
+	RID       string
 	NewPlayer bool
 	mails     []*outer.Mail
 	ACC       string

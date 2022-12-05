@@ -15,7 +15,7 @@ var _ = regist(&outer.MailListReq{}, func(player iface.Player, v interface{}) {
 
 	for _, mail := range mails {
 		msgMails = append(msgMails, &outer.Mail{
-			Uuid:         mail.Uuid,
+			Uuid:         mail.UUID,
 			CreateAt:     mail.CreateAt,
 			SenderRoleId: mail.SenderRoleId,
 			Name:         mail.Name,

@@ -1,7 +1,6 @@
 package player
 
 import (
-	"server/db/dbmysql/table"
 	"server/proto/outermsg/outer"
 	"time"
 
@@ -15,7 +14,7 @@ import (
 	"server/service/game/logic/player/controller"
 )
 
-func New(roleId uint64, gamer iface.Gamer, firstLogin bool) *Player {
+func New(roleId string, gamer iface.Gamer, firstLogin bool) *Player {
 	p := &Player{
 		roleId:     roleId,
 		gamer:      gamer,
@@ -27,13 +26,12 @@ func New(roleId uint64, gamer iface.Gamer, firstLogin bool) *Player {
 type (
 	Player struct {
 		actor.Base
-		gamer      iface.Gamer
-		gSession   common.GSession // 网络session
-		sender     common.SendTools
-		playerData table.Player
-		models     [allmod]iface.Modeler // 玩家所有功能模块
+		gamer    iface.Gamer
+		gSession common.GSession // 网络session
+		sender   common.SendTools
+		models   [allmod]iface.Modeler // 玩家所有功能模块
 
-		roleId      uint64
+		roleId      string
 		firstLogin  bool
 		saveTimerId string
 		exitTimerId string
@@ -43,22 +41,12 @@ type (
 
 func (s *Player) OnInit() {
 	s.sender = common.NewSendTools(s)
-	s.playerData.RoleId = s.roleId
-	data := table.Player{RoleId: s.roleId}
-
-	// load data if not first login
-	if !s.firstLogin {
-		err := s.gamer.Load(&data)
-		if err != nil {
-			log.Errorw("load player data failed", "err", err)
-			return
-		}
-	} else {
-		defer s.store(true)
+	if s.firstLogin {
+		defer s.store()
 	}
 
 	// 初始化玩家所有功能模块
-	s.initModule(&data)
+	s.initModule()
 
 	// 定时回存
 	randTime := tools.Now().Add(time.Second)
@@ -118,23 +106,10 @@ func (s *Player) Online() bool                            { return s.Role().Logi
 func (s *Player) IsNewRole() bool                         { return s.firstLogin }
 
 // 回存数据
-func (s *Player) store(new ...bool) {
-	data := table.Player{RoleId: s.roleId}
+func (s *Player) store() {
 	for _, mod := range s.models {
-		mod.OnSave(&data)
+		mod.OnSave()
 	}
-
-	var insert bool
-	if len(new) > 0 && new[0] {
-		insert = true
-	}
-
-	err := s.Gamer().Store(insert, &data)
-	if err != nil {
-		log.Errorw("player store err", "err", err)
-		return
-	}
-
 	log.Infow("player stored model", "RID", s.roleId)
 }
 

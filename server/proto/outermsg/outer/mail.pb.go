@@ -111,7 +111,7 @@ func (m *MailListResp) GetMails() []*Mail {
 }
 
 type AddMailNotify struct {
-	Uuid uint64 `protobuf:"varint,1,opt,name=Uuid,proto3" json:"Uuid,omitempty"`
+	Uuid string `protobuf:"bytes,1,opt,name=Uuid,proto3" json:"Uuid,omitempty"`
 }
 
 func (m *AddMailNotify) Reset()         { *m = AddMailNotify{} }
@@ -147,15 +147,15 @@ func (m *AddMailNotify) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_AddMailNotify proto.InternalMessageInfo
 
-func (m *AddMailNotify) GetUuid() uint64 {
+func (m *AddMailNotify) GetUuid() string {
 	if m != nil {
 		return m.Uuid
 	}
-	return 0
+	return ""
 }
 
 type ReadMailReq struct {
-	Uuid uint64 `protobuf:"varint,1,opt,name=Uuid,proto3" json:"Uuid,omitempty"`
+	Uuid string `protobuf:"bytes,1,opt,name=Uuid,proto3" json:"Uuid,omitempty"`
 }
 
 func (m *ReadMailReq) Reset()         { *m = ReadMailReq{} }
@@ -191,15 +191,15 @@ func (m *ReadMailReq) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_ReadMailReq proto.InternalMessageInfo
 
-func (m *ReadMailReq) GetUuid() uint64 {
+func (m *ReadMailReq) GetUuid() string {
 	if m != nil {
 		return m.Uuid
 	}
-	return 0
+	return ""
 }
 
 type ReadMailResp struct {
-	Uuid uint64 `protobuf:"varint,1,opt,name=Uuid,proto3" json:"Uuid,omitempty"`
+	Uuid string `protobuf:"bytes,1,opt,name=Uuid,proto3" json:"Uuid,omitempty"`
 }
 
 func (m *ReadMailResp) Reset()         { *m = ReadMailResp{} }
@@ -235,15 +235,15 @@ func (m *ReadMailResp) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_ReadMailResp proto.InternalMessageInfo
 
-func (m *ReadMailResp) GetUuid() uint64 {
+func (m *ReadMailResp) GetUuid() string {
 	if m != nil {
 		return m.Uuid
 	}
-	return 0
+	return ""
 }
 
 type ReceiveMailItemReq struct {
-	Uuid uint64 `protobuf:"varint,1,opt,name=Uuid,proto3" json:"Uuid,omitempty"`
+	Uuid string `protobuf:"bytes,1,opt,name=Uuid,proto3" json:"Uuid,omitempty"`
 }
 
 func (m *ReceiveMailItemReq) Reset()         { *m = ReceiveMailItemReq{} }
@@ -279,15 +279,15 @@ func (m *ReceiveMailItemReq) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_ReceiveMailItemReq proto.InternalMessageInfo
 
-func (m *ReceiveMailItemReq) GetUuid() uint64 {
+func (m *ReceiveMailItemReq) GetUuid() string {
 	if m != nil {
 		return m.Uuid
 	}
-	return 0
+	return ""
 }
 
 type ReceiveMailItemResp struct {
-	Uuid uint64 `protobuf:"varint,1,opt,name=Uuid,proto3" json:"Uuid,omitempty"`
+	Uuid string `protobuf:"bytes,1,opt,name=Uuid,proto3" json:"Uuid,omitempty"`
 }
 
 func (m *ReceiveMailItemResp) Reset()         { *m = ReceiveMailItemResp{} }
@@ -323,15 +323,15 @@ func (m *ReceiveMailItemResp) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_ReceiveMailItemResp proto.InternalMessageInfo
 
-func (m *ReceiveMailItemResp) GetUuid() uint64 {
+func (m *ReceiveMailItemResp) GetUuid() string {
 	if m != nil {
 		return m.Uuid
 	}
-	return 0
+	return ""
 }
 
 type DeleteMailReq struct {
-	Uuids []uint64 `protobuf:"varint,1,rep,packed,name=Uuids,proto3" json:"Uuids,omitempty"`
+	Uuids []string `protobuf:"bytes,1,rep,name=Uuids,proto3" json:"Uuids,omitempty"`
 }
 
 func (m *DeleteMailReq) Reset()         { *m = DeleteMailReq{} }
@@ -367,7 +367,7 @@ func (m *DeleteMailReq) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_DeleteMailReq proto.InternalMessageInfo
 
-func (m *DeleteMailReq) GetUuids() []uint64 {
+func (m *DeleteMailReq) GetUuids() []string {
 	if m != nil {
 		return m.Uuids
 	}
@@ -397,14 +397,14 @@ var fileDescriptor_7cda5f053e74676b = []byte{
 	0x42, 0x8a, 0x5c, 0xac, 0x20, 0x7e, 0xb1, 0x04, 0xa3, 0x02, 0xb3, 0x06, 0xb7, 0x11, 0xb7, 0x1e,
 	0xd8, 0x64, 0x3d, 0x90, 0x58, 0x10, 0x44, 0x46, 0x49, 0x99, 0x8b, 0xd7, 0x31, 0x25, 0x05, 0xc4,
 	0xf6, 0xcb, 0x2f, 0xc9, 0x4c, 0xab, 0x14, 0x12, 0xe2, 0x62, 0x09, 0x2d, 0xcd, 0x4c, 0x01, 0x1b,
-	0xcc, 0x12, 0x04, 0x66, 0x2b, 0x29, 0x72, 0x71, 0x07, 0xa5, 0x26, 0x82, 0x55, 0x81, 0x2c, 0xc7,
+	0xcc, 0x19, 0x04, 0x66, 0x2b, 0x29, 0x72, 0x71, 0x07, 0xa5, 0x26, 0x82, 0x55, 0x81, 0x2c, 0xc7,
 	0xa6, 0x44, 0x89, 0x8b, 0x07, 0xa1, 0xa4, 0xb8, 0x00, 0xab, 0x1a, 0x0d, 0x2e, 0xa1, 0xa0, 0xd4,
 	0xe4, 0xd4, 0xcc, 0xb2, 0x54, 0x90, 0x32, 0xcf, 0x92, 0xd4, 0x5c, 0x5c, 0xa6, 0x69, 0x72, 0x09,
 	0x63, 0xa8, 0xc4, 0x61, 0xa8, 0x2a, 0x17, 0xaf, 0x4b, 0x6a, 0x4e, 0x6a, 0x49, 0x2a, 0xcc, 0x75,
-	0x22, 0x5c, 0xac, 0x20, 0x09, 0x88, 0xa7, 0x59, 0x82, 0x20, 0x1c, 0x27, 0x85, 0x13, 0x8f, 0xe4,
+	0x22, 0x5c, 0xac, 0x20, 0x09, 0x88, 0xa7, 0x39, 0x83, 0x20, 0x1c, 0x27, 0x85, 0x13, 0x8f, 0xe4,
 	0x18, 0x2f, 0x3c, 0x92, 0x63, 0x7c, 0xf0, 0x48, 0x8e, 0x71, 0xc2, 0x63, 0x39, 0x86, 0x0b, 0x8f,
 	0xe5, 0x18, 0x6e, 0x3c, 0x96, 0x63, 0x88, 0x62, 0xd3, 0x07, 0x87, 0x4a, 0x12, 0x1b, 0x38, 0xa0,
-	0x8d, 0x01, 0x01, 0x00, 0x00, 0xff, 0xff, 0x1d, 0x6b, 0x1f, 0xd4, 0x8b, 0x01, 0x00, 0x00,
+	0x8d, 0x01, 0x01, 0x00, 0x00, 0xff, 0xff, 0xc9, 0xac, 0x33, 0xd1, 0x8b, 0x01, 0x00, 0x00,
 }
 
 func (m *MailListReq) Marshal() (dAtA []byte, err error) {
@@ -492,10 +492,12 @@ func (m *AddMailNotify) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.Uuid != 0 {
-		i = encodeVarintMail(dAtA, i, uint64(m.Uuid))
+	if len(m.Uuid) > 0 {
+		i -= len(m.Uuid)
+		copy(dAtA[i:], m.Uuid)
+		i = encodeVarintMail(dAtA, i, uint64(len(m.Uuid)))
 		i--
-		dAtA[i] = 0x8
+		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
@@ -520,10 +522,12 @@ func (m *ReadMailReq) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.Uuid != 0 {
-		i = encodeVarintMail(dAtA, i, uint64(m.Uuid))
+	if len(m.Uuid) > 0 {
+		i -= len(m.Uuid)
+		copy(dAtA[i:], m.Uuid)
+		i = encodeVarintMail(dAtA, i, uint64(len(m.Uuid)))
 		i--
-		dAtA[i] = 0x8
+		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
@@ -548,10 +552,12 @@ func (m *ReadMailResp) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.Uuid != 0 {
-		i = encodeVarintMail(dAtA, i, uint64(m.Uuid))
+	if len(m.Uuid) > 0 {
+		i -= len(m.Uuid)
+		copy(dAtA[i:], m.Uuid)
+		i = encodeVarintMail(dAtA, i, uint64(len(m.Uuid)))
 		i--
-		dAtA[i] = 0x8
+		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
@@ -576,10 +582,12 @@ func (m *ReceiveMailItemReq) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.Uuid != 0 {
-		i = encodeVarintMail(dAtA, i, uint64(m.Uuid))
+	if len(m.Uuid) > 0 {
+		i -= len(m.Uuid)
+		copy(dAtA[i:], m.Uuid)
+		i = encodeVarintMail(dAtA, i, uint64(len(m.Uuid)))
 		i--
-		dAtA[i] = 0x8
+		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
@@ -604,10 +612,12 @@ func (m *ReceiveMailItemResp) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.Uuid != 0 {
-		i = encodeVarintMail(dAtA, i, uint64(m.Uuid))
+	if len(m.Uuid) > 0 {
+		i -= len(m.Uuid)
+		copy(dAtA[i:], m.Uuid)
+		i = encodeVarintMail(dAtA, i, uint64(len(m.Uuid)))
 		i--
-		dAtA[i] = 0x8
+		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
@@ -633,22 +643,13 @@ func (m *DeleteMailReq) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	var l int
 	_ = l
 	if len(m.Uuids) > 0 {
-		dAtA2 := make([]byte, len(m.Uuids)*10)
-		var j1 int
-		for _, num := range m.Uuids {
-			for num >= 1<<7 {
-				dAtA2[j1] = uint8(uint64(num)&0x7f | 0x80)
-				num >>= 7
-				j1++
-			}
-			dAtA2[j1] = uint8(num)
-			j1++
+		for iNdEx := len(m.Uuids) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.Uuids[iNdEx])
+			copy(dAtA[i:], m.Uuids[iNdEx])
+			i = encodeVarintMail(dAtA, i, uint64(len(m.Uuids[iNdEx])))
+			i--
+			dAtA[i] = 0xa
 		}
-		i -= j1
-		copy(dAtA[i:], dAtA2[:j1])
-		i = encodeVarintMail(dAtA, i, uint64(j1))
-		i--
-		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
@@ -697,8 +698,9 @@ func (m *AddMailNotify) Size() (n int) {
 	}
 	var l int
 	_ = l
-	if m.Uuid != 0 {
-		n += 1 + sovMail(uint64(m.Uuid))
+	l = len(m.Uuid)
+	if l > 0 {
+		n += 1 + l + sovMail(uint64(l))
 	}
 	return n
 }
@@ -709,8 +711,9 @@ func (m *ReadMailReq) Size() (n int) {
 	}
 	var l int
 	_ = l
-	if m.Uuid != 0 {
-		n += 1 + sovMail(uint64(m.Uuid))
+	l = len(m.Uuid)
+	if l > 0 {
+		n += 1 + l + sovMail(uint64(l))
 	}
 	return n
 }
@@ -721,8 +724,9 @@ func (m *ReadMailResp) Size() (n int) {
 	}
 	var l int
 	_ = l
-	if m.Uuid != 0 {
-		n += 1 + sovMail(uint64(m.Uuid))
+	l = len(m.Uuid)
+	if l > 0 {
+		n += 1 + l + sovMail(uint64(l))
 	}
 	return n
 }
@@ -733,8 +737,9 @@ func (m *ReceiveMailItemReq) Size() (n int) {
 	}
 	var l int
 	_ = l
-	if m.Uuid != 0 {
-		n += 1 + sovMail(uint64(m.Uuid))
+	l = len(m.Uuid)
+	if l > 0 {
+		n += 1 + l + sovMail(uint64(l))
 	}
 	return n
 }
@@ -745,8 +750,9 @@ func (m *ReceiveMailItemResp) Size() (n int) {
 	}
 	var l int
 	_ = l
-	if m.Uuid != 0 {
-		n += 1 + sovMail(uint64(m.Uuid))
+	l = len(m.Uuid)
+	if l > 0 {
+		n += 1 + l + sovMail(uint64(l))
 	}
 	return n
 }
@@ -758,11 +764,10 @@ func (m *DeleteMailReq) Size() (n int) {
 	var l int
 	_ = l
 	if len(m.Uuids) > 0 {
-		l = 0
-		for _, e := range m.Uuids {
-			l += sovMail(uint64(e))
+		for _, s := range m.Uuids {
+			l = len(s)
+			n += 1 + l + sovMail(uint64(l))
 		}
-		n += 1 + sovMail(uint64(l)) + l
 	}
 	return n
 }
@@ -956,10 +961,10 @@ func (m *AddMailNotify) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 0 {
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Uuid", wireType)
 			}
-			m.Uuid = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowMail
@@ -969,11 +974,24 @@ func (m *AddMailNotify) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Uuid |= uint64(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthMail
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthMail
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Uuid = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipMail(dAtA[iNdEx:])
@@ -1025,10 +1043,10 @@ func (m *ReadMailReq) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 0 {
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Uuid", wireType)
 			}
-			m.Uuid = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowMail
@@ -1038,11 +1056,24 @@ func (m *ReadMailReq) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Uuid |= uint64(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthMail
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthMail
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Uuid = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipMail(dAtA[iNdEx:])
@@ -1094,10 +1125,10 @@ func (m *ReadMailResp) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 0 {
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Uuid", wireType)
 			}
-			m.Uuid = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowMail
@@ -1107,11 +1138,24 @@ func (m *ReadMailResp) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Uuid |= uint64(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthMail
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthMail
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Uuid = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipMail(dAtA[iNdEx:])
@@ -1163,10 +1207,10 @@ func (m *ReceiveMailItemReq) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 0 {
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Uuid", wireType)
 			}
-			m.Uuid = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowMail
@@ -1176,11 +1220,24 @@ func (m *ReceiveMailItemReq) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Uuid |= uint64(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthMail
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthMail
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Uuid = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipMail(dAtA[iNdEx:])
@@ -1232,10 +1289,10 @@ func (m *ReceiveMailItemResp) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 0 {
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Uuid", wireType)
 			}
-			m.Uuid = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowMail
@@ -1245,11 +1302,24 @@ func (m *ReceiveMailItemResp) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Uuid |= uint64(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthMail
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthMail
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Uuid = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipMail(dAtA[iNdEx:])
@@ -1301,81 +1371,37 @@ func (m *DeleteMailReq) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType == 0 {
-				var v uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return ErrIntOverflowMail
-					}
-					if iNdEx >= l {
-						return io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					v |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				m.Uuids = append(m.Uuids, v)
-			} else if wireType == 2 {
-				var packedLen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return ErrIntOverflowMail
-					}
-					if iNdEx >= l {
-						return io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					packedLen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if packedLen < 0 {
-					return ErrInvalidLengthMail
-				}
-				postIndex := iNdEx + packedLen
-				if postIndex < 0 {
-					return ErrInvalidLengthMail
-				}
-				if postIndex > l {
-					return io.ErrUnexpectedEOF
-				}
-				var elementCount int
-				var count int
-				for _, integer := range dAtA[iNdEx:postIndex] {
-					if integer < 128 {
-						count++
-					}
-				}
-				elementCount = count
-				if elementCount != 0 && len(m.Uuids) == 0 {
-					m.Uuids = make([]uint64, 0, elementCount)
-				}
-				for iNdEx < postIndex {
-					var v uint64
-					for shift := uint(0); ; shift += 7 {
-						if shift >= 64 {
-							return ErrIntOverflowMail
-						}
-						if iNdEx >= l {
-							return io.ErrUnexpectedEOF
-						}
-						b := dAtA[iNdEx]
-						iNdEx++
-						v |= uint64(b&0x7F) << shift
-						if b < 0x80 {
-							break
-						}
-					}
-					m.Uuids = append(m.Uuids, v)
-				}
-			} else {
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Uuids", wireType)
 			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMail
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthMail
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthMail
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Uuids = append(m.Uuids, string(dAtA[iNdEx:postIndex]))
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipMail(dAtA[iNdEx:])

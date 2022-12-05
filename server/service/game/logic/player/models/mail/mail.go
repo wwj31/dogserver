@@ -3,7 +3,6 @@ package mail
 import (
 	"server/common"
 	"server/common/log"
-	"server/db/dbmysql/table"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
 	"server/service/game/iface"
@@ -11,7 +10,6 @@ import (
 
 	"github.com/spf13/cast"
 	"github.com/wwj31/dogactor/container/rank"
-	"github.com/wwj31/dogactor/expect"
 	"github.com/wwj31/dogactor/tools"
 )
 
@@ -22,54 +20,52 @@ type Mail struct {
 	mailInfo inner.MailInfo
 }
 
-func New(base models.Model, bytes []byte) *Mail {
+func New(base models.Model) *Mail {
 	mail := &Mail{
 		Model: base,
 		zSet:  *rank.New(),
 	}
 
-	if bytes != nil {
-		by, err := common.UnGZip(bytes)
-		expect.Nil(err)
-		err = mail.mailInfo.Unmarshal(by)
-		expect.Nil(err)
+	// load
+	//by, err := common.UnGZip(bytes)
+	//expect.Nil(err)
+	//err = mail.mailInfo.Unmarshal(by)
+	//expect.Nil(err)
+	//
+	//for _, m := range mail.mailInfo.Mails {
+	//	mail.zSet.Add(m.GetUUID(), m.CreateAt)
+	//}
 
-		for _, m := range mail.mailInfo.Mails {
-			mail.zSet.Add(cast.ToString(m.Uuid), m.CreateAt)
-		}
-	} else {
-		mail.mailInfo.Mails = make(map[uint64]*inner.Mail, 4)
-		mail.NewBuilder().
-			SetMailTitle("welcome to dog game!").
-			SetSender(0).
-			SetContent("best wish for you !").
-			SetItems(map[int64]int64{10001: 1, 10002: 10}).
-			Build()
-	}
+	// first
+	mail.mailInfo.Mails = make(map[string]*inner.Mail, 4)
+	mail.NewBuilder().
+		SetMailTitle("welcome to dog game!").
+		SetContent("best wish for you !").
+		SetItems(map[int64]int64{10001: 1, 10002: 10}).
+		Build()
 
 	return mail
 }
 
-func (s *Mail) OnSave(data *table.Player) {
-	bytes, err := common.GZip(common.ProtoMarshal(&s.mailInfo))
+func (s *Mail) OnSave() {
+	_, err := common.GZip(common.ProtoMarshal(&s.mailInfo))
 	if err != nil {
 		log.Errorw("mail zip failed", "err", err)
 		return
 	}
-	data.MailBytes = bytes
 }
 
 func (s *Mail) Add(mail *inner.Mail) {
-	s.mailInfo.Mails[mail.Uuid] = mail
-	s.zSet.Add(cast.ToString(mail.Uuid), mail.CreateAt)
-	s.Player.Send2Client(&outer.AddMailNotify{Uuid: mail.Uuid})
+	s.mailInfo.Mails[mail.GetUUID()] = mail
+	s.zSet.Add(cast.ToString(mail.GetUUID()), mail.CreateAt)
+	s.Player.Send2Client(&outer.AddMailNotify{Uuid: mail.GetUUID()})
 	log.Debugw("add actormail ", "player", s.Player.Role().RoleId(), "actormail", mail.Title, "items", mail.Items)
 }
 
 func (s *Mail) NewBuilder() iface.MailBuilder {
 	return &Builder{
 		mail: &inner.Mail{
-			Uuid:     s.Player.Gamer().GenUuid(),
+			UUID:     tools.XUID(),
 			CreateAt: tools.NowTime(),
 			Status:   0,
 		},
@@ -82,7 +78,7 @@ func (s *Mail) Mails(count, limit int32) []*inner.Mail {
 	keys := s.zSet.Get(int(count+1), int(count+limit))
 
 	for _, k := range keys {
-		mailId := cast.ToUint64(k.Key)
+		mailId := k.Key
 		mail, ok := s.mailInfo.Mails[mailId]
 		if !ok {
 			log.Warnw("can not found actor mail key:%v", mailId)
@@ -93,7 +89,7 @@ func (s *Mail) Mails(count, limit int32) []*inner.Mail {
 	return mails
 }
 
-func (s *Mail) Read(uuid uint64) {
+func (s *Mail) Read(uuid string) {
 	mail, ok := s.mailInfo.Mails[uuid]
 	if !ok {
 		log.Warnw("Read can not find mail", "uuid", uuid, "roleId", s.Player.Role().RoleId())
@@ -102,7 +98,7 @@ func (s *Mail) Read(uuid uint64) {
 	mail.Status = 1
 }
 
-func (s *Mail) ReceiveItem(uuid uint64) {
+func (s *Mail) ReceiveItem(uuid string) {
 	mail, ok := s.mailInfo.Mails[uuid]
 	if !ok {
 		log.Warnw("ReceiveItem can not find mail", "uuid", uuid, "roleId", s.Player.Role().RoleId())
@@ -117,7 +113,7 @@ func (s *Mail) ReceiveItem(uuid uint64) {
 	mail.Status = 2
 }
 
-func (s *Mail) Delete(uuids ...uint64) {
+func (s *Mail) Delete(uuids ...string) {
 	for _, uuid := range uuids {
 		s.zSet.Del(cast.ToString(uuid))
 		delete(s.mailInfo.Mails, uuid)

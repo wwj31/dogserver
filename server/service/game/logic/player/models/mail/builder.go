@@ -32,7 +32,7 @@ func (s *Builder) SetItems(items map[int64]int64) iface.MailBuilder {
 	}
 	return s
 }
-func (s *Builder) SetSender(RoleId uint64) iface.MailBuilder {
+func (s *Builder) SetSender(RoleId string) iface.MailBuilder {
 	s.mail.SenderRoleId = RoleId
 	return s
 }

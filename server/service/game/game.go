@@ -26,7 +26,6 @@ func New(serverId uint16) *Game {
 
 type Game struct {
 	actor.Base
-	common.UID
 	iface.StoreLoader
 
 	sid       uint16 // serverId
@@ -35,7 +34,6 @@ type Game struct {
 
 func (s *Game) OnInit() {
 	s.StoreLoader = dbmysql.New(toml.Get("mysql"), toml.Get("database"), s.System())
-	s.UID = common.NewUID(s.sid)
 	s.onlineMgr = newMgr(s)
 
 	s.System().OnEvent(s.ID(), func(event actor.EvDelActor) {
@@ -71,7 +69,7 @@ func (s *Game) SID() uint16 {
 }
 
 // MsgToPlayer send msg to player actor
-func (s *Game) MsgToPlayer(rid uint64, sid uint16, msg gogo.Message) {
+func (s *Game) MsgToPlayer(rid string, sid uint16, msg gogo.Message) {
 	actorId := actortype.PlayerId(rid)
 	gSession, ok := s.onlineMgr.GSessionByPlayer(actorId)
 	if ok {
@@ -97,7 +95,7 @@ func (s *Game) MsgToPlayer(rid uint64, sid uint16, msg gogo.Message) {
 	s.toPlayer("", wrapper)
 }
 
-func (s *Game) checkAndActivatePlayer(rid uint64, firstLogin bool) actortype.ActorId {
+func (s *Game) checkAndActivatePlayer(rid string, firstLogin bool) actortype.ActorId {
 	playerId := actortype.PlayerId(rid)
 	if act := s.System().LocalActor(playerId); act == nil || firstLogin {
 		playerActor := actor.New(

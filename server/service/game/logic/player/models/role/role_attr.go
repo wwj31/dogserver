@@ -4,10 +4,10 @@ import (
 	"server/service/game/logic/player/models/role/typ"
 )
 
-func (s *Role) RoleId() uint64     { return s.role.RoleId }
-func (s *Role) SetRoleId(v uint64) { s.role.RoleId = v }
-func (s *Role) UUId() uint64       { return s.role.UUId }
-func (s *Role) SetUUId(v uint64)   { s.role.UUId = v }
+func (s *Role) RoleId() string     { return s.role.RID }
+func (s *Role) SetRoleId(v string) { s.role.RID = v }
+func (s *Role) UId() string        { return s.role.UID }
+func (s *Role) SetUId(v string)    { s.role.UID = v }
 func (s *Role) SId() uint64        { return s.role.SId }
 func (s *Role) Name() string       { return s.role.Name }
 func (s *Role) Icon() string       { return s.role.Icon }

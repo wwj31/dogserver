@@ -13,8 +13,8 @@ type Account struct {
 	gSession common.GSession
 }
 
-func (s *Account) UUId() uint64                   { return s.table.UUId }
-func (s *Account) LastRoleId() uint64             { return s.table.LastRoleId }
+func (s *Account) UUId() string                   { return "s.table.UUId" }
+func (s *Account) LastRoleId() string             { return s.table.LastRoleId }
 func (s *Account) ServerId() actortype.ActorId    { return s.serverId }
 func (s *Account) GSession() common.GSession      { return s.gSession }
 func (s *Account) SetGSession(gs common.GSession) { s.gSession = gs }

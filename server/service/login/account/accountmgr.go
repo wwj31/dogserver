@@ -51,11 +51,11 @@ func (s *Mgr) LoadAllAccount(loader iface.Loader) {
 		account := &Account{table: data}
 		s.accountsByPlatformId[account.table.PlatformUUId] = account
 		s.accountsByUId[account.table.UUId] = account
-		lastLoginRole := account.table.Roles[account.table.LastRoleId]
-		if lastLoginRole != nil {
-			s.accountsByName[lastLoginRole.Name] = account
-			account.serverId = actortype.GameName(int32(lastLoginRole.SId))
-		}
+		//lastLoginRole := account.table.Roles[account.table.LastRoleId]
+		//if lastLoginRole != nil {
+		//	s.accountsByName[lastLoginRole.Name] = account
+		//	account.serverId = actortype.GameName(int32(lastLoginRole.SId))
+		//}
 	}
 }
 
@@ -72,8 +72,8 @@ func (s *Mgr) Login(msg *outer.LoginReq, store iface.Storer) (acc *Account, new 
 	newAcc.table.ClientVersion = msg.ClientVersion
 
 	newRole := &inner.RoleInfo{
-		UUId:     newAcc.table.UUId,
-		RoleId:   s.uuidGen.GenUuid(),
+		//UID:      newAcc.table.UUId,
+		//RID:      s.uuidGen.GenUuid(),
 		SId:      1,
 		Name:     fmt.Sprintf("player_%v", newAcc.table.UUId),
 		Icon:     "Avatar",
@@ -82,8 +82,8 @@ func (s *Mgr) Login(msg *outer.LoginReq, store iface.Storer) (acc *Account, new 
 		LoginAt:  0,
 		LogoutAt: 0,
 	}
-	newAcc.table.Roles = table2.RoleMap{newRole.RoleId: newRole}
-	newAcc.table.LastRoleId = newRole.RoleId
+	//newAcc.table.Roles = table2.RoleMap{newRole.RoleId: newRole}
+	//newAcc.table.LastRoleId = newRole.RoleId
 	newAcc.serverId = actortype.GameName(int32(newRole.SId))
 
 	// 回存db

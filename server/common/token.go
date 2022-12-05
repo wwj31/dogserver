@@ -16,7 +16,7 @@ func LoginToken(req *outer.LoginReq) string {
 	return hex.EncodeToString(sum[:])
 }
 
-func LoginMD5(uid, rid uint64, new bool) string {
+func LoginMD5(uid, rid string, new bool) string {
 	sum := md5.Sum([]byte(fmt.Sprintf("%v%v%v%v", uid, rid, new, key)))
 	return hex.EncodeToString(sum[:])
 }

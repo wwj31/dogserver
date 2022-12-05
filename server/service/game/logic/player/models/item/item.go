@@ -2,12 +2,9 @@ package item
 
 import (
 	"server/common"
-	"server/db/dbmysql/table"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
 	"server/service/game/logic/player/models"
-
-	"github.com/wwj31/dogactor/expect"
 )
 
 type Item struct {
@@ -16,18 +13,14 @@ type Item struct {
 	modify bool
 }
 
-func New(base models.Model, bytes []byte) *Item {
+func New(base models.Model) *Item {
 	mod := &Item{
 		Model: base,
 		items: inner.ItemInfo{Items: make(map[int64]int64, 10)},
 	}
 
-	if bytes != nil {
-		err := mod.items.Unmarshal(bytes)
-		expect.Nil(err)
-	} else {
-		mod.Add(map[int64]int64{123: 999})
-	}
+	//first
+	mod.Add(map[int64]int64{123: 999})
 	return mod
 }
 
@@ -36,14 +29,9 @@ func (s *Item) OnLogin() {
 }
 
 func (s *Item) OnLogout() {
-
 }
 
-func (s *Item) OnSave(data *table.Player) {
-	if s.modify {
-		data.ItemBytes = common.ProtoMarshal(&s.items)
-	}
-	s.modify = false
+func (s *Item) OnSave() {
 }
 
 func (s *Item) Enough(items map[int64]int64) bool {

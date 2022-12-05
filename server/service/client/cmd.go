@@ -89,7 +89,7 @@ func (s *Client) readMail(arg ...string) {
 	if len(arg) != 1 {
 		return
 	}
-	mailId := cast.ToUint64(arg[0])
+	mailId := arg[0]
 	msg := &outer.ReadMailReq{
 		Uuid: mailId,
 	}
@@ -100,7 +100,7 @@ func (s *Client) recvMail(arg ...string) {
 	if len(arg) != 1 {
 		return
 	}
-	mailId := cast.ToUint64(arg[0])
+	mailId := arg[0]
 	msg := &outer.ReceiveMailItemReq{
 		Uuid: mailId,
 	}
@@ -111,9 +111,9 @@ func (s *Client) delMail(arg ...string) {
 	if len(arg) != 1 {
 		return
 	}
-	mailId := cast.ToUint64(arg[0])
+	mailId := arg[0]
 	msg := &outer.DeleteMailReq{
-		Uuids: []uint64{mailId},
+		Uuids: []string{mailId},
 	}
 	s.SendToServer(outer.MSG_DELETE_MAIL_REQ.Int32(), msg)
 }

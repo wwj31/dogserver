@@ -2,9 +2,6 @@ syntax = "proto3";
 package outer;
 option  go_package = "/outer";
 
-import "error.proto";
-import "common.proto";
-
 
 message Ping
 {
@@ -33,16 +30,16 @@ message LoginReq
 
 message LoginResp
 {
-    uint64  UID          = 1;
-    uint64  RID          = 2;
+    string  UID          = 1;
+    string  RID          = 2;
     bool    NewPlayer    = 3;
     string  Token        = 4;
 }
 
 message EnterGameReq
 {
-    uint64  UID        = 1;
-    uint64  RID        = 2;
+    string  UID        = 1;
+    string  RID        = 2;
     bool    NewPlayer  = 3;
     string  Checksum   = 4;
 }
@@ -56,8 +53,8 @@ message EnterGameResp
 // 角色信息
 message RoleInfoPush
 {
-    uint64  UID     = 1;
-    uint64  RID     = 2;
+    string  UID     = 1;
+    string  RID     = 2;
     uint64  SId     = 3;
     string  Name    = 4;
     string  Icon    = 5;

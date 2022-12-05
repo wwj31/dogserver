@@ -6,10 +6,10 @@ import (
 
 type Role interface {
 	Modeler
-	RoleId() uint64
-	SetRoleId(v uint64)
-	UUId() uint64
-	SetUUId(v uint64)
+	RoleId() string
+	SetRoleId(v string)
+	UId() string
+	SetUId(v string)
 
 	SId() uint64
 	Name() string

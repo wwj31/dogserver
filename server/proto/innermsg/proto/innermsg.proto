@@ -16,7 +16,7 @@ message GateMsgWrapper
 // 其他actor和player通信，由game转发
 message GameMsgWrapper
 {
-    uint64  RID        = 1;
+    string RID         = 1;
     string MsgName     = 2;
     bytes  Data        = 3;
 }
@@ -37,9 +37,9 @@ message L2GTSessionAssignGame
 // game通知login，玩家离线
 message G2LRoleOffline
 {
-    uint64  UID         = 1;
-    uint64  RID         = 2;
-    string GateSession = 3; //
+    string  UID         = 1;
+    string  RID         = 2;
+    string GateSession  = 3; //
 }
 
 // game通知login，玩家离线

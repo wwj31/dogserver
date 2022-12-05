@@ -1,7 +1,6 @@
 package models
 
 import (
-	"server/db/dbmysql/table"
 	"server/service/game/iface"
 )
 
@@ -17,7 +16,7 @@ func New(player iface.Player) Model {
 }
 
 // OnSave 功能模块回存时触发回调，将对应功能数据放入data中
-func (s *Model) OnSave(data *table.Player) {}
+func (s *Model) OnSave() {}
 
 // OnLogin 玩家登录触发
 func (s *Model) OnLogin() {}
