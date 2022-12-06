@@ -1,14 +1,13 @@
 package chat
 
 import (
+	gogo "github.com/gogo/protobuf/proto"
+	"github.com/wwj31/dogactor/expect"
+
 	"server/common"
 	"server/common/actortype"
 	"server/proto/innermsg/inner"
 	"server/service/game/logic/player/models"
-
-	"github.com/wwj31/dogactor/expect"
-
-	gogo "github.com/gogo/protobuf/proto"
 )
 
 type Chat struct {
