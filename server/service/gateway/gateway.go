@@ -67,7 +67,8 @@ func (s *GateWay) OnHandle(m actor.Message) {
 			"own", s.ID(),
 			"gSession", msg.GateSession,
 			"sourceId", m.GetSourceId(),
-			"msgName", msg.MsgName}
+			"msgName", msg.MsgName,
+		}
 
 		if s.ID() != actorId {
 			log.Errorw("session disabled gate is not own", logInfo...)
