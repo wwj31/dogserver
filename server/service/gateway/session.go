@@ -15,7 +15,6 @@ import (
 type UserSession struct {
 	gateway  *GateWay
 	PlayerId actortype.ActorId // 关联的player
-	GameId   actortype.ActorId // 关联的player所在game
 	KeepLive time.Time
 	network.Session
 }
@@ -88,27 +87,6 @@ func (s *UserSession) OnRecv(data []byte) {
 	if outer.MSG_LOGIN_SEGMENT_BEGIN.Int32() <= msgId && msgId <= outer.MSG_LOGIN_SEGMENT_END.Int32() {
 		err = s.gateway.Send(actortype.Login_Actor, wrapperMsg)
 	} else if outer.MSG_GAME_SEGMENT_BEGIN.Int32() <= msgId && msgId <= outer.MSG_GAME_SEGMENT_END.Int32() {
-		if msgId == outer.MSG_ENTER_GAME_REQ.Int32() {
-			if s.GameId == "" {
-				log.Errorw("enter game msg can't send to the game",
-					"session", s.Id(),
-					"player", s.PlayerId,
-				)
-			}
-
-			err = s.gateway.Send(s.GameId, wrapperMsg)
-			return
-		}
-
-		if s.PlayerId == "" {
-			log.Errorw("msg can't send to the player",
-				"session", s.Id(),
-				"game", s.GameId,
-				"player", s.PlayerId,
-			)
-			return
-		}
-
 		err = s.gateway.Send(s.PlayerId, wrapperMsg)
 	}
 

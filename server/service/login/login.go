@@ -59,18 +59,8 @@ func (s *Login) LoginReq(sourceId string, gSession common.GSession, msg *outer.L
 
 	acc, newPlayer := s.accountMgr.Login(msg, s.storage)
 
-	// 新、旧session不相同做顶号处理
-	if acc.GSession().Valid() && acc.GSession() != gSession {
-		oldId, _ := acc.GSession().Split()
-		_ = s.Send2Gate(oldId, &inner.L2GTSessionDisabled{GateSession: acc.GSession().String()})
-	}
-	acc.SetGSession(gSession)
-
-	// 通知gate绑定角色服务器
-	err := s.Send2Gate(sourceId, &inner.L2GTSessionAssignGame{
-		GateSession:  gSession.String(),
-		GameServerId: acc.ServerId(),
-	})
+	// 通知game拉起player
+	err := s.Send(acc.Game(), &inner.PullPlayer{RID: acc.LastRoleId()})
 	if err != nil {
 		return err
 	}

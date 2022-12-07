@@ -14,9 +14,9 @@ type Account struct {
 }
 
 func (s *Account) UUId() string                   { return "s.table.UUId" }
-func (s *Account) LastRoleId() string             { return s.table.LastRoleId }
-func (s *Account) ServerId() actortype.ActorId    { return s.serverId }
-func (s *Account) GSession() common.GSession      { return s.gSession }
+func (s *Account) LastRoleId() string        { return s.table.LastRoleId }
+func (s *Account) Game() actortype.ActorId   { return s.serverId }
+func (s *Account) GSession() common.GSession { return s.gSession }
 func (s *Account) SetGSession(gs common.GSession) { s.gSession = gs }
 
 func combine(a, b string) string {

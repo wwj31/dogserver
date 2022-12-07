@@ -2,19 +2,17 @@ package game
 
 import (
 	"errors"
+	"github.com/wwj31/dogactor/actor"
 	"github.com/wwj31/dogactor/actor/actorerr"
+	"github.com/wwj31/dogactor/expect"
 	"server/common"
 	"server/common/actortype"
 	"server/common/log"
 	"server/common/toml"
 	"server/db/dbmysql"
-	"server/proto/outermsg/outer"
+	"server/proto/innermsg/inner"
 	"server/service/game/iface"
 	"server/service/game/logic/player"
-	"server/service/game/logic/player/localmsg"
-
-	"github.com/wwj31/dogactor/actor"
-	"github.com/wwj31/dogactor/expect"
 )
 
 func New(serverId uint16) *Game {
@@ -46,27 +44,24 @@ func (s *Game) OnStop() bool {
 	return true
 }
 
-func (s *Game) OnHandle(msg actor.Message) {
-	actMsg, _, gSession, err := common.UnwrapperGateMsg(msg.RawMsg())
-	expect.Nil(err)
-
-	switch pbMsg := actMsg.(type) {
-	case *outer.EnterGameReq:
-		s.enterGameReq(gSession, pbMsg)
-	//case *inner.GT2GSessionClosed:
-	//s.logout(pbMsg)
-	default:
-		log.Warnw("unknown msg:%v", msg.String())
-		//s.toPlayer(gSession, actMsg)
-	}
-}
-
 // SID serverId
 func (s *Game) SID() uint16 {
 	return s.sid
 }
 
-func (s *Game) checkAndActivatePlayer(rid string) actortype.ActorId {
+func (s *Game) OnHandle(msg actor.Message) {
+	actMsg, _, _, err := common.UnwrapperGateMsg(msg.RawMsg())
+	expect.Nil(err)
+
+	switch pbMsg := actMsg.(type) {
+	case *inner.PullPlayer:
+		s.checkAndPullPlayer(pbMsg.RID)
+	default:
+		log.Warnw("unknown msg:%v", msg.String())
+	}
+}
+
+func (s *Game) checkAndPullPlayer(rid string) actortype.ActorId {
 	playerId := actortype.PlayerId(rid)
 	if act := s.System().LocalActor(playerId); act == nil {
 		playerActor := actor.New(
@@ -85,40 +80,4 @@ func (s *Game) checkAndActivatePlayer(rid string) actortype.ActorId {
 	}
 
 	return playerId
-}
-
-// player enter game
-func (s *Game) enterGameReq(gSession common.GSession, msg *outer.EnterGameReq) {
-	log.Debugw("EnterGameReq", "msg", msg)
-	// check sign
-	if common.LoginMD5(msg.UID, msg.RID, msg.NewPlayer) != msg.Checksum {
-		log.Warnw("checksum md5 check faild", "msg", msg.String())
-		return
-	}
-
-	// warn:repeated login
-	if _, ok := s.onlineMgr.PlayerBySession(gSession); ok {
-		log.Warnw("player repeated enter game", "gSession", gSession, "localmsg", msg.RID)
-		return
-	}
-
-	var playerId = actortype.PlayerId(msg.RID)
-
-	if oldSession, ok := s.onlineMgr.GSessionByPlayer(playerId); ok {
-		s.onlineMgr.DelGSession(oldSession)
-	} else {
-		playerId = s.checkAndActivatePlayer(msg.RID)
-	}
-	s.onlineMgr.AssociateSession(playerId, gSession)
-
-	err := s.Send(playerId, localmsg.Login{
-		GSession: gSession,
-		RId:      msg.RID,
-		UId:      msg.UID,
-		First:    msg.NewPlayer,
-	})
-	if err != nil {
-		log.Errorw("login send error", "rid", msg.RID, "err", err, "playerId", playerId)
-		return
-	}
 }

@@ -7,7 +7,7 @@ import (
 	"server/service/game/iface"
 )
 
-var _ = regist(&outer.ChatReq{}, func(player iface.Player, v interface{}) {
+var _ = registry(&outer.ChatReq{}, func(player iface.Player, v interface{}) {
 	msg, ok := v.(*outer.ChatReq)
 	assert(ok, "chat req msg convert failed", "type", reflect.TypeOf(v).String())
 

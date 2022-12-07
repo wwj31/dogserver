@@ -63,7 +63,7 @@ func (s *Player) OnHandle(msg actor.Message) {
 	message, msgName, gSession, err := common.UnwrapperGateMsg(msg.RawMsg())
 	expect.Nil(err)
 
-	handle, ok := controller.MsgRouter[msgName]
+	handle, ok := controller.GetHandler(msgName)
 	if !ok {
 		log.Errorw("player undefined route ", "name", msgName)
 		return

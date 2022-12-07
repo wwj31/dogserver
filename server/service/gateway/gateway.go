@@ -56,7 +56,7 @@ func (s *GateWay) checkDeadSession(dt time.Duration) {
 	}
 }
 
-// OnHandleMessage 主要转发消息至玩家client，少量内部消息处理
+// OnHandle 主要转发消息至玩家client，少量内部消息处理
 func (s *GateWay) OnHandle(m actor.Message) {
 	rawMsg := m.RawMsg()
 	switch msg := rawMsg.(type) {

@@ -9,7 +9,7 @@ import (
 	"github.com/gogo/protobuf/proto"
 )
 
-var _ = regist(&outer.UseItemReq{}, func(player iface.Player, v interface{}) {
+var _ = registry(&outer.UseItemReq{}, func(player iface.Player, v interface{}) {
 	msg, ok := v.(*outer.UseItemReq)
 	if !ok {
 		log.Errorw("use item req msg convert failed", "type", reflect.TypeOf(v).String())

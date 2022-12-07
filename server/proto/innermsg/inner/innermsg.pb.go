@@ -118,23 +118,23 @@ func (m *GateMsgWrapper) GetData() []byte {
 	return nil
 }
 
-// gatesession断开,gate通知game
-type GT2GSessionClosed struct {
+// session断开,gate通知player
+type GSessionClosed struct {
 	GateSession string `protobuf:"bytes,1,opt,name=GateSession,proto3" json:"GateSession,omitempty"`
 }
 
-func (m *GT2GSessionClosed) Reset()         { *m = GT2GSessionClosed{} }
-func (m *GT2GSessionClosed) String() string { return proto.CompactTextString(m) }
-func (*GT2GSessionClosed) ProtoMessage()    {}
-func (*GT2GSessionClosed) Descriptor() ([]byte, []int) {
+func (m *GSessionClosed) Reset()         { *m = GSessionClosed{} }
+func (m *GSessionClosed) String() string { return proto.CompactTextString(m) }
+func (*GSessionClosed) ProtoMessage()    {}
+func (*GSessionClosed) Descriptor() ([]byte, []int) {
 	return fileDescriptor_04a0580320a2f95b, []int{2}
 }
-func (m *GT2GSessionClosed) XXX_Unmarshal(b []byte) error {
+func (m *GSessionClosed) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *GT2GSessionClosed) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *GSessionClosed) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_GT2GSessionClosed.Marshal(b, m, deterministic)
+		return xxx_messageInfo_GSessionClosed.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -144,43 +144,41 @@ func (m *GT2GSessionClosed) XXX_Marshal(b []byte, deterministic bool) ([]byte, e
 		return b[:n], nil
 	}
 }
-func (m *GT2GSessionClosed) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_GT2GSessionClosed.Merge(m, src)
+func (m *GSessionClosed) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GSessionClosed.Merge(m, src)
 }
-func (m *GT2GSessionClosed) XXX_Size() int {
+func (m *GSessionClosed) XXX_Size() int {
 	return m.Size()
 }
-func (m *GT2GSessionClosed) XXX_DiscardUnknown() {
-	xxx_messageInfo_GT2GSessionClosed.DiscardUnknown(m)
+func (m *GSessionClosed) XXX_DiscardUnknown() {
+	xxx_messageInfo_GSessionClosed.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_GT2GSessionClosed proto.InternalMessageInfo
+var xxx_messageInfo_GSessionClosed proto.InternalMessageInfo
 
-func (m *GT2GSessionClosed) GetGateSession() string {
+func (m *GSessionClosed) GetGateSession() string {
 	if m != nil {
 		return m.GateSession
 	}
 	return ""
 }
 
-// login通知gate 为session分配gameActor
-type L2GTSessionAssignGame struct {
-	GateSession  string `protobuf:"bytes,1,opt,name=GateSession,proto3" json:"GateSession,omitempty"`
-	GameServerId string `protobuf:"bytes,2,opt,name=GameServerId,proto3" json:"GameServerId,omitempty"`
+type PullPlayer struct {
+	RID string `protobuf:"bytes,1,opt,name=RID,proto3" json:"RID,omitempty"`
 }
 
-func (m *L2GTSessionAssignGame) Reset()         { *m = L2GTSessionAssignGame{} }
-func (m *L2GTSessionAssignGame) String() string { return proto.CompactTextString(m) }
-func (*L2GTSessionAssignGame) ProtoMessage()    {}
-func (*L2GTSessionAssignGame) Descriptor() ([]byte, []int) {
+func (m *PullPlayer) Reset()         { *m = PullPlayer{} }
+func (m *PullPlayer) String() string { return proto.CompactTextString(m) }
+func (*PullPlayer) ProtoMessage()    {}
+func (*PullPlayer) Descriptor() ([]byte, []int) {
 	return fileDescriptor_04a0580320a2f95b, []int{3}
 }
-func (m *L2GTSessionAssignGame) XXX_Unmarshal(b []byte) error {
+func (m *PullPlayer) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *L2GTSessionAssignGame) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *PullPlayer) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_L2GTSessionAssignGame.Marshal(b, m, deterministic)
+		return xxx_messageInfo_PullPlayer.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -190,171 +188,21 @@ func (m *L2GTSessionAssignGame) XXX_Marshal(b []byte, deterministic bool) ([]byt
 		return b[:n], nil
 	}
 }
-func (m *L2GTSessionAssignGame) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_L2GTSessionAssignGame.Merge(m, src)
+func (m *PullPlayer) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PullPlayer.Merge(m, src)
 }
-func (m *L2GTSessionAssignGame) XXX_Size() int {
+func (m *PullPlayer) XXX_Size() int {
 	return m.Size()
 }
-func (m *L2GTSessionAssignGame) XXX_DiscardUnknown() {
-	xxx_messageInfo_L2GTSessionAssignGame.DiscardUnknown(m)
+func (m *PullPlayer) XXX_DiscardUnknown() {
+	xxx_messageInfo_PullPlayer.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_L2GTSessionAssignGame proto.InternalMessageInfo
+var xxx_messageInfo_PullPlayer proto.InternalMessageInfo
 
-func (m *L2GTSessionAssignGame) GetGateSession() string {
-	if m != nil {
-		return m.GateSession
-	}
-	return ""
-}
-
-func (m *L2GTSessionAssignGame) GetGameServerId() string {
-	if m != nil {
-		return m.GameServerId
-	}
-	return ""
-}
-
-// game通知login，玩家离线
-type G2LRoleOffline struct {
-	UID         string `protobuf:"bytes,1,opt,name=UID,proto3" json:"UID,omitempty"`
-	RID         string `protobuf:"bytes,2,opt,name=RID,proto3" json:"RID,omitempty"`
-	GateSession string `protobuf:"bytes,3,opt,name=GateSession,proto3" json:"GateSession,omitempty"`
-}
-
-func (m *G2LRoleOffline) Reset()         { *m = G2LRoleOffline{} }
-func (m *G2LRoleOffline) String() string { return proto.CompactTextString(m) }
-func (*G2LRoleOffline) ProtoMessage()    {}
-func (*G2LRoleOffline) Descriptor() ([]byte, []int) {
-	return fileDescriptor_04a0580320a2f95b, []int{4}
-}
-func (m *G2LRoleOffline) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *G2LRoleOffline) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_G2LRoleOffline.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *G2LRoleOffline) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_G2LRoleOffline.Merge(m, src)
-}
-func (m *G2LRoleOffline) XXX_Size() int {
-	return m.Size()
-}
-func (m *G2LRoleOffline) XXX_DiscardUnknown() {
-	xxx_messageInfo_G2LRoleOffline.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_G2LRoleOffline proto.InternalMessageInfo
-
-func (m *G2LRoleOffline) GetUID() string {
-	if m != nil {
-		return m.UID
-	}
-	return ""
-}
-
-func (m *G2LRoleOffline) GetRID() string {
+func (m *PullPlayer) GetRID() string {
 	if m != nil {
 		return m.RID
-	}
-	return ""
-}
-
-func (m *G2LRoleOffline) GetGateSession() string {
-	if m != nil {
-		return m.GateSession
-	}
-	return ""
-}
-
-// game通知login，玩家离线
-type G2DGameStop struct {
-}
-
-func (m *G2DGameStop) Reset()         { *m = G2DGameStop{} }
-func (m *G2DGameStop) String() string { return proto.CompactTextString(m) }
-func (*G2DGameStop) ProtoMessage()    {}
-func (*G2DGameStop) Descriptor() ([]byte, []int) {
-	return fileDescriptor_04a0580320a2f95b, []int{5}
-}
-func (m *G2DGameStop) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *G2DGameStop) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_G2DGameStop.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *G2DGameStop) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_G2DGameStop.Merge(m, src)
-}
-func (m *G2DGameStop) XXX_Size() int {
-	return m.Size()
-}
-func (m *G2DGameStop) XXX_DiscardUnknown() {
-	xxx_messageInfo_G2DGameStop.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_G2DGameStop proto.InternalMessageInfo
-
-// login通知game,玩家顶号，旧session失效
-type L2GTSessionDisabled struct {
-	GateSession string `protobuf:"bytes,1,opt,name=GateSession,proto3" json:"GateSession,omitempty"`
-}
-
-func (m *L2GTSessionDisabled) Reset()         { *m = L2GTSessionDisabled{} }
-func (m *L2GTSessionDisabled) String() string { return proto.CompactTextString(m) }
-func (*L2GTSessionDisabled) ProtoMessage()    {}
-func (*L2GTSessionDisabled) Descriptor() ([]byte, []int) {
-	return fileDescriptor_04a0580320a2f95b, []int{6}
-}
-func (m *L2GTSessionDisabled) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *L2GTSessionDisabled) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_L2GTSessionDisabled.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *L2GTSessionDisabled) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_L2GTSessionDisabled.Merge(m, src)
-}
-func (m *L2GTSessionDisabled) XXX_Size() int {
-	return m.Size()
-}
-func (m *L2GTSessionDisabled) XXX_DiscardUnknown() {
-	xxx_messageInfo_L2GTSessionDisabled.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_L2GTSessionDisabled proto.InternalMessageInfo
-
-func (m *L2GTSessionDisabled) GetGateSession() string {
-	if m != nil {
-		return m.GateSession
 	}
 	return ""
 }
@@ -362,36 +210,27 @@ func (m *L2GTSessionDisabled) GetGateSession() string {
 func init() {
 	proto.RegisterType((*Error)(nil), "inner.Error")
 	proto.RegisterType((*GateMsgWrapper)(nil), "inner.GateMsgWrapper")
-	proto.RegisterType((*GT2GSessionClosed)(nil), "inner.GT2GSessionClosed")
-	proto.RegisterType((*L2GTSessionAssignGame)(nil), "inner.L2GTSessionAssignGame")
-	proto.RegisterType((*G2LRoleOffline)(nil), "inner.G2LRoleOffline")
-	proto.RegisterType((*G2DGameStop)(nil), "inner.G2DGameStop")
-	proto.RegisterType((*L2GTSessionDisabled)(nil), "inner.L2GTSessionDisabled")
+	proto.RegisterType((*GSessionClosed)(nil), "inner.GSessionClosed")
+	proto.RegisterType((*PullPlayer)(nil), "inner.PullPlayer")
 }
 
 func init() { proto.RegisterFile("innermsg.proto", fileDescriptor_04a0580320a2f95b) }
 
 var fileDescriptor_04a0580320a2f95b = []byte{
-	// 289 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x51, 0x41, 0x4b, 0xc3, 0x30,
-	0x18, 0x5d, 0xac, 0xdb, 0xf0, 0xdb, 0x2c, 0x1a, 0x11, 0x7a, 0x0a, 0x25, 0xa7, 0x9d, 0x14, 0x2a,
-	0xe2, 0x59, 0xad, 0x84, 0xc2, 0xa6, 0xd0, 0x4d, 0x05, 0x41, 0x30, 0x63, 0x59, 0x29, 0x74, 0x4d,
-	0x49, 0x8a, 0xbf, 0xc3, 0x9f, 0xe5, 0x71, 0x47, 0x8f, 0xd2, 0xfe, 0x11, 0x49, 0x88, 0x30, 0xf5,
-	0x30, 0x6f, 0xef, 0xbd, 0xe4, 0xfb, 0xde, 0xfb, 0x78, 0xe0, 0xe7, 0x65, 0x29, 0xd4, 0x4a, 0x67,
-	0x27, 0x95, 0x92, 0xb5, 0xc4, 0x5d, 0xcb, 0x69, 0x1f, 0xba, 0x37, 0x4a, 0x49, 0x45, 0x5f, 0xc0,
-	0x67, 0xbc, 0x16, 0x13, 0x9d, 0x3d, 0x2a, 0x5e, 0x55, 0x42, 0xe1, 0x10, 0x06, 0x46, 0x99, 0x0a,
-	0xad, 0x73, 0x59, 0x06, 0x28, 0x44, 0xa3, 0xbd, 0x74, 0x53, 0xc2, 0x01, 0xf4, 0x27, 0x3a, 0xbb,
-	0xe5, 0x2b, 0x11, 0xec, 0xd8, 0xd7, 0x6f, 0x8a, 0x31, 0xec, 0xc6, 0xbc, 0xe6, 0x81, 0x17, 0xa2,
-	0xd1, 0x30, 0xb5, 0x98, 0x9e, 0xc3, 0x21, 0x9b, 0x45, 0xcc, 0x0d, 0x5f, 0x17, 0x52, 0x8b, 0xc5,
-	0x76, 0x13, 0xfa, 0x0c, 0xc7, 0xe3, 0x88, 0xcd, 0x1c, 0xbd, 0xd4, 0x3a, 0xcf, 0x4a, 0x66, 0x3c,
-	0xb6, 0xe7, 0xa3, 0x30, 0x34, 0x3f, 0xa7, 0x42, 0xbd, 0x0a, 0x95, 0x2c, 0x5c, 0xc8, 0x1f, 0x1a,
-	0x7d, 0x00, 0x9f, 0x45, 0xe3, 0x54, 0x16, 0xe2, 0x6e, 0xb9, 0x2c, 0xf2, 0x52, 0xe0, 0x03, 0xf0,
-	0xee, 0x93, 0xd8, 0xed, 0x33, 0xd0, 0x28, 0x69, 0x12, 0xbb, 0x71, 0x03, 0x7f, 0x7b, 0x7b, 0x7f,
-	0x63, 0xef, 0xc3, 0x80, 0x45, 0xb1, 0xb5, 0xaa, 0x65, 0x45, 0x2f, 0xe0, 0x68, 0xe3, 0x8a, 0x38,
-	0xd7, 0x7c, 0x5e, 0xfc, 0xe7, 0xfc, 0xab, 0xf0, 0xbd, 0x21, 0x68, 0xdd, 0x10, 0xf4, 0xd9, 0x10,
-	0xf4, 0xd6, 0x92, 0xce, 0xba, 0x25, 0x9d, 0x8f, 0x96, 0x74, 0x9e, 0x7a, 0xa7, 0xb6, 0xc2, 0x79,
-	0xcf, 0x16, 0x7a, 0xf6, 0x15, 0x00, 0x00, 0xff, 0xff, 0x2e, 0xa2, 0xd0, 0xb3, 0xe2, 0x01, 0x00,
-	0x00,
+	// 204 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0xcb, 0xcc, 0xcb, 0x4b,
+	0x2d, 0xca, 0x2d, 0x4e, 0xd7, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0x05, 0xf3, 0x95, 0xd8,
+	0xb9, 0x58, 0x5d, 0x8b, 0x8a, 0xf2, 0x8b, 0x94, 0x12, 0xb8, 0xf8, 0xdc, 0x13, 0x4b, 0x52, 0x7d,
+	0x8b, 0xd3, 0xc3, 0x8b, 0x12, 0x0b, 0x0a, 0x52, 0x8b, 0x84, 0x14, 0xb8, 0xb8, 0x41, 0x22, 0xc1,
+	0xa9, 0xc5, 0xc5, 0x99, 0xf9, 0x79, 0x12, 0x8c, 0x0a, 0x8c, 0x1a, 0x9c, 0x41, 0xc8, 0x42, 0x42,
+	0x12, 0x5c, 0xec, 0xbe, 0xc5, 0xe9, 0x7e, 0x89, 0xb9, 0xa9, 0x12, 0x4c, 0x60, 0x59, 0x18, 0x57,
+	0x48, 0x88, 0x8b, 0xc5, 0x25, 0xb1, 0x24, 0x51, 0x82, 0x59, 0x81, 0x51, 0x83, 0x27, 0x08, 0xcc,
+	0x56, 0x32, 0xe2, 0xe2, 0x73, 0x87, 0xea, 0x74, 0xce, 0xc9, 0x2f, 0x4e, 0x4d, 0x21, 0x6c, 0x83,
+	0x92, 0x1c, 0x17, 0x57, 0x40, 0x69, 0x4e, 0x4e, 0x40, 0x4e, 0x62, 0x65, 0x6a, 0x91, 0x90, 0x00,
+	0x17, 0x73, 0x90, 0xa7, 0x0b, 0x54, 0x1d, 0x88, 0xe9, 0xa4, 0x70, 0xe2, 0x91, 0x1c, 0xe3, 0x85,
+	0x47, 0x72, 0x8c, 0x0f, 0x1e, 0xc9, 0x31, 0x4e, 0x78, 0x2c, 0xc7, 0x70, 0xe1, 0xb1, 0x1c, 0xc3,
+	0x8d, 0xc7, 0x72, 0x0c, 0x51, 0x6c, 0xfa, 0x60, 0x0f, 0x26, 0xb1, 0x81, 0xbd, 0x6b, 0x0c, 0x08,
+	0x00, 0x00, 0xff, 0xff, 0xd0, 0xf6, 0x51, 0xba, 0x00, 0x01, 0x00, 0x00,
 }
 
 func (m *Error) Marshal() (dAtA []byte, err error) {
@@ -461,7 +300,7 @@ func (m *GateMsgWrapper) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *GT2GSessionClosed) Marshal() (dAtA []byte, err error) {
+func (m *GSessionClosed) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -471,12 +310,12 @@ func (m *GT2GSessionClosed) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *GT2GSessionClosed) MarshalTo(dAtA []byte) (int, error) {
+func (m *GSessionClosed) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *GT2GSessionClosed) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *GSessionClosed) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -491,7 +330,7 @@ func (m *GT2GSessionClosed) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *L2GTSessionAssignGame) Marshal() (dAtA []byte, err error) {
+func (m *PullPlayer) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -501,124 +340,20 @@ func (m *L2GTSessionAssignGame) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *L2GTSessionAssignGame) MarshalTo(dAtA []byte) (int, error) {
+func (m *PullPlayer) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *L2GTSessionAssignGame) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *PullPlayer) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.GameServerId) > 0 {
-		i -= len(m.GameServerId)
-		copy(dAtA[i:], m.GameServerId)
-		i = encodeVarintInnermsg(dAtA, i, uint64(len(m.GameServerId)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.GateSession) > 0 {
-		i -= len(m.GateSession)
-		copy(dAtA[i:], m.GateSession)
-		i = encodeVarintInnermsg(dAtA, i, uint64(len(m.GateSession)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *G2LRoleOffline) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *G2LRoleOffline) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *G2LRoleOffline) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.GateSession) > 0 {
-		i -= len(m.GateSession)
-		copy(dAtA[i:], m.GateSession)
-		i = encodeVarintInnermsg(dAtA, i, uint64(len(m.GateSession)))
-		i--
-		dAtA[i] = 0x1a
-	}
 	if len(m.RID) > 0 {
 		i -= len(m.RID)
 		copy(dAtA[i:], m.RID)
 		i = encodeVarintInnermsg(dAtA, i, uint64(len(m.RID)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.UID) > 0 {
-		i -= len(m.UID)
-		copy(dAtA[i:], m.UID)
-		i = encodeVarintInnermsg(dAtA, i, uint64(len(m.UID)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *G2DGameStop) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *G2DGameStop) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *G2DGameStop) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	return len(dAtA) - i, nil
-}
-
-func (m *L2GTSessionDisabled) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *L2GTSessionDisabled) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *L2GTSessionDisabled) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.GateSession) > 0 {
-		i -= len(m.GateSession)
-		copy(dAtA[i:], m.GateSession)
-		i = encodeVarintInnermsg(dAtA, i, uint64(len(m.GateSession)))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -666,7 +401,7 @@ func (m *GateMsgWrapper) Size() (n int) {
 	return n
 }
 
-func (m *GT2GSessionClosed) Size() (n int) {
+func (m *GSessionClosed) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -679,60 +414,13 @@ func (m *GT2GSessionClosed) Size() (n int) {
 	return n
 }
 
-func (m *L2GTSessionAssignGame) Size() (n int) {
+func (m *PullPlayer) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = len(m.GateSession)
-	if l > 0 {
-		n += 1 + l + sovInnermsg(uint64(l))
-	}
-	l = len(m.GameServerId)
-	if l > 0 {
-		n += 1 + l + sovInnermsg(uint64(l))
-	}
-	return n
-}
-
-func (m *G2LRoleOffline) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.UID)
-	if l > 0 {
-		n += 1 + l + sovInnermsg(uint64(l))
-	}
 	l = len(m.RID)
-	if l > 0 {
-		n += 1 + l + sovInnermsg(uint64(l))
-	}
-	l = len(m.GateSession)
-	if l > 0 {
-		n += 1 + l + sovInnermsg(uint64(l))
-	}
-	return n
-}
-
-func (m *G2DGameStop) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	return n
-}
-
-func (m *L2GTSessionDisabled) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.GateSession)
 	if l > 0 {
 		n += 1 + l + sovInnermsg(uint64(l))
 	}
@@ -943,7 +631,7 @@ func (m *GateMsgWrapper) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *GT2GSessionClosed) Unmarshal(dAtA []byte) error {
+func (m *GSessionClosed) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -966,10 +654,10 @@ func (m *GT2GSessionClosed) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: GT2GSessionClosed: wiretype end group for non-group")
+			return fmt.Errorf("proto: GSessionClosed: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: GT2GSessionClosed: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: GSessionClosed: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1025,7 +713,7 @@ func (m *GT2GSessionClosed) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *L2GTSessionAssignGame) Unmarshal(dAtA []byte) error {
+func (m *PullPlayer) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1048,159 +736,13 @@ func (m *L2GTSessionAssignGame) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: L2GTSessionAssignGame: wiretype end group for non-group")
+			return fmt.Errorf("proto: PullPlayer: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: L2GTSessionAssignGame: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: PullPlayer: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field GateSession", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowInnermsg
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthInnermsg
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthInnermsg
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.GateSession = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field GameServerId", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowInnermsg
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthInnermsg
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthInnermsg
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.GameServerId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipInnermsg(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthInnermsg
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *G2LRoleOffline) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowInnermsg
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: G2LRoleOffline: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: G2LRoleOffline: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field UID", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowInnermsg
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthInnermsg
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthInnermsg
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.UID = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field RID", wireType)
 			}
@@ -1231,170 +773,6 @@ func (m *G2LRoleOffline) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.RID = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field GateSession", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowInnermsg
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthInnermsg
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthInnermsg
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.GateSession = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipInnermsg(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthInnermsg
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *G2DGameStop) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowInnermsg
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: G2DGameStop: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: G2DGameStop: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		default:
-			iNdEx = preIndex
-			skippy, err := skipInnermsg(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthInnermsg
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *L2GTSessionDisabled) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowInnermsg
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: L2GTSessionDisabled: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: L2GTSessionDisabled: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field GateSession", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowInnermsg
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthInnermsg
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthInnermsg
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.GateSession = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

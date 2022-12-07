@@ -2,22 +2,27 @@ package controller
 
 import (
 	"fmt"
-	"github.com/wwj31/dogactor/log"
 	"reflect"
+
+	"github.com/wwj31/dogactor/log"
 	"server/service/game/iface"
 )
 
 type Handler func(player iface.Player, v interface{})
 
-var MsgRouter = map[string]func(player iface.Player, v interface{}){}
+var router = map[string]Handler{}
 
-func regist(msg interface{}, fun Handler) bool {
+func registry(msg interface{}, fun Handler) bool {
 	msgName := MsgName(msg)
-	if _, ok := MsgRouter[msgName]; ok {
+	if _, ok := router[msgName]; ok {
 		panic(fmt.Errorf("%v repeated ", msg))
 	}
-	MsgRouter[msgName] = fun
+	router[msgName] = fun
 	return true
+}
+func GetHandler(msgName string) (Handler, bool) {
+	fn, ok := router[msgName]
+	return fn, ok
 }
 
 func MsgName(v interface{}) string {
