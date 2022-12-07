@@ -22,14 +22,11 @@ func New(serverId uint16) *Game {
 type Game struct {
 	actor.Base
 	iface.StoreLoader
-
-	sid       uint16 // serverId
-	onlineMgr onlineMgr
+	sid uint16 // serverId
 }
 
 func (s *Game) OnInit() {
 	s.StoreLoader = dbmysql.New(toml.Get("mysql"), toml.Get("database"), s.System())
-	s.onlineMgr = newMgr(s)
 
 	s.System().OnEvent(s.ID(), func(event actor.EvDelActor) {
 		if actortype.IsActorOf(event.ActorId, actortype.Player_Actor) {
@@ -62,6 +59,7 @@ func (s *Game) OnHandle(msg actor.Message) {
 }
 
 func (s *Game) checkAndPullPlayer(rid string) actortype.ActorId {
+	// TODO::检查玩家是否在其他game节点中,并且通知目标下线,需要将玩家所在节点数据存入redis中以便查询
 	playerId := actortype.PlayerId(rid)
 	if act := s.System().LocalActor(playerId); act == nil {
 		playerActor := actor.New(

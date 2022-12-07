@@ -41,7 +41,7 @@ func (s *UserSession) OnSessionClosed() {
 	if s.PlayerId != "" {
 		// 通知player
 		gSession := common.GateSession(s.gateway.ID(), s.Id())
-		_ = s.gateway.Send(s.PlayerId, &inner.GT2GSessionClosed{GateSession: gSession.String()})
+		_ = s.gateway.Send(s.PlayerId, &inner.GSessionClosed{GateSession: gSession.String()})
 	}
 
 	_ = s.gateway.Send(s.gateway.ID(), func() {
