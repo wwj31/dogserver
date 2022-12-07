@@ -45,7 +45,7 @@ func startup() {
 		log.Init(*logLevel, *logPath, logName, cast.ToBool(toml.Get("dispaly")))
 
 		// init redis
-		if err := redis.Builder().ClusterMode().Addr(toml.Get("redisaddr", "localhost:9001")).
+		if err := redis.Builder().Addr(toml.Get("redisaddr", "localhost:6379")).
 			Connect(); err != nil {
 			panic(err)
 		}

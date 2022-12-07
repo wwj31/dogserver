@@ -4,7 +4,8 @@ logpath    = "./log"
 etcdprefix = "dog"
 etcdaddr   = "127.0.0.1:2379"
 natsurl    = "nats://localhost:4222"
-redisaddr  = "localhost:9001"
+#redisaddr  = ["localhost:9001","localhost:9003","localhost:9005"]
+redisaddr  = "localhost:6379"
 
 
 
@@ -18,11 +19,11 @@ redisaddr  = "localhost:9001"
 
     [server.gateway_1]
         actoraddr = "127.0.0.1:8001"
-        gateaddr  = "0.0.0.0:9001"     # client连接端口
+        gateaddr  = "0.0.0.0:7001"     # client连接端口
 
     [server.gateway_2]
         actoraddr = "127.0.0.1:8002"
-        gateaddr  = "0.0.0.0:9002"     # client连接端口
+        gateaddr  = "0.0.0.0:7002"     # client连接端口
 
     [server.game_1]
         actoraddr  = "127.0.0.1:8201"

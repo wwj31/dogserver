@@ -46,6 +46,25 @@ func Get(k string, defaultValue ...string) string {
 	return v.(string)
 }
 
+func GetArray(k string, defaultValue ...string) []string {
+	v, ok := Config[k]
+	if !ok {
+		if v, ok = BaseConfig[k]; !ok {
+			if len(defaultValue) > 0 {
+				return defaultValue
+			}
+
+			panic(fmt.Errorf("common Config not find k %v", k))
+		}
+	}
+	arr := v.([]interface{})
+	array := make([]string, 0, len(arr))
+	for _, v := range arr {
+		array = append(array, v.(string))
+	}
+	return array
+}
+
 func GetB(k string) (string, bool) {
 	v, ok := Config[k]
 	if !ok {
