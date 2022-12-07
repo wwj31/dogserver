@@ -13,14 +13,6 @@ message GateMsgWrapper
     bytes  Data        = 3;
 }
 
-// 其他actor和player通信，由game转发
-message GameMsgWrapper
-{
-    string RID         = 1;
-    string MsgName     = 2;
-    bytes  Data        = 3;
-}
-
 // gatesession断开,gate通知game
 message GT2GSessionClosed
 {

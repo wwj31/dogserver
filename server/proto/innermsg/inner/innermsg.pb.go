@@ -118,67 +118,6 @@ func (m *GateMsgWrapper) GetData() []byte {
 	return nil
 }
 
-// 其他actor和player通信，由game转发
-type GameMsgWrapper struct {
-	RID     string `protobuf:"bytes,1,opt,name=RID,proto3" json:"RID,omitempty"`
-	MsgName string `protobuf:"bytes,2,opt,name=MsgName,proto3" json:"MsgName,omitempty"`
-	Data    []byte `protobuf:"bytes,3,opt,name=Data,proto3" json:"Data,omitempty"`
-}
-
-func (m *GameMsgWrapper) Reset()         { *m = GameMsgWrapper{} }
-func (m *GameMsgWrapper) String() string { return proto.CompactTextString(m) }
-func (*GameMsgWrapper) ProtoMessage()    {}
-func (*GameMsgWrapper) Descriptor() ([]byte, []int) {
-	return fileDescriptor_04a0580320a2f95b, []int{2}
-}
-func (m *GameMsgWrapper) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *GameMsgWrapper) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_GameMsgWrapper.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *GameMsgWrapper) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_GameMsgWrapper.Merge(m, src)
-}
-func (m *GameMsgWrapper) XXX_Size() int {
-	return m.Size()
-}
-func (m *GameMsgWrapper) XXX_DiscardUnknown() {
-	xxx_messageInfo_GameMsgWrapper.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_GameMsgWrapper proto.InternalMessageInfo
-
-func (m *GameMsgWrapper) GetRID() string {
-	if m != nil {
-		return m.RID
-	}
-	return ""
-}
-
-func (m *GameMsgWrapper) GetMsgName() string {
-	if m != nil {
-		return m.MsgName
-	}
-	return ""
-}
-
-func (m *GameMsgWrapper) GetData() []byte {
-	if m != nil {
-		return m.Data
-	}
-	return nil
-}
-
 // gatesession断开,gate通知game
 type GT2GSessionClosed struct {
 	GateSession string `protobuf:"bytes,1,opt,name=GateSession,proto3" json:"GateSession,omitempty"`
@@ -188,7 +127,7 @@ func (m *GT2GSessionClosed) Reset()         { *m = GT2GSessionClosed{} }
 func (m *GT2GSessionClosed) String() string { return proto.CompactTextString(m) }
 func (*GT2GSessionClosed) ProtoMessage()    {}
 func (*GT2GSessionClosed) Descriptor() ([]byte, []int) {
-	return fileDescriptor_04a0580320a2f95b, []int{3}
+	return fileDescriptor_04a0580320a2f95b, []int{2}
 }
 func (m *GT2GSessionClosed) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -234,7 +173,7 @@ func (m *L2GTSessionAssignGame) Reset()         { *m = L2GTSessionAssignGame{} }
 func (m *L2GTSessionAssignGame) String() string { return proto.CompactTextString(m) }
 func (*L2GTSessionAssignGame) ProtoMessage()    {}
 func (*L2GTSessionAssignGame) Descriptor() ([]byte, []int) {
-	return fileDescriptor_04a0580320a2f95b, []int{4}
+	return fileDescriptor_04a0580320a2f95b, []int{3}
 }
 func (m *L2GTSessionAssignGame) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -288,7 +227,7 @@ func (m *G2LRoleOffline) Reset()         { *m = G2LRoleOffline{} }
 func (m *G2LRoleOffline) String() string { return proto.CompactTextString(m) }
 func (*G2LRoleOffline) ProtoMessage()    {}
 func (*G2LRoleOffline) Descriptor() ([]byte, []int) {
-	return fileDescriptor_04a0580320a2f95b, []int{5}
+	return fileDescriptor_04a0580320a2f95b, []int{4}
 }
 func (m *G2LRoleOffline) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -346,7 +285,7 @@ func (m *G2DGameStop) Reset()         { *m = G2DGameStop{} }
 func (m *G2DGameStop) String() string { return proto.CompactTextString(m) }
 func (*G2DGameStop) ProtoMessage()    {}
 func (*G2DGameStop) Descriptor() ([]byte, []int) {
-	return fileDescriptor_04a0580320a2f95b, []int{6}
+	return fileDescriptor_04a0580320a2f95b, []int{5}
 }
 func (m *G2DGameStop) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -384,7 +323,7 @@ func (m *L2GTSessionDisabled) Reset()         { *m = L2GTSessionDisabled{} }
 func (m *L2GTSessionDisabled) String() string { return proto.CompactTextString(m) }
 func (*L2GTSessionDisabled) ProtoMessage()    {}
 func (*L2GTSessionDisabled) Descriptor() ([]byte, []int) {
-	return fileDescriptor_04a0580320a2f95b, []int{7}
+	return fileDescriptor_04a0580320a2f95b, []int{6}
 }
 func (m *L2GTSessionDisabled) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -423,7 +362,6 @@ func (m *L2GTSessionDisabled) GetGateSession() string {
 func init() {
 	proto.RegisterType((*Error)(nil), "inner.Error")
 	proto.RegisterType((*GateMsgWrapper)(nil), "inner.GateMsgWrapper")
-	proto.RegisterType((*GameMsgWrapper)(nil), "inner.GameMsgWrapper")
 	proto.RegisterType((*GT2GSessionClosed)(nil), "inner.GT2GSessionClosed")
 	proto.RegisterType((*L2GTSessionAssignGame)(nil), "inner.L2GTSessionAssignGame")
 	proto.RegisterType((*G2LRoleOffline)(nil), "inner.G2LRoleOffline")
@@ -434,26 +372,26 @@ func init() {
 func init() { proto.RegisterFile("innermsg.proto", fileDescriptor_04a0580320a2f95b) }
 
 var fileDescriptor_04a0580320a2f95b = []byte{
-	// 304 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0xcb, 0xcc, 0xcb, 0x4b,
-	0x2d, 0xca, 0x2d, 0x4e, 0xd7, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0x05, 0xf3, 0x95, 0xd8,
-	0xb9, 0x58, 0x5d, 0x8b, 0x8a, 0xf2, 0x8b, 0x94, 0x12, 0xb8, 0xf8, 0xdc, 0x13, 0x4b, 0x52, 0x7d,
-	0x8b, 0xd3, 0xc3, 0x8b, 0x12, 0x0b, 0x0a, 0x52, 0x8b, 0x84, 0x14, 0xb8, 0xb8, 0x41, 0x22, 0xc1,
-	0xa9, 0xc5, 0xc5, 0x99, 0xf9, 0x79, 0x12, 0x8c, 0x0a, 0x8c, 0x1a, 0x9c, 0x41, 0xc8, 0x42, 0x42,
-	0x12, 0x5c, 0xec, 0xbe, 0xc5, 0xe9, 0x7e, 0x89, 0xb9, 0xa9, 0x12, 0x4c, 0x60, 0x59, 0x18, 0x57,
-	0x48, 0x88, 0x8b, 0xc5, 0x25, 0xb1, 0x24, 0x51, 0x82, 0x59, 0x81, 0x51, 0x83, 0x27, 0x08, 0xcc,
-	0x56, 0x0a, 0x00, 0xd9, 0x90, 0x8b, 0x6c, 0x83, 0x00, 0x17, 0x73, 0x90, 0xa7, 0x0b, 0xd4, 0x64,
-	0x10, 0x93, 0x44, 0x13, 0x4d, 0xb9, 0x04, 0xdd, 0x43, 0x8c, 0xdc, 0xa1, 0xce, 0x71, 0xce, 0xc9,
-	0x2f, 0x4e, 0x4d, 0x21, 0xec, 0x6c, 0xa5, 0x58, 0x2e, 0x51, 0x1f, 0x23, 0xf7, 0x10, 0x28, 0xd7,
-	0xb1, 0xb8, 0x38, 0x33, 0x3d, 0x0f, 0xe4, 0x32, 0x22, 0x7c, 0xac, 0xc4, 0xc5, 0x03, 0x52, 0x19,
-	0x9c, 0x5a, 0x54, 0x96, 0x5a, 0xe4, 0x99, 0x02, 0x75, 0x24, 0x8a, 0x98, 0x52, 0x18, 0x17, 0x9f,
-	0xbb, 0x91, 0x4f, 0x50, 0x7e, 0x4e, 0xaa, 0x7f, 0x5a, 0x5a, 0x4e, 0x66, 0x5e, 0x2a, 0xc8, 0x9f,
-	0xa1, 0x08, 0x7f, 0x86, 0x7a, 0xba, 0xc0, 0x7c, 0xce, 0x84, 0xf0, 0x39, 0x9a, 0xdd, 0xcc, 0x98,
-	0xce, 0xe6, 0xe5, 0xe2, 0x76, 0x37, 0x72, 0x01, 0x5b, 0x55, 0x92, 0x5f, 0xa0, 0x64, 0xce, 0x25,
-	0x8c, 0xe4, 0x0b, 0x97, 0xcc, 0xe2, 0xc4, 0xa4, 0x1c, 0x62, 0xbc, 0xef, 0xa4, 0x70, 0xe2, 0x91,
-	0x1c, 0xe3, 0x85, 0x47, 0x72, 0x8c, 0x0f, 0x1e, 0xc9, 0x31, 0x4e, 0x78, 0x2c, 0xc7, 0x70, 0xe1,
-	0xb1, 0x1c, 0xc3, 0x8d, 0xc7, 0x72, 0x0c, 0x51, 0x6c, 0xfa, 0xe0, 0x44, 0x91, 0xc4, 0x06, 0x4e,
-	0x22, 0xc6, 0x80, 0x00, 0x00, 0x00, 0xff, 0xff, 0xa2, 0xcb, 0xb4, 0x3e, 0x34, 0x02, 0x00, 0x00,
+	// 289 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x51, 0x41, 0x4b, 0xc3, 0x30,
+	0x18, 0x5d, 0xac, 0xdb, 0xf0, 0xdb, 0x2c, 0x1a, 0x11, 0x7a, 0x0a, 0x25, 0xa7, 0x9d, 0x14, 0x2a,
+	0xe2, 0x59, 0xad, 0x84, 0xc2, 0xa6, 0xd0, 0x4d, 0x05, 0x41, 0x30, 0x63, 0x59, 0x29, 0x74, 0x4d,
+	0x49, 0x8a, 0xbf, 0xc3, 0x9f, 0xe5, 0x71, 0x47, 0x8f, 0xd2, 0xfe, 0x11, 0x49, 0x88, 0x30, 0xf5,
+	0x30, 0x6f, 0xef, 0xbd, 0xe4, 0xfb, 0xde, 0xfb, 0x78, 0xe0, 0xe7, 0x65, 0x29, 0xd4, 0x4a, 0x67,
+	0x27, 0x95, 0x92, 0xb5, 0xc4, 0x5d, 0xcb, 0x69, 0x1f, 0xba, 0x37, 0x4a, 0x49, 0x45, 0x5f, 0xc0,
+	0x67, 0xbc, 0x16, 0x13, 0x9d, 0x3d, 0x2a, 0x5e, 0x55, 0x42, 0xe1, 0x10, 0x06, 0x46, 0x99, 0x0a,
+	0xad, 0x73, 0x59, 0x06, 0x28, 0x44, 0xa3, 0xbd, 0x74, 0x53, 0xc2, 0x01, 0xf4, 0x27, 0x3a, 0xbb,
+	0xe5, 0x2b, 0x11, 0xec, 0xd8, 0xd7, 0x6f, 0x8a, 0x31, 0xec, 0xc6, 0xbc, 0xe6, 0x81, 0x17, 0xa2,
+	0xd1, 0x30, 0xb5, 0x98, 0x9e, 0xc3, 0x21, 0x9b, 0x45, 0xcc, 0x0d, 0x5f, 0x17, 0x52, 0x8b, 0xc5,
+	0x76, 0x13, 0xfa, 0x0c, 0xc7, 0xe3, 0x88, 0xcd, 0x1c, 0xbd, 0xd4, 0x3a, 0xcf, 0x4a, 0x66, 0x3c,
+	0xb6, 0xe7, 0xa3, 0x30, 0x34, 0x3f, 0xa7, 0x42, 0xbd, 0x0a, 0x95, 0x2c, 0x5c, 0xc8, 0x1f, 0x1a,
+	0x7d, 0x00, 0x9f, 0x45, 0xe3, 0x54, 0x16, 0xe2, 0x6e, 0xb9, 0x2c, 0xf2, 0x52, 0xe0, 0x03, 0xf0,
+	0xee, 0x93, 0xd8, 0xed, 0x33, 0xd0, 0x28, 0x69, 0x12, 0xbb, 0x71, 0x03, 0x7f, 0x7b, 0x7b, 0x7f,
+	0x63, 0xef, 0xc3, 0x80, 0x45, 0xb1, 0xb5, 0xaa, 0x65, 0x45, 0x2f, 0xe0, 0x68, 0xe3, 0x8a, 0x38,
+	0xd7, 0x7c, 0x5e, 0xfc, 0xe7, 0xfc, 0xab, 0xf0, 0xbd, 0x21, 0x68, 0xdd, 0x10, 0xf4, 0xd9, 0x10,
+	0xf4, 0xd6, 0x92, 0xce, 0xba, 0x25, 0x9d, 0x8f, 0x96, 0x74, 0x9e, 0x7a, 0xa7, 0xb6, 0xc2, 0x79,
+	0xcf, 0x16, 0x7a, 0xf6, 0x15, 0x00, 0x00, 0xff, 0xff, 0x2e, 0xa2, 0xd0, 0xb3, 0xe2, 0x01, 0x00,
+	0x00,
 }
 
 func (m *Error) Marshal() (dAtA []byte, err error) {
@@ -517,50 +455,6 @@ func (m *GateMsgWrapper) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i -= len(m.GateSession)
 		copy(dAtA[i:], m.GateSession)
 		i = encodeVarintInnermsg(dAtA, i, uint64(len(m.GateSession)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *GameMsgWrapper) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *GameMsgWrapper) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *GameMsgWrapper) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.Data) > 0 {
-		i -= len(m.Data)
-		copy(dAtA[i:], m.Data)
-		i = encodeVarintInnermsg(dAtA, i, uint64(len(m.Data)))
-		i--
-		dAtA[i] = 0x1a
-	}
-	if len(m.MsgName) > 0 {
-		i -= len(m.MsgName)
-		copy(dAtA[i:], m.MsgName)
-		i = encodeVarintInnermsg(dAtA, i, uint64(len(m.MsgName)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.RID) > 0 {
-		i -= len(m.RID)
-		copy(dAtA[i:], m.RID)
-		i = encodeVarintInnermsg(dAtA, i, uint64(len(m.RID)))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -772,27 +666,6 @@ func (m *GateMsgWrapper) Size() (n int) {
 	return n
 }
 
-func (m *GameMsgWrapper) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.RID)
-	if l > 0 {
-		n += 1 + l + sovInnermsg(uint64(l))
-	}
-	l = len(m.MsgName)
-	if l > 0 {
-		n += 1 + l + sovInnermsg(uint64(l))
-	}
-	l = len(m.Data)
-	if l > 0 {
-		n += 1 + l + sovInnermsg(uint64(l))
-	}
-	return n
-}
-
 func (m *GT2GSessionClosed) Size() (n int) {
 	if m == nil {
 		return 0
@@ -982,154 +855,6 @@ func (m *GateMsgWrapper) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.GateSession = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field MsgName", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowInnermsg
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthInnermsg
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthInnermsg
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.MsgName = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Data", wireType)
-			}
-			var byteLen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowInnermsg
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				byteLen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if byteLen < 0 {
-				return ErrInvalidLengthInnermsg
-			}
-			postIndex := iNdEx + byteLen
-			if postIndex < 0 {
-				return ErrInvalidLengthInnermsg
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Data = append(m.Data[:0], dAtA[iNdEx:postIndex]...)
-			if m.Data == nil {
-				m.Data = []byte{}
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipInnermsg(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthInnermsg
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *GameMsgWrapper) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowInnermsg
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: GameMsgWrapper: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: GameMsgWrapper: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RID", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowInnermsg
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthInnermsg
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthInnermsg
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.RID = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {

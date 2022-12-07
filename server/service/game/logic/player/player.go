@@ -2,6 +2,7 @@ package player
 
 import (
 	"context"
+	"github.com/wwj31/dogactor/expect"
 	"reflect"
 	"strings"
 	"time"
@@ -59,20 +60,30 @@ func (s *Player) OnInit() {
 }
 
 func (s *Player) OnHandle(msg actor.Message) {
-	rawMsg := msg.RawMsg()
-	name := controller.MsgName(rawMsg)
-	handle, ok := controller.MsgRouter[name]
+	message, msgName, gSession, err := common.UnwrapperGateMsg(msg.RawMsg())
+	expect.Nil(err)
+
+	handle, ok := controller.MsgRouter[msgName]
 	if !ok {
-		log.Errorw("player undefined route ", "name", name)
+		log.Errorw("player undefined route ", "name", msgName)
 		return
 	}
 
-	handle(s, rawMsg)
+	// 重连的情况，除了EnterGame消息，其他都不处理
+	if s.gSession != gSession {
+		if _, ok := message.(outer.EnterGameReq); !ok {
+			log.Warnw("recv message of old session:%v new session:%v", s.gSession, gSession)
+			return
+		}
+		s.SetGateSession(gSession)
+	}
 
-	pt, ok := rawMsg.(proto.Message)
+	handle(s, message)
+
+	pt, ok := message.(proto.Message)
 	if ok {
 		msgName := s.System().ProtoIndex().MsgName(pt)
-		outer.Put(msgName, rawMsg)
+		outer.Put(msgName, message)
 	}
 
 	s.keepAlive = tools.NowTime()
