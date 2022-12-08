@@ -13,6 +13,12 @@ message GateMsgWrapper
     bytes  Data        = 3;
 }
 
+message BindSessionWithRID
+{
+    string GateSession = 1;
+    string RID         = 2;
+}
+
 // session断开,gate通知player
 message GSessionClosed
 {

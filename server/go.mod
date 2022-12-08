@@ -16,7 +16,8 @@ require (
 	github.com/spf13/viper v1.9.0
 	github.com/stretchr/testify v1.7.0
 	github.com/tealeg/xlsx v1.0.5
-	github.com/wwj31/dogactor v1.3.0
+	github.com/wwj31/dogactor v1.3.2
+	go.mongodb.org/mongo-driver v1.11.0
 	gorm.io/driver/mysql v1.1.3
 	gorm.io/gorm v1.22.3
 )
@@ -64,7 +65,6 @@ require (
 	github.com/xdg-go/stringprep v1.0.3 // indirect
 	github.com/youmark/pkcs8 v0.0.0-20181117223130-1be2e3e5546d // indirect
 	github.com/yuin/gopher-lua v0.0.0-20210529063254-f4c35e4016d9 // indirect
-	go.mongodb.org/mongo-driver v1.11.0 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.7.0 // indirect
 	go.uber.org/zap v1.21.0 // indirect

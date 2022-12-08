@@ -2,22 +2,18 @@ package login
 
 import (
 	"fmt"
-	"server/common"
-	"server/common/log"
-	"server/proto/innermsg/inner"
-	"server/proto/outermsg/outer"
-	"server/service/game/iface"
-	"server/service/login/account"
-
 	"github.com/wwj31/dogactor/actor"
 	"github.com/wwj31/dogactor/expect"
+	"server/common"
+	"server/common/log"
+	"server/proto/outermsg/outer"
+	"server/service/game/iface"
 )
 
 type Login struct {
 	actor.Base
 	common.SendTools
-	storage    iface.StoreLoader
-	accountMgr account.Mgr
+	storage iface.StoreLoader
 }
 
 func New(s iface.StoreLoader) *Login {
@@ -28,8 +24,6 @@ func New(s iface.StoreLoader) *Login {
 
 func (s *Login) OnInit() {
 	s.SendTools = common.NewSendTools(s)
-	s.accountMgr = account.NewAccountMgr()
-	s.accountMgr.LoadAllAccount(s.storage)
 	log.Debugf("login OnInit")
 }
 
@@ -57,20 +51,6 @@ func (s *Login) LoginReq(sourceId string, gSession common.GSession, msg *outer.L
 		return fmt.Errorf("login req token failed msg:%v", msg.String())
 	}
 
-	acc, newPlayer := s.accountMgr.Login(msg, s.storage)
-
-	// 通知game拉起player
-	err := s.Send(acc.Game(), &inner.PullPlayer{RID: acc.LastRoleId()})
-	if err != nil {
-		return err
-	}
-
-	md5 := common.LoginMD5(acc.UUId(), acc.LastRoleId(), newPlayer)
-	// 通知玩家登录成功
-	return s.Send2Client(gSession, &outer.LoginResp{
-		UID:       acc.UUId(),
-		RID:       acc.LastRoleId(),
-		NewPlayer: newPlayer,
-		Token:     md5,
-	})
+	s.Login(gSession, msg)
+	return nil
 }

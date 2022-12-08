@@ -17,7 +17,6 @@ func New(player iface.Player) Model {
 }
 
 func (s *Model) Data() gogo.Message { return nil }
-
 func (s *Model) OnLoaded()          {}
 func (s *Model) OnLogin(first bool) {}
 func (s *Model) OnLogout()          {}

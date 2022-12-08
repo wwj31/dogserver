@@ -3,6 +3,7 @@ package player
 import (
 	"context"
 	"github.com/wwj31/dogactor/expect"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"reflect"
 	"strings"
 	"time"
@@ -152,7 +153,11 @@ func (s *Player) store() {
 				continue
 			}
 
-			if _, err := mongodb.Ins.Collection(str[1]).InsertOne(context.Background(), doc); err != nil {
+			if _, err := mongodb.Ins.Collection(str[1]).UpdateByID(
+				context.Background(),
+				s.roleId,
+				doc,
+				options.Update().SetUpsert(true)); err != nil {
 				log.Errorw("player store failed", "collection", str[1], "doc", doc.String())
 			}
 		}

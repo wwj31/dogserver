@@ -1,24 +1,24 @@
 package account
 
-import (
-	"fmt"
-	"server/common"
-	"server/common/actortype"
-	"server/db/dbmysql/table"
-)
+const Collection = "account"
 
 type Account struct {
-	table    table.Account
-	serverId actortype.ActorId
-	gSession common.GSession
+	UUID          string `bson:"_id"`
+	PlatformID    string
+	SID           string
+	OS            string
+	ClientVersion string
+	Language      string
+	Country       string
+	LastLoginRID  string
+	Roles         map[string]Role
 }
 
-func (s *Account) UUId() string                   { return "s.table.UUId" }
-func (s *Account) LastRoleId() string        { return s.table.LastRoleId }
-func (s *Account) Game() actortype.ActorId   { return s.serverId }
-func (s *Account) GSession() common.GSession { return s.gSession }
-func (s *Account) SetGSession(gs common.GSession) { s.gSession = gs }
+type Role struct {
+	RID      string
+	CreateAt string
+}
 
-func combine(a, b string) string {
-	return fmt.Sprintf("%v_%v", a, b)
+func New() *Account {
+	return &Account{}
 }

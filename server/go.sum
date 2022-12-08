@@ -359,13 +359,14 @@ github.com/subosito/gotenv v1.2.0 h1:Slr1R9HxAlEKefgq5jn9U+DnETlIUa6HfgEzj0g5d7s
 github.com/subosito/gotenv v1.2.0/go.mod h1:N0PQaV/YGNqwC0u51sEeR/aUtSLEXKX9iv69rRypqCw=
 github.com/tealeg/xlsx v1.0.5 h1:+f8oFmvY8Gw1iUXzPk+kz+4GpbDZPK1FhPiQRd+ypgE=
 github.com/tealeg/xlsx v1.0.5/go.mod h1:btRS8dz54TDnvKNosuAqxrM1QgN1udgk9O34bDCnORM=
+github.com/tidwall/pretty v1.0.0 h1:HsD+QiTn7sK6flMKIvNmpqz1qrpP3Ps6jOKIKMooyg4=
 github.com/tidwall/pretty v1.0.0/go.mod h1:XNkn88O1ChpSDQmQeStsy+sBenx6DDtFZJxhVysOjyk=
 github.com/tklauser/go-sysconf v0.3.9 h1:JeUVdAOWhhxVcU6Eqr/ATFHgXk/mmiItdKeJPev3vTo=
 github.com/tklauser/go-sysconf v0.3.9/go.mod h1:11DU/5sG7UexIrp/O6g35hrWzu0JxlwQ3LSFUzyeuhs=
 github.com/tklauser/numcpus v0.3.0 h1:ILuRUQBtssgnxw0XXIjKUC56fgnOrFoQQ/4+DeU2biQ=
 github.com/tklauser/numcpus v0.3.0/go.mod h1:yFGUr7TUHQRAhyqBcEg0Ge34zDBAsIvJJcyE6boqnA8=
-github.com/wwj31/dogactor v1.3.0 h1:Zgtp9MvJKb5FG+pDn0R43kN+VuUqnGRs8cPrI4O37AI=
-github.com/wwj31/dogactor v1.3.0/go.mod h1:9qhTDGB2GhqJu5K7fo6WkYre/ykd3GD4v7X6EOpRcZQ=
+github.com/wwj31/dogactor v1.3.2 h1:9fH0BK5eECvt8Cw1uDfkfnfP1qbXhsSsaveaxmXvSrg=
+github.com/wwj31/dogactor v1.3.2/go.mod h1:9qhTDGB2GhqJu5K7fo6WkYre/ykd3GD4v7X6EOpRcZQ=
 github.com/wwj31/jtimer v1.2.8 h1:tPBI0B5FCpPR0GTZt2fxT4oNDAIr0G+aJiAt5awk2fs=
 github.com/wwj31/jtimer v1.2.8/go.mod h1:GP0k/io5C3wpu11DS42YLL5UWJ3k9WAApIYUE/2bvwA=
 github.com/xdg-go/pbkdf2 v1.0.0 h1:Su7DPu48wXMwC3bs7MCNG+z4FhcyEuz5dlvchbq0B0c=

@@ -3,6 +3,7 @@ package mongodb
 import (
 	"context"
 	"go.mongodb.org/mongo-driver/mongo"
+	"server/common/log"
 	"sync"
 )
 
@@ -35,6 +36,10 @@ func (m *mongoDB) Collection(name string) *mongo.Collection {
 	coll := m.collections[name]
 	if coll == nil {
 		if m.database == nil {
+			return nil
+		}
+		if err := m.CreateCollection(name); err != nil {
+			log.Errorf("create collection failed ", "err", err)
 			return nil
 		}
 		coll = m.database.Collection(name)
