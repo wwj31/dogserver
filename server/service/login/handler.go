@@ -22,11 +22,11 @@ func redisKey(key string) string {
 func (s *Login) Login(gSession common.GSession, msg *outer.LoginReq) {
 	go tools.Try(func() {
 		redis.LockDo(redisKey(msg.PlatformUUID), func() {
-
 			var (
 				acc       *account.Account
 				newPlayer bool
 			)
+
 			result := mongodb.Ins.Collection(account.Collection).FindOne(context.Background(), bson.M{"_id": msg.PlatformUUID})
 			if result.Err() == mongo.ErrNoDocuments {
 				acc = account.New()
