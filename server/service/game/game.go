@@ -15,14 +15,14 @@ import (
 	"server/service/game/logic/player"
 )
 
-func New(serverId uint16) *Game {
+func New(serverId int32) *Game {
 	return &Game{sid: serverId}
 }
 
 type Game struct {
 	actor.Base
 	iface.StoreLoader
-	sid uint16 // serverId
+	sid int32 // serverId
 }
 
 func (s *Game) OnInit() {
@@ -42,7 +42,7 @@ func (s *Game) OnStop() bool {
 }
 
 // SID serverId
-func (s *Game) SID() uint16 {
+func (s *Game) SID() int32 {
 	return s.sid
 }
 

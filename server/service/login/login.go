@@ -7,19 +7,15 @@ import (
 	"server/common"
 	"server/common/log"
 	"server/proto/outermsg/outer"
-	"server/service/game/iface"
 )
 
 type Login struct {
 	actor.Base
 	common.SendTools
-	storage iface.StoreLoader
 }
 
-func New(s iface.StoreLoader) *Login {
-	return &Login{
-		storage: s,
-	}
+func New() *Login {
+	return &Login{}
 }
 
 func (s *Login) OnInit() {

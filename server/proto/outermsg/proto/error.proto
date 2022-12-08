@@ -17,3 +17,12 @@ enum ERROR
    CFG_NO_THIS_PARAM          = 10; //配置表错误
    NAME_LEN_OUTRANGE          = 13; //命名超过长度限制
 }
+
+message Unknown{}
+message Ok {}
+message Fail
+{
+   ERROR  Error = 1;
+   string info  = 2;
+}
+

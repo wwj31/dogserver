@@ -30,6 +30,7 @@ message LoginReq
 
 message LoginResp
 {
+
     string  UID          = 1;
     string  RID          = 2;
     bool    NewPlayer    = 3;

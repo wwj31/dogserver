@@ -25,14 +25,38 @@ func (s *Login) Login(gSession common.GSession, msg *outer.LoginReq) {
 			var (
 				acc       *account.Account
 				newPlayer bool
+				err       error
 			)
+
+			defer func() {
+				if acc == nil {
+					_ = s.Send2Client(gSession, &outer.Fail{
+						Error: outer.ERROR_FAILED,
+						Info:  err.Error(),
+					})
+				}
+
+				md5 := common.LoginMD5(acc.UUID, acc.LastLoginRID, newPlayer)
+				gateId, _ := gSession.Split()
+				_ = s.Send2Gate(gateId, &inner.BindSessionWithRID{
+					GateSession: gSession.String(),
+					RID:         acc.LastLoginRID,
+				})
+
+				_ = s.Send2Client(gSession, &outer.LoginResp{
+					UID:       acc.UUID,
+					RID:       acc.LastLoginRID,
+					NewPlayer: newPlayer,
+					Token:     md5,
+				})
+			}()
 
 			result := mongodb.Ins.Collection(account.Collection).FindOne(context.Background(), bson.M{"_id": msg.PlatformUUID})
 			if result.Err() == mongo.ErrNoDocuments {
 				acc = account.New()
 				acc.UUID = tools.XUID()
 				acc.SID = actortype.GameName(1)
-				if _, err := mongodb.Ins.Collection(account.Collection).InsertOne(context.Background(), acc); err != nil {
+				if _, err = mongodb.Ins.Collection(account.Collection).InsertOne(context.Background(), acc); err != nil {
 					log.Errorw("login insert new account failed ", "UUID", acc.UUID, "err", err)
 				}
 				newPlayer = true
@@ -44,7 +68,7 @@ func (s *Login) Login(gSession common.GSession, msg *outer.LoginReq) {
 				}
 
 				acc = &account.Account{}
-				if err := result.Decode(acc); err != nil {
+				if err = result.Decode(acc); err != nil {
 					log.Errorw("login find account decode failed", "err", err)
 					return
 				}
@@ -57,7 +81,7 @@ func (s *Login) Login(gSession common.GSession, msg *outer.LoginReq) {
 				acc.LastLoginRID = rid
 			}
 
-			err := s.Send(acc.SID, inner.PullPlayer{
+			err = s.Send(acc.SID, inner.PullPlayer{
 				RID: acc.LastLoginRID,
 			})
 
@@ -65,20 +89,6 @@ func (s *Login) Login(gSession common.GSession, msg *outer.LoginReq) {
 				log.Errorw("send to game failed ", "err", err)
 				return
 			}
-
-			md5 := common.LoginMD5(acc.UUID, acc.LastLoginRID, newPlayer)
-			gateId, _ := gSession.Split()
-			s.Send2Gate(gateId, &inner.BindSessionWithRID{
-				GateSession: gSession.String(),
-				RID:         acc.LastLoginRID,
-			})
-
-			s.Send2Client(gSession, &outer.LoginResp{
-				UID:       acc.UUID,
-				RID:       acc.LastLoginRID,
-				NewPlayer: newPlayer,
-				Token:     md5,
-			})
 		})
 	})
 }

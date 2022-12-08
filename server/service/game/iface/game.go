@@ -6,5 +6,5 @@ import (
 
 type Gamer interface {
 	actor.Actor
-	SID() uint16
+	SID() int32
 }

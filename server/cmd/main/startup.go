@@ -5,7 +5,6 @@ import (
 	"os"
 	"os/signal"
 	"server/common/redis"
-	"server/db/dbmysql"
 	"syscall"
 
 	"github.com/spf13/cast"
@@ -113,8 +112,7 @@ func newProtoIndex() *tools.ProtoIndex {
 }
 
 func newLogin(system *actor.System) {
-	dbIns := dbmysql.New(toml.Get("mysql"), toml.Get("database"), system)
-	loginActor := login.New(dbIns)
+	loginActor := login.New()
 	expect.Nil(system.Add(actor.New(actortype.Login_Actor, loginActor, actor.SetMailBoxSize(1000))))
 }
 
@@ -124,8 +122,8 @@ func newGateway(appId int32, system *actor.System) {
 }
 
 func newGame(appId int32, system *actor.System) {
-	gameActor := game.New(uint16(appId))
+	gameActor := game.New(appId)
 	ch := channel.New()
 	expect.Nil(system.Add(actor.New(actortype.GameName(appId), gameActor, actor.SetMailBoxSize(4000))))
-	expect.Nil(system.Add(actor.New(actortype.ChatName(uint16(appId)), ch, actor.SetMailBoxSize(1000))))
+	expect.Nil(system.Add(actor.New(actortype.ChatName(appId), ch, actor.SetMailBoxSize(1000))))
 }
