@@ -36,10 +36,10 @@ func startup() {
 		osSignal := make(chan os.Signal)
 		signal.Notify(osSignal, syscall.SIGKILL, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
 
-		// init toml file
+		// init toml
 		toml.Init(*tomlPath, *appName, *appId)
 
-		// init log file
+		// init log
 		logName := *appName + cast.ToString(appId)
 		log.Init(*logLevel, *logPath, logName, cast.ToBool(toml.Get("dispaly")))
 
