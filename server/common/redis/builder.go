@@ -3,9 +3,9 @@ package redis
 import (
 	"context"
 	"fmt"
-	redisv8 "github.com/go-redis/redis/v8"
+	redisv9 "github.com/go-redis/redis/v9"
 	"github.com/go-redsync/redsync/v4"
-	"github.com/go-redsync/redsync/v4/redis/goredis/v8"
+	"github.com/go-redsync/redsync/v4/redis/goredis/v9"
 	"time"
 )
 
@@ -39,15 +39,16 @@ func (b *builder) Connect() (err error) {
 		var client Client
 		if b.clusterMode {
 			opt := b.clusterOptions()
-			client = redisv8.NewClusterClient(opt)
+			client = redisv9.NewClusterClient(opt)
 		} else {
 			opt := b.options()
-			client = redisv8.NewClient(opt)
+			client = redisv9.NewClient(opt)
 		}
 
 		if b.onConnectHande != nil {
 			b.onConnectHande()
 		}
+
 		ping := client.Ping(context.Background())
 		if ping.Err() != nil {
 			err = fmt.Errorf("redis connect ping err:%v", ping.Err())
@@ -104,8 +105,8 @@ func (b *builder) OnConnect(fn func()) *builder {
 	return b
 }
 
-func (b *builder) options() *redisv8.Options {
-	return &redisv8.Options{
+func (b *builder) options() *redisv9.Options {
+	return &redisv9.Options{
 		Addr:         b.addr[0],
 		Username:     b.userName,
 		Password:     b.password,
@@ -116,8 +117,8 @@ func (b *builder) options() *redisv8.Options {
 	}
 }
 
-func (b *builder) clusterOptions() *redisv8.ClusterOptions {
-	return &redisv8.ClusterOptions{
+func (b *builder) clusterOptions() *redisv9.ClusterOptions {
+	return &redisv9.ClusterOptions{
 		Addrs:        b.addr,
 		Username:     b.userName,
 		Password:     b.password,

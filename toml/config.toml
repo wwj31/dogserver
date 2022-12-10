@@ -4,18 +4,18 @@ logpath    = "./log"
 etcdprefix = "dog"
 etcdaddr   = "127.0.0.1:2379"
 natsurl    = "nats://localhost:4222"
-#redisaddr  = ["localhost:9001","localhost:9003","localhost:9005"]
-redisaddr  = "localhost:6379"
+redisaddr  = ["localhost:6379","localhost:6002"]
+mysql      = "root:123456@tcp(127.0.0.1:3306)/%s?charset=utf8mb4&parseTime=True&loc=Local"
+mongaddr   = "mongodb://localhost:27017"
+configjson = "../server/config/confjson"
 
 
 
 [server]
     [server.login_1]
         actoraddr  = "127.0.0.1:8100"
-        mysql      = "root:123456@tcp(127.0.0.1:3306)/%s?charset=utf8mb4&parseTime=True&loc=Local"
         luapath    = "./root/servers/gate/lua/main.lua"
         database   = "game"
-        configjson = "../server/config/confjson"
 
     [server.gateway_1]
         actoraddr = "127.0.0.1:8001"
@@ -27,17 +27,13 @@ redisaddr  = "localhost:6379"
 
     [server.game_1]
         actoraddr  = "127.0.0.1:8201"
-        mysql      = "root:123456@tcp(127.0.0.1:3306)/%s?charset=utf8mb4&parseTime=True&loc=Local"
         database   = "game"
-        configjson = "../server/config/confjson"
 
 
     [server.all_1]
         actoraddr  = "127.0.0.1:8000"
         gateaddr   = "0.0.0.0:9001"
-        mysql      = "root:123456@tcp(127.0.0.1:3306)/%s?charset=utf8mb4&parseTime=True&loc=Local"
         database   = "game"
-        configjson = "../server/config/confjson"
 
     [server.client_1]
         actoraddr  = "127.0.0.1:5001"

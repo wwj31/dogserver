@@ -5,6 +5,7 @@ go 1.17
 require (
 	github.com/agiledragon/gomonkey/v2 v2.3.1
 	github.com/go-redis/redis/v8 v8.11.5
+	github.com/go-redis/redis/v9 v9.0.0-beta.2
 	github.com/go-redsync/redsync/v4 v4.7.1
 	github.com/gogo/protobuf v1.3.2
 	github.com/golang/mock v1.6.0

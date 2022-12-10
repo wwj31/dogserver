@@ -2,8 +2,10 @@ package main
 
 import (
 	"fmt"
+	syslog "github.com/wwj31/dogactor/log"
 	"os"
 	"os/signal"
+	"server/common/mongodb"
 	"server/common/redis"
 	"syscall"
 
@@ -12,7 +14,6 @@ import (
 	"github.com/wwj31/dogactor/actor/cluster/mq"
 	"github.com/wwj31/dogactor/actor/cluster/mq/nats"
 	"github.com/wwj31/dogactor/expect"
-	syslog "github.com/wwj31/dogactor/log"
 	"github.com/wwj31/dogactor/logger"
 	"github.com/wwj31/dogactor/tools"
 	"server/common"
@@ -34,7 +35,6 @@ func startup() {
 	tools.Try(func() {
 		osSignal := make(chan os.Signal)
 		signal.Notify(osSignal, syscall.SIGKILL, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
-		syslog.SysLog.Level(logger.WarnLevel)
 
 		// init toml file
 		toml.Init(*tomlPath, *appName, *appId)
@@ -43,8 +43,17 @@ func startup() {
 		logName := *appName + cast.ToString(appId)
 		log.Init(*logLevel, *logPath, logName, cast.ToBool(toml.Get("dispaly")))
 
+		// init mongo
+		if err := mongodb.Builder().
+			Addr("mongodb://localhost:27017").Database("test").
+			Connect(); err != nil {
+			panic(err)
+		}
+
 		// init redis
-		if err := redis.Builder().Addr(toml.Get("redisaddr", "localhost:6379")).
+		if err := redis.Builder().
+			Addr(toml.GetArray("redisaddr", "localhost:6379")...).
+			ClusterMode().
 			Connect(); err != nil {
 			panic(err)
 		}
@@ -72,6 +81,7 @@ func startup() {
 
 func run(appType string, appId int32) *actor.System {
 	// startup the system of actor
+	syslog.SysLog.Level(logger.WarnLevel)
 	system, _ := actor.NewSystem(
 		//fullmesh.WithRemote(toml.Get("etcdaddr"), toml.Get("etcdprefix")),
 		mq.WithRemote(toml.Get("natsurl"), nats.New()),
