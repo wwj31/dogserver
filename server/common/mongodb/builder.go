@@ -2,6 +2,7 @@ package mongodb
 
 import (
 	"context"
+	"fmt"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"time"
@@ -27,6 +28,11 @@ func (b *builder) Connect() (err error) {
 		}
 
 		Ins.collections = map[string]*mongo.Collection{}
+		if b.databaseName == "" {
+			err = fmt.Errorf("mongo database is nil")
+			return
+		}
+
 		Ins.database = Ins.client.Database(b.databaseName)
 	})
 	return

@@ -10,7 +10,8 @@ import (
 )
 
 func TestMongo(t *testing.T) {
-	if err := Builder().Addr("mongodb://localhost:27017").Database("test").
+	if err := Builder().Addr("mongodb://localhost:27017").
+		Database("test").
 		Connect(); err != nil {
 		assert.NoError(t, err)
 		return
@@ -32,14 +33,23 @@ func TestMongo(t *testing.T) {
 		Name: "fegh",
 		Val:  999,
 	})
-
-	test := &TestColl{}
-	Ins.Collection("testColl").FindOne(context.Background(), bson.M{"_id": id}).Decode(test)
-
 	if err != nil {
 		assert.NoError(t, err)
 		return
 	}
+
+	test := &TestColl{}
+	err = Ins.Collection("testColl").FindOne(context.Background(), bson.M{"_id": id}).Decode(test)
+	if err != nil {
+		assert.NoError(t, err)
+		return
+	}
+
 	fmt.Println(result)
 	fmt.Println("find", test)
+	_, err = Ins.Collection("testColl").DeleteOne(context.Background(), bson.M{"_id": id})
+	if err != nil {
+		assert.NoError(t, err)
+		return
+	}
 }

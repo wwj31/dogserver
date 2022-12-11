@@ -44,17 +44,15 @@ func startup() {
 		log.Init(*logLevel, *logPath, logName, cast.ToBool(toml.Get("dispaly")))
 
 		// init mongo
-		if err := mongodb.Builder().
-			Addr("mongodb://localhost:27017").Database("test").
-			Connect(); err != nil {
+		if err := mongodb.Builder().Addr(toml.Get("mongoaddr")).
+			Database(toml.Get("database")).Connect(); err != nil {
 			panic(err)
 		}
 
 		// init redis
 		if err := redis.Builder().
 			Addr(toml.GetArray("redisaddr", "localhost:6379")...).
-			ClusterMode().
-			Connect(); err != nil {
+			ClusterMode().Connect(); err != nil {
 			panic(err)
 		}
 

@@ -6,7 +6,8 @@ etcdaddr   = "127.0.0.1:2379"
 natsurl    = "nats://localhost:4222"
 redisaddr  = ["localhost:6379","localhost:6002"]
 mysql      = "root:123456@tcp(127.0.0.1:3306)/%s?charset=utf8mb4&parseTime=True&loc=Local"
-mongaddr   = "mongodb://localhost:27017"
+mongoaddr   = "mongodb://localhost:27017"
+database   = "game"
 configjson = "../server/config/confjson"
 
 
@@ -15,7 +16,6 @@ configjson = "../server/config/confjson"
     [server.login_1]
         actoraddr  = "127.0.0.1:8100"
         luapath    = "./root/servers/gate/lua/main.lua"
-        database   = "game"
 
     [server.gateway_1]
         actoraddr = "127.0.0.1:8001"
@@ -27,7 +27,6 @@ configjson = "../server/config/confjson"
 
     [server.game_1]
         actoraddr  = "127.0.0.1:8201"
-        database   = "game"
 
 
     [server.all_1]
