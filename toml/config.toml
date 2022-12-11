@@ -18,27 +18,27 @@ configjson = "../server/config/confjson"
         luapath    = "./root/servers/gate/lua/main.lua"
 
     [server.gateway_1]
-        actoraddr = "127.0.0.1:8001"
+        #actoraddr = "127.0.0.1:8001" // use for full-mesh mode
         gateaddr  = "0.0.0.0:7001"     # client连接端口
 
     [server.gateway_2]
-        actoraddr = "127.0.0.1:8002"
+        #actoraddr = "127.0.0.1:8002" // use for full-mesh mode
         gateaddr  = "0.0.0.0:7002"     # client连接端口
 
     [server.game_1]
-        actoraddr  = "127.0.0.1:8201"
+        #actoraddr  = "127.0.0.1:8201" // use ofr full-mesh mode
 
 
     [server.all_1]
-        actoraddr  = "127.0.0.1:8000"
+        #actoraddr  = "127.0.0.1:8000" // use ofr full-mesh mode
         gateaddr   = "0.0.0.0:9001"
         database   = "game"
 
-    [server.client_1]
-        actoraddr  = "127.0.0.1:5001"
+#    [server.client_1]
+#        actoraddr  = "127.0.0.1:5001"
     [server.client_2]
-        actoraddr  = "127.0.0.1:5002"
-    [server.client_3]
-        actoraddr  = "127.0.0.1:5003"
+#        actoraddr  = "127.0.0.1:5002"
+#    [server.client_3]
+#        actoraddr  = "127.0.0.1:5003"
     [server.robot_1]
-        actoraddr  = "127.0.0.1:5003"
+#        actoraddr  = "127.0.0.1:5003"

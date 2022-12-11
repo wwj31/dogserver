@@ -12,7 +12,7 @@ import (
 	"github.com/wwj31/dogactor/tools"
 )
 
-const addr = "127.0.0.1:9001"
+const addr = "127.0.0.1:7001"
 
 type Client struct {
 	actor.Base

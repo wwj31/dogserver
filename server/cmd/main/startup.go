@@ -82,14 +82,14 @@ func run(appType string, appId int32) *actor.System {
 	syslog.SysLog.Level(logger.WarnLevel)
 	system, _ := actor.NewSystem(
 		//fullmesh.WithRemote(toml.Get("etcdaddr"), toml.Get("etcdprefix")),
+		//actor.Addr(toml.Get("actoraddr")),
 		mq.WithRemote(toml.Get("natsurl"), nats.New()),
-		actor.Addr(toml.Get("actoraddr")),
 		actor.ProtoIndex(newProtoIndex()),
 	)
 
 	switch appType {
 	case actortype.Client:
-		expect.Nil(system.Add(actor.New(actortype.Client, &client.Client{}, actor.SetLocalized())))
+		expect.Nil(system.Add(actor.New(actortype.Client, &client.Client{ACC: "Client"}, actor.SetLocalized())))
 	case actortype.Robot:
 		system.Add(actor.New(actortype.Robot, &robot.Robot{}, actor.SetLocalized()))
 	case actortype.GateWay_Actor:

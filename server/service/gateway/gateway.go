@@ -31,7 +31,8 @@ func New() *GateWay {
 func (s *GateWay) OnInit() {
 	s.sessions = make(map[uint64]*UserSession)
 
-	s.listener = network.StartTcpListen(toml.Get("gateaddr"),
+	addr := toml.Get("gateaddr")
+	s.listener = network.StartTcpListen(addr,
 		func() network.DecodeEncoder { return &network.StreamCode{MaxDecode: 100 * tools.KB} },
 		func() network.SessionHandler { return &UserSession{gateway: s} },
 	)
@@ -39,10 +40,10 @@ func (s *GateWay) OnInit() {
 	s.AddTimer(tools.XUID(), tools.Now().Add(time.Hour), s.checkDeadSession, -1)
 
 	if err := s.listener.Start(); err != nil {
-		log.Errorw("gateway listener start failed", "err", err, "addr", toml.Get("gateaddr"))
+		log.Errorw("gateway listener start failed", "err", err, "addr", addr)
 		return
 	}
-	log.Debugf("gateway OnInit")
+	log.Debugf("gateway OnInit addr:%v", addr)
 }
 
 // 定期检查并清理死链接

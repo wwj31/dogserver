@@ -60,7 +60,6 @@ func (s *Login) Login(gSession common.GSession, msg *outer.LoginReq) {
 					log.Errorw("login insert new account failed ", "UUID", acc.UUID, "err", err)
 				}
 				newPlayer = true
-				return
 			} else {
 				if result.Err() != nil {
 					log.Errorw("login mongo find failed", "err", result.Err())
