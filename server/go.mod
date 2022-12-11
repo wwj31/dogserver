@@ -17,7 +17,7 @@ require (
 	github.com/spf13/viper v1.9.0
 	github.com/stretchr/testify v1.7.0
 	github.com/tealeg/xlsx v1.0.5
-	github.com/wwj31/dogactor v1.3.0
+	github.com/wwj31/dogactor v1.3.3
 	go.mongodb.org/mongo-driver v1.11.0
 	gorm.io/driver/mysql v1.1.3
 	gorm.io/gorm v1.22.3
@@ -60,7 +60,6 @@ require (
 	github.com/subosito/gotenv v1.2.0 // indirect
 	github.com/tklauser/go-sysconf v0.3.9 // indirect
 	github.com/tklauser/numcpus v0.3.0 // indirect
-	github.com/wwj31/jtimer v1.2.8 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.1 // indirect
 	github.com/xdg-go/stringprep v1.0.3 // indirect
@@ -79,3 +78,5 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
+
+replace github.com/wwj31/dogactor => ../../dogactor

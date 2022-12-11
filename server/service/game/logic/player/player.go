@@ -63,29 +63,27 @@ func (s *Player) OnInit() {
 }
 
 func (s *Player) OnHandle(msg actor.Message) {
-	log.Debugw("player recv ", "msg", msg)
 	message, msgName, gSession, err := common.UnwrapperGateMsg(msg.RawMsg())
 	expect.Nil(err)
 
 	// 重连的情况，除了EnterGame消息，其他都不处理
-	if s.gSession != gSession {
+	if s.gSession != gSession && gSession != "" {
 		if _, ok := message.(*outer.EnterGameReq); !ok {
 			log.Warnw("recv message from the old session",
 				"local session", s.gSession,
 				"new session", gSession,
-				"message", message)
+			)
 			return
 		}
 		s.SetGateSession(gSession)
 	}
 
 	if msgName == "" {
-		//msgName = s.System().ProtoIndex().MsgName(message.(gogo.Message))
-		msgName = msg.GetMsgName()
+		msgName = s.System().ProtoIndex().MsgName(message.(gogo.Message))
 	}
 	handle, ok := controller.GetHandler(msgName)
 	if !ok {
-		log.Errorw("player undefined route ", "msg", msgName, "message", message)
+		log.Errorw("player undefined route ", "msg", msgName)
 		return
 	}
 	handle(s, message)

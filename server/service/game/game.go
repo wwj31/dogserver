@@ -9,6 +9,7 @@ import (
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
 	"server/service/game/logic/player"
+	"time"
 )
 
 func New(serverId int32) *Game {
@@ -23,11 +24,13 @@ type Game struct {
 
 func (s *Game) OnInit() {
 	s.respIdMap = make(map[actor.Id]string)
-	s.System().OnEvent(s.ID(), func(event actor.EvDelActor) {
+	s.System().OnEvent(s.ID(), func(event actor.EvActorSubMqFin) {
 		if actortype.IsActorOf(event.ActorId, actortype.Player_Actor) {
 			log.Debugw("player loaded", "player", event.ActorId)
-			respId := s.respIdMap[event.ActorId]
-			_ = s.Response(respId, &outer.Ok{})
+			if respId, ok := s.respIdMap[event.ActorId]; ok {
+				time.Sleep(100 * time.Millisecond)
+				_ = s.Response(respId, &outer.Ok{})
+			}
 		}
 	})
 
@@ -48,6 +51,7 @@ func (s *Game) SID() int32 {
 func (s *Game) OnHandle(msg actor.Message) {
 	actMsg, _, _, err := common.UnwrapperGateMsg(msg.RawMsg())
 	expect.Nil(err)
+	log.Debugw("game handle msg", "msg", actMsg)
 
 	switch pbMsg := actMsg.(type) {
 	case *inner.PullPlayer:

@@ -57,10 +57,13 @@ func (s *Login) Login(gSession common.GSession, msg *outer.LoginReq) {
 				log.Debugw("player login success", "RID", acc.LastLoginRID, "UID", acc.UUID)
 			}()
 
-			result := mongodb.Ins.Collection(account.Collection).FindOne(context.Background(), bson.M{"_id": msg.PlatformUUID})
+			uuid := msg.PlatformName + ":" + msg.PlatformUUID
+			result := mongodb.Ins.Collection(account.Collection).FindOne(context.Background(), bson.M{"_id": uuid})
 			if result.Err() == mongo.ErrNoDocuments {
 				acc = account.New()
-				acc.UUID = tools.XUID()
+				acc.PlatformID = msg.PlatformUUID
+				acc.PlatformName = msg.PlatformName
+				acc.UUID = uuid
 				acc.SID = actortype.GameName(1)
 				if _, err = mongodb.Ins.Collection(account.Collection).InsertOne(context.Background(), acc); err != nil {
 					log.Errorw("login insert new account failed ", "UUID", acc.UUID, "err", err)
@@ -91,7 +94,7 @@ func (s *Login) Login(gSession common.GSession, msg *outer.LoginReq) {
 			})
 
 			if err != nil {
-				log.Errorw("send to game failed ", "err", err)
+				log.Errorw("send to game failed ", "err", err, "sid", acc.SID)
 				return
 			}
 		})

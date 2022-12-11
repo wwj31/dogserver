@@ -5,6 +5,7 @@ const Collection = "account"
 type Account struct {
 	UUID          string `bson:"_id"`
 	PlatformID    string
+	PlatformName  string
 	SID           string
 	OS            string
 	ClientVersion string
