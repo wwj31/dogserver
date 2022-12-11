@@ -9,7 +9,6 @@ import (
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
 	"server/service/game/logic/player"
-	"time"
 )
 
 func New(serverId int32) *Game {
@@ -26,10 +25,9 @@ func (s *Game) OnInit() {
 	s.respIdMap = make(map[actor.Id]string)
 	s.System().OnEvent(s.ID(), func(event actor.EvActorSubMqFin) {
 		if actortype.IsActorOf(event.ActorId, actortype.Player_Actor) {
-			log.Debugw("player loaded", "player", event.ActorId)
 			if respId, ok := s.respIdMap[event.ActorId]; ok {
-				time.Sleep(100 * time.Millisecond)
 				_ = s.Response(respId, &outer.Ok{})
+				delete(s.respIdMap, event.ActorId)
 			}
 		}
 	})
@@ -79,8 +77,8 @@ func (s *Game) checkAndPullPlayer(rid string) (playerId actortype.ActorId, loadi
 
 		err := s.System().Add(playerActor)
 		expect.Nil(err)
-		return playerId, false
+		return playerId, true
 	}
 
-	return playerId, true
+	return playerId, false
 }

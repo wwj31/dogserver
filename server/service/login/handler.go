@@ -65,6 +65,10 @@ func (s *Login) Login(gSession common.GSession, msg *outer.LoginReq) {
 				acc.PlatformName = msg.PlatformName
 				acc.UUID = uuid
 				acc.SID = actortype.GameName(1)
+				acc.Roles = make(map[string]account.Role)
+				rid := tools.XUID()
+				acc.Roles[rid] = account.Role{RID: rid}
+				acc.LastLoginRID = rid
 				if _, err = mongodb.Ins.Collection(account.Collection).InsertOne(context.Background(), acc); err != nil {
 					log.Errorw("login insert new account failed ", "UUID", acc.UUID, "err", err)
 				}
@@ -80,13 +84,6 @@ func (s *Login) Login(gSession common.GSession, msg *outer.LoginReq) {
 					log.Errorw("login find account decode failed", "err", err)
 					return
 				}
-			}
-
-			if acc.LastLoginRID == "" {
-				acc.Roles = make(map[string]account.Role)
-				rid := tools.XUID()
-				acc.Roles[rid] = account.Role{RID: rid}
-				acc.LastLoginRID = rid
 			}
 
 			_, err = s.RequestWait(acc.SID, &inner.PullPlayer{
