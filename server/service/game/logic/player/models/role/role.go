@@ -11,16 +11,17 @@ import (
 
 type Role struct {
 	models.Model
-	role *inner.RoleInfo
+	data inner.RoleInfo
 }
 
 func New(base models.Model) *Role {
 	mod := &Role{Model: base}
+	mod.data.RID = base.Player.RID()
 	return mod
 }
 
 func (s *Role) Data() gogo.Message {
-	return s.role
+	return &s.data
 }
 
 func (s *Role) OnLogin(first bool) {
@@ -31,21 +32,21 @@ func (s *Role) OnLogin(first bool) {
 		s.SetAttribute(typ.Glod, 0)
 	}
 
-	s.role.LoginAt = tools.Milliseconds()
+	s.data.LoginAt = tools.Milliseconds()
 	s.Player.Send2Client(s.roleInfoPush())
 }
 
 func (s *Role) OnLogout() {
-	s.role.LogoutAt = tools.Milliseconds()
+	s.data.LogoutAt = tools.Milliseconds()
 }
 
 func (s *Role) roleInfoPush() *outer.RoleInfoPush {
 	return &outer.RoleInfoPush{
-		UID:     s.role.UID,
-		RID:     s.role.RID,
-		SId:     s.role.SId,
-		Name:    s.role.Name,
-		Icon:    s.role.Icon,
-		Country: s.role.Country,
+		UID:     s.data.UID,
+		RID:     s.data.RID,
+		SId:     s.data.SId,
+		Name:    s.data.Name,
+		Icon:    s.data.Icon,
+		Country: s.data.Country,
 	}
 }

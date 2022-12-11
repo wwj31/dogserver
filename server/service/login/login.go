@@ -20,7 +20,12 @@ func New() *Login {
 
 func (s *Login) OnInit() {
 	s.SendTools = common.NewSendTools(s)
-	log.Debugf("login OnInit")
+	log.Debugw("login OnInit")
+}
+
+func (s *Login) OnStop() bool {
+	log.Debugw("login stop", "id", s.ID())
+	return true
 }
 
 func (s *Login) OnHandle(m actor.Message) {

@@ -86,6 +86,9 @@ func (s *GateWay) OnHandle(m actor.Message) {
 		_ = userSessionHandler.SendMsg(network.CombineMsgWithId(msgId, msg.Data))
 
 	default:
-		s.InnerHandler(m.GetSourceId(), rawMsg) // 内部消息，单独处理
+		resp := s.InnerHandler(m.GetSourceId(), rawMsg) // 内部消息，单独处理
+		if resp != nil && m.GetRequestId() != "" {
+			s.Response(m.GetRequestId(), resp)
+		}
 	}
 }

@@ -22,7 +22,6 @@ message BindSessionWithRID
 // session断开,gate通知player
 message GSessionClosed
 {
-    string GateSession = 1;
 }
 
 message PullPlayer

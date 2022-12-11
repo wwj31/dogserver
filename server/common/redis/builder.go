@@ -49,7 +49,9 @@ func (b *builder) Connect() (err error) {
 			b.onConnectHande()
 		}
 
-		ping := client.Ping(context.Background())
+		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+		defer cancel()
+		ping := client.Ping(ctx)
 		if ping.Err() != nil {
 			err = fmt.Errorf("redis connect ping err:%v", ping.Err())
 		}

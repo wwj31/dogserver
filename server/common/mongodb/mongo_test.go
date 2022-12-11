@@ -17,7 +17,7 @@ func TestMongo(t *testing.T) {
 		return
 	}
 
-	if err := Ins.CreateCollection("testcoll"); err != nil {
+	if err := Ins.CreateCollection("testColl"); err != nil {
 		assert.NoError(t, err)
 		return
 	}
@@ -45,9 +45,19 @@ func TestMongo(t *testing.T) {
 		return
 	}
 
+	_, err = Ins.Collection("testColl").UpdateByID(context.Background(), id, bson.M{"$set": &TestColl{
+		Id:   id,
+		Name: "bbbb",
+		Val:  123,
+	}})
+	if err != nil {
+		assert.NoError(t, err)
+		return
+	}
+
 	fmt.Println(result)
 	fmt.Println("find", test)
-	_, err = Ins.Collection("testColl").DeleteOne(context.Background(), bson.M{"_id": id})
+	//_, err = Ins.Collection("testColl").DeleteOne(context.Background(), bson.M{"_id": id})
 	if err != nil {
 		assert.NoError(t, err)
 		return

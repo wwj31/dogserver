@@ -40,8 +40,7 @@ func (s *UserSession) OnSessionCreated(sess network.Session) {
 func (s *UserSession) OnSessionClosed() {
 	if s.PlayerId != "" {
 		// 通知player
-		gSession := common.GateSession(s.gateway.ID(), s.Id())
-		_ = s.gateway.Send(s.PlayerId, &inner.GSessionClosed{GateSession: gSession.String()})
+		_ = s.gateway.Send(s.PlayerId, &inner.GSessionClosed{})
 	}
 
 	_ = s.gateway.Send(s.gateway.ID(), func() {
@@ -94,5 +93,6 @@ func (s *UserSession) OnRecv(data []byte) {
 		"msgId", msgId,
 		"msgName", msgName,
 		"gSession", gSession,
+		"player", s.PlayerId,
 	)
 }

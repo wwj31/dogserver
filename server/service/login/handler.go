@@ -38,10 +38,15 @@ func (s *Login) Login(gSession common.GSession, msg *outer.LoginReq) {
 
 				md5 := common.LoginMD5(acc.UUID, acc.LastLoginRID, newPlayer)
 				gateId, _ := gSession.Split()
-				_ = s.Send2Gate(gateId, &inner.BindSessionWithRID{
+				_, err = s.RequestWait(gateId, &inner.BindSessionWithRID{
 					GateSession: gSession.String(),
 					RID:         acc.LastLoginRID,
 				})
+				if err != nil {
+					log.Errorw("bind session with rid failed",
+						"gsession", gSession.String(), "RID", acc.LastLoginRID)
+					return
+				}
 
 				_ = s.Send2Client(gSession, &outer.LoginResp{
 					UID:       acc.UUID,
@@ -49,6 +54,7 @@ func (s *Login) Login(gSession common.GSession, msg *outer.LoginReq) {
 					NewPlayer: newPlayer,
 					Token:     md5,
 				})
+				log.Debugw("player login success", "RID", acc.LastLoginRID, "UID", acc.UUID)
 			}()
 
 			result := mongodb.Ins.Collection(account.Collection).FindOne(context.Background(), bson.M{"_id": msg.PlatformUUID})
@@ -80,7 +86,7 @@ func (s *Login) Login(gSession common.GSession, msg *outer.LoginReq) {
 				acc.LastLoginRID = rid
 			}
 
-			err = s.Send(acc.SID, inner.PullPlayer{
+			_, err = s.RequestWait(acc.SID, &inner.PullPlayer{
 				RID: acc.LastLoginRID,
 			})
 

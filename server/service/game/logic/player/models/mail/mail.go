@@ -15,9 +15,9 @@ import (
 
 type Mail struct {
 	models.Model
+	data inner.MailInfo
 
-	zSet     rank.Rank
-	mailInfo *inner.MailInfo
+	zSet rank.Rank
 }
 
 func New(base models.Model) *Mail {
@@ -25,27 +25,28 @@ func New(base models.Model) *Mail {
 		Model: base,
 		zSet:  *rank.New(),
 	}
+	mail.data.RID = base.Player.RID()
 	return mail
 }
 
 func (s *Mail) OnLoaded() {
-	for _, m := range s.mailInfo.Mails {
+	for _, m := range s.data.Mails {
 		s.zSet.Add(m.GetUUID(), m.CreateAt)
 	}
 }
 
 func (s *Mail) Data() gogo.Message {
-	//_, err := common.GZip(common.ProtoMarshal(&s.mailInfo))
+	//_, err := common.GZip(common.ProtoMarshal(&s.data))
 	//if err != nil {
 	//	log.Errorw("mail zip failed", "err", err)
 	//	return nil
 	//}
-	return s.mailInfo
+	return &s.data
 }
 
 func (s *Mail) OnLogin(first bool) {
 	if first {
-		s.mailInfo.Mails = make(map[string]*inner.Mail, 4)
+		s.data.Mails = make(map[string]*inner.Mail, 4)
 		s.NewBuilder().
 			SetMailTitle("welcome to dog game!").
 			SetContent("best wish for you !").
@@ -55,7 +56,7 @@ func (s *Mail) OnLogin(first bool) {
 }
 
 func (s *Mail) Add(mail *inner.Mail) {
-	s.mailInfo.Mails[mail.GetUUID()] = mail
+	s.data.Mails[mail.GetUUID()] = mail
 	s.zSet.Add(cast.ToString(mail.GetUUID()), mail.CreateAt)
 	s.Player.Send2Client(&outer.AddMailNotify{Uuid: mail.GetUUID()})
 	log.Debugw("add actormail ", "player", s.Player.Role().RoleId(), "actormail", mail.Title, "items", mail.Items)
@@ -78,7 +79,7 @@ func (s *Mail) Mails(count, limit int32) []*inner.Mail {
 
 	for _, k := range keys {
 		mailId := k.Key
-		mail, ok := s.mailInfo.Mails[mailId]
+		mail, ok := s.data.Mails[mailId]
 		if !ok {
 			log.Warnw("can not found actor mail key:%v", mailId)
 			continue
@@ -89,7 +90,7 @@ func (s *Mail) Mails(count, limit int32) []*inner.Mail {
 }
 
 func (s *Mail) Read(uuid string) {
-	mail, ok := s.mailInfo.Mails[uuid]
+	mail, ok := s.data.Mails[uuid]
 	if !ok {
 		log.Warnw("Read can not find mail", "uuid", uuid, "roleId", s.Player.Role().RoleId())
 		return
@@ -98,7 +99,7 @@ func (s *Mail) Read(uuid string) {
 }
 
 func (s *Mail) ReceiveItem(uuid string) {
-	mail, ok := s.mailInfo.Mails[uuid]
+	mail, ok := s.data.Mails[uuid]
 	if !ok {
 		log.Warnw("ReceiveItem can not find mail", "uuid", uuid, "roleId", s.Player.Role().RoleId())
 		return
@@ -115,6 +116,6 @@ func (s *Mail) ReceiveItem(uuid string) {
 func (s *Mail) Delete(uuids ...string) {
 	for _, uuid := range uuids {
 		s.zSet.Del(cast.ToString(uuid))
-		delete(s.mailInfo.Mails, uuid)
+		delete(s.data.Mails, uuid)
 	}
 }

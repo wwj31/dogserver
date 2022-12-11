@@ -3,6 +3,7 @@ package client
 import (
 	"github.com/wwj31/dogactor/expect"
 	"github.com/wwj31/dogactor/network"
+	"server/common/log"
 )
 
 type SessionHandler struct {
@@ -10,11 +11,11 @@ type SessionHandler struct {
 }
 
 func (s SessionHandler) OnSessionCreated(session network.Session) {
-	logger.Infof("session OnSessionCreated!")
+	log.Infof("session OnSessionCreated!")
 }
 
 func (s SessionHandler) OnSessionClosed() {
-	logger.Infof("session OnSessionClosed!")
+	log.Infof("session OnSessionClosed!")
 }
 
 func (s SessionHandler) OnRecv(bytes []byte) {

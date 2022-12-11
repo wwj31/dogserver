@@ -5,32 +5,32 @@ import (
 	"time"
 )
 
-func (s *Role) RoleId() string      { return s.role.RID }
-func (s *Role) SetRoleId(v string)  { s.role.RID = v }
-func (s *Role) UId() string         { return s.role.UID }
-func (s *Role) SetUId(v string)     { s.role.UID = v }
-func (s *Role) SId() uint64         { return s.role.SId }
-func (s *Role) Name() string        { return s.role.Name }
-func (s *Role) Icon() string        { return s.role.Icon }
-func (s *Role) Country() string     { return s.role.Country }
-func (s *Role) CreateAt() time.Time { return time.UnixMilli(s.role.CreateAt) }
-func (s *Role) LoginAt() time.Time  { return time.UnixMilli(s.role.LoginAt) }
-func (s *Role) LogoutAt() time.Time { return time.UnixMilli(s.role.LogoutAt) }
+func (s *Role) RoleId() string      { return s.data.RID }
+func (s *Role) SetRoleId(v string)  { s.data.RID = v }
+func (s *Role) UId() string         { return s.data.UID }
+func (s *Role) SetUId(v string)     { s.data.UID = v }
+func (s *Role) SId() uint64         { return s.data.SId }
+func (s *Role) Name() string        { return s.data.Name }
+func (s *Role) Icon() string        { return s.data.Icon }
+func (s *Role) Country() string     { return s.data.Country }
+func (s *Role) CreateAt() time.Time { return time.UnixMilli(s.data.CreateAt) }
+func (s *Role) LoginAt() time.Time  { return time.UnixMilli(s.data.LoginAt) }
+func (s *Role) LogoutAt() time.Time { return time.UnixMilli(s.data.LogoutAt) }
 
 func newAtrributeMap() map[int64]int64 {
 	return make(map[int64]int64, typ.AttributeMax)
 }
 
 func (s *Role) Attribute(typ typ.Attribute) int64 {
-	if s.role.Attributes == nil {
-		s.role.Attributes = newAtrributeMap()
+	if s.data.Attributes == nil {
+		s.data.Attributes = newAtrributeMap()
 	}
-	return s.role.Attributes[int64(typ)]
+	return s.data.Attributes[int64(typ)]
 }
 
 func (s *Role) SetAttribute(typ typ.Attribute, val int64) {
-	if s.role.Attributes == nil {
-		s.role.Attributes = newAtrributeMap()
+	if s.data.Attributes == nil {
+		s.data.Attributes = newAtrributeMap()
 	}
-	s.role.Attributes[int64(typ)] = val
+	s.data.Attributes[int64(typ)] = val
 }

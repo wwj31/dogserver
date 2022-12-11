@@ -1,17 +1,13 @@
 package game
 
 import (
-	"errors"
 	"github.com/wwj31/dogactor/actor"
-	"github.com/wwj31/dogactor/actor/actorerr"
 	"github.com/wwj31/dogactor/expect"
 	"server/common"
 	"server/common/actortype"
 	"server/common/log"
-	"server/common/toml"
-	"server/db/dbmysql"
 	"server/proto/innermsg/inner"
-	"server/service/game/iface"
+	"server/proto/outermsg/outer"
 	"server/service/game/logic/player"
 )
 
@@ -21,17 +17,20 @@ func New(serverId int32) *Game {
 
 type Game struct {
 	actor.Base
-	iface.StoreLoader
-	sid int32 // serverId
+	sid       int32 // serverId
+	respIdMap map[actor.Id]string
 }
 
 func (s *Game) OnInit() {
-	s.StoreLoader = dbmysql.New(toml.Get("mysql"), toml.Get("database"), s.System())
-
+	s.respIdMap = make(map[actor.Id]string)
 	s.System().OnEvent(s.ID(), func(event actor.EvDelActor) {
 		if actortype.IsActorOf(event.ActorId, actortype.Player_Actor) {
+			log.Debugw("player loaded", "player", event.ActorId)
+			respId := s.respIdMap[event.ActorId]
+			_ = s.Response(respId, &outer.Ok{})
 		}
 	})
+
 	log.Debugf("game OnInit")
 }
 
@@ -52,15 +51,20 @@ func (s *Game) OnHandle(msg actor.Message) {
 
 	switch pbMsg := actMsg.(type) {
 	case *inner.PullPlayer:
-		s.checkAndPullPlayer(pbMsg.RID)
+		playerId, loading := s.checkAndPullPlayer(pbMsg.RID)
+		if !loading {
+			_ = s.Response(msg.GetRequestId(), &outer.Ok{})
+		} else {
+			s.respIdMap[playerId] = msg.GetRequestId()
+		}
 	default:
 		log.Warnw("unknown msg:%v", msg.String())
 	}
 }
 
-func (s *Game) checkAndPullPlayer(rid string) actortype.ActorId {
+func (s *Game) checkAndPullPlayer(rid string) (playerId actortype.ActorId, loading bool) {
 	// TODO::检查玩家是否在其他game节点中,并且通知目标下线,需要将玩家所在节点数据存入redis中以便查询
-	playerId := actortype.PlayerId(rid)
+	playerId = actortype.PlayerId(rid)
 	if act := s.System().LocalActor(playerId); act == nil {
 		playerActor := actor.New(
 			playerId,
@@ -70,12 +74,9 @@ func (s *Game) checkAndPullPlayer(rid string) actortype.ActorId {
 		)
 
 		err := s.System().Add(playerActor)
-		if errors.Is(err, actorerr.RegisterActorSameIdErr) {
-			log.Errorw("actor add err", "err", err)
-			return playerId
-		}
 		expect.Nil(err)
+		return playerId, false
 	}
 
-	return playerId
+	return playerId, true
 }

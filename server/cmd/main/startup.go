@@ -79,7 +79,7 @@ func startup() {
 
 func run(appType string, appId int32) *actor.System {
 	// startup the system of actor
-	syslog.SysLog.Level(logger.WarnLevel)
+	syslog.SysLog.Level(logger.InfoLevel)
 	system, _ := actor.NewSystem(
 		//fullmesh.WithRemote(toml.Get("etcdaddr"), toml.Get("etcdprefix")),
 		//actor.Addr(toml.Get("actoraddr")),

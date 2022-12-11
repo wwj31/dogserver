@@ -9,6 +9,7 @@ type (
 	Player interface {
 		actor.Actor
 		Session
+		RID() string
 
 		Send2Client(pb proto.Message)
 		Login(first bool)

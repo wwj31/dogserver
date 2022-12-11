@@ -10,7 +10,7 @@ import (
 
 // 玩家登录
 var _ = registry(&outer.EnterGameReq{}, func(player iface.Player, v interface{}) {
-	msg := v.(outer.EnterGameReq)
+	msg := v.(*outer.EnterGameReq)
 
 	if common.LoginMD5(msg.UID, msg.RID, msg.NewPlayer) != msg.Checksum {
 		log.Warnw("checksum md5 check faild", "msg", msg.String())

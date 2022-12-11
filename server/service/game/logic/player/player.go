@@ -2,20 +2,22 @@ package player
 
 import (
 	"context"
-	"github.com/wwj31/dogactor/expect"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"reflect"
 	"strings"
 	"time"
 
-	"github.com/gogo/protobuf/proto"
+	gogo "github.com/gogo/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
+	"github.com/wwj31/dogactor/expect"
 	"github.com/wwj31/dogactor/tools"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"server/common"
 	"server/common/log"
 	"server/common/mongodb"
+	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
 	"server/service/game/iface"
 	"server/service/game/logic/player/controller"
@@ -52,7 +54,7 @@ func (s *Player) OnInit() {
 	s.load()
 
 	// 定时回存
-	randTime := tools.Now().Add(time.Second)
+	randTime := tools.Now().Add(time.Minute)
 	s.saveTimerId = s.AddTimer(tools.XUID(), randTime, func(dt time.Duration) {
 		s.store()
 		s.checkAlive()
@@ -61,27 +63,35 @@ func (s *Player) OnInit() {
 }
 
 func (s *Player) OnHandle(msg actor.Message) {
+	log.Debugw("player recv ", "msg", msg)
 	message, msgName, gSession, err := common.UnwrapperGateMsg(msg.RawMsg())
 	expect.Nil(err)
 
-	handle, ok := controller.GetHandler(msgName)
-	if !ok {
-		log.Errorw("player undefined route ", "name", msgName)
-		return
-	}
-
 	// 重连的情况，除了EnterGame消息，其他都不处理
 	if s.gSession != gSession {
-		if _, ok := message.(outer.EnterGameReq); !ok {
-			log.Warnw("recv message of old session:%v new session:%v", s.gSession, gSession)
+		if _, ok := message.(*outer.EnterGameReq); !ok {
+			log.Warnw("recv message from the old session",
+				"local session", s.gSession,
+				"new session", gSession,
+				"message", message)
 			return
 		}
 		s.SetGateSession(gSession)
 	}
 
+	if msgName == "" {
+		//msgName = s.System().ProtoIndex().MsgName(message.(gogo.Message))
+		msgName = msg.GetMsgName()
+	}
+	handle, ok := controller.GetHandler(msgName)
+	if !ok {
+		log.Errorw("player undefined route ", "msg", msgName, "message", message)
+		return
+	}
 	handle(s, message)
+	log.Debugw("player handler msg", "player", s.ID(), "msg", msgName)
 
-	pt, ok := message.(proto.Message)
+	pt, ok := message.(gogo.Message)
 	if ok {
 		msgName := s.System().ProtoIndex().MsgName(pt)
 		outer.Put(msgName, message)
@@ -90,7 +100,11 @@ func (s *Player) OnHandle(msg actor.Message) {
 	s.keepAlive = tools.NowTime()
 }
 
-func (s *Player) Send2Client(pb proto.Message) {
+func (s *Player) RID() string {
+	return s.roleId
+}
+
+func (s *Player) Send2Client(pb gogo.Message) {
 	if pb == nil || !s.Online() {
 		return
 	}
@@ -121,6 +135,11 @@ func (s *Player) load() {
 	for _, mod := range s.models {
 		doc := mod.Data()
 		if doc != nil {
+			if reflect.ValueOf(doc).IsNil() {
+				log.Errorw("doc is nil interface", "type", reflect.TypeOf(doc).Name())
+				continue
+			}
+
 			str := strings.Split(controller.MsgName(doc), ".")
 			if len(str) < 2 {
 				log.Errorw("msg name get failed", "type", reflect.TypeOf(doc).String())
@@ -128,13 +147,21 @@ func (s *Player) load() {
 			}
 
 			result := mongodb.Ins.Collection(str[1]).FindOne(context.Background(), bson.M{"_id": s.roleId})
-			if result.Err() != nil {
-				log.Errorw("player store failed", "collection", str[1], "doc", doc.String())
+			if result.Err() == mongo.ErrNoDocuments {
+				if _, ok := doc.(*inner.RoleInfo); ok {
+					// 新玩家直接跳过
+					break
+				}
+
+				// 老玩家找不到新添加的表，不做处理
+				continue
+			} else if result.Err() != nil {
+				log.Errorw("player store failed", "collection", str[1], "err", result.Err())
 				return
 			}
 
 			if err := result.Decode(doc); err != nil {
-				log.Errorw("player store failed", "collection", str[1], "doc", doc.String())
+				log.Errorw("player store failed", "collection", str[1], "err", result.Err())
 				return
 			}
 		}
@@ -147,18 +174,24 @@ func (s *Player) store() {
 	for _, mod := range s.models {
 		doc := mod.Data()
 		if doc != nil {
+
 			str := strings.Split(controller.MsgName(doc), ".")
 			if len(str) < 2 {
 				log.Errorw("msg name get failed", "type", reflect.TypeOf(doc).String())
 				continue
 			}
 
+			if reflect.ValueOf(doc).IsNil() {
+				log.Errorw("doc is nil interface{}", "type", str[1])
+				continue
+			}
+
 			if _, err := mongodb.Ins.Collection(str[1]).UpdateByID(
 				context.Background(),
 				s.roleId,
-				doc,
+				bson.M{"$set": doc},
 				options.Update().SetUpsert(true)); err != nil {
-				log.Errorw("player store failed", "collection", str[1], "doc", doc.String())
+				log.Errorw("player store failed", "collection", str[1], "err", err)
 			}
 		}
 	}

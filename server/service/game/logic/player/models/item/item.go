@@ -10,21 +10,20 @@ import (
 
 type Item struct {
 	models.Model
-	items  *inner.ItemInfo
+	data   inner.ItemInfo
 	modify bool
 }
 
 func New(base models.Model) *Item {
-	mod := &Item{
-		Model: base,
-		items: &inner.ItemInfo{Items: make(map[int64]int64, 10)},
-	}
+	mod := &Item{Model: base}
+	mod.data.Items = make(map[int64]int64)
+	mod.data.RID = base.Player.RID()
 
 	return mod
 }
 
 func (s *Item) Data() gogo.Message {
-	return s.items
+	return &s.data
 }
 
 func (s *Item) OnLogin(first bool) {
@@ -40,7 +39,7 @@ func (s *Item) OnLogout() {
 
 func (s *Item) Enough(items map[int64]int64) bool {
 	for id, need := range items {
-		if s.items.Items[id] < common.Abs64(need) {
+		if s.data.Items[id] < common.Abs64(need) {
 			return false
 		}
 	}
@@ -70,7 +69,7 @@ func (s *Item) Add(items map[int64]int64, push ...bool) {
 	defer func() { s.modify = true }()
 
 	for id, count := range items {
-		val, ok := s.items.Items[id]
+		val, ok := s.data.Items[id]
 		if ok {
 			if count > 0 {
 				val += count
@@ -82,7 +81,7 @@ func (s *Item) Add(items map[int64]int64, push ...bool) {
 		} else {
 			val = common.Max64(0, count)
 		}
-		s.items.Items[id] = val
+		s.data.Items[id] = val
 	}
 
 	if len(push) > 0 && len(items) > 0 {
@@ -94,6 +93,6 @@ func (s *Item) Add(items map[int64]int64, push ...bool) {
 
 func (s *Item) itemInfoPush() *outer.ItemInfoPush {
 	return &outer.ItemInfoPush{
-		Items: s.items.Items,
+		Items: s.data.Items,
 	}
 }

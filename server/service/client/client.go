@@ -2,6 +2,7 @@ package client
 
 import (
 	"reflect"
+	"server/common/log"
 	"server/proto/outermsg/outer"
 	"time"
 
@@ -45,49 +46,48 @@ func (s *Client) SendToServer(msgId int32, pb proto.Message) {
 
 	data := network.CombineMsgWithId(msgId, bytes)
 	err = s.cli.SendMsg(data)
-	expect.Nil(err)
 }
 
 func (s *Client) OnHandle(m actor.Message) {
 	switch msg := m.RawMsg().(type) {
 	case *outer.Pong:
-		logger.Infow("aliving~")
+		log.Infow("aliving~")
 	case *outer.Fail:
-		logger.Infow("msg respones fail", "err:", msg.String())
+		log.Infow("msg respones fail", "err:", msg.String())
 	// 登录
 	case *outer.LoginResp:
-		logger.Infow("login success!", "msg", msg.String())
+		log.Infow("login success!", "msg", msg.String())
 		s.UID = msg.UID
 		s.RID = msg.RID
 		s.NewPlayer = msg.NewPlayer
 		s.enter()
 	case *outer.EnterGameResp:
-		logger.Infow("EnterGameResp!", "msg", msg.String())
+		log.Infow("EnterGameResp!", "msg", msg.String())
 	case *outer.RoleInfoPush:
-		logger.Infow("RoleInfoPush!", "msg", msg.String())
+		log.Infow("RoleInfoPush!", "msg", msg.String())
 	case *outer.ItemInfoPush:
-		logger.Infow("ItemInfoPush!", "msg", msg.String())
+		log.Infow("ItemInfoPush!", "msg", msg.String())
 
 	// 道具
 	case *outer.UseItemResp:
-		logger.Infow("UseItemResp!", "msg", msg.String())
+		log.Infow("UseItemResp!", "msg", msg.String())
 	case *outer.ItemChangeNotify:
-		logger.Infow("ItemChangeNotify!", "msg", msg.String())
+		log.Infow("ItemChangeNotify!", "msg", msg.String())
 
 	// 邮件
 	case *outer.MailListResp:
 		s.mails = append(s.mails, msg.Mails...)
-		logger.Infow("MailListResp!", "msg", msg.String())
+		log.Infow("MailListResp!", "msg", msg.String())
 	case *outer.ReadMailResp:
-		logger.Infow("ReadMailResp!", "msg", msg.String())
+		log.Infow("ReadMailResp!", "msg", msg.String())
 	case *outer.ReceiveMailItemResp:
-		logger.Infow("ReceiveMailItemResp!", "msg", msg.String())
+		log.Infow("ReceiveMailItemResp!", "msg", msg.String())
 
 		// 聊天
 	case *outer.ChatNotify:
-		logger.Infow("ChatNotify!", "msg", msg.String())
+		log.Infow("ChatNotify!", "msg", msg.String())
 
 	default:
-		logger.Infow("unknown type!", "type", reflect.TypeOf(msg).String(), "msg", msg)
+		log.Infow("unknown type!", "type", reflect.TypeOf(msg).String(), "msg", msg)
 	}
 }
