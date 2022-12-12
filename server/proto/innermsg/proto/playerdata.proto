@@ -15,9 +15,9 @@ message RoleInfo
     string Icon    = 5;
     string Country = 6;
     map<int64,int64> Attributes = 7; // 属性集
-    int64 CreateAt = 8;
-    int64 LoginAt  = 9;
-    int64 LogoutAt = 10;
+    string CreateAt = 8;
+    string LoginAt  = 9;
+    string LogoutAt = 10;
 }
 
 message ItemInfo

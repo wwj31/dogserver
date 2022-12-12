@@ -44,7 +44,9 @@ func (s *Login) Login(gSession common.GSession, msg *outer.LoginReq) {
 				})
 				if err != nil {
 					log.Errorw("bind session with rid failed",
-						"gsession", gSession.String(), "RID", acc.LastLoginRID)
+						"gsession", gSession.String(),
+						"RID", acc.LastLoginRID,
+						"err", err)
 					return
 				}
 

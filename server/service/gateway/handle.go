@@ -21,7 +21,7 @@ func (s *GateWay) InnerHandler(sourceId string, v interface{}) gogo.Message {
 			return nil
 		}
 		session.PlayerId = actortype.PlayerId(msg.RID)
-		log.Debugw("bing session with player", "session", sessionId, "player", session.PlayerId)
+		log.Infow("bing session with player", "session", sessionId, "player", session.PlayerId)
 		return &outer.Ok{}
 	default:
 	}

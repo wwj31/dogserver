@@ -86,8 +86,8 @@ func (s *Player) OnHandle(msg actor.Message) {
 		log.Errorw("player undefined route ", "msg", msgName)
 		return
 	}
+	log.Debugw("player handle msg", "player", s.ID(), "msg", msgName)
 	handle(s, message)
-	log.Debugw("player handler msg", "player", s.ID(), "msg", msgName)
 
 	pt, ok := message.(gogo.Message)
 	if ok {
@@ -112,6 +112,7 @@ func (s *Player) Send2Client(pb gogo.Message) {
 }
 
 func (s *Player) Login(first bool) {
+	log.Infow("player login", "id", s.roleId)
 	for _, mod := range s.models {
 		mod.OnLogin(first)
 	}
@@ -120,6 +121,7 @@ func (s *Player) Login(first bool) {
 }
 
 func (s *Player) Logout() {
+	log.Infow("player logout", "id", s.roleId)
 	for _, mod := range s.models {
 		mod.OnLogout()
 	}

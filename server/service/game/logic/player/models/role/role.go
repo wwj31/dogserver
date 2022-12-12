@@ -25,19 +25,21 @@ func (s *Role) Data() gogo.Message {
 }
 
 func (s *Role) OnLogin(first bool) {
+	nowStr := tools.TimeFormat(tools.Now())
 	if first {
 		//first
 		s.SetAttribute(typ.Level, 1)
 		s.SetAttribute(typ.Exp, 0)
 		s.SetAttribute(typ.Glod, 0)
+		s.data.CreateAt = nowStr
 	}
 
-	s.data.LoginAt = tools.Milliseconds()
+	s.data.LoginAt = nowStr
 	s.Player.Send2Client(s.roleInfoPush())
 }
 
 func (s *Role) OnLogout() {
-	s.data.LogoutAt = tools.Milliseconds()
+	s.data.LogoutAt = tools.TimeFormat(tools.Now())
 }
 
 func (s *Role) roleInfoPush() *outer.RoleInfoPush {

@@ -1,6 +1,7 @@
 package role
 
 import (
+	"github.com/wwj31/dogactor/tools"
 	"server/service/game/logic/player/models/role/typ"
 	"time"
 )
@@ -13,9 +14,9 @@ func (s *Role) SId() uint64         { return s.data.SId }
 func (s *Role) Name() string        { return s.data.Name }
 func (s *Role) Icon() string        { return s.data.Icon }
 func (s *Role) Country() string     { return s.data.Country }
-func (s *Role) CreateAt() time.Time { return time.UnixMilli(s.data.CreateAt) }
-func (s *Role) LoginAt() time.Time  { return time.UnixMilli(s.data.LoginAt) }
-func (s *Role) LogoutAt() time.Time { return time.UnixMilli(s.data.LogoutAt) }
+func (s *Role) CreateAt() time.Time { return tools.TimeParse(s.data.CreateAt) }
+func (s *Role) LoginAt() time.Time  { return tools.TimeParse(s.data.LoginAt) }
+func (s *Role) LogoutAt() time.Time { return tools.TimeParse(s.data.LogoutAt) }
 
 func newAtrributeMap() map[int64]int64 {
 	return make(map[int64]int64, typ.AttributeMax)

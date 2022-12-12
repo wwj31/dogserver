@@ -65,7 +65,6 @@ func (s *GateWay) OnHandle(m actor.Message) {
 		// 用户消息直接转发前端
 		actorId, sessionId := common.GSession(msg.GateSession).Split()
 		logInfo := []interface{}{
-			"own", s.ID(),
 			"gSession", msg.GateSession,
 			"sourceId", m.GetSourceId(),
 			"msgName", msg.MsgName,
@@ -88,7 +87,10 @@ func (s *GateWay) OnHandle(m actor.Message) {
 	default:
 		resp := s.InnerHandler(m.GetSourceId(), rawMsg) // 内部消息，单独处理
 		if resp != nil && m.GetRequestId() != "" {
-			s.Response(m.GetRequestId(), resp)
-		}
+			log.Debugw("resp ", "reqId", m.GetRequestId())
+			if err := s.Response(m.GetRequestId(), resp); err != nil {
+				log.Errorw("respone failed", "err", err)
+			}
+		} //wait_cebjpknm1tui4lpi2eh0@1670855890094264048@gateway_1_Actor#:8888
 	}
 }
