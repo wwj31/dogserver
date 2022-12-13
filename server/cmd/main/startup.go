@@ -2,11 +2,8 @@ package main
 
 import (
 	"fmt"
-	syslog "github.com/wwj31/dogactor/log"
 	"os"
 	"os/signal"
-	"server/common/mongodb"
-	"server/common/redis"
 	"syscall"
 
 	"github.com/spf13/cast"
@@ -19,6 +16,8 @@ import (
 	"server/common"
 	"server/common/actortype"
 	"server/common/log"
+	"server/common/mongodb"
+	"server/common/redis"
 	"server/common/toml"
 	"server/config/confgo"
 	"server/proto/innermsg/inner"
@@ -79,12 +78,12 @@ func startup() {
 
 func run(appType string, appId int32) *actor.System {
 	// startup the system of actor
-	syslog.SysLog.Level(logger.InfoLevel)
 	system, _ := actor.NewSystem(
 		//fullmesh.WithRemote(toml.Get("etcdaddr"), toml.Get("etcdprefix")),
 		//actor.Addr(toml.Get("actoraddr")),
 		mq.WithRemote(toml.Get("natsurl"), nats.New()),
 		actor.ProtoIndex(newProtoIndex()),
+		actor.LogLevel(logger.InfoLevel),
 	)
 
 	switch appType {

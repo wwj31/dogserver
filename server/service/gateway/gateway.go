@@ -43,7 +43,7 @@ func (s *GateWay) OnInit() {
 		log.Errorw("gateway listener start failed", "err", err, "addr", addr)
 		return
 	}
-	log.Debugf("gateway OnInit addr:%v", addr)
+	log.Infow("gateway OnInit ", "addr", addr)
 }
 
 // 定期检查并清理死链接

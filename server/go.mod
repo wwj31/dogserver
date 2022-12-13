@@ -17,7 +17,7 @@ require (
 	github.com/spf13/viper v1.9.0
 	github.com/stretchr/testify v1.7.0
 	github.com/tealeg/xlsx v1.0.5
-	github.com/wwj31/dogactor v1.3.4
+	github.com/wwj31/dogactor v1.3.7
 	go.mongodb.org/mongo-driver v1.11.0
 	gorm.io/driver/mysql v1.1.3
 	gorm.io/gorm v1.22.3
@@ -79,4 +79,4 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-replace github.com/wwj31/dogactor => ../../dogactor
+//replace github.com/wwj31/dogactor => ../../dogactor
