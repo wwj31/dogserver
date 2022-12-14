@@ -68,7 +68,7 @@ func (s *UserSession) OnRecv(data []byte) {
 		ping := network.NewBytesMessageParse(data, protoIndex).Proto().(*outer.Ping)
 		pong := network.NewPbMessage(&outer.Pong{
 			ClientTimestamp: ping.ClientTimestamp,
-			ServerTimestamp: tools.Milliseconds(),
+			ServerTimestamp: tools.Now().UnixMilli(),
 		}, outer.MSG_PONG.Int32())
 		err = s.SendMsg(pong.Buffer())
 		s.KeepLive = time.Now()

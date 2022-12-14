@@ -66,7 +66,7 @@ func (s *Mail) NewBuilder() iface.MailBuilder {
 	return &Builder{
 		mail: &inner.Mail{
 			UUID:     tools.XUID(),
-			CreateAt: tools.NowTime(),
+			CreateAt: tools.Now().Unix(),
 			Status:   0,
 		},
 		mailer: s,

@@ -43,7 +43,7 @@ type (
 		roleId      string
 		saveTimerId string
 		exitTimerId string
-		keepAlive   int64
+		keepAlive   time.Time
 	}
 )
 
@@ -55,17 +55,13 @@ func (s *Player) OnInit() {
 	s.load()
 
 	// 定时回存
-	randDur := func() time.Duration {
-		return time.Duration(rand.Intn(int(30*time.Second))) + (30 * time.Second)
-	}
-	storeTicker := func() {
-		execAt := tools.Now().
-		s.saveTimerId = s.AddTimer(tools.XUID(), randDur(), func(dt time.Duration) {
-			s.store()
-			s.checkAlive()
-		})
-	}
+	s.storeTicker()
 	log.Infow("player actor activated", "id", s.ID())
+}
+
+func (s *Player) OnStop() bool {
+	s.store()
+	return true
 }
 
 func (s *Player) OnHandle(msg actor.Message) {
@@ -101,7 +97,7 @@ func (s *Player) OnHandle(msg actor.Message) {
 		outer.Put(msgName, message)
 	}
 
-	s.keepAlive = tools.NowTime()
+	s.keepAlive = tools.Now()
 }
 
 func (s *Player) RID() string {
@@ -176,6 +172,19 @@ func (s *Player) load() {
 	log.Infow("player loaded model", "RID", s.roleId)
 }
 
+func (s *Player) storeTicker() {
+	randDur := func() time.Duration {
+		return time.Duration(rand.Intn(int(30*time.Second))) + (30 * time.Second)
+	}
+
+	execAt := tools.Now().Add(randDur())
+	s.saveTimerId = s.AddTimer(tools.XUID(), execAt, func(dt time.Duration) {
+		s.store()
+		s.checkAlive()
+		s.storeTicker()
+	})
+}
+
 func (s *Player) store() {
 	for _, mod := range s.models {
 		doc := mod.Data()
@@ -206,9 +215,8 @@ func (s *Player) store() {
 
 const aliveDuration = 5 * time.Second // 24*time.Hour
 func (s Player) checkAlive() {
-	now := tools.NowTime()
-	duration := now - s.keepAlive
-	if duration > int64(aliveDuration) && !s.Online() {
+	duration := tools.Now().Sub(s.keepAlive)
+	if duration > aliveDuration && !s.Online() {
 		//s.Exit()
 	}
 }
