@@ -20,7 +20,7 @@ func New() *Login {
 
 func (s *Login) OnInit() {
 	s.SendTools = common.NewSendTools(s)
-	log.Debugw("login OnInit")
+	log.Infow("login OnInit")
 }
 
 func (s *Login) OnStop() bool {

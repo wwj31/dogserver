@@ -81,6 +81,7 @@ func run(appType string, appId int32) *actor.System {
 	system, _ := actor.NewSystem(
 		//fullmesh.WithRemote(toml.Get("etcdaddr"), toml.Get("etcdprefix")),
 		//actor.Addr(toml.Get("actoraddr")),
+		actor.Name(appType+cast.ToString(appId)),
 		mq.WithRemote(toml.Get("natsurl"), nats.New()),
 		actor.ProtoIndex(newProtoIndex()),
 		actor.LogLevel(logger.InfoLevel),

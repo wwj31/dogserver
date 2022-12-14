@@ -12,7 +12,7 @@ func Locker(key string) *redsync.Mutex {
 func LockDo(key string, fn func()) {
 	locker := rs.NewMutex(key)
 	if err := locker.Lock(); err != nil {
-		log.Errorf("redsync lock", "err", err)
+		log.Errorw("redsync lock failed", "key", key, "err", err)
 		return
 	}
 	defer locker.Unlock()

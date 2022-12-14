@@ -32,7 +32,7 @@ func (s *Game) OnInit() {
 		}
 	})
 
-	log.Debugf("game OnInit")
+	log.Infow("game OnInit")
 }
 
 func (s *Game) OnStop() bool {
