@@ -2,6 +2,7 @@ package player
 
 import (
 	"context"
+	"math/rand"
 	"reflect"
 	"strings"
 	"time"
@@ -54,11 +55,16 @@ func (s *Player) OnInit() {
 	s.load()
 
 	// 定时回存
-	randTime := tools.Now().Add(time.Minute)
-	s.saveTimerId = s.AddTimer(tools.XUID(), randTime, func(dt time.Duration) {
-		s.store()
-		s.checkAlive()
-	}, -1)
+	randDur := func() time.Duration {
+		return time.Duration(rand.Intn(int(30*time.Second))) + (30 * time.Second)
+	}
+	storeTicker := func() {
+		execAt := tools.Now().
+		s.saveTimerId = s.AddTimer(tools.XUID(), randDur(), func(dt time.Duration) {
+			s.store()
+			s.checkAlive()
+		})
+	}
 	log.Infow("player actor activated", "id", s.ID())
 }
 
@@ -140,7 +146,7 @@ func (s *Player) load() {
 				continue
 			}
 
-			str := strings.Split(controller.MsgName(doc), ".")
+			str := strings.Split(common.ProtoType(doc), ".")
 			if len(str) < 2 {
 				log.Errorw("msg name get failed", "type", reflect.TypeOf(doc).String())
 				continue
@@ -175,7 +181,7 @@ func (s *Player) store() {
 		doc := mod.Data()
 		if doc != nil {
 
-			str := strings.Split(controller.MsgName(doc), ".")
+			str := strings.Split(common.ProtoType(doc), ".")
 			if len(str) < 2 {
 				log.Errorw("msg name get failed", "type", reflect.TypeOf(doc).String())
 				continue
