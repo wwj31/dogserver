@@ -2,11 +2,13 @@ package dbmongo
 
 import (
 	"context"
+	"sync"
+	"time"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"server/common/log"
 	"server/common/mongodb"
-	"sync"
 )
 
 var (
@@ -22,7 +24,6 @@ type (
 
 		collection string
 		queue      []*data
-		kv         map[string]*data
 	}
 
 	data struct {
@@ -47,11 +48,10 @@ func Store(collection, key string, doc interface{}) {
 	}
 
 	proc := v.(*processor)
+
 	proc.fn <- func() {
-		proc.queue = append(proc.queue, &data{
-			key:      key,
-			document: doc,
-		})
+		d := &data{key: key, document: doc}
+		proc.queue = append(proc.queue, d)
 	}
 }
 
@@ -60,21 +60,24 @@ func newProcessor(collection string) *processor {
 		fn:         make(chan func()),
 		collection: collection,
 		queue:      make([]*data, 0),
-		kv:         make(map[string]*data),
 	}
 
 	waitGroup.Add(1)
+	tick := time.Tick(time.Second)
 	go func() {
 		for {
 			select {
 			case <-ctx.Done():
+				proc.update()
 				waitGroup.Done()
 				return
 
 			case fn := <-proc.fn:
 				fn()
+
+			case <-tick:
 				proc.update()
-				log.Infof("update")
+
 			}
 		}
 	}()
@@ -96,4 +99,6 @@ func (p *processor) update() {
 			return
 		}
 	}
+
+	p.queue = p.queue[len(p.queue):]
 }
