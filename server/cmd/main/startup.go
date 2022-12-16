@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
-	"server/db/mgo"
 	"syscall"
 
 	"github.com/spf13/cast"
@@ -21,6 +20,7 @@ import (
 	"server/common/redis"
 	"server/common/toml"
 	"server/config/confgo"
+	"server/db/mgo"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
 	"server/service/client"
@@ -46,21 +46,24 @@ func startup() {
 		// init mongo
 		if err := mongodb.Builder().Addr(toml.Get("mongoaddr")).
 			Database(toml.Get("database")).Connect(); err != nil {
-			panic(err)
+			log.Errorw("mongo connect failed", "err", err)
+			return
 		}
 
 		// init redis
 		if err := redis.Builder().
 			Addr(toml.GetArray("redisaddr", "localhost:6379")...).
 			ClusterMode().Connect(); err != nil {
-			panic(err)
+			log.Errorw("redis connect failed", "err", err)
+			return
 		}
 
 		// load config of excels
 		if path, ok := toml.GetB("configjson"); ok {
 			err := confgo.Load(path)
 			if err != nil {
-				panic(err)
+				log.Errorw("toml get config json failed", "err", err)
+				return
 			}
 			common.RefactorConfig()
 		}
