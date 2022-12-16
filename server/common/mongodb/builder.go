@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
 	"time"
 )
 
@@ -19,10 +20,7 @@ func Builder() *builder {
 
 func (b *builder) Connect() (err error) {
 	once.Do(func() {
-		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-		defer cancel()
-
-		Ins.client, err = mongo.Connect(ctx, options.Client().ApplyURI(b.addr))
+		Ins.client, err = mongo.Connect(context.Background(), options.Client().ApplyURI(b.addr))
 		if err != nil {
 			return
 		}
@@ -30,6 +28,14 @@ func (b *builder) Connect() (err error) {
 		Ins.collections = map[string]*mongo.Collection{}
 		if b.databaseName == "" {
 			err = fmt.Errorf("mongo database is nil")
+			return
+		}
+
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+
+		if err = Ins.client.Ping(ctx, readpref.Primary()); err != nil {
+			err = fmt.Errorf("mongo connect failed err:%v", err)
 			return
 		}
 

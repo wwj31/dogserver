@@ -23,10 +23,10 @@ type (
 		fn chan func()
 
 		collection string
-		queue      []*data
+		queue      []*docData
 	}
 
-	data struct {
+	docData struct {
 		key      string
 		document interface{}
 	}
@@ -48,10 +48,11 @@ func Store(collection, key string, doc interface{}) {
 	}
 
 	proc := v.(*processor)
-
 	proc.fn <- func() {
-		d := &data{key: key, document: doc}
-		proc.queue = append(proc.queue, d)
+		data := &docData{key: key, document: doc}
+		if !replace(proc.queue, data) {
+			proc.queue = append(proc.queue, data)
+		}
 	}
 }
 
@@ -59,7 +60,7 @@ func newProcessor(collection string) *processor {
 	proc := &processor{
 		fn:         make(chan func()),
 		collection: collection,
-		queue:      make([]*data, 0),
+		queue:      make([]*docData, 0),
 	}
 
 	waitGroup.Add(1)
@@ -85,19 +86,38 @@ func newProcessor(collection string) *processor {
 	return proc
 }
 
+func replace(queue []*docData, new *docData) bool {
+	for i, v := range queue {
+		if v.key == new.key {
+			queue[i] = new
+			return true
+		}
+	}
+	return false
+}
+
 func (p *processor) update() {
 	for _, v := range p.queue {
-		_, err := mongodb.Ins.Collection(p.collection).UpdateByID(
-			context.Background(),
-			v.key,
-			bson.M{"$set": v.document},
-			options.Update().SetUpsert(true),
-		)
+		func() {
+			log.Debugw("exec update")
+			defer func() {
+				if delta := time.Now().Sub(time.Now()); delta > time.Millisecond*100 {
+					log.Warnw("mongo update exec too long", "delta", delta)
+				}
+			}()
 
-		if err != nil {
-			log.Errorf("mongo update failed", "collection", p.collection, "key", v.key, "err", err)
-			return
-		}
+			_, err := mongodb.Ins.Collection(p.collection).UpdateByID(
+				context.Background(),
+				v.key,
+				bson.M{"$set": v.document},
+				options.Update().SetUpsert(true),
+			)
+
+			if err != nil {
+				log.Errorf("mongo update failed", "collection", p.collection, "key", v.key, "err", err)
+				return
+			}
+		}()
 	}
 
 	p.queue = p.queue[len(p.queue):]

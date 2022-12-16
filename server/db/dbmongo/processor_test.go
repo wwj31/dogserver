@@ -1,12 +1,14 @@
 package dbmongo
 
 import (
-	"github.com/stretchr/testify/assert"
-	"github.com/wwj31/dogactor/tools"
 	"reflect"
-	"server/common/mongodb"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/wwj31/dogactor/tools"
+	"server/common/log"
+	"server/common/mongodb"
 )
 
 type DocInfo1 struct {
@@ -16,6 +18,7 @@ type DocInfo1 struct {
 }
 
 func TestProcessor(t *testing.T) {
+	log.Init(-1, "", "", true)
 	if err := mongodb.Builder().Addr("mongodb://localhost:27017").
 		Database("test").Connect(); err != nil {
 		assert.NoError(t, err)
