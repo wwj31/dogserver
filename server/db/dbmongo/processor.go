@@ -99,7 +99,7 @@ func replace(queue []*docData, new *docData) bool {
 func (p *processor) update() {
 	for _, v := range p.queue {
 		func() {
-			log.Debugw("exec update")
+			log.Debugf("exec update collection:%v", p.collection)
 			defer func() {
 				if delta := time.Now().Sub(time.Now()); delta > time.Millisecond*100 {
 					log.Warnw("mongo update exec too long", "delta", delta)
@@ -114,7 +114,7 @@ func (p *processor) update() {
 			)
 
 			if err != nil {
-				log.Errorf("mongo update failed", "collection", p.collection, "key", v.key, "err", err)
+				log.Errorw("mongo update failed", "collection", p.collection, "key", v.key, "err", err)
 				return
 			}
 		}()

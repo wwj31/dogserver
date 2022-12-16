@@ -3,7 +3,6 @@ package mongodb
 import (
 	"context"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"server/common/log"
 	"sync"
 )
@@ -22,9 +21,7 @@ type mongoDB struct {
 }
 
 func (m *mongoDB) CreateCollection(name string) error {
-	err := m.database.CreateCollection(context.Background(),
-		name,
-		options.CreateCollection().SetExpireAfterSeconds(3))
+	err := m.database.CreateCollection(context.Background(), name)
 	commandErr, ok := err.(mongo.CommandError)
 	if ok && commandErr.HasErrorCode(48) {
 		return nil
