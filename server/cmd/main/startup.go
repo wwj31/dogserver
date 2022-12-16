@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"server/db/mgo"
 	"syscall"
 
 	"github.com/spf13/cast"
@@ -32,8 +33,8 @@ import (
 
 func startup() {
 	tools.Try(func() {
-		osSignal := make(chan os.Signal)
-		signal.Notify(osSignal, syscall.SIGKILL, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
+		osQuitSignal := make(chan os.Signal)
+		signal.Notify(osQuitSignal, syscall.SIGKILL, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
 
 		// init toml
 		toml.Init(*tomlPath, *appName, *appId)
@@ -66,11 +67,15 @@ func startup() {
 
 		monitor(*logPath, logName+"mo")
 
+		// startup
 		system := run(*appName, int32(*appId))
-		<-osSignal
+
+		// safe quit
+		<-osQuitSignal
 		system.Stop()
 		<-system.Stopped
 	})
+	mgo.Stop()
 	logger.Close()
 
 	fmt.Println("stop")
