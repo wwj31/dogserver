@@ -1,4 +1,4 @@
-package dbmongo
+package mgo
 
 import (
 	"context"
@@ -23,7 +23,7 @@ type (
 		fn chan func()
 
 		collection string
-		queue      []*docData
+		queue      []docData
 	}
 
 	docData struct {
@@ -49,7 +49,7 @@ func Store(collection, key string, doc interface{}) {
 
 	proc := v.(*processor)
 	proc.fn <- func() {
-		data := &docData{key: key, document: doc}
+		data := docData{key: key, document: doc}
 		if !replace(proc.queue, data) {
 			proc.queue = append(proc.queue, data)
 		}
@@ -60,7 +60,7 @@ func newProcessor(collection string) *processor {
 	proc := &processor{
 		fn:         make(chan func()),
 		collection: collection,
-		queue:      make([]*docData, 0),
+		queue:      make([]docData, 0),
 	}
 
 	waitGroup.Add(1)
@@ -86,7 +86,7 @@ func newProcessor(collection string) *processor {
 	return proc
 }
 
-func replace(queue []*docData, new *docData) bool {
+func replace(queue []docData, new docData) bool {
 	for i, v := range queue {
 		if v.key == new.key {
 			queue[i] = new

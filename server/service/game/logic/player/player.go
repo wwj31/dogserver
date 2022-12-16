@@ -4,6 +4,7 @@ import (
 	"context"
 	"math/rand"
 	"reflect"
+	"server/db/mgo"
 	"strings"
 	"time"
 
@@ -13,8 +14,6 @@ import (
 	"github.com/wwj31/dogactor/tools"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
-
 	"server/common"
 	"server/common/log"
 	"server/common/mongodb"
@@ -189,25 +188,8 @@ func (s *Player) store() {
 	for _, mod := range s.models {
 		doc := mod.Data()
 		if doc != nil {
-
-			str := strings.Split(common.ProtoType(doc), ".")
-			if len(str) < 2 {
-				log.Errorw("msg name get failed", "type", reflect.TypeOf(doc).String())
-				continue
-			}
-
-			if reflect.ValueOf(doc).IsNil() {
-				log.Errorw("doc is nil interface{}", "type", str[1])
-				continue
-			}
-
-			if _, err := mongodb.Ins.Collection(str[1]).UpdateByID(
-				context.Background(),
-				s.roleId,
-				bson.M{"$set": doc},
-				options.Update().SetUpsert(true)); err != nil {
-				log.Errorw("player store failed", "collection", str[1], "err", err)
-			}
+			collType := mgo.GoGoCollectionType(doc)
+			mgo.Store(collType, s.roleId, gogo.Clone(doc))
 		}
 	}
 	log.Infow("player stored model", "RID", s.roleId)

@@ -1,4 +1,4 @@
-package dbmongo
+package mgo
 
 import (
 	"github.com/spf13/cast"
