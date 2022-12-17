@@ -3,15 +3,14 @@ package controller
 import (
 	"server/common"
 	"server/common/log"
+	"server/common/router"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
-	"server/service/game/iface"
+	"server/service/game/logic/player"
 )
 
 // 玩家登录
-var _ = registry(&outer.EnterGameReq{}, func(player iface.Player, v interface{}) {
-	msg := v.(*outer.EnterGameReq)
-
+var _ = router.Reg(func(player *player.Player, msg *outer.EnterGameReq) {
 	if common.LoginMD5(msg.UID, msg.RID, msg.NewPlayer) != msg.Checksum {
 		log.Warnw("checksum md5 check faild", "msg", msg.String())
 		return
@@ -27,6 +26,6 @@ var _ = registry(&outer.EnterGameReq{}, func(player iface.Player, v interface{})
 })
 
 // 玩家离线
-var _ = registry(&inner.GSessionClosed{}, func(player iface.Player, v interface{}) {
+var _ = router.Reg(func(player *player.Player, msg *inner.GSessionClosed) {
 	player.Logout()
 })

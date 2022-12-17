@@ -2,14 +2,13 @@ package controller
 
 import (
 	"server/common/log"
+	"server/common/router"
 	"server/proto/outermsg/outer"
-	"server/service/game/iface"
+	"server/service/game/logic/player"
 )
 
 // 前端请求邮件列表，msg.Count 前端已有的邮件数量
-var _ = registry(&outer.MailListReq{}, func(player iface.Player, v interface{}) {
-	msg := v.(*outer.MailListReq)
-
+var _ = router.Reg(func(player *player.Player, msg *outer.MailListReq) {
 	var msgMails []*outer.Mail
 	mails := player.Mail().Mails(msg.Count, 10)
 
@@ -30,27 +29,21 @@ var _ = registry(&outer.MailListReq{}, func(player iface.Player, v interface{}) 
 })
 
 // 已读操作
-var _ = registry(&outer.ReadMailReq{}, func(player iface.Player, v interface{}) {
-	msg := v.(*outer.ReadMailReq)
-
+var _ = router.Reg(func(player *player.Player, msg *outer.ReadMailReq) {
 	player.Mail().Read(msg.Uuid)
 	player.Send2Client(&outer.ReadMailResp{Uuid: msg.Uuid})
 	log.Debugw("player read actormail ", "player", player.ID(), "mailId", msg.Uuid)
 })
 
 // 领取邮件道具
-var _ = registry(&outer.ReceiveMailItemReq{}, func(player iface.Player, v interface{}) {
-	msg := v.(*outer.ReceiveMailItemReq)
-
+var _ = router.Reg(func(player *player.Player, msg *outer.ReceiveMailItemReq) {
 	player.Mail().ReceiveItem(msg.Uuid)
 	player.Send2Client(&outer.ReceiveMailItemResp{Uuid: msg.Uuid})
 	log.Debugw("player recv actormail item", "player", player.ID(), "mailId", msg.Uuid)
 })
 
 // 删除邮件
-var _ = registry(&outer.DeleteMailReq{}, func(player iface.Player, v interface{}) {
-	msg := v.(*outer.DeleteMailReq)
-
+var _ = router.Reg(func(player *player.Player, msg *outer.DeleteMailReq) {
 	player.Mail().Delete(msg.Uuids...)
 	log.Debugw("player del actormail", "player", player.ID(), "mailId", msg.Uuids)
 })

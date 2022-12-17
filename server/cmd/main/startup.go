@@ -20,6 +20,7 @@ import (
 	"server/common/redis"
 	"server/common/toml"
 	"server/config/confgo"
+	_ "server/controller"
 	"server/db/mgo"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"

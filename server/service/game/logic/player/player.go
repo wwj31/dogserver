@@ -4,6 +4,7 @@ import (
 	"context"
 	"math/rand"
 	"reflect"
+	"server/common/router"
 	"server/db/mgo"
 	"strings"
 	"time"
@@ -20,7 +21,6 @@ import (
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
 	"server/service/game/iface"
-	"server/service/game/logic/player/controller"
 )
 
 func New(roleId string, gamer iface.Gamer) *Player {
@@ -64,6 +64,10 @@ func (s *Player) OnStop() bool {
 }
 
 func (s *Player) OnHandle(msg actor.Message) {
+	defer func() {
+		s.keepAlive = tools.Now()
+	}()
+
 	message, msgName, gSession, err := common.UnwrapperGateMsg(msg.RawMsg())
 	expect.Nil(err)
 
@@ -79,24 +83,18 @@ func (s *Player) OnHandle(msg actor.Message) {
 		s.SetGateSession(gSession)
 	}
 
-	if msgName == "" {
-		msgName = s.System().ProtoIndex().MsgName(message.(gogo.Message))
-	}
-	handle, ok := controller.GetHandler(msgName)
+	pt, ok := message.(gogo.Message)
 	if !ok {
-		log.Errorw("player undefined route ", "msg", msgName)
+		log.Warnw("unknown msg", "msg", reflect.TypeOf(message).String())
 		return
 	}
-	log.Debugw("player handle msg", "player", s.ID(), "msg", msgName)
-	handle(s, message)
 
-	pt, ok := message.(gogo.Message)
-	if ok {
-		msgName := s.System().ProtoIndex().MsgName(pt)
-		outer.Put(msgName, message)
-	}
+	router.On(s, pt)
 
-	s.keepAlive = tools.Now()
+	log.Debugw("player handle msg", "player", s.ID(), "msgName", msgName, "pt", pt.String())
+	msgName = s.System().ProtoIndex().MsgName(pt)
+	outer.Put(msgName, message)
+
 }
 
 func (s *Player) RID() string {

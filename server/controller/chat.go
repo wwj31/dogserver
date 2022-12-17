@@ -1,16 +1,13 @@
 package controller
 
 import (
-	"reflect"
 	"server/common/log"
+	"server/common/router"
 	"server/proto/outermsg/outer"
-	"server/service/game/iface"
+	"server/service/game/logic/player"
 )
 
-var _ = registry(&outer.ChatReq{}, func(player iface.Player, v interface{}) {
-	msg, ok := v.(*outer.ChatReq)
-	assert(ok, "chat req msg convert failed", "type", reflect.TypeOf(v).String())
-
+var _ = router.Reg(func(player *player.Player, msg *outer.ChatReq) {
 	player.Chat().SendToChannel("world", &outer.ChatNotify{
 		SenderId:    player.Role().RoleId(),
 		Name:        player.Role().Name(),
