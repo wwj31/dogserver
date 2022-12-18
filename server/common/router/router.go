@@ -11,26 +11,26 @@ import (
 
 var router = sync.Map{}
 
-func Reg[A actor.Actor, T gogo.Message](fn func(actor A, msg T), repeat ...bool) bool {
+func Reg[ACTOR actor.Actor, MSG gogo.Message](fn func(actor ACTOR, msg MSG), repeat ...bool) bool {
 	var (
-		t     T
-		a     A
-		tname = reflect.TypeOf(t).String()
-		aname = reflect.TypeOf(a).String()
+		msg     MSG
+		act     ACTOR
+		msgName = reflect.TypeOf(msg).String()
+		actName = reflect.TypeOf(act).String()
 	)
 
-	v, _ := router.LoadOrStore(tname, &sync.Map{})
+	v, _ := router.LoadOrStore(msgName, &sync.Map{})
 	handlers, _ := v.(*sync.Map)
 
-	if _, ok := handlers.Load(aname); ok {
-		log.Warnw("repeat handler ", "actor", aname, "msg", tname)
+	if _, ok := handlers.Load(actName); ok {
+		log.Warnw("repeat handler ", "actor", actName, "msg", msgName)
 		if len(repeat) == 0 || !repeat[0] {
 			return false
 		}
 	}
 
-	handlers.Store(aname, func(actor actor.Actor, message gogo.Message) {
-		fn(actor.(A), message.(T))
+	handlers.Store(actName, func(actor actor.Actor, message gogo.Message) {
+		fn(actor.(ACTOR), message.(MSG))
 	})
 	return true
 }

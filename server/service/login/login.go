@@ -11,7 +11,6 @@ import (
 
 type Login struct {
 	actor.Base
-	common.SendTools
 }
 
 func New() *Login {
@@ -19,7 +18,6 @@ func New() *Login {
 }
 
 func (s *Login) OnInit() {
-	s.SendTools = common.NewSendTools(s)
 	log.Infow("login OnInit")
 }
 
@@ -30,7 +28,7 @@ func (s *Login) OnStop() bool {
 
 func (s *Login) OnHandle(m actor.Message) {
 	rawMsg := m.RawMsg()
-	v, _, gSession, err := common.UnwrapperGateMsg(rawMsg)
+	v, _, gSession, err := common.UnwrappedGateMsg(rawMsg)
 
 	expect.Nil(err)
 	switch msg := v.(type) {

@@ -30,7 +30,7 @@ func (s *Login) Login(gSession common.GSession, msg *outer.LoginReq) {
 
 			defer func() {
 				if acc == nil {
-					_ = s.Send2Client(gSession, &outer.Fail{
+					gSession.SendToClient(s, &outer.Fail{
 						Error: outer.ERROR_FAILED,
 						Info:  err.Error(),
 					})
@@ -50,7 +50,7 @@ func (s *Login) Login(gSession common.GSession, msg *outer.LoginReq) {
 					return
 				}
 
-				_ = s.Send2Client(gSession, &outer.LoginResp{
+				gSession.SendToClient(s, &outer.LoginResp{
 					UID:       acc.UUID,
 					RID:       acc.LastLoginRID,
 					NewPlayer: newPlayer,

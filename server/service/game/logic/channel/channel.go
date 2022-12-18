@@ -7,8 +7,6 @@ import (
 	"server/proto/innermsg/inner"
 
 	"github.com/gogo/protobuf/proto"
-	"github.com/wwj31/dogactor/expect"
-
 	"github.com/wwj31/dogactor/actor"
 )
 
@@ -21,12 +19,10 @@ func New() *Channel {
 type Channel struct {
 	actor.Base
 
-	sender   common.Sender
 	channels map[common.CHANNEL_TYPE]id2SessionMap
 }
 
 func (s *Channel) OnInit() {
-	s.sender = common.NewSendTools(s)
 	s.channels = make(map[common.CHANNEL_TYPE]id2SessionMap)
 	s.channels[common.WORLD] = id2SessionMap{}
 
@@ -99,7 +95,6 @@ func (s *Channel) broadcast(typ common.CHANNEL_TYPE, msg proto.Message) {
 	}
 
 	for _, gSession := range smap {
-		err := s.sender.Send2Client(gSession, msg)
-		expect.Nil(err)
+		gSession.SendToClient(s, msg)
 	}
 }

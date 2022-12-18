@@ -2,17 +2,20 @@ package common
 
 import (
 	"fmt"
-	"server/common/actortype"
-	"server/common/log"
-	"server/proto/innermsg/inner"
-	"server/proto/outermsg/outer"
 	"strings"
 
-	"github.com/gogo/protobuf/proto"
+	gogo "github.com/gogo/protobuf/proto"
 	"github.com/spf13/cast"
+	"github.com/wwj31/dogactor/actor"
+	"server/common/actortype"
+	"server/common/log"
 )
 
 type GSession string
+
+func GateSession(gateId actortype.ActorId, sessionId uint64) GSession {
+	return GSession(fmt.Sprintf("%v:%v", gateId, sessionId))
+}
 
 func (s GSession) Split() (gateId actortype.ActorId, sessionId uint64) {
 	strs := strings.Split(string(s), ":")
@@ -41,46 +44,14 @@ func (s GSession) Valid() bool {
 	return s != ""
 }
 
-func GateSession(gateId actortype.ActorId, sessionId uint64) GSession {
-	return GSession(fmt.Sprintf("%v:%v", gateId, sessionId))
-}
-
-func NewGateWrapperByPb(pb proto.Message, msgName string, gateSession GSession) *inner.GateMsgWrapper {
-	data, err := proto.Marshal(pb)
-	if err != nil {
-		log.Errorw("marshal pb failed", "err", err)
-		return nil
-	}
-	//return &inner.GateMsgWrapper{GateSession: gateSession.String(), MsgName: tools.MsgName(pb), Data: data}
-	return &inner.GateMsgWrapper{GateSession: gateSession.String(), MsgName: msgName, Data: data}
-}
-
-// 网关封装的消息信息(避免一次序列化操作)
-func NewGateWrapperByBytes(data []byte, msgName string, gateSession GSession) *inner.GateMsgWrapper {
-	return &inner.GateMsgWrapper{GateSession: gateSession.String(), MsgName: msgName, Data: data}
-}
-
-func UnwrapperGateMsg(msg interface{}) (interface{}, string, GSession, error) {
-	wrapper, is := msg.(*inner.GateMsgWrapper)
-	if !is {
-		return msg, "", "", nil
+func (s GSession) SendToClient(sender actor.Sender, pb gogo.Message) {
+	if s.Invalid() {
+		return
 	}
 
-	//tp, err := protoregistry.GlobalTypes.FindMessageByName(protoreflect.FullName(wrapper.MsgName))
-	//if err != nil {
-	//	return nil, GSession(wrapper.GateSession), err
-	//}
-	//
-	//actMsg := tp.New().Interface().(proto.Message)
-	v, ok := outer.Spawner(wrapper.MsgName, true)
-	if !ok {
-		return nil, "", GSession(wrapper.GateSession), fmt.Errorf("msg not found in outer Spawner %v", wrapper.MsgName)
+	gateway, _ := s.Split()
+	wrap := NewGateWrapperByPb(pb, s)
+	if err := sender.Send(gateway, wrap); err != nil {
+		log.Errorw("gsession send to client failed", "err", err)
 	}
-	actMsg := v.(proto.Message)
-
-	err := proto.Unmarshal(wrapper.Data, actMsg)
-	if err != nil {
-		return nil, wrapper.MsgName, GSession(wrapper.GateSession), err
-	}
-	return actMsg, wrapper.MsgName, GSession(wrapper.GateSession), nil
 }

@@ -35,8 +35,7 @@ type (
 	Player struct {
 		actor.Base
 		gamer    iface.Gamer
-		gSession common.GSession // 网络session
-		sender   common.SendTools
+		gSession common.GSession       // 网络session
 		models   [allmod]iface.Modeler // 玩家所有功能模块
 
 		roleId      string
@@ -47,8 +46,6 @@ type (
 )
 
 func (s *Player) OnInit() {
-	s.sender = common.NewSendTools(s)
-
 	// 初始化玩家所有功能模块
 	s.initModule()
 	s.load()
@@ -68,7 +65,7 @@ func (s *Player) OnHandle(msg actor.Message) {
 		s.keepAlive = tools.Now()
 	}()
 
-	message, msgName, gSession, err := common.UnwrapperGateMsg(msg.RawMsg())
+	message, msgName, gSession, err := common.UnwrappedGateMsg(msg.RawMsg())
 	expect.Nil(err)
 
 	// 重连的情况，除了EnterGame消息，其他都不处理
@@ -105,9 +102,7 @@ func (s *Player) Send2Client(pb gogo.Message) {
 	if pb == nil || !s.Online() {
 		return
 	}
-	if err := s.sender.Send2Client(s.gSession, pb); err != nil {
-		log.Errorw("player send faild", "err", err)
-	}
+	s.gSession.SendToClient(s, pb)
 }
 
 func (s *Player) Login(first bool) {
