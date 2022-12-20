@@ -2,11 +2,14 @@ package mail
 
 import (
 	gogo "github.com/gogo/protobuf/proto"
+	"server/common"
 	"server/common/log"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
 	"server/service/game/iface"
+	"server/service/game/logic/player/event"
 	"server/service/game/logic/player/models"
+	"server/service/game/logic/player/models/role/typ"
 
 	"github.com/spf13/cast"
 	"github.com/wwj31/dogactor/container/rank"
@@ -26,6 +29,16 @@ func New(base models.Model) *Mail {
 		zSet:  *rank.New(),
 	}
 	mail.data.RID = base.Player.RID()
+
+	common.WatchEvent(base.Player.Observer(), func(ev event.ChangeAttribute) {
+		if ev.Type == typ.Level && ev.NewVal == 10 {
+			mail.NewBuilder().
+				SetMailTitle("🎉恭喜升到10级!🎉").
+				SetContent("这是给你的奖励!").
+				SetItems(map[int64]int64{10001: 100, 10002: 100}).
+				Build()
+		}
+	})
 	return mail
 }
 

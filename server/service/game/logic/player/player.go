@@ -37,6 +37,7 @@ type (
 		gamer    iface.Gamer
 		gSession common.GSession       // 网络session
 		models   [allmod]iface.Modeler // 玩家所有功能模块
+		observer *common.Observer
 
 		roleId      string
 		saveTimerId string
@@ -46,6 +47,8 @@ type (
 )
 
 func (s *Player) OnInit() {
+	s.observer = common.NewObserver()
+
 	// 初始化玩家所有功能模块
 	s.initModule()
 	s.load()
@@ -86,7 +89,7 @@ func (s *Player) OnHandle(msg actor.Message) {
 		return
 	}
 
-	router.On(s, pt)
+	router.Dispatch(s, pt)
 
 	log.Debugw("player handle msg", "player", s.ID(), "msgName", msgName, "pt", pt.String())
 	msgName = s.System().ProtoIndex().MsgName(pt)
@@ -96,6 +99,10 @@ func (s *Player) OnHandle(msg actor.Message) {
 
 func (s *Player) RID() string {
 	return s.roleId
+}
+
+func (s *Player) Observer() *common.Observer {
+	return s.observer
 }
 
 func (s *Player) Send2Client(pb gogo.Message) {

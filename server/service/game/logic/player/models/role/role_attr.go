@@ -2,6 +2,8 @@ package role
 
 import (
 	"github.com/wwj31/dogactor/tools"
+	"server/common"
+	"server/service/game/logic/player/event"
 	"server/service/game/logic/player/models/role/typ"
 	"time"
 )
@@ -29,9 +31,16 @@ func (s *Role) Attribute(typ typ.Attribute) int64 {
 	return s.data.Attributes[int64(typ)]
 }
 
-func (s *Role) SetAttribute(typ typ.Attribute, val int64) {
+func (s *Role) SetAttribute(t typ.Attribute, val int64) {
 	if s.data.Attributes == nil {
 		s.data.Attributes = newAtrributeMap()
 	}
-	s.data.Attributes[int64(typ)] = val
+	old := s.data.Attributes[t.Int64()]
+	s.data.Attributes[t.Int64()] = val
+
+	common.EmitEvent(s.Player.Observer(), event.ChangeAttribute{
+		Type:   t,
+		OldVal: old,
+		NewVal: val,
+	})
 }

@@ -2,6 +2,7 @@ package mgo
 
 import (
 	"context"
+	"math/rand"
 	"sync"
 	"time"
 
@@ -64,21 +65,26 @@ func newProcessor(collection string) *processor {
 	}
 
 	waitGroup.Add(1)
-	tick := time.Tick(time.Second)
+	randDur := func() time.Duration {
+		return time.Duration(rand.Intn(int(30*time.Second))) + (30 * time.Second)
+	}
+	t := time.NewTimer(randDur())
 	go func() {
 		for {
 			select {
 			case <-ctx.Done():
+				ok := make(chan struct{})
 				proc.update()
+				<-ok
 				waitGroup.Done()
 				return
 
 			case fn := <-proc.fn:
 				fn()
 
-			case <-tick:
+			case <-t.C:
 				proc.update()
-
+				t.Reset(randDur())
 			}
 		}
 	}()
@@ -97,7 +103,9 @@ func replace(queue []docData, new docData) bool {
 }
 
 func (p *processor) update() {
-	for _, v := range p.queue {
+	arr := p.queue
+	p.queue = nil
+	for _, v := range arr {
 		func() {
 			defer func() {
 				if delta := time.Now().Sub(time.Now()); delta > time.Millisecond*100 {
@@ -118,6 +126,4 @@ func (p *processor) update() {
 			}
 		}()
 	}
-
-	p.queue = p.queue[len(p.queue):]
 }

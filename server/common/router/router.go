@@ -35,7 +35,7 @@ func Reg[ACTOR actor.Actor, MSG gogo.Message](fn func(actor ACTOR, msg MSG), rep
 	return true
 }
 
-func On(a actor.Actor, msg gogo.Message) {
+func Dispatch(a actor.Actor, msg gogo.Message) {
 	msgName := reflect.TypeOf(msg).String()
 	actorName := reflect.TypeOf(a).String()
 

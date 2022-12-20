@@ -1,62 +1,44 @@
 package common
 
-import (
-	"server/common/log"
+import "server/common/log"
 
-	"github.com/wwj31/dogactor/tools"
-)
+type Observer struct {
+	watcher map[string][]func(interface{})
+}
 
-type EventType = int
-type Listener = int
-type (
-	Handle func(ev interface{})
-
-	Observer struct {
-		listeners map[EventType]map[Listener]Handle
-	}
-)
-
-func New() Observer {
-	return Observer{
-		listeners: make(map[EventType]map[Listener]Handle, 10),
+func NewObserver() *Observer {
+	return &Observer{
+		watcher: map[string][]func(interface{}){},
 	}
 }
 
-func (s *Observer) Dispatch(typ EventType, event interface{}) {
-	list, ok := s.listeners[typ]
-	if !ok {
+func WatchEvent[T any](observer *Observer, fn func(ev T)) {
+	if observer == nil {
+		log.Errorw("observer is nil")
 		return
 	}
 
-	for _, fun := range list {
-		tools.Try(func() {
-			fun(event)
-		})
+	var t T
+	evName := ProtoType(t)
+	if _, ok := observer.watcher[evName]; !ok {
+		observer.watcher[evName] = []func(interface{}){}
 	}
+
+	arr := observer.watcher[evName]
+	arr = append(arr, func(v interface{}) {
+		fn(v.(T))
+	})
+	observer.watcher[evName] = arr
 }
 
-func (s *Observer) AddListener(obj Listener, typ EventType, callback Handle) {
-	if _, ok := s.listeners[typ]; !ok {
-		s.listeners[typ] = make(map[Listener]Handle, 1)
-	}
-
-	if _, ok := s.listeners[typ][obj]; ok {
-		log.Errorw("repeated listen event", "obj", obj, "typ", typ)
+func EmitEvent(observer *Observer, v interface{}) {
+	if observer == nil {
+		log.Errorw("observer is nil")
 		return
 	}
-
-	s.listeners[typ][obj] = callback
-}
-
-func (s *Observer) RemoveListener(typ EventType, obj Listener) {
-	listenerMap, ok := s.listeners[typ]
-	if !ok {
-		return
+	evName := ProtoType(v)
+	arr := observer.watcher[evName]
+	for _, fn := range arr {
+		fn(v)
 	}
-
-	if _, ok := listenerMap[obj]; !ok {
-		return
-	}
-
-	delete(listenerMap, obj)
 }
