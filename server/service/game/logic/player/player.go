@@ -92,8 +92,7 @@ func (s *Player) OnHandle(msg actor.Message) {
 	router.Dispatch(s, pt)
 
 	log.Debugw("player handle msg", "player", s.ID(), "msgName", msgName, "pt", pt.String())
-	msgName = s.System().ProtoIndex().MsgName(pt)
-	outer.Put(msgName, message)
+	//outer.Put(s.System().ProtoIndex().MsgName(pt), message)
 
 }
 
