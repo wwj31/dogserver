@@ -10,12 +10,13 @@ func _() {
 	var x [1]struct{}
 	_ = x[Level-1]
 	_ = x[Exp-2]
-	_ = x[Glod-3]
+	_ = x[Gold-3]
+	_ = x[AttributeMax-4]
 }
 
-const _Attribute_name = "等级经验金币"
+const _Attribute_name = "等级经验金币AttributeMax"
 
-var _Attribute_index = [...]uint8{0, 6, 12, 18}
+var _Attribute_index = [...]uint8{0, 6, 12, 18, 30}
 
 func (i Attribute) String() string {
 	i -= 1

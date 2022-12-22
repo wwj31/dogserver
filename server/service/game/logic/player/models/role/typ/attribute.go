@@ -9,11 +9,15 @@ const (
 	_     Attribute = iota
 	Level           // 等级
 	Exp             // 经验
-	Glod            // 金币
+	Gold            // 金币
 
 	AttributeMax
 )
 
 func (s Attribute) Int64() int64 {
 	return int64(s)
+}
+
+func (s Attribute) Int32() int32 {
+	return int32(s)
 }

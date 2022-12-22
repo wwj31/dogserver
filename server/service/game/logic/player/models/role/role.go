@@ -30,7 +30,7 @@ func (s *Role) OnLogin(first bool) {
 		//first
 		s.SetAttribute(typ.Level, 1)
 		s.SetAttribute(typ.Exp, 0)
-		s.SetAttribute(typ.Glod, 0)
+		s.SetAttribute(typ.Gold, 0)
 		s.data.CreateAt = nowStr
 	}
 
