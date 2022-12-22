@@ -20,20 +20,20 @@ func (s *Role) CreateAt() time.Time { return tools.TimeParse(s.data.CreateAt) }
 func (s *Role) LoginAt() time.Time  { return tools.TimeParse(s.data.LoginAt) }
 func (s *Role) LogoutAt() time.Time { return tools.TimeParse(s.data.LogoutAt) }
 
-func newAtrributeMap() map[int64]int64 {
+func newAttributeMap() map[int64]int64 {
 	return make(map[int64]int64, typ.AttributeMax)
 }
 
 func (s *Role) Attribute(typ typ.Attribute) int64 {
 	if s.data.Attributes == nil {
-		s.data.Attributes = newAtrributeMap()
+		s.data.Attributes = newAttributeMap()
 	}
 	return s.data.Attributes[int64(typ)]
 }
 
 func (s *Role) SetAttribute(t typ.Attribute, val int64) {
 	if s.data.Attributes == nil {
-		s.data.Attributes = newAtrributeMap()
+		s.data.Attributes = newAttributeMap()
 	}
 	old := s.data.Attributes[t.Int64()]
 	s.data.Attributes[t.Int64()] = val
