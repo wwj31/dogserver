@@ -17,7 +17,6 @@ func NewGateWrapperByPb(pb proto.Message, gateSession GSession) *inner.GateMsgWr
 	return &inner.GateMsgWrapper{GateSession: gateSession.String(), MsgName: ProtoType(pb), Data: data}
 }
 
-// NewGateWrapperByBytes 网关封装的消息信息(避免一次序列化操作)
 func NewGateWrapperByBytes(data []byte, msgName string, gateSession GSession) *inner.GateMsgWrapper {
 	return &inner.GateMsgWrapper{GateSession: gateSession.String(), MsgName: msgName, Data: data}
 }
