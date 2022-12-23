@@ -36,7 +36,7 @@ func (s *Login) Login(gSession common.GSession, msg *outer.LoginReq) {
 					})
 				}
 
-				md5 := common.LoginMD5(acc.UUID, acc.LastLoginRID, newPlayer)
+				md5 := common.EnterGameToken(acc.UUID, acc.LastLoginRID, newPlayer)
 				gateId, _ := gSession.Split()
 				_, err = s.RequestWait(gateId, &inner.BindSessionWithRID{
 					GateSession: gSession.String(),

@@ -57,7 +57,7 @@ func (s *Client) enter(arg ...string) {
 		UID:       s.UID,
 		RID:       s.RID,
 		NewPlayer: s.NewPlayer,
-		Checksum:  common.LoginMD5(s.UID, s.RID, s.NewPlayer),
+		Checksum:  common.EnterGameToken(s.UID, s.RID, s.NewPlayer),
 	}
 	s.SendToServer(outer.MSG_ENTER_GAME_REQ.Int32(), msg)
 }
