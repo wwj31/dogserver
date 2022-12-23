@@ -7,6 +7,8 @@ natsurl    = "nats://localhost:4222"
 redisaddr  = ["localhost:6379","localhost:6002"]
 mysql      = "root:123456@tcp(127.0.0.1:3306)/%s?charset=utf8mb4&parseTime=True&loc=Local"
 mongoaddr   = "mongodb://localhost:27017"
+#mongoaddr   = "mongodb+srv://admin:ewqmh388@wwjmongocluster.fpdka24.mongodb.net/admin?replicaSet=atlas-lrdfhp-shard-0&readPreference=primary&connectTimeoutMS=10000&authSource=admin&authMechanism=SCRAM-SHA-1&3t.uriVersion=3&3t.connection.name=atlas-lrdfhp-shard-0&3t.databases=admin&3t.alwaysShowAuthDB=true&3t.alwaysShowDBFromUserRole=true&3t.sslTlsVersion=TLS"
+#mongoaddr   = "mongodb://root:Ewqmh388@s-2vcb275f2bc33814-pub.mongodb.cn-chengdu.rds.aliyuncs.com:3717,s-2vc6836735c055c4-pub.mongodb.cn-chengdu.rds.aliyuncs.com:3717/admin"
 database   = "game"
 configjson = "../server/config/confjson"
 

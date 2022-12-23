@@ -73,9 +73,7 @@ func newProcessor(collection string) *processor {
 		for {
 			select {
 			case <-ctx.Done():
-				ok := make(chan struct{})
 				proc.update()
-				<-ok
 				waitGroup.Done()
 				return
 

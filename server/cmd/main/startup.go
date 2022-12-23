@@ -46,7 +46,7 @@ func startup() {
 
 		// init mongo
 		if err := mongodb.Builder().Addr(toml.Get("mongoaddr")).
-			Database(toml.Get("database")).Connect(); err != nil {
+			Database(toml.Get("database")).EnableSharding().Connect(); err != nil {
 			log.Errorw("mongo connect failed", "err", err)
 			return
 		}

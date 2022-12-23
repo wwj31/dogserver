@@ -12,6 +12,7 @@ import (
 func TestMongo(t *testing.T) {
 	if err := Builder().Addr("mongodb://localhost:27017").
 		Database("test").
+		EnableSharding().
 		Connect(); err != nil {
 		assert.NoError(t, err)
 		return

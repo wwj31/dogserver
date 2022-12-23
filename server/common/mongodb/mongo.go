@@ -2,6 +2,7 @@ package mongodb
 
 import (
 	"context"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"server/common/log"
 	"sync"
@@ -17,6 +18,7 @@ type mongoDB struct {
 	database     *mongo.Database
 	addr         string
 	databaseName string
+	sharding     bool
 	collections  map[string]*mongo.Collection
 }
 
@@ -28,6 +30,17 @@ func (m *mongoDB) CreateCollection(name string) error {
 	}
 	if err != nil {
 		return err
+	}
+
+	if m.sharding {
+		result := m.client.Database("admin").RunCommand(context.Background(), bson.D{
+			{"shardcollection", m.databaseName + "." + name},
+			{"key", bson.M{"_id": "hashed"}},
+		})
+
+		if result.Err() != nil {
+			log.Errorw("shard collection failed", "err", result.Err())
+		}
 	}
 	return nil
 }

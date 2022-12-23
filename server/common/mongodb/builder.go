@@ -3,15 +3,18 @@ package mongodb
 import (
 	"context"
 	"fmt"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
+	"server/common/log"
 	"time"
 )
 
 type builder struct {
 	addr         string
 	databaseName string
+	sharding     bool
 }
 
 func Builder() *builder {
@@ -39,9 +42,23 @@ func (b *builder) Connect() (err error) {
 			return
 		}
 
+		Ins.databaseName = b.databaseName
 		Ins.database = Ins.client.Database(b.databaseName)
+
+		Ins.sharding = b.sharding
+		if b.sharding {
+			result := Ins.client.Database("admin").RunCommand(context.Background(), bson.M{"enablesharding": b.databaseName})
+			if result.Err() != nil {
+				log.Warnw("enable sharding failed", "err", result.Err())
+			}
+		}
 	})
 	return
+}
+
+func (b *builder) EnableSharding() *builder {
+	b.sharding = true
+	return b
 }
 
 func (b *builder) Addr(addr string) *builder {
