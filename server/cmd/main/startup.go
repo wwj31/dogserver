@@ -10,7 +10,6 @@ import (
 	"github.com/wwj31/dogactor/actor"
 	"github.com/wwj31/dogactor/actor/cluster/mq"
 	"github.com/wwj31/dogactor/actor/cluster/mq/nats"
-	"github.com/wwj31/dogactor/expect"
 	"github.com/wwj31/dogactor/logger"
 	"github.com/wwj31/dogactor/tools"
 	"server/common"
@@ -99,9 +98,9 @@ func run(appType string, appId int32) *actor.System {
 
 	switch appType {
 	case actortype.Client:
-		expect.Nil(system.Add(actor.New(actortype.Client, &client.Client{ACC: "Client"}, actor.SetLocalized())))
+		_ = system.Add(actor.New(actortype.Client, &client.Client{ACC: "Client"}, actor.SetLocalized()))
 	case actortype.Robot:
-		system.Add(actor.New(actortype.Robot, &robot.Robot{}, actor.SetLocalized()))
+		_ = system.Add(actor.New(actortype.Robot, &robot.Robot{}, actor.SetLocalized()))
 	case actortype.GateWay_Actor:
 		newGateway(appId, system)
 	case actortype.Login_Actor:
@@ -131,17 +130,17 @@ func newProtoIndex() *tools.ProtoIndex {
 
 func newLogin(system *actor.System) {
 	loginActor := login.New()
-	expect.Nil(system.Add(actor.New(actortype.Login_Actor, loginActor, actor.SetMailBoxSize(1000))))
+	_ = system.Add(actor.New(actortype.Login_Actor, loginActor, actor.SetMailBoxSize(2000)))
 }
 
 func newGateway(appId int32, system *actor.System) {
 	loginActor := gateway.New()
-	expect.Nil(system.Add(actor.New(actortype.GatewayName(appId), loginActor, actor.SetMailBoxSize(2000))))
+	_ = system.Add(actor.New(actortype.GatewayName(appId), loginActor, actor.SetMailBoxSize(2000)))
 }
 
 func newGame(appId int32, system *actor.System) {
 	gameActor := game.New(appId)
 	ch := channel.New()
-	expect.Nil(system.Add(actor.New(actortype.GameName(appId), gameActor, actor.SetMailBoxSize(4000))))
-	expect.Nil(system.Add(actor.New(actortype.ChatName(appId), ch, actor.SetMailBoxSize(1000))))
+	_ = system.Add(actor.New(actortype.GameName(appId), gameActor, actor.SetMailBoxSize(1000)))
+	_ = system.Add(actor.New(actortype.ChatName(appId), ch, actor.SetMailBoxSize(1000)))
 }
