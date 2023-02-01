@@ -32,53 +32,52 @@ import (
 )
 
 func startup() {
-	tools.Try(func() {
-		osQuitSignal := make(chan os.Signal)
-		signal.Notify(osQuitSignal, syscall.SIGKILL, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
+	osQuitSignal := make(chan os.Signal)
+	signal.Notify(osQuitSignal, syscall.SIGKILL, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
 
-		// init toml
-		toml.Init(*tomlPath, *appName, *appId)
+	// init toml
+	toml.Init(*tomlPath, *appName, *appId)
 
-		// init log
-		logName := *appName + cast.ToString(appId)
-		log.Init(*logLevel, *logPath, logName, cast.ToBool(toml.Get("dispaly")))
+	// init log
+	logName := *appName + cast.ToString(appId)
+	log.Init(*logLevel, *logPath, logName, cast.ToBool(toml.Get("dispaly")))
 
-		// init mongo
-		if err := mongodb.Builder().Addr(toml.Get("mongoaddr")).
-			Database(toml.Get("database")).EnableSharding().Connect(); err != nil {
-			log.Errorw("mongo connect failed", "err", err)
+	// init mongo
+	if err := mongodb.Builder().Addr(toml.Get("mongoaddr")).
+		Database(toml.Get("database")).EnableSharding().Connect(); err != nil {
+		log.Errorw("mongo connect failed", "err", err)
+		return
+	}
+
+	// init redis
+	if err := redis.Builder().
+		Addr(toml.GetArray("redisaddr", "localhost:6379")...).
+		ClusterMode().Connect(); err != nil {
+		log.Errorw("redis connect failed", "err", err)
+		return
+	}
+
+	// load config of excels
+	if path, ok := toml.GetB("configjson"); ok {
+		err := confgo.Load(path)
+		if err != nil {
+			log.Errorw("toml get config json failed", "err", err)
 			return
 		}
+		common.RefactorConfig()
+	}
 
-		// init redis
-		if err := redis.Builder().
-			Addr(toml.GetArray("redisaddr", "localhost:6379")...).
-			ClusterMode().Connect(); err != nil {
-			log.Errorw("redis connect failed", "err", err)
-			return
-		}
+	monitor(*logPath, logName+"mo")
+	pprof("6060")
 
-		// load config of excels
-		if path, ok := toml.GetB("configjson"); ok {
-			err := confgo.Load(path)
-			if err != nil {
-				log.Errorw("toml get config json failed", "err", err)
-				return
-			}
-			common.RefactorConfig()
-		}
+	// startup
+	system := run(*appName, int32(*appId))
 
-		monitor(*logPath, logName+"mo")
-		pprof("6060")
+	// safe quit
+	<-osQuitSignal
+	system.Stop()
+	<-system.Stopped
 
-		// startup
-		system := run(*appName, int32(*appId))
-
-		// safe quit
-		<-osQuitSignal
-		system.Stop()
-		<-system.Stopped
-	})
 	mgo.Stop()
 	logger.Close()
 
