@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"server/common"
+	"server/config/confgo"
 	"syscall"
 
 	"github.com/spf13/cast"
@@ -12,13 +14,11 @@ import (
 	"github.com/wwj31/dogactor/actor/cluster/mq/nats"
 	"github.com/wwj31/dogactor/logger"
 	"github.com/wwj31/dogactor/tools"
-	"server/common"
 	"server/common/actortype"
 	"server/common/log"
 	"server/common/mongodb"
 	"server/common/redis"
 	"server/common/toml"
-	"server/config/confgo"
 	_ "server/controller"
 	"server/db/mgo"
 	"server/proto/innermsg/inner"
@@ -42,6 +42,16 @@ func startup() {
 	logName := *appName + cast.ToString(appId)
 	log.Init(*logLevel, *logPath, logName, cast.ToBool(toml.Get("dispaly")))
 
+	// load config of excels
+	if path, ok := toml.GetB("configjson"); ok {
+		err := confgo.Load(path)
+		if err != nil {
+			log.Errorw("toml get config json failed", "err", err)
+			return
+		}
+		common.RefactorConfig()
+	}
+
 	// init mongo
 	if err := mongodb.Builder().Addr(toml.Get("mongoaddr")).
 		Database(toml.Get("database")).EnableSharding().Connect(); err != nil {
@@ -55,16 +65,6 @@ func startup() {
 		ClusterMode().Connect(); err != nil {
 		log.Errorw("redis connect failed", "err", err)
 		return
-	}
-
-	// load config of excels
-	if path, ok := toml.GetB("configjson"); ok {
-		err := confgo.Load(path)
-		if err != nil {
-			log.Errorw("toml get config json failed", "err", err)
-			return
-		}
-		common.RefactorConfig()
 	}
 
 	monitor(*logPath, logName+"mo")

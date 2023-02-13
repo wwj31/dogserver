@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"html/template"
-	"io/ioutil"
 	"os"
 	"path"
 	"strings"
@@ -20,9 +19,10 @@ const (
 // 解析配置表格式
 func parsing(data [][]string, structName string) (result string, err error) {
 	stName := firstRuneToUpper(structName)
-	structMeta := fmt.Sprintf(structBegin, stName) + "{\n"
-	fieldGet := ""
-	for _, value := range data {
+	var (
+		fieldBody, fieldGetFun string
+	)
+	for n, value := range data {
 		if len(value) != lineNumber {
 			return "", fmt.Errorf("parsing sheetName:%v col's len:%d is err", value, len(value))
 		}
@@ -34,20 +34,24 @@ func parsing(data [][]string, structName string) (result string, err error) {
 		typ, exist := TypeIndex[fieldType]
 		if !exist {
 			continue // 所有找不到的类型，全部忽略
-			//return "", fmt.Errorf("parsing TypeIndex err:%v structName:%v", fieldType, structName)
 		}
 
 		field := firstRuneToUpper(fieldName)
-		structMeta += fmt.Sprintf(structValue, field, typ)
-		fieldGet += genGet(stName, field, fieldType, comment)
+		fieldBody += fmt.Sprintf("%v %v", field, typ)
 		if comment != "" {
-			structMeta += fmt.Sprintf(structRemarks, comment)
+			fieldBody += fmt.Sprintf(" // %v", comment)
 		}
-		structMeta += "\n"
+
+		// 最后一个字段不换行
+		if n < len(data)-1 {
+			fieldBody += "\n"
+		}
+
+		fieldGetFun += genGet(stName, field, fieldType, comment)
 	}
-	structMeta += "}\n"
-	structMeta += fieldGet
-	return structMeta, nil
+
+	result = fmt.Sprintf(structContext, stName, fieldBody, fieldGetFun)
+	return
 }
 
 func genGet(stName, field, fieldType, comment string) string {
@@ -121,7 +125,7 @@ func (s *Generate) writeGolangFile(struType, sheetName, keyType, key, xlsxname s
 func (s *Generate) writeJsonFile(data, filename string) error {
 	os.MkdirAll(s.SaveJsonPath, os.ModePerm)
 	newFile := path.Join(s.SaveJsonPath, filename+".json")
-	if err := ioutil.WriteFile(newFile, []byte(data), 0644); err != nil {
+	if err := os.WriteFile(newFile, []byte(data), 0644); err != nil {
 		return fmt.Errorf("writeJsonFile Write is err:%v", err)
 	}
 	return nil

@@ -13,11 +13,16 @@ import (
 )
 
 var (
-	lineNumber    = 3                  // 每个工作表需要读取的行数
-	structBegin   = "type _%v struct " // 结构体开始
-	structValue   = "    %v %v"        // 结构体的内容
-	structRemarks = "	 // %v"          // 结构体备注
-	headerFromat  = "%v\n\r"           // 文件头
+	lineNumber   = 3        // 每个工作表需要读取的行数
+	headerFromat = "%v\n\r" // 文件头
+
+	structContext = `
+	type _%v struct {
+		%v
+	}
+
+    %v
+	`
 )
 
 type Generate struct {
@@ -70,7 +75,7 @@ func (s *Generate) ReadExcel() {
 					panic(err)
 				}
 
-				fmt.Printf("%-15v ok.\n", files[idx].Name())
+				fmt.Printf("%v  %-15v ok.\n", files[idx].Name(), sheet.Name)
 			}
 
 		}(i)
@@ -118,7 +123,7 @@ func (s *Generate) BuildTypeStruct(sheet *xlsx.Sheet, fileName string) error {
 		if strings.TrimSpace(sheet.Cell(FIELDNAME, i).Value) == "" {
 			continue
 		}
-		meta := make([]string, 0)
+		var meta []string
 		// 遍历行
 		for j := 0; j < lineNumber; j++ {
 			meta = append(meta, strings.TrimSpace(sheet.Cell(j, i).Value))
@@ -136,12 +141,17 @@ func (s *Generate) BuildTypeStruct(sheet *xlsx.Sheet, fileName string) error {
 	structType += "\n"
 
 	fieldName := firstRuneToUpper(strings.TrimSpace(sheet.Cell(FIELDNAME, 0).Value))
-	var keyType string
+
+	var (
+		keyType string
+		ok      bool
+	)
+
 	fieldType := strings.TrimSpace(sheet.Cell(FIELDTYPE, 0).Value)
 	if fieldType != STR && fieldType != INT {
 		return fmt.Errorf("主键类型错误:%v %v %v", fieldType, fileName, sheet.Name)
 	}
-	var ok bool
+
 	if keyType, ok = TypeIndex[fieldType]; !ok {
 		return fmt.Errorf("主键类型找不到:%v %v %v", fieldType, fileName, sheet.Name)
 	}
@@ -155,12 +165,13 @@ func (s *Generate) BuildTypeStruct(sheet *xlsx.Sheet, fileName string) error {
 
 // BuildJsonStruct 构建json结构
 func (s *Generate) BuildJsonStruct(sheet *xlsx.Sheet, fileName string) error {
-	array := []string{}
+	var array []string
 	// 判断表格中内容的行数是否小于需要读取的行数
 	dataLen := sheet.MaxRow - lineNumber
 	if dataLen < 0 {
 		return fmt.Errorf("ReadExcel dataLen < 0 dataLen:%v MaxRow:%v lineNumber:%v ", dataLen, sheet.MaxRow, lineNumber)
 	}
+
 	// 遍历列
 	var err error
 	checkUnique := make(map[string]struct{}, sheet.MaxRow)
@@ -177,7 +188,7 @@ func (s *Generate) BuildJsonStruct(sheet *xlsx.Sheet, fileName string) error {
 			break
 		}
 		if _, ex := checkUnique[key]; ex {
-			return fmt.Errorf("表:%v 主键重复 key:%v", fileName, key)
+			return fmt.Errorf("表:[%v] 页:[%v] 主键重复 key:[%v]", fileName, sheet.Name, key)
 		}
 		m := map[string]interface{}{}
 		for j := 0; j < sheet.MaxCol; j++ {
@@ -199,6 +210,7 @@ func (s *Generate) BuildJsonStruct(sheet *xlsx.Sheet, fileName string) error {
 		}
 		checkUnique[key] = struct{}{}
 	}
+
 	if err := s.writeJsonFile("[\n    "+strings.Join(array, ",\n    ")+"\n]", sheet.Name); err != nil {
 		return err
 	}
@@ -206,7 +218,6 @@ func (s *Generate) BuildJsonStruct(sheet *xlsx.Sheet, fileName string) error {
 }
 
 func (s *Generate) BuildConfigConst(sheet *xlsx.Sheet) error {
-	var ()
 	// 遍历列 找到STR_SERVER_CONST
 	constData := ""
 	for col := 0; col < sheet.MaxCol; col++ {
