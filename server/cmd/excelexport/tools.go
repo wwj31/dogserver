@@ -75,7 +75,7 @@ func genGet(stName, field, fieldType, comment string) string {
 func (s *Generate) writeGolangFile(struType, sheetName, keyType, key, xlsxname string) error {
 	type Portion struct {
 		FileHeaderComment string
-		Packagename       string
+		PackageName       string
 		TypeName          string
 		SheetName         string
 		MapType           string
@@ -86,7 +86,7 @@ func (s *Generate) writeGolangFile(struType, sheetName, keyType, key, xlsxname s
 	}
 	format := Portion{}
 	format.FileHeaderComment = xlsxname
-	format.Packagename = fmt.Sprintf(headerFromat, *goPackageName)
+	format.PackageName = fmt.Sprintf(headerFromat, *goPackageName)
 	format.TypeName = firstRuneToUpper(sheetName)
 	format.SheetName = sheetName
 	format.StruType = struType

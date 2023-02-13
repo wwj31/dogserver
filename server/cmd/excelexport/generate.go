@@ -8,8 +8,8 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"runtime"
 	"strings"
-	"sync"
 )
 
 var (
@@ -34,7 +34,8 @@ func (s *Generate) ReadExcel() {
 	if err != nil {
 		panic(fmt.Errorf("excel文件路径读取失败 此路径无效:%v error:%v", s.ReadPath, err))
 	}
-	var wg sync.WaitGroup
+
+	pChNum := make(chan struct{}, 10)
 	for i, file := range files {
 		//if hasChinese(file.Name()) {
 		//	continue
@@ -46,11 +47,13 @@ func (s *Generate) ReadExcel() {
 			continue
 		}
 
-		wg.Add(1)
-		go func(j int) {
-			defer wg.Done()
+		pChNum <- struct{}{}
+		go func(idx int) {
+			defer func() {
+				<-pChNum
+			}()
 
-			dir := path.Join(s.ReadPath, files[j].Name())
+			dir := path.Join(s.ReadPath, files[idx].Name())
 			f, err := xlsx.OpenFile(dir)
 			if err != nil {
 				panic(fmt.Errorf("excel文件读取失败 无效文件:%v error:%v", dir, err))
@@ -58,7 +61,7 @@ func (s *Generate) ReadExcel() {
 
 			// 遍历工作表
 			for _, sheet := range f.Sheets {
-				fileName := files[j].Name()
+				fileName := files[idx].Name()
 				if err := s.BuildTypeStruct(sheet, fileName); err != nil {
 					panic(err)
 				}
@@ -67,12 +70,16 @@ func (s *Generate) ReadExcel() {
 					panic(err)
 				}
 
-				fmt.Printf("%-15v ok.\n", files[j].Name())
+				fmt.Printf("%-15v ok.\n", files[idx].Name())
 			}
 
 		}(i)
 	}
-	wg.Wait()
+
+	// 等待所有表处理完成
+	for len(pChNum) > 0 {
+		runtime.Gosched()
+	}
 
 	// 导出依赖的字段解析函数
 	tpath := path.Join(s.TplPath, "convert.go.tpl")
@@ -89,7 +96,7 @@ func (s *Generate) ReadExcel() {
 	}
 
 	err = tmpl.Execute(file, struct {
-		Packagename string
+		PackageName string
 	}{s.PackageName})
 
 	if err != nil {
