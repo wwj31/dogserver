@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/tealeg/xlsx"
 	"html/template"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
@@ -31,7 +30,7 @@ type Generate struct {
 
 // ReadExcel 读取excel
 func (s *Generate) ReadExcel() {
-	files, err := ioutil.ReadDir(s.ReadPath)
+	files, err := os.ReadDir(s.ReadPath)
 	if err != nil {
 		panic(fmt.Errorf("excel文件路径读取失败 此路径无效:%v error:%v", s.ReadPath, err))
 	}
@@ -147,7 +146,7 @@ func (s *Generate) BuildTypeStruct(sheet *xlsx.Sheet, fileName string) error {
 	return nil
 }
 
-// 构建json结构
+// BuildJsonStruct 构建json结构
 func (s *Generate) BuildJsonStruct(sheet *xlsx.Sheet, fileName string) error {
 	array := []string{}
 	// 判断表格中内容的行数是否小于需要读取的行数

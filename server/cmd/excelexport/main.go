@@ -9,7 +9,7 @@ import (
 var (
 	saveGoPath    = flag.String("saveGoPath", "./config", ".conf.go output path")
 	saveJsonPath  = flag.String("saveJsonPath", "./config", ".json output path")
-	readPath      = flag.String("readPath", "./", "The path of reading Excel")
+	inputPath     = flag.String("inputPath", "./", "The path of reading Excel")
 	tplPath       = flag.String("tplPath", "./", "The path of .go.tpl")
 	goPackageName = flag.String("goPackageName", "config", "go package of file")
 )
@@ -25,7 +25,7 @@ func main() {
 	(&Generate{
 		SaveGoPath:   *saveGoPath,
 		SaveJsonPath: *saveJsonPath,
-		ReadPath:     *readPath,
+		ReadPath:     *inputPath,
 		PackageName:  *goPackageName,
 		TplPath:      *tplPath,
 	}).ReadExcel()
