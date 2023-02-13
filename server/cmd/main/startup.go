@@ -5,7 +5,7 @@ import (
 	"os"
 	"os/signal"
 	"server/common"
-	"server/config/confgo"
+	"server/config/conf"
 	"syscall"
 
 	"github.com/spf13/cast"
@@ -44,7 +44,7 @@ func startup() {
 
 	// load config of excels
 	if path, ok := toml.GetB("configjson"); ok {
-		err := confgo.Load(path)
+		err := conf.Load(path)
 		if err != nil {
 			log.Errorw("toml get config json failed", "err", err)
 			return

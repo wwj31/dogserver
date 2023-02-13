@@ -1,2 +1,2 @@
-.\exec.exe -saveGoPath=../confgo -saveJsonPath=../confjson -inputPath=../excel -tplPath=./ -goPackageName=confgo
+.\exec.exe -saveGoPath=../conf -saveJsonPath=../confjson -inputPath=../excel -tplPath=./ -goPackageName=conf
 pause
