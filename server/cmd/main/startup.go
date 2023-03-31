@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"syscall"
+
 	"server/common"
 	"server/config/conf"
-	"syscall"
 
 	"github.com/spf13/cast"
 	"github.com/wwj31/dogactor/actor"
@@ -14,6 +15,7 @@ import (
 	"github.com/wwj31/dogactor/actor/cluster/mq/nats"
 	"github.com/wwj31/dogactor/logger"
 	"github.com/wwj31/dogactor/tools"
+
 	"server/common/actortype"
 	"server/common/log"
 	"server/common/mongodb"
@@ -60,7 +62,7 @@ func startup() {
 	}
 
 	// init redis
-	if err := redis.Builder().
+	if err := redis.NewBuilder().
 		Addr(toml.GetArray("redisaddr", "localhost:6379")...).
 		ClusterMode().Connect(); err != nil {
 		log.Errorw("redis connect failed", "err", err)
@@ -100,11 +102,11 @@ func run(appType string, appId int32) *actor.System {
 		_ = system.Add(actor.New(actortype.Client, &client.Client{ACC: "Client"}, actor.SetLocalized()))
 	case actortype.Robot:
 		_ = system.Add(actor.New(actortype.Robot, &robot.Robot{}, actor.SetLocalized()))
-	case actortype.GateWay_Actor:
+	case actortype.GatewayActor:
 		newGateway(appId, system)
-	case actortype.Login_Actor:
+	case actortype.LoginActor:
 		newLogin(system)
-	case actortype.Game_Actor:
+	case actortype.GameActor:
 		newGame(appId, system)
 	case "all":
 		newGateway(appId, system)
@@ -129,7 +131,7 @@ func newProtoIndex() *tools.ProtoIndex {
 
 func newLogin(system *actor.System) {
 	loginActor := login.New()
-	_ = system.Add(actor.New(actortype.Login_Actor, loginActor, actor.SetMailBoxSize(2000)))
+	_ = system.Add(actor.New(actortype.LoginActor, loginActor, actor.SetMailBoxSize(2000)))
 }
 
 func newGateway(appId int32, system *actor.System) {

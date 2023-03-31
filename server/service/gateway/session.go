@@ -1,12 +1,13 @@
 package gateway
 
 import (
+	"time"
+
 	"server/common"
 	"server/common/actortype"
 	"server/common/log"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
-	"time"
 
 	"github.com/wwj31/dogactor/network"
 	"github.com/wwj31/dogactor/tools"
@@ -84,7 +85,7 @@ func (s *UserSession) OnRecv(data []byte) {
 	wrapperMsg := common.NewGateWrapperByBytes(data[4:], msgName, gSession)
 
 	if outer.MSG_LOGIN_SEGMENT_BEGIN.Int32() <= msgId && msgId <= outer.MSG_LOGIN_SEGMENT_END.Int32() {
-		err = s.gateway.Send(actortype.Login_Actor, wrapperMsg)
+		err = s.gateway.Send(actortype.LoginActor, wrapperMsg)
 	} else if outer.MSG_GAME_SEGMENT_BEGIN.Int32() <= msgId && msgId <= outer.MSG_GAME_SEGMENT_END.Int32() {
 		err = s.gateway.Send(s.PlayerId, wrapperMsg)
 	}

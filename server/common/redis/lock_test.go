@@ -7,7 +7,7 @@ import (
 )
 
 func TestLock(t *testing.T) {
-	Builder().OnConnect(func() {
+	NewBuilder().OnConnect(func() {
 		fmt.Println("redis connect success")
 	}).Connect()
 

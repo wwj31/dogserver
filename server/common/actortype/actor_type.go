@@ -10,34 +10,34 @@ import (
 type ActorId = string
 
 const (
-	World_Actor   = "world"
-	Login_Actor   = "login"
-	Game_Actor    = "game"
-	Player_Actor  = "player"
-	GateWay_Actor = "gateway"
-	Chat_Actor    = "chat"
+	WorldActor   = "world"
+	LoginActor   = "login"
+	GameActor    = "game"
+	PlayerActor  = "player"
+	GatewayActor = "gateway"
+	ChatActor    = "chat"
 
 	Client = "client"
 	Robot  = "robot"
 )
 
 func GameName(id int32) ActorId {
-	return fmt.Sprintf("%v_%v_Actor", Game_Actor, id)
+	return fmt.Sprintf("%v_%v_Actor", GameActor, id)
 }
 
 func PlayerId(id string) ActorId {
-	return fmt.Sprintf("%v_%v_Actor", Player_Actor, id)
+	return fmt.Sprintf("%v_%v_Actor", PlayerActor, id)
 }
 
 func WorldName(id int32) ActorId {
-	return fmt.Sprintf("%v_%v_Actor", World_Actor, id)
+	return fmt.Sprintf("%v_%v_Actor", WorldActor, id)
 }
 
 func GatewayName(id int32) ActorId {
-	return fmt.Sprintf("%v_%v_Actor", GateWay_Actor, id)
+	return fmt.Sprintf("%v_%v_Actor", GatewayActor, id)
 }
 func ChatName(id int32) ActorId {
-	return fmt.Sprintf("%v_%v_Actor", Chat_Actor, id)
+	return fmt.Sprintf("%v_%v_Actor", ChatActor, id)
 }
 
 func AId(actorId ActorId, typ string) (str string) {
@@ -58,7 +58,6 @@ func NumAndType(actorId ActorId) (int, string) {
 	return cast.ToInt(str[1]), str[0]
 }
 
-// 匹配actor类型 按照固定格式匹配
 func IsActorOf(actorId, typ string) bool {
 	str := strings.Split(actorId, "_")
 	if len(str) != 3 {

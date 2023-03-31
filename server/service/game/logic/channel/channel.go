@@ -19,11 +19,11 @@ func New() *Channel {
 type Channel struct {
 	actor.Base
 
-	channels map[common.CHANNEL_TYPE]id2SessionMap
+	channels map[common.ChannelType]id2SessionMap
 }
 
 func (s *Channel) OnInit() {
-	s.channels = make(map[common.CHANNEL_TYPE]id2SessionMap)
+	s.channels = make(map[common.ChannelType]id2SessionMap)
 	s.channels[common.WORLD] = id2SessionMap{}
 
 	log.Debugf("chat server OnInit %v", s.ID())
@@ -49,7 +49,7 @@ func (s *Channel) OnHandle(m actor.Message) {
 	}
 }
 
-func (s *Channel) join(typ common.CHANNEL_TYPE, playerId actortype.ActorId, gs common.GSession) bool {
+func (s *Channel) join(typ common.ChannelType, playerId actortype.ActorId, gs common.GSession) bool {
 	var (
 		channel id2SessionMap
 		ok      bool
@@ -65,7 +65,7 @@ func (s *Channel) join(typ common.CHANNEL_TYPE, playerId actortype.ActorId, gs c
 	return true
 }
 
-func (s *Channel) leave(typ common.CHANNEL_TYPE, playerId actortype.ActorId) {
+func (s *Channel) leave(typ common.ChannelType, playerId actortype.ActorId) {
 	var (
 		smap id2SessionMap
 		ok   bool
@@ -81,7 +81,7 @@ func (s *Channel) leave(typ common.CHANNEL_TYPE, playerId actortype.ActorId) {
 	delete(smap, playerId)
 }
 
-func (s *Channel) broadcast(typ common.CHANNEL_TYPE, msg proto.Message) {
+func (s *Channel) broadcast(typ common.ChannelType, msg proto.Message) {
 	var (
 		smap id2SessionMap
 		ok   bool

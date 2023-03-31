@@ -6,7 +6,7 @@ import (
 )
 
 func TestScript(t *testing.T) {
-	Builder().OnConnect(func() {
+	NewBuilder().OnConnect(func() {
 		fmt.Println("redis connect success")
 	}).Connect()
 

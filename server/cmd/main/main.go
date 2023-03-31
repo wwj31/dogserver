@@ -20,6 +20,5 @@ func main() {
 	flag.Usage = func() { fmt.Println("flag param error") }
 	flag.Parse()
 
-	// start the world
 	startup()
 }

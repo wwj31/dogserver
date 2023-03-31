@@ -1,6 +1,6 @@
 package common
 
-var refactorTable = []func(){}
+var refactorTable []func()
 
 func RegistRefactorFun(f func()) {
 	refactorTable = append(refactorTable, f)

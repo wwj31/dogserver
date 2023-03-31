@@ -2,6 +2,7 @@ package item
 
 import (
 	gogo "github.com/gogo/protobuf/proto"
+
 	"server/common"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
@@ -39,7 +40,7 @@ func (s *Item) OnLogout() {
 
 func (s *Item) Enough(items map[int64]int64) bool {
 	for id, need := range items {
-		if s.data.Items[id] < common.Abs64(need) {
+		if s.data.Items[id] < common.Abs(need) {
 			return false
 		}
 	}
@@ -74,12 +75,12 @@ func (s *Item) Add(items map[int64]int64, push ...bool) {
 			if count > 0 {
 				val += count
 			} else if count < 0 {
-				val -= common.Min64(val, common.Abs64(count))
+				val -= common.Min(val, common.Abs(count))
 			} else {
 				continue
 			}
 		} else {
-			val = common.Max64(0, count)
+			val = common.Max(0, count)
 		}
 		s.data.Items[id] = val
 	}

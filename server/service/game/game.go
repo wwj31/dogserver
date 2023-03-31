@@ -3,6 +3,7 @@ package game
 import (
 	"github.com/wwj31/dogactor/actor"
 	"github.com/wwj31/dogactor/expect"
+
 	"server/common"
 	"server/common/actortype"
 	"server/common/log"
@@ -24,7 +25,7 @@ type Game struct {
 func (s *Game) OnInit() {
 	s.respIdMap = make(map[actor.Id]string)
 	s.System().OnEvent(s.ID(), func(event actor.EvActorSubMqFin) {
-		if actortype.IsActorOf(event.ActorId, actortype.Player_Actor) {
+		if actortype.IsActorOf(event.ActorId, actortype.PlayerActor) {
 			if respId, ok := s.respIdMap[event.ActorId]; ok {
 				_ = s.Response(respId, &outer.Ok{})
 				delete(s.respIdMap, event.ActorId)
@@ -66,7 +67,7 @@ func (s *Game) OnHandle(msg actor.Message) {
 func (s *Game) checkAndPullPlayer(rid string) (playerId actortype.ActorId, loading bool) {
 	// TODO::检查玩家是否在其他game节点中,并且通知目标下线,需要将玩家所在节点数据存入redis中以便查询
 	playerId = actortype.PlayerId(rid)
-	if act := s.System().LocalActor(playerId); act == nil {
+	if !s.System().HasActor(playerId) {
 		playerActor := actor.New(
 			playerId,
 			player.New(rid, s),
