@@ -68,14 +68,12 @@ func (s *Game) checkAndPullPlayer(rid string) (playerId actortype.ActorId, loadi
 	// TODO::检查玩家是否在其他game节点中,并且通知目标下线,需要将玩家所在节点数据存入redis中以便查询
 	playerId = actortype.PlayerId(rid)
 	if !s.System().HasActor(playerId) {
-		playerActor := actor.New(
+		err := s.System().NewActor(
 			playerId,
 			player.New(rid, s),
 			actor.SetMailBoxSize(200),
 			//actor.SetLocalized(),
 		)
-
-		err := s.System().Add(playerActor)
 		expect.Nil(err)
 		return playerId, true
 	}

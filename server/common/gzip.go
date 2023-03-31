@@ -3,7 +3,7 @@ package common
 import (
 	"bytes"
 	"compress/gzip"
-	"io/ioutil"
+	"io"
 	"sync"
 	"unsafe"
 )
@@ -69,7 +69,7 @@ func UnGZip(data []byte) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	data, err = ioutil.ReadAll(zip)
+	data, err = io.ReadAll(zip)
 	return data, err
 }
 
@@ -79,7 +79,7 @@ func testUnGZip(data []byte) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	return ioutil.ReadAll(gz)
+	return io.ReadAll(gz)
 }
 func testUnGZip2(data []byte) ([]byte, error) {
 	zip := zipReaderPool.Get().(*gzip.Reader)
@@ -88,6 +88,6 @@ func testUnGZip2(data []byte) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	data, err = ioutil.ReadAll(zip)
+	data, err = io.ReadAll(zip)
 	return data, err
 }

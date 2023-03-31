@@ -3,10 +3,11 @@ package robot
 import (
 	"fmt"
 	"math/rand"
-	"server/service/client"
 	"sync"
 	"sync/atomic"
 	"time"
+
+	"server/service/client"
 
 	"github.com/wwj31/dogactor/actor"
 	"github.com/wwj31/dogactor/expect"
@@ -36,7 +37,7 @@ func (s *Robot) stateLogin(acc string) {
 	s.AddTimer(tools.XUID(), tools.Now().Add(randtime), func(dt time.Duration) {
 		v, _ := s.clients.LoadOrStore(acc, &client.Client{ACC: acc})
 		cli := v.(*client.Client)
-		expect.Nil(s.System().Add(actor.New(cli.ACC, cli, actor.SetLocalized())))
+		expect.Nil(s.System().NewActor(cli.ACC, cli, actor.SetLocalized()))
 
 		fmt.Println("\nlogin", cli.ACC)
 		// 随机2～8秒后，退出actor logout

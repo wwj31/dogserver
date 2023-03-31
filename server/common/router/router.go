@@ -2,8 +2,9 @@ package router
 
 import (
 	"reflect"
-	"server/common/log"
 	"sync"
+
+	"server/common/log"
 
 	gogo "github.com/gogo/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"

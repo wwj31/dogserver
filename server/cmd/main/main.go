@@ -12,7 +12,7 @@ var (
 	appName  = flag.String("app", "all", "app type")
 	appId    = flag.Int("id", 1, "app id")
 	logLevel = flag.Int("log", -1, "log level, if debug log=-1")
-	logPath  = flag.String("logpath", "./", "path of log file")
+	logPath  = flag.String("log_path", "./", "path of log file")
 )
 
 func main() {

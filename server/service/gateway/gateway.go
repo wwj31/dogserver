@@ -31,7 +31,7 @@ func New() *GateWay {
 func (s *GateWay) OnInit() {
 	s.sessions = make(map[uint64]*UserSession)
 
-	addr := toml.Get("gateaddr")
+	addr := toml.Get("gate_addr")
 	s.listener = network.StartTcpListen(addr,
 		func() network.DecodeEncoder { return &network.StreamCode{MaxDecode: 100 * tools.KB} },
 		func() network.SessionHandler { return &UserSession{gateway: s} },
