@@ -3,7 +3,7 @@ package common
 type ChannelType = string
 
 const (
-	WORLD    ChannelType = "world"    // 世界频道
-	ALLIANCE             = "alliance" // 联盟频道
-	PRIVATE              = "private"  // 私聊频道
+	WorldChat    ChannelType = "world_chat"    // 世界频道
+	AllianceChat             = "alliance_chat" // 联盟频道
+	PrivateChat              = "private_chat"  // 私聊频道
 )

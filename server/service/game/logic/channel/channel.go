@@ -24,7 +24,7 @@ type Channel struct {
 
 func (s *Channel) OnInit() {
 	s.channels = make(map[common.ChannelType]id2SessionMap)
-	s.channels[common.WORLD] = id2SessionMap{}
+	s.channels[common.WorldChat] = id2SessionMap{}
 
 	log.Debugf("chat server OnInit %v", s.ID())
 }
