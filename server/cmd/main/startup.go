@@ -93,7 +93,7 @@ func run(appType string, appId int32) *actor.System {
 		//actor.Addr(toml.Get("actor_addr")),
 		actor.Name(appType+cast.ToString(appId)),
 		mq.WithRemote(toml.Get("nats_url"), nats.New()),
-		actor.ProtoIndex(newProtoIndex("Id")),
+		actor.ProtoIndex(newProtoIndex()),
 		actor.LogLevel(logger.InfoLevel),
 	)
 
@@ -116,7 +116,7 @@ func run(appType string, appId int32) *actor.System {
 	return system
 }
 
-func newProtoIndex(prefix string) *tools.ProtoIndex {
+func newProtoIndex() *tools.ProtoIndex {
 	return tools.NewProtoIndex(func(name string) (v interface{}, ok bool) {
 		v, ok = inner.Spawner(name)
 		if !ok {
@@ -125,7 +125,7 @@ func newProtoIndex(prefix string) *tools.ProtoIndex {
 		return
 	}, tools.EnumIdx{
 		PackageName: "outer",
-		Prefix:      prefix,
+		Prefix:      "Id",
 		Enum2Name:   outer.Msg_name,
 		Name2Enum:   outer.Msg_value,
 	})
