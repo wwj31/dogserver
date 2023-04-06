@@ -70,7 +70,7 @@ func startup() {
 	}
 
 	monitor(*logPath, logName+"mo")
-	pprof("6060")
+	//pprof("6060")
 
 	// startup
 	system := run(*appName, int32(*appId))
