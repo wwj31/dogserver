@@ -3,19 +3,17 @@ package outer;
 option  go_package = "/outer";
 
 
-message Ping
-{
+message PingReq {
     int64 ClientTimestamp = 1;
 }
-message Pong
-{
+message PongRsp {
     int64 ClientTimestamp = 1;
     int64 ServerTimestamp = 2;
 }
 
 
-message LoginReq
-{
+
+message LoginReq {  // tag:login
     // 平台uuid
     string PlatformUUID  = 1;
     // 平台名字
@@ -28,8 +26,7 @@ message LoginReq
     string Token         = 5;
 }
 
-message LoginResp
-{
+message LoginRsp {
 
     string  UID          = 1;
     string  RID          = 2;
@@ -37,23 +34,20 @@ message LoginResp
     string  Token        = 4;
 }
 
-message EnterGameReq
-{
+message EnterGameReq { // tag:player
     string  UID        = 1;
     string  RID        = 2;
     bool    NewPlayer  = 3;
     string  Checksum   = 4;
 }
 
-message EnterGameResp
-{
+message EnterGameRsp {
     // 是否是新玩家
     bool NewPlayer = 1;
 }
 
 // 角色信息
-message RoleInfoPush
-{
+message RoleInfoPush {
     string  UID     = 1;
     string  RID     = 2;
     uint64  SId     = 3;
@@ -63,7 +57,6 @@ message RoleInfoPush
 }
 
 // 道具信息
-message ItemInfoPush
-{
+message ItemInfoPush {
     map<int64,int64> Items = 1;
 }

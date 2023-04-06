@@ -22,22 +22,22 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-type Ping struct {
+type PingReq struct {
 	ClientTimestamp int64 `protobuf:"varint,1,opt,name=ClientTimestamp,proto3" json:"ClientTimestamp,omitempty"`
 }
 
-func (m *Ping) Reset()         { *m = Ping{} }
-func (m *Ping) String() string { return proto.CompactTextString(m) }
-func (*Ping) ProtoMessage()    {}
-func (*Ping) Descriptor() ([]byte, []int) {
+func (m *PingReq) Reset()         { *m = PingReq{} }
+func (m *PingReq) String() string { return proto.CompactTextString(m) }
+func (*PingReq) ProtoMessage()    {}
+func (*PingReq) Descriptor() ([]byte, []int) {
 	return fileDescriptor_67c21677aa7f4e4f, []int{0}
 }
-func (m *Ping) XXX_Unmarshal(b []byte) error {
+func (m *PingReq) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *Ping) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *PingReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_Ping.Marshal(b, m, deterministic)
+		return xxx_messageInfo_PingReq.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -47,42 +47,42 @@ func (m *Ping) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 		return b[:n], nil
 	}
 }
-func (m *Ping) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Ping.Merge(m, src)
+func (m *PingReq) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PingReq.Merge(m, src)
 }
-func (m *Ping) XXX_Size() int {
+func (m *PingReq) XXX_Size() int {
 	return m.Size()
 }
-func (m *Ping) XXX_DiscardUnknown() {
-	xxx_messageInfo_Ping.DiscardUnknown(m)
+func (m *PingReq) XXX_DiscardUnknown() {
+	xxx_messageInfo_PingReq.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_Ping proto.InternalMessageInfo
+var xxx_messageInfo_PingReq proto.InternalMessageInfo
 
-func (m *Ping) GetClientTimestamp() int64 {
+func (m *PingReq) GetClientTimestamp() int64 {
 	if m != nil {
 		return m.ClientTimestamp
 	}
 	return 0
 }
 
-type Pong struct {
+type PongRsp struct {
 	ClientTimestamp int64 `protobuf:"varint,1,opt,name=ClientTimestamp,proto3" json:"ClientTimestamp,omitempty"`
 	ServerTimestamp int64 `protobuf:"varint,2,opt,name=ServerTimestamp,proto3" json:"ServerTimestamp,omitempty"`
 }
 
-func (m *Pong) Reset()         { *m = Pong{} }
-func (m *Pong) String() string { return proto.CompactTextString(m) }
-func (*Pong) ProtoMessage()    {}
-func (*Pong) Descriptor() ([]byte, []int) {
+func (m *PongRsp) Reset()         { *m = PongRsp{} }
+func (m *PongRsp) String() string { return proto.CompactTextString(m) }
+func (*PongRsp) ProtoMessage()    {}
+func (*PongRsp) Descriptor() ([]byte, []int) {
 	return fileDescriptor_67c21677aa7f4e4f, []int{1}
 }
-func (m *Pong) XXX_Unmarshal(b []byte) error {
+func (m *PongRsp) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *Pong) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *PongRsp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_Pong.Marshal(b, m, deterministic)
+		return xxx_messageInfo_PongRsp.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -92,26 +92,26 @@ func (m *Pong) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 		return b[:n], nil
 	}
 }
-func (m *Pong) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Pong.Merge(m, src)
+func (m *PongRsp) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PongRsp.Merge(m, src)
 }
-func (m *Pong) XXX_Size() int {
+func (m *PongRsp) XXX_Size() int {
 	return m.Size()
 }
-func (m *Pong) XXX_DiscardUnknown() {
-	xxx_messageInfo_Pong.DiscardUnknown(m)
+func (m *PongRsp) XXX_DiscardUnknown() {
+	xxx_messageInfo_PongRsp.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_Pong proto.InternalMessageInfo
+var xxx_messageInfo_PongRsp proto.InternalMessageInfo
 
-func (m *Pong) GetClientTimestamp() int64 {
+func (m *PongRsp) GetClientTimestamp() int64 {
 	if m != nil {
 		return m.ClientTimestamp
 	}
 	return 0
 }
 
-func (m *Pong) GetServerTimestamp() int64 {
+func (m *PongRsp) GetServerTimestamp() int64 {
 	if m != nil {
 		return m.ServerTimestamp
 	}
@@ -199,25 +199,25 @@ func (m *LoginReq) GetToken() string {
 	return ""
 }
 
-type LoginResp struct {
+type LoginRsp struct {
 	UID       string `protobuf:"bytes,1,opt,name=UID,proto3" json:"UID,omitempty"`
 	RID       string `protobuf:"bytes,2,opt,name=RID,proto3" json:"RID,omitempty"`
 	NewPlayer bool   `protobuf:"varint,3,opt,name=NewPlayer,proto3" json:"NewPlayer,omitempty"`
 	Token     string `protobuf:"bytes,4,opt,name=Token,proto3" json:"Token,omitempty"`
 }
 
-func (m *LoginResp) Reset()         { *m = LoginResp{} }
-func (m *LoginResp) String() string { return proto.CompactTextString(m) }
-func (*LoginResp) ProtoMessage()    {}
-func (*LoginResp) Descriptor() ([]byte, []int) {
+func (m *LoginRsp) Reset()         { *m = LoginRsp{} }
+func (m *LoginRsp) String() string { return proto.CompactTextString(m) }
+func (*LoginRsp) ProtoMessage()    {}
+func (*LoginRsp) Descriptor() ([]byte, []int) {
 	return fileDescriptor_67c21677aa7f4e4f, []int{3}
 }
-func (m *LoginResp) XXX_Unmarshal(b []byte) error {
+func (m *LoginRsp) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *LoginResp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *LoginRsp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_LoginResp.Marshal(b, m, deterministic)
+		return xxx_messageInfo_LoginRsp.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -227,40 +227,40 @@ func (m *LoginResp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 		return b[:n], nil
 	}
 }
-func (m *LoginResp) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_LoginResp.Merge(m, src)
+func (m *LoginRsp) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_LoginRsp.Merge(m, src)
 }
-func (m *LoginResp) XXX_Size() int {
+func (m *LoginRsp) XXX_Size() int {
 	return m.Size()
 }
-func (m *LoginResp) XXX_DiscardUnknown() {
-	xxx_messageInfo_LoginResp.DiscardUnknown(m)
+func (m *LoginRsp) XXX_DiscardUnknown() {
+	xxx_messageInfo_LoginRsp.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_LoginResp proto.InternalMessageInfo
+var xxx_messageInfo_LoginRsp proto.InternalMessageInfo
 
-func (m *LoginResp) GetUID() string {
+func (m *LoginRsp) GetUID() string {
 	if m != nil {
 		return m.UID
 	}
 	return ""
 }
 
-func (m *LoginResp) GetRID() string {
+func (m *LoginRsp) GetRID() string {
 	if m != nil {
 		return m.RID
 	}
 	return ""
 }
 
-func (m *LoginResp) GetNewPlayer() bool {
+func (m *LoginRsp) GetNewPlayer() bool {
 	if m != nil {
 		return m.NewPlayer
 	}
 	return false
 }
 
-func (m *LoginResp) GetToken() string {
+func (m *LoginRsp) GetToken() string {
 	if m != nil {
 		return m.Token
 	}
@@ -335,23 +335,23 @@ func (m *EnterGameReq) GetChecksum() string {
 	return ""
 }
 
-type EnterGameResp struct {
+type EnterGameRsp struct {
 	// 是否是新玩家
 	NewPlayer bool `protobuf:"varint,1,opt,name=NewPlayer,proto3" json:"NewPlayer,omitempty"`
 }
 
-func (m *EnterGameResp) Reset()         { *m = EnterGameResp{} }
-func (m *EnterGameResp) String() string { return proto.CompactTextString(m) }
-func (*EnterGameResp) ProtoMessage()    {}
-func (*EnterGameResp) Descriptor() ([]byte, []int) {
+func (m *EnterGameRsp) Reset()         { *m = EnterGameRsp{} }
+func (m *EnterGameRsp) String() string { return proto.CompactTextString(m) }
+func (*EnterGameRsp) ProtoMessage()    {}
+func (*EnterGameRsp) Descriptor() ([]byte, []int) {
 	return fileDescriptor_67c21677aa7f4e4f, []int{5}
 }
-func (m *EnterGameResp) XXX_Unmarshal(b []byte) error {
+func (m *EnterGameRsp) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *EnterGameResp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *EnterGameRsp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_EnterGameResp.Marshal(b, m, deterministic)
+		return xxx_messageInfo_EnterGameRsp.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -361,19 +361,19 @@ func (m *EnterGameResp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error
 		return b[:n], nil
 	}
 }
-func (m *EnterGameResp) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_EnterGameResp.Merge(m, src)
+func (m *EnterGameRsp) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EnterGameRsp.Merge(m, src)
 }
-func (m *EnterGameResp) XXX_Size() int {
+func (m *EnterGameRsp) XXX_Size() int {
 	return m.Size()
 }
-func (m *EnterGameResp) XXX_DiscardUnknown() {
-	xxx_messageInfo_EnterGameResp.DiscardUnknown(m)
+func (m *EnterGameRsp) XXX_DiscardUnknown() {
+	xxx_messageInfo_EnterGameRsp.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_EnterGameResp proto.InternalMessageInfo
+var xxx_messageInfo_EnterGameRsp proto.InternalMessageInfo
 
-func (m *EnterGameResp) GetNewPlayer() bool {
+func (m *EnterGameRsp) GetNewPlayer() bool {
 	if m != nil {
 		return m.NewPlayer
 	}
@@ -511,12 +511,12 @@ func (m *ItemInfoPush) GetItems() map[int64]int64 {
 }
 
 func init() {
-	proto.RegisterType((*Ping)(nil), "outer.Ping")
-	proto.RegisterType((*Pong)(nil), "outer.Pong")
+	proto.RegisterType((*PingReq)(nil), "outer.PingReq")
+	proto.RegisterType((*PongRsp)(nil), "outer.PongRsp")
 	proto.RegisterType((*LoginReq)(nil), "outer.LoginReq")
-	proto.RegisterType((*LoginResp)(nil), "outer.LoginResp")
+	proto.RegisterType((*LoginRsp)(nil), "outer.LoginRsp")
 	proto.RegisterType((*EnterGameReq)(nil), "outer.EnterGameReq")
-	proto.RegisterType((*EnterGameResp)(nil), "outer.EnterGameResp")
+	proto.RegisterType((*EnterGameRsp)(nil), "outer.EnterGameRsp")
 	proto.RegisterType((*RoleInfoPush)(nil), "outer.RoleInfoPush")
 	proto.RegisterType((*ItemInfoPush)(nil), "outer.ItemInfoPush")
 	proto.RegisterMapType((map[int64]int64)(nil), "outer.ItemInfoPush.ItemsEntry")
@@ -525,38 +525,39 @@ func init() {
 func init() { proto.RegisterFile("login.proto", fileDescriptor_67c21677aa7f4e4f) }
 
 var fileDescriptor_67c21677aa7f4e4f = []byte{
-	// 447 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x53, 0x31, 0x6f, 0xd3, 0x40,
-	0x18, 0xcd, 0xc5, 0x4e, 0x48, 0xbe, 0xa6, 0x50, 0x9d, 0x18, 0xac, 0x0a, 0x59, 0xd1, 0x89, 0x21,
-	0x0b, 0x01, 0x01, 0x43, 0xc5, 0x48, 0x5a, 0x21, 0x4b, 0xa8, 0xb5, 0x2e, 0x2d, 0x43, 0x37, 0x13,
-	0xbe, 0xb6, 0x56, 0xec, 0xbb, 0x70, 0x77, 0x2e, 0xca, 0xc2, 0xc8, 0xcc, 0x2f, 0xe0, 0xf7, 0x30,
-	0x76, 0x64, 0x44, 0xc9, 0x1f, 0x41, 0x77, 0x76, 0x63, 0x27, 0x13, 0x88, 0xed, 0xbd, 0x77, 0xcf,
-	0xdf, 0x7b, 0xba, 0xfb, 0x0c, 0x7b, 0x99, 0xbc, 0x4e, 0xc5, 0x78, 0xa1, 0xa4, 0x91, 0xb4, 0x23,
-	0x0b, 0x83, 0x8a, 0xbd, 0x00, 0x3f, 0x4e, 0xc5, 0x35, 0x1d, 0xc1, 0xa3, 0x49, 0x96, 0xa2, 0x30,
-	0xe7, 0x69, 0x8e, 0xda, 0x24, 0xf9, 0x22, 0x20, 0x43, 0x32, 0xf2, 0xf8, 0xae, 0xcc, 0x2e, 0xc1,
-	0x8f, 0xe5, 0xbf, 0x7c, 0x61, 0x9d, 0x53, 0x54, 0xb7, 0xa8, 0x6a, 0x67, 0xbb, 0x74, 0xee, 0xc8,
-	0xec, 0x07, 0x81, 0xde, 0x7b, 0x5b, 0x92, 0xe3, 0x67, 0xca, 0x60, 0x10, 0x67, 0x89, 0xb9, 0x92,
-	0x2a, 0xbf, 0xb8, 0x88, 0x8e, 0xdd, 0xf4, 0x3e, 0xdf, 0xd2, 0x9a, 0x9e, 0xd3, 0x24, 0x47, 0x37,
-	0xb7, 0xe1, 0xb1, 0x1a, 0x7d, 0x08, 0xed, 0xb3, 0x69, 0xe0, 0xb9, 0x93, 0xf6, 0xd9, 0x94, 0x3e,
-	0x85, 0xfd, 0xb2, 0xe1, 0x07, 0x54, 0x3a, 0x95, 0x22, 0xf0, 0xdd, 0xd1, 0xb6, 0x48, 0x1f, 0x43,
-	0xe7, 0x5c, 0xce, 0x51, 0x04, 0x1d, 0x77, 0x5a, 0x12, 0x36, 0x83, 0x7e, 0xd5, 0x4f, 0x2f, 0xe8,
-	0x01, 0x78, 0x75, 0x2f, 0x0b, 0xad, 0xc2, 0xa3, 0xe3, 0xaa, 0x85, 0x85, 0xf4, 0x09, 0xf4, 0x4f,
-	0xf1, 0x4b, 0x9c, 0x25, 0x4b, 0x54, 0xae, 0x43, 0x8f, 0xd7, 0x42, 0x1d, 0xe2, 0x37, 0x43, 0x32,
-	0x18, 0x9c, 0x08, 0x83, 0xea, 0x5d, 0x92, 0xa3, 0xbd, 0x88, 0xff, 0xcf, 0x39, 0x84, 0xde, 0xe4,
-	0x06, 0x67, 0x73, 0x5d, 0xe4, 0x55, 0xd4, 0x86, 0xb3, 0x67, 0xb0, 0xdf, 0x48, 0xd3, 0x8b, 0xed,
-	0x51, 0x64, 0x67, 0x14, 0xfb, 0x46, 0x60, 0xc0, 0x65, 0x86, 0x91, 0xb8, 0x92, 0x71, 0xa1, 0x6f,
-	0xfe, 0xaa, 0xdd, 0x01, 0x78, 0xd3, 0xe8, 0x93, 0xeb, 0xe5, 0x73, 0x0b, 0x29, 0x05, 0xdf, 0x3d,
-	0x58, 0xd9, 0xc6, 0x61, 0xab, 0x45, 0x33, 0x79, 0x7f, 0xe3, 0x0e, 0xd3, 0x00, 0x1e, 0x4c, 0x64,
-	0x21, 0x8c, 0x5a, 0x06, 0x5d, 0x27, 0xdf, 0x53, 0xf6, 0x15, 0x06, 0x91, 0xc1, 0x7c, 0xd3, 0xe3,
-	0x35, 0x74, 0x2c, 0xd7, 0x01, 0x19, 0x7a, 0xa3, 0xbd, 0x97, 0xe1, 0xd8, 0x2d, 0xf8, 0xb8, 0xe9,
-	0x71, 0x44, 0x9f, 0xd8, 0xcf, 0x79, 0x69, 0x3e, 0x3c, 0x02, 0xa8, 0x45, 0xdb, 0x73, 0x8e, 0xcb,
-	0x6a, 0x8f, 0x2d, 0xb4, 0x2f, 0x74, 0x9b, 0x64, 0x05, 0x56, 0x1b, 0x5b, 0x92, 0x37, 0xed, 0x23,
-	0xf2, 0x76, 0xf8, 0x73, 0x15, 0x92, 0xbb, 0x55, 0x48, 0x7e, 0xaf, 0x42, 0xf2, 0x7d, 0x1d, 0xb6,
-	0xee, 0xd6, 0x61, 0xeb, 0xd7, 0x3a, 0x6c, 0x5d, 0x76, 0x9f, 0xbb, 0xe8, 0x8f, 0x5d, 0xf7, 0xa7,
-	0xbd, 0xfa, 0x13, 0x00, 0x00, 0xff, 0xff, 0x6d, 0x43, 0xc0, 0x05, 0x78, 0x03, 0x00, 0x00,
+	// 453 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x93, 0xbf, 0x6e, 0xdb, 0x30,
+	0x10, 0xc6, 0x4d, 0xcb, 0xff, 0x72, 0x71, 0xdb, 0x80, 0xe8, 0x20, 0x04, 0x85, 0x60, 0x10, 0x1d,
+	0x3c, 0x14, 0x2e, 0xd0, 0x74, 0x08, 0x3a, 0xd6, 0x09, 0x0a, 0x01, 0x45, 0x22, 0xd0, 0x49, 0x87,
+	0x02, 0x1d, 0x94, 0xf4, 0xe2, 0x08, 0x96, 0x48, 0x95, 0xa4, 0x52, 0x78, 0xe9, 0xd8, 0xb9, 0x4f,
+	0xd0, 0xe7, 0xe9, 0x98, 0xb1, 0x63, 0x61, 0xbf, 0x48, 0x41, 0xca, 0x8e, 0x64, 0x4f, 0x06, 0xb2,
+	0xdd, 0x7d, 0xfc, 0x74, 0xdf, 0x0f, 0xe4, 0x09, 0xf6, 0x53, 0x39, 0x4d, 0xc4, 0x28, 0x57, 0xd2,
+	0x48, 0xda, 0x96, 0x85, 0x41, 0xc5, 0x8e, 0xa0, 0x1b, 0x25, 0x62, 0xca, 0xf1, 0x1b, 0x1d, 0xc2,
+	0xb3, 0x71, 0x9a, 0xa0, 0x30, 0x17, 0x49, 0x86, 0xda, 0xc4, 0x59, 0xee, 0x93, 0x01, 0x19, 0x7a,
+	0x7c, 0x5b, 0x66, 0x5f, 0xa0, 0x1b, 0x49, 0x31, 0xe5, 0x3a, 0xdf, 0xfd, 0x23, 0xeb, 0x9c, 0xa0,
+	0xba, 0x43, 0x55, 0x39, 0x9b, 0xa5, 0x73, 0x4b, 0x66, 0xbf, 0x09, 0xf4, 0x3e, 0x5a, 0x54, 0x4b,
+	0xc5, 0xa0, 0x1f, 0xa5, 0xb1, 0xb9, 0x91, 0x2a, 0xbb, 0xbc, 0x0c, 0x4f, 0xdc, 0xf4, 0x3d, 0xbe,
+	0xa1, 0xd5, 0x3d, 0x67, 0x71, 0x86, 0x6e, 0x6e, 0xcd, 0x63, 0x35, 0xfa, 0x14, 0x9a, 0xe7, 0x13,
+	0xdf, 0x73, 0x27, 0xcd, 0xf3, 0x09, 0x7d, 0x09, 0x4f, 0x4a, 0xc2, 0x4f, 0xa8, 0x74, 0x22, 0x85,
+	0xdf, 0x72, 0x47, 0x9b, 0x22, 0x7d, 0x0e, 0xed, 0x0b, 0x39, 0x43, 0xe1, 0xb7, 0xdd, 0x69, 0xd9,
+	0xb0, 0xab, 0x35, 0x9f, 0xce, 0xe9, 0x01, 0x78, 0x15, 0x96, 0x2d, 0xad, 0xc2, 0xc3, 0x93, 0x15,
+	0x84, 0x2d, 0xe9, 0x0b, 0xd8, 0x3b, 0xc3, 0xef, 0x51, 0x1a, 0xcf, 0x51, 0x39, 0x84, 0x1e, 0xaf,
+	0x84, 0x2a, 0xa3, 0x55, 0xcf, 0x48, 0xa1, 0x7f, 0x2a, 0x0c, 0xaa, 0x0f, 0x71, 0x86, 0xf6, 0x1e,
+	0x1e, 0x9f, 0x73, 0x08, 0xbd, 0xf1, 0x2d, 0x5e, 0xcf, 0x74, 0x91, 0xad, 0xa2, 0x1e, 0x7a, 0xf6,
+	0xaa, 0x9e, 0xa6, 0xf3, 0xcd, 0x49, 0x64, 0x6b, 0x12, 0xfb, 0x49, 0xa0, 0xcf, 0x65, 0x8a, 0xa1,
+	0xb8, 0x91, 0x51, 0xa1, 0x6f, 0x77, 0x82, 0x3b, 0x00, 0x6f, 0x12, 0x7e, 0x75, 0x58, 0x2d, 0x6e,
+	0x4b, 0x4a, 0xa1, 0xe5, 0x9e, 0xab, 0x84, 0x71, 0xb5, 0xd5, 0xc2, 0x6b, 0xb9, 0xbe, 0x6f, 0x57,
+	0x53, 0x1f, 0xba, 0x63, 0x59, 0x08, 0xa3, 0xe6, 0x7e, 0xc7, 0xc9, 0xeb, 0x96, 0xfd, 0x80, 0x7e,
+	0x68, 0x30, 0x7b, 0xe0, 0x78, 0x0b, 0x6d, 0xdb, 0x6b, 0x9f, 0x0c, 0xbc, 0xe1, 0xfe, 0x9b, 0x60,
+	0xe4, 0x96, 0x7c, 0x54, 0xf7, 0xb8, 0x46, 0x9f, 0xda, 0xcf, 0x79, 0x69, 0x3e, 0x3c, 0x06, 0xa8,
+	0x44, 0xcb, 0x39, 0xc3, 0xf9, 0x6a, 0x8b, 0x6d, 0x69, 0x1f, 0xe8, 0x2e, 0x4e, 0x0b, 0x5c, 0xed,
+	0x6b, 0xd9, 0xbc, 0x6b, 0x1e, 0x93, 0xf7, 0x83, 0x3f, 0x8b, 0x80, 0xdc, 0x2f, 0x02, 0xf2, 0x6f,
+	0x11, 0x90, 0x5f, 0xcb, 0xa0, 0x71, 0xbf, 0x0c, 0x1a, 0x7f, 0x97, 0x41, 0xe3, 0x73, 0xe7, 0xb5,
+	0x8b, 0xbe, 0xea, 0xb8, 0xbf, 0xed, 0xe8, 0x7f, 0x00, 0x00, 0x00, 0xff, 0xff, 0xa5, 0x11, 0x5a,
+	0x0b, 0x7c, 0x03, 0x00, 0x00,
 }
 
-func (m *Ping) Marshal() (dAtA []byte, err error) {
+func (m *PingReq) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -566,12 +567,12 @@ func (m *Ping) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *Ping) MarshalTo(dAtA []byte) (int, error) {
+func (m *PingReq) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *Ping) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *PingReq) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -584,7 +585,7 @@ func (m *Ping) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *Pong) Marshal() (dAtA []byte, err error) {
+func (m *PongRsp) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -594,12 +595,12 @@ func (m *Pong) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *Pong) MarshalTo(dAtA []byte) (int, error) {
+func (m *PongRsp) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *Pong) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *PongRsp) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -675,7 +676,7 @@ func (m *LoginReq) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *LoginResp) Marshal() (dAtA []byte, err error) {
+func (m *LoginRsp) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -685,12 +686,12 @@ func (m *LoginResp) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *LoginResp) MarshalTo(dAtA []byte) (int, error) {
+func (m *LoginRsp) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *LoginResp) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *LoginRsp) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -783,7 +784,7 @@ func (m *EnterGameReq) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *EnterGameResp) Marshal() (dAtA []byte, err error) {
+func (m *EnterGameRsp) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -793,12 +794,12 @@ func (m *EnterGameResp) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *EnterGameResp) MarshalTo(dAtA []byte) (int, error) {
+func (m *EnterGameRsp) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *EnterGameResp) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *EnterGameRsp) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -928,7 +929,7 @@ func encodeVarintLogin(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *Ping) Size() (n int) {
+func (m *PingReq) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -940,7 +941,7 @@ func (m *Ping) Size() (n int) {
 	return n
 }
 
-func (m *Pong) Size() (n int) {
+func (m *PongRsp) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -984,7 +985,7 @@ func (m *LoginReq) Size() (n int) {
 	return n
 }
 
-func (m *LoginResp) Size() (n int) {
+func (m *LoginRsp) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1032,7 +1033,7 @@ func (m *EnterGameReq) Size() (n int) {
 	return n
 }
 
-func (m *EnterGameResp) Size() (n int) {
+func (m *EnterGameRsp) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1099,7 +1100,7 @@ func sovLogin(x uint64) (n int) {
 func sozLogin(x uint64) (n int) {
 	return sovLogin(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *Ping) Unmarshal(dAtA []byte) error {
+func (m *PingReq) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1122,10 +1123,10 @@ func (m *Ping) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: Ping: wiretype end group for non-group")
+			return fmt.Errorf("proto: PingReq: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: Ping: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: PingReq: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1168,7 +1169,7 @@ func (m *Ping) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *Pong) Unmarshal(dAtA []byte) error {
+func (m *PongRsp) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1191,10 +1192,10 @@ func (m *Pong) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: Pong: wiretype end group for non-group")
+			return fmt.Errorf("proto: PongRsp: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: Pong: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: PongRsp: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1466,7 +1467,7 @@ func (m *LoginReq) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *LoginResp) Unmarshal(dAtA []byte) error {
+func (m *LoginRsp) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1489,10 +1490,10 @@ func (m *LoginResp) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: LoginResp: wiretype end group for non-group")
+			return fmt.Errorf("proto: LoginRsp: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: LoginResp: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: LoginRsp: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1798,7 +1799,7 @@ func (m *EnterGameReq) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *EnterGameResp) Unmarshal(dAtA []byte) error {
+func (m *EnterGameRsp) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1821,10 +1822,10 @@ func (m *EnterGameResp) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: EnterGameResp: wiretype end group for non-group")
+			return fmt.Errorf("proto: EnterGameRsp: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: EnterGameResp: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: EnterGameRsp: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:

@@ -66,22 +66,22 @@ func (m *MailListReq) GetCount() int32 {
 	return 0
 }
 
-type MailListResp struct {
+type MailListRsp struct {
 	Mails []*Mail `protobuf:"bytes,1,rep,name=Mails,proto3" json:"Mails,omitempty"`
 }
 
-func (m *MailListResp) Reset()         { *m = MailListResp{} }
-func (m *MailListResp) String() string { return proto.CompactTextString(m) }
-func (*MailListResp) ProtoMessage()    {}
-func (*MailListResp) Descriptor() ([]byte, []int) {
+func (m *MailListRsp) Reset()         { *m = MailListRsp{} }
+func (m *MailListRsp) String() string { return proto.CompactTextString(m) }
+func (*MailListRsp) ProtoMessage()    {}
+func (*MailListRsp) Descriptor() ([]byte, []int) {
 	return fileDescriptor_7cda5f053e74676b, []int{1}
 }
-func (m *MailListResp) XXX_Unmarshal(b []byte) error {
+func (m *MailListRsp) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MailListResp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MailListRsp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MailListResp.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MailListRsp.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -91,19 +91,19 @@ func (m *MailListResp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error)
 		return b[:n], nil
 	}
 }
-func (m *MailListResp) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MailListResp.Merge(m, src)
+func (m *MailListRsp) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MailListRsp.Merge(m, src)
 }
-func (m *MailListResp) XXX_Size() int {
+func (m *MailListRsp) XXX_Size() int {
 	return m.Size()
 }
-func (m *MailListResp) XXX_DiscardUnknown() {
-	xxx_messageInfo_MailListResp.DiscardUnknown(m)
+func (m *MailListRsp) XXX_DiscardUnknown() {
+	xxx_messageInfo_MailListRsp.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MailListResp proto.InternalMessageInfo
+var xxx_messageInfo_MailListRsp proto.InternalMessageInfo
 
-func (m *MailListResp) GetMails() []*Mail {
+func (m *MailListRsp) GetMails() []*Mail {
 	if m != nil {
 		return m.Mails
 	}
@@ -198,22 +198,22 @@ func (m *ReadMailReq) GetUuid() string {
 	return ""
 }
 
-type ReadMailResp struct {
+type ReadMailRsp struct {
 	Uuid string `protobuf:"bytes,1,opt,name=Uuid,proto3" json:"Uuid,omitempty"`
 }
 
-func (m *ReadMailResp) Reset()         { *m = ReadMailResp{} }
-func (m *ReadMailResp) String() string { return proto.CompactTextString(m) }
-func (*ReadMailResp) ProtoMessage()    {}
-func (*ReadMailResp) Descriptor() ([]byte, []int) {
+func (m *ReadMailRsp) Reset()         { *m = ReadMailRsp{} }
+func (m *ReadMailRsp) String() string { return proto.CompactTextString(m) }
+func (*ReadMailRsp) ProtoMessage()    {}
+func (*ReadMailRsp) Descriptor() ([]byte, []int) {
 	return fileDescriptor_7cda5f053e74676b, []int{4}
 }
-func (m *ReadMailResp) XXX_Unmarshal(b []byte) error {
+func (m *ReadMailRsp) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *ReadMailResp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *ReadMailRsp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_ReadMailResp.Marshal(b, m, deterministic)
+		return xxx_messageInfo_ReadMailRsp.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -223,19 +223,19 @@ func (m *ReadMailResp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error)
 		return b[:n], nil
 	}
 }
-func (m *ReadMailResp) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ReadMailResp.Merge(m, src)
+func (m *ReadMailRsp) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ReadMailRsp.Merge(m, src)
 }
-func (m *ReadMailResp) XXX_Size() int {
+func (m *ReadMailRsp) XXX_Size() int {
 	return m.Size()
 }
-func (m *ReadMailResp) XXX_DiscardUnknown() {
-	xxx_messageInfo_ReadMailResp.DiscardUnknown(m)
+func (m *ReadMailRsp) XXX_DiscardUnknown() {
+	xxx_messageInfo_ReadMailRsp.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_ReadMailResp proto.InternalMessageInfo
+var xxx_messageInfo_ReadMailRsp proto.InternalMessageInfo
 
-func (m *ReadMailResp) GetUuid() string {
+func (m *ReadMailRsp) GetUuid() string {
 	if m != nil {
 		return m.Uuid
 	}
@@ -286,22 +286,22 @@ func (m *ReceiveMailItemReq) GetUuid() string {
 	return ""
 }
 
-type ReceiveMailItemResp struct {
+type ReceiveMailItemRsp struct {
 	Uuid string `protobuf:"bytes,1,opt,name=Uuid,proto3" json:"Uuid,omitempty"`
 }
 
-func (m *ReceiveMailItemResp) Reset()         { *m = ReceiveMailItemResp{} }
-func (m *ReceiveMailItemResp) String() string { return proto.CompactTextString(m) }
-func (*ReceiveMailItemResp) ProtoMessage()    {}
-func (*ReceiveMailItemResp) Descriptor() ([]byte, []int) {
+func (m *ReceiveMailItemRsp) Reset()         { *m = ReceiveMailItemRsp{} }
+func (m *ReceiveMailItemRsp) String() string { return proto.CompactTextString(m) }
+func (*ReceiveMailItemRsp) ProtoMessage()    {}
+func (*ReceiveMailItemRsp) Descriptor() ([]byte, []int) {
 	return fileDescriptor_7cda5f053e74676b, []int{6}
 }
-func (m *ReceiveMailItemResp) XXX_Unmarshal(b []byte) error {
+func (m *ReceiveMailItemRsp) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *ReceiveMailItemResp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *ReceiveMailItemRsp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_ReceiveMailItemResp.Marshal(b, m, deterministic)
+		return xxx_messageInfo_ReceiveMailItemRsp.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -311,19 +311,19 @@ func (m *ReceiveMailItemResp) XXX_Marshal(b []byte, deterministic bool) ([]byte,
 		return b[:n], nil
 	}
 }
-func (m *ReceiveMailItemResp) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ReceiveMailItemResp.Merge(m, src)
+func (m *ReceiveMailItemRsp) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ReceiveMailItemRsp.Merge(m, src)
 }
-func (m *ReceiveMailItemResp) XXX_Size() int {
+func (m *ReceiveMailItemRsp) XXX_Size() int {
 	return m.Size()
 }
-func (m *ReceiveMailItemResp) XXX_DiscardUnknown() {
-	xxx_messageInfo_ReceiveMailItemResp.DiscardUnknown(m)
+func (m *ReceiveMailItemRsp) XXX_DiscardUnknown() {
+	xxx_messageInfo_ReceiveMailItemRsp.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_ReceiveMailItemResp proto.InternalMessageInfo
+var xxx_messageInfo_ReceiveMailItemRsp proto.InternalMessageInfo
 
-func (m *ReceiveMailItemResp) GetUuid() string {
+func (m *ReceiveMailItemRsp) GetUuid() string {
 	if m != nil {
 		return m.Uuid
 	}
@@ -376,35 +376,35 @@ func (m *DeleteMailReq) GetUuids() []string {
 
 func init() {
 	proto.RegisterType((*MailListReq)(nil), "outer.MailListReq")
-	proto.RegisterType((*MailListResp)(nil), "outer.MailListResp")
+	proto.RegisterType((*MailListRsp)(nil), "outer.MailListRsp")
 	proto.RegisterType((*AddMailNotify)(nil), "outer.AddMailNotify")
 	proto.RegisterType((*ReadMailReq)(nil), "outer.ReadMailReq")
-	proto.RegisterType((*ReadMailResp)(nil), "outer.ReadMailResp")
+	proto.RegisterType((*ReadMailRsp)(nil), "outer.ReadMailRsp")
 	proto.RegisterType((*ReceiveMailItemReq)(nil), "outer.ReceiveMailItemReq")
-	proto.RegisterType((*ReceiveMailItemResp)(nil), "outer.ReceiveMailItemResp")
+	proto.RegisterType((*ReceiveMailItemRsp)(nil), "outer.ReceiveMailItemRsp")
 	proto.RegisterType((*DeleteMailReq)(nil), "outer.DeleteMailReq")
 }
 
 func init() { proto.RegisterFile("mail.proto", fileDescriptor_7cda5f053e74676b) }
 
 var fileDescriptor_7cda5f053e74676b = []byte{
-	// 255 bytes of a gzipped FileDescriptorProto
+	// 245 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0xca, 0x4d, 0xcc, 0xcc,
 	0xd1, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0xcd, 0x2f, 0x2d, 0x49, 0x2d, 0x92, 0xe2, 0x49,
 	0xce, 0xcf, 0xcd, 0xcd, 0xcf, 0x83, 0x08, 0x2a, 0x29, 0x73, 0x71, 0xfb, 0x26, 0x66, 0xe6, 0xf8,
 	0x64, 0x16, 0x97, 0x04, 0xa5, 0x16, 0x0a, 0x89, 0x70, 0xb1, 0x26, 0xe7, 0x97, 0xe6, 0x95, 0x48,
-	0x30, 0x2a, 0x30, 0x6a, 0xb0, 0x06, 0x41, 0x38, 0x4a, 0x86, 0x5c, 0x3c, 0x08, 0x45, 0xc5, 0x05,
-	0x42, 0x8a, 0x5c, 0xac, 0x20, 0x7e, 0xb1, 0x04, 0xa3, 0x02, 0xb3, 0x06, 0xb7, 0x11, 0xb7, 0x1e,
-	0xd8, 0x64, 0x3d, 0x90, 0x58, 0x10, 0x44, 0x46, 0x49, 0x99, 0x8b, 0xd7, 0x31, 0x25, 0x05, 0xc4,
-	0xf6, 0xcb, 0x2f, 0xc9, 0x4c, 0xab, 0x14, 0x12, 0xe2, 0x62, 0x09, 0x2d, 0xcd, 0x4c, 0x01, 0x1b,
-	0xcc, 0x19, 0x04, 0x66, 0x2b, 0x29, 0x72, 0x71, 0x07, 0xa5, 0x26, 0x82, 0x55, 0x81, 0x2c, 0xc7,
-	0xa6, 0x44, 0x89, 0x8b, 0x07, 0xa1, 0xa4, 0xb8, 0x00, 0xab, 0x1a, 0x0d, 0x2e, 0xa1, 0xa0, 0xd4,
-	0xe4, 0xd4, 0xcc, 0xb2, 0x54, 0x90, 0x32, 0xcf, 0x92, 0xd4, 0x5c, 0x5c, 0xa6, 0x69, 0x72, 0x09,
-	0x63, 0xa8, 0xc4, 0x61, 0xa8, 0x2a, 0x17, 0xaf, 0x4b, 0x6a, 0x4e, 0x6a, 0x49, 0x2a, 0xcc, 0x75,
-	0x22, 0x5c, 0xac, 0x20, 0x09, 0x88, 0xa7, 0x39, 0x83, 0x20, 0x1c, 0x27, 0x85, 0x13, 0x8f, 0xe4,
-	0x18, 0x2f, 0x3c, 0x92, 0x63, 0x7c, 0xf0, 0x48, 0x8e, 0x71, 0xc2, 0x63, 0x39, 0x86, 0x0b, 0x8f,
-	0xe5, 0x18, 0x6e, 0x3c, 0x96, 0x63, 0x88, 0x62, 0xd3, 0x07, 0x87, 0x4a, 0x12, 0x1b, 0x38, 0xa0,
-	0x8d, 0x01, 0x01, 0x00, 0x00, 0xff, 0xff, 0xc9, 0xac, 0x33, 0xd1, 0x8b, 0x01, 0x00, 0x00,
+	0x30, 0x2a, 0x30, 0x6a, 0xb0, 0x06, 0x41, 0x38, 0x4a, 0x06, 0x48, 0x8a, 0x8a, 0x0b, 0x84, 0x14,
+	0xb9, 0x58, 0x41, 0xdc, 0x62, 0x09, 0x46, 0x05, 0x66, 0x0d, 0x6e, 0x23, 0x6e, 0x3d, 0xb0, 0xc1,
+	0x7a, 0x20, 0xb1, 0x20, 0x88, 0x8c, 0x92, 0x32, 0x17, 0xaf, 0x63, 0x4a, 0x0a, 0x88, 0xed, 0x97,
+	0x5f, 0x92, 0x99, 0x56, 0x29, 0x24, 0xc4, 0xc5, 0x12, 0x5a, 0x9a, 0x99, 0x02, 0x36, 0x97, 0x33,
+	0x08, 0xcc, 0x56, 0x52, 0xe4, 0xe2, 0x0e, 0x4a, 0x4d, 0x04, 0xab, 0x02, 0xd9, 0x4d, 0x48, 0x49,
+	0x71, 0x01, 0x56, 0x25, 0x1a, 0x5c, 0x42, 0x41, 0xa9, 0xc9, 0xa9, 0x99, 0x65, 0xa9, 0x20, 0x55,
+	0x9e, 0x25, 0xa9, 0xb9, 0xb8, 0x0c, 0xc3, 0xa2, 0x12, 0x87, 0x99, 0xaa, 0x5c, 0xbc, 0x2e, 0xa9,
+	0x39, 0xa9, 0x25, 0xa9, 0x30, 0xb7, 0x89, 0x70, 0xb1, 0x82, 0x24, 0x20, 0x5e, 0xe6, 0x0c, 0x82,
+	0x70, 0x9c, 0x14, 0x4e, 0x3c, 0x92, 0x63, 0xbc, 0xf0, 0x48, 0x8e, 0xf1, 0xc1, 0x23, 0x39, 0xc6,
+	0x09, 0x8f, 0xe5, 0x18, 0x2e, 0x3c, 0x96, 0x63, 0xb8, 0xf1, 0x58, 0x8e, 0x21, 0x8a, 0x4d, 0x1f,
+	0x1c, 0x26, 0x49, 0x6c, 0xe0, 0x50, 0x36, 0x06, 0x04, 0x00, 0x00, 0xff, 0xff, 0xa4, 0xb0, 0x2c,
+	0x78, 0x88, 0x01, 0x00, 0x00,
 }
 
 func (m *MailListReq) Marshal() (dAtA []byte, err error) {
@@ -435,7 +435,7 @@ func (m *MailListReq) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MailListResp) Marshal() (dAtA []byte, err error) {
+func (m *MailListRsp) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -445,12 +445,12 @@ func (m *MailListResp) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MailListResp) MarshalTo(dAtA []byte) (int, error) {
+func (m *MailListRsp) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MailListResp) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MailListRsp) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -532,7 +532,7 @@ func (m *ReadMailReq) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *ReadMailResp) Marshal() (dAtA []byte, err error) {
+func (m *ReadMailRsp) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -542,12 +542,12 @@ func (m *ReadMailResp) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *ReadMailResp) MarshalTo(dAtA []byte) (int, error) {
+func (m *ReadMailRsp) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *ReadMailResp) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *ReadMailRsp) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -592,7 +592,7 @@ func (m *ReceiveMailItemReq) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *ReceiveMailItemResp) Marshal() (dAtA []byte, err error) {
+func (m *ReceiveMailItemRsp) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -602,12 +602,12 @@ func (m *ReceiveMailItemResp) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *ReceiveMailItemResp) MarshalTo(dAtA []byte) (int, error) {
+func (m *ReceiveMailItemRsp) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *ReceiveMailItemResp) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *ReceiveMailItemRsp) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -677,7 +677,7 @@ func (m *MailListReq) Size() (n int) {
 	return n
 }
 
-func (m *MailListResp) Size() (n int) {
+func (m *MailListRsp) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -718,7 +718,7 @@ func (m *ReadMailReq) Size() (n int) {
 	return n
 }
 
-func (m *ReadMailResp) Size() (n int) {
+func (m *ReadMailRsp) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -744,7 +744,7 @@ func (m *ReceiveMailItemReq) Size() (n int) {
 	return n
 }
 
-func (m *ReceiveMailItemResp) Size() (n int) {
+func (m *ReceiveMailItemRsp) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -847,7 +847,7 @@ func (m *MailListReq) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MailListResp) Unmarshal(dAtA []byte) error {
+func (m *MailListRsp) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -870,10 +870,10 @@ func (m *MailListResp) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MailListResp: wiretype end group for non-group")
+			return fmt.Errorf("proto: MailListRsp: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MailListResp: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MailListRsp: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1095,7 +1095,7 @@ func (m *ReadMailReq) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *ReadMailResp) Unmarshal(dAtA []byte) error {
+func (m *ReadMailRsp) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1118,10 +1118,10 @@ func (m *ReadMailResp) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: ReadMailResp: wiretype end group for non-group")
+			return fmt.Errorf("proto: ReadMailRsp: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: ReadMailResp: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: ReadMailRsp: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1259,7 +1259,7 @@ func (m *ReceiveMailItemReq) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *ReceiveMailItemResp) Unmarshal(dAtA []byte) error {
+func (m *ReceiveMailItemRsp) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1282,10 +1282,10 @@ func (m *ReceiveMailItemResp) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: ReceiveMailItemResp: wiretype end group for non-group")
+			return fmt.Errorf("proto: ReceiveMailItemRsp: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: ReceiveMailItemResp: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: ReceiveMailItemRsp: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:

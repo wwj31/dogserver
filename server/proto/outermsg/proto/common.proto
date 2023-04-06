@@ -2,8 +2,7 @@ syntax = "proto3";
 package outer;
 option  go_package = "/outer";
 
-message Mail
-{
+message Mail {
    string Uuid            = 1;
    int64  CreateAt        = 2; // 邮件发送时间
    string SenderRoleId    = 3; // 发送者RoleId
@@ -14,7 +13,6 @@ message Mail
    int32 Status           = 8; // 状态 0.未读 1.已读 2.已领
 }
 
-message MailInfo
-{
+message MailInfo {
    map<string,Mail> Mails = 1; // 所有邮件
 }

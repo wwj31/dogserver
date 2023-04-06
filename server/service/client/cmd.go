@@ -3,9 +3,10 @@ package client
 import (
 	"fmt"
 	"math/rand"
+	"time"
+
 	"server/common"
 	"server/proto/outermsg/outer"
-	"time"
 
 	"github.com/spf13/cast"
 )
@@ -37,7 +38,7 @@ func (s *Client) login(arg ...string) {
 	}
 	token := common.LoginToken(logReq)
 	logReq.Token = token
-	s.SendToServer(outer.MSG_LOGIN_REQ.Int32(), logReq)
+	s.SendToServer(outer.Msg_IdLoginReq.Int32(), logReq)
 }
 
 func (s *Client) randLogin(arg ...string) {
@@ -47,7 +48,7 @@ func (s *Client) randLogin(arg ...string) {
 			PlatformName: "test",
 			OS:           "test",
 		}
-		s.SendToServer(outer.MSG_LOGIN_REQ.Int32(), logReq)
+		s.SendToServer(outer.Msg_IdLoginReq.Int32(), logReq)
 		time.Sleep(time.Duration(rand.Intn(500)) * time.Millisecond)
 	}
 }
@@ -59,7 +60,7 @@ func (s *Client) enter(arg ...string) {
 		NewPlayer: s.NewPlayer,
 		Checksum:  common.EnterGameToken(s.UID, s.RID, s.NewPlayer),
 	}
-	s.SendToServer(outer.MSG_ENTER_GAME_REQ.Int32(), msg)
+	s.SendToServer(outer.Msg_IdEnterGameReq.Int32(), msg)
 }
 
 func (s *Client) item(arg ...string) {
@@ -71,7 +72,7 @@ func (s *Client) item(arg ...string) {
 	msg := &outer.UseItemReq{
 		Items: map[int64]int64{itemId: itemcount},
 	}
-	s.SendToServer(outer.MSG_USE_ITEM_REQ.Int32(), msg)
+	s.SendToServer(outer.Msg_IdUseItemReq.Int32(), msg)
 }
 
 func (s *Client) listMail(arg ...string) {
@@ -82,7 +83,7 @@ func (s *Client) listMail(arg ...string) {
 	msg := &outer.MailListReq{
 		Count: count,
 	}
-	s.SendToServer(outer.MSG_MAIL_LIST_REQ.Int32(), msg)
+	s.SendToServer(outer.Msg_IdMailListReq.Int32(), msg)
 }
 
 func (s *Client) readMail(arg ...string) {
@@ -93,7 +94,7 @@ func (s *Client) readMail(arg ...string) {
 	msg := &outer.ReadMailReq{
 		Uuid: mailId,
 	}
-	s.SendToServer(outer.MSG_READ_MAIL_REQ.Int32(), msg)
+	s.SendToServer(outer.Msg_IdReadMailReq.Int32(), msg)
 }
 
 func (s *Client) recvMail(arg ...string) {
@@ -104,7 +105,7 @@ func (s *Client) recvMail(arg ...string) {
 	msg := &outer.ReceiveMailItemReq{
 		Uuid: mailId,
 	}
-	s.SendToServer(outer.MSG_RECEIVE_MAIL_ITEM_REQ.Int32(), msg)
+	s.SendToServer(outer.Msg_IdReceiveMailItemReq.Int32(), msg)
 }
 
 func (s *Client) delMail(arg ...string) {
@@ -115,7 +116,7 @@ func (s *Client) delMail(arg ...string) {
 	msg := &outer.DeleteMailReq{
 		Uuids: []string{mailId},
 	}
-	s.SendToServer(outer.MSG_DELETE_MAIL_REQ.Int32(), msg)
+	s.SendToServer(outer.Msg_IdDeleteMailReq.Int32(), msg)
 }
 
 func (s *Client) chat(arg ...string) {
@@ -127,5 +128,5 @@ func (s *Client) chat(arg ...string) {
 		Content:     content,
 		ChannelType: 1,
 	}
-	s.SendToServer(outer.MSG_CHAT_REQ.Int32(), msg)
+	s.SendToServer(outer.Msg_IdChatReq.Int32(), msg)
 }

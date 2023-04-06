@@ -2,8 +2,7 @@ syntax = "proto3";
 package outer;
 option  go_package = "/outer";
 
-enum ERROR
-{
+enum ERROR {
    SUCCESS                    = 0;  //执行成功
    FAILED                     = 1;  //协议执行失败，原因模糊
    SECURITYCODE_CHECK_FAILED  = 2;  //安全码校验失败
@@ -20,8 +19,7 @@ enum ERROR
 
 message Unknown{}
 message Ok {}
-message Fail
-{
+message Fail {
    ERROR  Error = 1;
    string info  = 2;
 }

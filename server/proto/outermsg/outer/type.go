@@ -1,20 +1,20 @@
 package outer
 
-//go install github.com/wwj31/spawner@latest
-//go:generate spawner -pool=true
+//go install github.com/wwj31/spawner@latest\
+//go:generate go run github.com/wwj31/spawner@latest -pool=false
 
-func (s MSG) Int32() int32 {
+func (s Msg) Int32() int32 {
 	return int32(s)
 }
 
-func (s MSG) UInt32() uint32 {
+func (s Msg) UInt32() uint32 {
 	return uint32(s)
 }
 
-func (s MSG) Int64() uint64 {
+func (s Msg) Int64() uint64 {
 	return uint64(s)
 }
 
-func (s MSG) UInt64() uint64 {
+func (s Msg) UInt64() uint64 {
 	return uint64(s)
 }

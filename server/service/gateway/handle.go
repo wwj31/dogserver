@@ -2,6 +2,7 @@ package gateway
 
 import (
 	gogo "github.com/gogo/protobuf/proto"
+
 	"server/common"
 	"server/common/actortype"
 	"server/common/log"

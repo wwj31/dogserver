@@ -4,19 +4,16 @@ option  go_package = "/outer";
 
 import "error.proto";
 
-message ChatReq
-{
+message ChatReq {   // tag:player
     string Content     = 1;
     int32  ChannelType = 2;
 }
 
-message ChatResp
-{
+message ChatRsp {
     ERROR err = 1;
 }
 
-message ChatNotify
-{
+message ChatNotify {
     string SenderId    = 1;
     string Name        = 2;
     string Content     = 3;
