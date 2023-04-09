@@ -44,7 +44,7 @@ func (s GSession) Valid() bool {
 	return s != ""
 }
 
-func (s GSession) SendToClient(sender actor.Sender, pb gogo.Message) {
+func (s GSession) SendToClient(sender actor.Messenger, pb gogo.Message) {
 	if s.Invalid() {
 		return
 	}

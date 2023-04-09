@@ -2,6 +2,7 @@ package game
 
 import (
 	"github.com/wwj31/dogactor/actor"
+	"github.com/wwj31/dogactor/actor/event"
 	"github.com/wwj31/dogactor/expect"
 	"server/common"
 	"server/common/actortype"
@@ -23,11 +24,11 @@ type Game struct {
 
 func (s *Game) OnInit() {
 	s.respIdMap = make(map[actor.Id]string)
-	s.System().OnEvent(s.ID(), func(event actor.EvActorSubMqFin) {
-		if actortype.IsActorOf(event.ActorId, actortype.Player_Actor) {
-			if respId, ok := s.respIdMap[event.ActorId]; ok {
+	s.System().OnEvent(s.ID(), func(ev event.EvActorSubMqFin) {
+		if actortype.IsActorOf(ev.ActorId, actortype.Player_Actor) {
+			if respId, ok := s.respIdMap[ev.ActorId]; ok {
 				_ = s.Response(respId, &outer.Ok{})
-				delete(s.respIdMap, event.ActorId)
+				delete(s.respIdMap, ev.ActorId)
 			}
 		}
 	})
@@ -66,15 +67,14 @@ func (s *Game) OnHandle(msg actor.Message) {
 func (s *Game) checkAndPullPlayer(rid string) (playerId actortype.ActorId, loading bool) {
 	// TODO::检查玩家是否在其他game节点中,并且通知目标下线,需要将玩家所在节点数据存入redis中以便查询
 	playerId = actortype.PlayerId(rid)
-	if act := s.System().LocalActor(playerId); act == nil {
-		playerActor := actor.New(
+	if !s.System().HasActor(playerId) {
+		err := s.System().NewActor(
 			playerId,
 			player.New(rid, s),
 			actor.SetMailBoxSize(200),
 			//actor.SetLocalized(),
 		)
 
-		err := s.System().Add(playerActor)
 		expect.Nil(err)
 		return playerId, true
 	}
