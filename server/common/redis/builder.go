@@ -3,13 +3,14 @@ package redis
 import (
 	"context"
 	"fmt"
-	redisv9 "github.com/go-redis/redis/v9"
+	"time"
+
+	"github.com/go-redis/redis/v9"
 	"github.com/go-redsync/redsync/v4"
 	"github.com/go-redsync/redsync/v4/redis/goredis/v9"
-	"time"
 )
 
-type builder struct {
+type Builder struct {
 	clusterMode    bool
 	addr           []string
 	userName       string
@@ -21,8 +22,8 @@ type builder struct {
 	onConnectHande func()
 }
 
-func Builder() *builder {
-	return &builder{
+func NewBuilder() *Builder {
+	return &Builder{
 		clusterMode:  false,
 		addr:         []string{"localhost:6379"},
 		userName:     "",
@@ -34,15 +35,15 @@ func Builder() *builder {
 	}
 }
 
-func (b *builder) Connect() (err error) {
+func (b *Builder) Connect() (err error) {
 	once.Do(func() {
 		var client Client
 		if b.clusterMode {
 			opt := b.clusterOptions()
-			client = redisv9.NewClusterClient(opt)
+			client = redis.NewClusterClient(opt)
 		} else {
 			opt := b.options()
-			client = redisv9.NewClient(opt)
+			client = redis.NewClient(opt)
 		}
 
 		if b.onConnectHande != nil {
@@ -62,53 +63,53 @@ func (b *builder) Connect() (err error) {
 	return
 }
 
-func (b *builder) Addr(addr ...string) *builder {
+func (b *Builder) Addr(addr ...string) *Builder {
 	b.addr = addr
 	return b
 }
 
-func (b *builder) ClusterMode() *builder {
+func (b *Builder) ClusterMode() *Builder {
 	b.clusterMode = true
 	return b
 }
 
-func (b *builder) UserName(name string) *builder {
+func (b *Builder) UserName(name string) *Builder {
 	b.userName = name
 	return b
 }
 
-func (b *builder) Password(password string) *builder {
+func (b *Builder) Password(password string) *Builder {
 	b.password = password
 	return b
 }
 
-func (b *builder) MaxRetries(maxRetries int) *builder {
+func (b *Builder) MaxRetries(maxRetries int) *Builder {
 	b.maxRetries = maxRetries
 	return b
 }
 
-func (b *builder) DialTimeout(dialTimeout time.Duration) *builder {
+func (b *Builder) DialTimeout(dialTimeout time.Duration) *Builder {
 	b.dialTimeout = dialTimeout
 	return b
 }
 
-func (b *builder) ReadTimeout(readTimeout time.Duration) *builder {
+func (b *Builder) ReadTimeout(readTimeout time.Duration) *Builder {
 	b.readTimeout = readTimeout
 	return b
 }
 
-func (b *builder) WriteTimeout(writeTimeout time.Duration) *builder {
+func (b *Builder) WriteTimeout(writeTimeout time.Duration) *Builder {
 	b.writeTimeout = writeTimeout
 	return b
 }
 
-func (b *builder) OnConnect(fn func()) *builder {
+func (b *Builder) OnConnect(fn func()) *Builder {
 	b.onConnectHande = fn
 	return b
 }
 
-func (b *builder) options() *redisv9.Options {
-	return &redisv9.Options{
+func (b *Builder) options() *redis.Options {
+	return &redis.Options{
 		Addr:         b.addr[0],
 		Username:     b.userName,
 		Password:     b.password,
@@ -119,8 +120,8 @@ func (b *builder) options() *redisv9.Options {
 	}
 }
 
-func (b *builder) clusterOptions() *redisv9.ClusterOptions {
-	return &redisv9.ClusterOptions{
+func (b *Builder) clusterOptions() *redis.ClusterOptions {
+	return &redis.ClusterOptions{
 		Addrs:        b.addr,
 		Username:     b.userName,
 		Password:     b.password,

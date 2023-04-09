@@ -2,6 +2,7 @@ package common
 
 import (
 	"reflect"
+
 	"server/common/log"
 	"server/proto/outermsg/outer"
 
@@ -33,9 +34,9 @@ func ProtoUnmarshal(msgType string, bytes []byte) gogo.Message {
 }
 
 func ProtoType(msg interface{}) string {
-	str := reflect.TypeOf(msg).String()
-	if str[0] == '*' {
-		str = str[1:]
+	typ := reflect.TypeOf(msg)
+	if typ.Kind() == reflect.Pointer {
+		typ = typ.Elem()
 	}
-	return str
+	return typ.String()
 }

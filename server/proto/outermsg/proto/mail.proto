@@ -4,40 +4,32 @@ option  go_package = "/outer";
 
 import "common.proto";
 
-message MailListReq
-{
+message MailListReq {   // tag:player
     int32 count = 1;
 }
-message MailListResp
-{
+message MailListRsp {
     repeated Mail Mails = 1;
 }
 
-message AddMailNotify
-{
+message AddMailNotify {
     string Uuid = 1;
 }
 
-message ReadMailReq
-{
+message ReadMailReq {   // tag:player
     string Uuid = 1;
 }
-message ReadMailResp
-{
-    string Uuid = 1;
-}
-
-message ReceiveMailItemReq
-{
+message ReadMailRsp {
     string Uuid = 1;
 }
 
-message ReceiveMailItemResp
-{
+message ReceiveMailItemReq {    // tag:player
     string Uuid = 1;
 }
 
-message DeleteMailReq
-{
+message ReceiveMailItemRsp {
+    string Uuid = 1;
+}
+
+message DeleteMailReq { // tag:player
     repeated string Uuids = 1;
 }

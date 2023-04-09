@@ -5,20 +5,24 @@ import (
 	"fmt"
 	"github.com/tealeg/xlsx"
 	"html/template"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
+	"runtime"
 	"strings"
-	"sync"
 )
 
 var (
-	lineNumber    = 3                  // 每个工作表需要读取的行数
-	structBegin   = "type _%v struct " // 结构体开始
-	structValue   = "    %v %v"        // 结构体的内容
-	structRemarks = "	 // %v"          // 结构体备注
-	headerFromat  = "%v\n\r"           // 文件头
+	lineNumber   = 3        // 每个工作表需要读取的行数
+	headerFromat = "%v\n\r" // 文件头
+
+	structContext = `
+	type _%v struct {
+		%v
+	}
+
+    %v
+	`
 )
 
 type Generate struct {
@@ -31,11 +35,12 @@ type Generate struct {
 
 // ReadExcel 读取excel
 func (s *Generate) ReadExcel() {
-	files, err := ioutil.ReadDir(s.ReadPath)
+	files, err := os.ReadDir(s.ReadPath)
 	if err != nil {
 		panic(fmt.Errorf("excel文件路径读取失败 此路径无效:%v error:%v", s.ReadPath, err))
 	}
-	var wg sync.WaitGroup
+
+	pChNum := make(chan struct{}, 10)
 	for i, file := range files {
 		//if hasChinese(file.Name()) {
 		//	continue
@@ -47,11 +52,13 @@ func (s *Generate) ReadExcel() {
 			continue
 		}
 
-		wg.Add(1)
-		go func(j int) {
-			defer wg.Done()
+		pChNum <- struct{}{}
+		go func(idx int) {
+			defer func() {
+				<-pChNum
+			}()
 
-			dir := path.Join(s.ReadPath, files[j].Name())
+			dir := path.Join(s.ReadPath, files[idx].Name())
 			f, err := xlsx.OpenFile(dir)
 			if err != nil {
 				panic(fmt.Errorf("excel文件读取失败 无效文件:%v error:%v", dir, err))
@@ -59,7 +66,7 @@ func (s *Generate) ReadExcel() {
 
 			// 遍历工作表
 			for _, sheet := range f.Sheets {
-				fileName := files[j].Name()
+				fileName := files[idx].Name()
 				if err := s.BuildTypeStruct(sheet, fileName); err != nil {
 					panic(err)
 				}
@@ -68,12 +75,16 @@ func (s *Generate) ReadExcel() {
 					panic(err)
 				}
 
-				fmt.Printf("%-15v ok.\n", files[j].Name())
+				fmt.Printf("%v  %-15v ok.\n", files[idx].Name(), sheet.Name)
 			}
 
 		}(i)
 	}
-	wg.Wait()
+
+	// 等待所有表处理完成
+	for len(pChNum) > 0 {
+		runtime.Gosched()
+	}
 
 	// 导出依赖的字段解析函数
 	tpath := path.Join(s.TplPath, "convert.go.tpl")
@@ -90,7 +101,7 @@ func (s *Generate) ReadExcel() {
 	}
 
 	err = tmpl.Execute(file, struct {
-		Packagename string
+		PackageName string
 	}{s.PackageName})
 
 	if err != nil {
@@ -112,7 +123,7 @@ func (s *Generate) BuildTypeStruct(sheet *xlsx.Sheet, fileName string) error {
 		if strings.TrimSpace(sheet.Cell(FIELDNAME, i).Value) == "" {
 			continue
 		}
-		meta := make([]string, 0)
+		var meta []string
 		// 遍历行
 		for j := 0; j < lineNumber; j++ {
 			meta = append(meta, strings.TrimSpace(sheet.Cell(j, i).Value))
@@ -130,12 +141,17 @@ func (s *Generate) BuildTypeStruct(sheet *xlsx.Sheet, fileName string) error {
 	structType += "\n"
 
 	fieldName := firstRuneToUpper(strings.TrimSpace(sheet.Cell(FIELDNAME, 0).Value))
-	var keyType string
+
+	var (
+		keyType string
+		ok      bool
+	)
+
 	fieldType := strings.TrimSpace(sheet.Cell(FIELDTYPE, 0).Value)
 	if fieldType != STR && fieldType != INT {
 		return fmt.Errorf("主键类型错误:%v %v %v", fieldType, fileName, sheet.Name)
 	}
-	var ok bool
+
 	if keyType, ok = TypeIndex[fieldType]; !ok {
 		return fmt.Errorf("主键类型找不到:%v %v %v", fieldType, fileName, sheet.Name)
 	}
@@ -147,14 +163,15 @@ func (s *Generate) BuildTypeStruct(sheet *xlsx.Sheet, fileName string) error {
 	return nil
 }
 
-// 构建json结构
+// BuildJsonStruct 构建json结构
 func (s *Generate) BuildJsonStruct(sheet *xlsx.Sheet, fileName string) error {
-	array := []string{}
+	var array []string
 	// 判断表格中内容的行数是否小于需要读取的行数
 	dataLen := sheet.MaxRow - lineNumber
 	if dataLen < 0 {
 		return fmt.Errorf("ReadExcel dataLen < 0 dataLen:%v MaxRow:%v lineNumber:%v ", dataLen, sheet.MaxRow, lineNumber)
 	}
+
 	// 遍历列
 	var err error
 	checkUnique := make(map[string]struct{}, sheet.MaxRow)
@@ -171,7 +188,7 @@ func (s *Generate) BuildJsonStruct(sheet *xlsx.Sheet, fileName string) error {
 			break
 		}
 		if _, ex := checkUnique[key]; ex {
-			return fmt.Errorf("表:%v 主键重复 key:%v", fileName, key)
+			return fmt.Errorf("表:[%v] 页:[%v] 主键重复 key:[%v]", fileName, sheet.Name, key)
 		}
 		m := map[string]interface{}{}
 		for j := 0; j < sheet.MaxCol; j++ {
@@ -193,6 +210,7 @@ func (s *Generate) BuildJsonStruct(sheet *xlsx.Sheet, fileName string) error {
 		}
 		checkUnique[key] = struct{}{}
 	}
+
 	if err := s.writeJsonFile("[\n    "+strings.Join(array, ",\n    ")+"\n]", sheet.Name); err != nil {
 		return err
 	}
@@ -200,7 +218,6 @@ func (s *Generate) BuildJsonStruct(sheet *xlsx.Sheet, fileName string) error {
 }
 
 func (s *Generate) BuildConfigConst(sheet *xlsx.Sheet) error {
-	var ()
 	// 遍历列 找到STR_SERVER_CONST
 	constData := ""
 	for col := 0; col < sheet.MaxCol; col++ {

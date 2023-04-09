@@ -7,6 +7,7 @@ import (
 	gogo "github.com/gogo/protobuf/proto"
 	"github.com/spf13/cast"
 	"github.com/wwj31/dogactor/actor"
+
 	"server/common/actortype"
 	"server/common/log"
 )
@@ -18,18 +19,18 @@ func GateSession(gateId actortype.ActorId, sessionId uint64) GSession {
 }
 
 func (s GSession) Split() (gateId actortype.ActorId, sessionId uint64) {
-	strs := strings.Split(string(s), ":")
-	if len(strs) != 2 {
+	str := strings.Split(string(s), ":")
+	if len(str) != 2 {
 		log.Errorw("split failed", "gateSession", s)
 		panic(nil)
 	}
-	gateId = strs[0]
-	sint, e := cast.ToUint64E(strs[1])
+	gateId = str[0]
+	n, e := cast.ToUint64E(str[1])
 	if e != nil {
 		log.Errorw("split failed", "gateSession", s)
 		panic(nil)
 	}
-	sessionId = sint
+	sessionId = n
 	return
 }
 

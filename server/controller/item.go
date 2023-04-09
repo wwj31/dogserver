@@ -19,7 +19,7 @@ var _ = router.Reg(func(player *player.Player, msg *outer.UseItemReq) {
 			Error: result,
 		}
 	} else {
-		resp = &outer.UseItemResp{}
+		resp = &outer.UseItemRsp{}
 	}
 	player.Send2Client(resp)
 	log.Infow("use item success ", "player", player.ID(), "msg", msg.String())

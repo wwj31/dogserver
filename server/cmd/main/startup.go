@@ -6,19 +6,21 @@ import (
 	"os/signal"
 	"syscall"
 
+	"server/common"
+	"server/config/conf"
+
 	"github.com/spf13/cast"
 	"github.com/wwj31/dogactor/actor"
 	"github.com/wwj31/dogactor/actor/cluster/mq"
 	"github.com/wwj31/dogactor/actor/cluster/mq/nats"
 	"github.com/wwj31/dogactor/logger"
 	"github.com/wwj31/dogactor/tools"
-	"server/common"
+
 	"server/common/actortype"
 	"server/common/log"
 	"server/common/mongodb"
 	"server/common/redis"
 	"server/common/toml"
-	"server/config/confgo"
 	_ "server/controller"
 	"server/db/mgo"
 	"server/proto/innermsg/inner"
@@ -40,26 +42,11 @@ func startup() {
 
 	// init log
 	logName := *appName + cast.ToString(appId)
-	log.Init(*logLevel, *logPath, logName, cast.ToBool(toml.Get("dispaly")))
-
-	// init mongo
-	if err := mongodb.Builder().Addr(toml.Get("mongoaddr")).
-		Database(toml.Get("database")).EnableSharding().Connect(); err != nil {
-		log.Errorw("mongo connect failed", "err", err)
-		return
-	}
-
-	// init redis
-	if err := redis.Builder().
-		Addr(toml.GetArray("redisaddr", "localhost:6379")...).
-		ClusterMode().Connect(); err != nil {
-		log.Errorw("redis connect failed", "err", err)
-		return
-	}
+	log.Init(*logLevel, *logPath, logName, cast.ToBool(toml.Get("display")))
 
 	// load config of excels
-	if path, ok := toml.GetB("configjson"); ok {
-		err := confgo.Load(path)
+	if path, ok := toml.GetB("config_json"); ok {
+		err := conf.Load(path)
 		if err != nil {
 			log.Errorw("toml get config json failed", "err", err)
 			return
@@ -67,8 +54,23 @@ func startup() {
 		common.RefactorConfig()
 	}
 
+	// init mongo
+	if err := mongodb.Builder().Addr(toml.Get("mongo_addr")).
+		Database(toml.Get("database")).EnableSharding().Connect(); err != nil {
+		log.Errorw("mongo connect failed", "err", err)
+		return
+	}
+
+	// init redis
+	if err := redis.NewBuilder().
+		Addr(toml.GetArray("redis_addr", "localhost:6379")...).
+		ClusterMode().Connect(); err != nil {
+		log.Errorw("redis connect failed", "err", err)
+		return
+	}
+
 	monitor(*logPath, logName+"mo")
-	pprof("6060")
+	//pprof("6060")
 
 	// startup
 	system := run(*appName, int32(*appId))
@@ -87,24 +89,24 @@ func startup() {
 func run(appType string, appId int32) *actor.System {
 	// startup the system of actor
 	system, _ := actor.NewSystem(
-		//fullmesh.WithRemote(toml.Get("etcdaddr"), toml.Get("etcdprefix")),
-		//actor.Addr(toml.Get("actoraddr")),
+		//fullmesh.WithRemote(toml.Get("etcd_addr"), toml.Get("etcd_prefix")),
+		//actor.Addr(toml.Get("actor_addr")),
 		actor.Name(appType+cast.ToString(appId)),
-		mq.WithRemote(toml.Get("natsurl"), nats.New()),
+		mq.WithRemote(toml.Get("nats_url"), nats.New()),
 		actor.ProtoIndex(newProtoIndex()),
 		actor.LogLevel(logger.InfoLevel),
 	)
 
 	switch appType {
 	case actortype.Client:
-		_ = system.Add(actor.New(actortype.Client, &client.Client{ACC: "Client"}, actor.SetLocalized()))
+		_ = system.NewActor(actortype.Client, &client.Client{ACC: "Client"}, actor.SetLocalized())
 	case actortype.Robot:
-		_ = system.Add(actor.New(actortype.Robot, &robot.Robot{}, actor.SetLocalized()))
-	case actortype.GateWay_Actor:
+		_ = system.NewActor(actortype.Robot, &robot.Robot{}, actor.SetLocalized())
+	case actortype.GatewayActor:
 		newGateway(appId, system)
-	case actortype.Login_Actor:
+	case actortype.LoginActor:
 		newLogin(system)
-	case actortype.Game_Actor:
+	case actortype.GameActor:
 		newGame(appId, system)
 	case "all":
 		newGateway(appId, system)
@@ -123,23 +125,25 @@ func newProtoIndex() *tools.ProtoIndex {
 		return
 	}, tools.EnumIdx{
 		PackageName: "outer",
-		Enum2Name:   outer.MSG_name,
+		Prefix:      "Id",
+		Enum2Name:   outer.Msg_name,
+		Name2Enum:   outer.Msg_value,
 	})
 }
 
 func newLogin(system *actor.System) {
 	loginActor := login.New()
-	_ = system.Add(actor.New(actortype.Login_Actor, loginActor, actor.SetMailBoxSize(2000)))
+	_ = system.NewActor(actortype.LoginActor, loginActor, actor.SetMailBoxSize(2000))
 }
 
 func newGateway(appId int32, system *actor.System) {
 	loginActor := gateway.New()
-	_ = system.Add(actor.New(actortype.GatewayName(appId), loginActor, actor.SetMailBoxSize(2000)))
+	_ = system.NewActor(actortype.GatewayName(appId), loginActor, actor.SetMailBoxSize(2000))
 }
 
 func newGame(appId int32, system *actor.System) {
 	gameActor := game.New(appId)
 	ch := channel.New()
-	_ = system.Add(actor.New(actortype.GameName(appId), gameActor, actor.SetMailBoxSize(1000)))
-	_ = system.Add(actor.New(actortype.ChatName(appId), ch, actor.SetMailBoxSize(1000)))
+	_ = system.NewActor(actortype.GameName(appId), gameActor, actor.SetMailBoxSize(1000))
+	_ = system.NewActor(actortype.ChatName(appId), ch, actor.SetMailBoxSize(1000))
 }

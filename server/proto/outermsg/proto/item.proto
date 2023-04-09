@@ -2,16 +2,13 @@ syntax = "proto3";
 package outer;
 option  go_package = "/outer";
 
-message UseItemReq
-{
+message UseItemReq {    // tag:player
     map<int64,int64> Items = 1;
 }
 
-message UseItemResp
-{
+message UseItemRsp {
 }
 
-message ItemChangeNotify
-{
+message ItemChangeNotify {
     map<int64,int64> Items = 1;
 }

@@ -1,12 +1,13 @@
 package gateway
 
 import (
+	"time"
+
 	"server/common"
 	"server/common/actortype"
 	"server/common/log"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
-	"time"
 
 	"github.com/wwj31/dogactor/network"
 	"github.com/wwj31/dogactor/tools"
@@ -64,12 +65,12 @@ func (s *UserSession) OnRecv(data []byte) {
 
 	protoIndex := s.gateway.System().ProtoIndex()
 	// 心跳
-	if msgId == outer.MSG_PING.Int32() {
-		ping := network.NewBytesMessageParse(data, protoIndex).Proto().(*outer.Ping)
-		pong := network.NewPbMessage(&outer.Pong{
+	if msgId == outer.Msg_IdPingReq.Int32() {
+		ping := network.NewBytesMessageParse(data, protoIndex).Proto().(*outer.PingReq)
+		pong := network.NewPbMessage(&outer.PongRsp{
 			ClientTimestamp: ping.ClientTimestamp,
 			ServerTimestamp: tools.Now().UnixMilli(),
-		}, outer.MSG_PONG.Int32())
+		}, outer.Msg_IdPongRsp.Int32())
 		err = s.SendMsg(pong.Buffer())
 		s.KeepLive = time.Now()
 		return
@@ -83,10 +84,14 @@ func (s *UserSession) OnRecv(data []byte) {
 	gSession := common.GateSession(s.gateway.ID(), s.Id())
 	wrapperMsg := common.NewGateWrapperByBytes(data[4:], msgName, gSession)
 
-	if outer.MSG_LOGIN_SEGMENT_BEGIN.Int32() <= msgId && msgId <= outer.MSG_LOGIN_SEGMENT_END.Int32() {
-		err = s.gateway.Send(actortype.Login_Actor, wrapperMsg)
-	} else if outer.MSG_GAME_SEGMENT_BEGIN.Int32() <= msgId && msgId <= outer.MSG_GAME_SEGMENT_END.Int32() {
+	switch tag := outer.MsgIDTags[msgId]; tag {
+	case actortype.LoginActor:
+		err = s.gateway.Send(actortype.LoginActor, wrapperMsg)
+	case actortype.PlayerActor:
 		err = s.gateway.Send(s.PlayerId, wrapperMsg)
+	default:
+		log.Errorw("cannot find the message tag; the message has no target for dispatch", "msgId", msgId, "tag", tag)
+		return
 	}
 
 	log.Infow("user msg -> server",

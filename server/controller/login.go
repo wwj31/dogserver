@@ -20,7 +20,7 @@ var _ = router.Reg(func(player *player.Player, msg *outer.EnterGameReq) {
 	player.Role().SetUId(msg.UID)
 
 	player.Login(msg.NewPlayer)
-	player.Send2Client(&outer.EnterGameResp{
+	player.Send2Client(&outer.EnterGameRsp{
 		NewPlayer: msg.NewPlayer,
 	})
 })

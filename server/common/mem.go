@@ -2,11 +2,12 @@ package common
 
 import (
 	"fmt"
-	"github.com/shirou/gopsutil/cpu"
-	"github.com/shirou/gopsutil/mem"
 	"math"
 	"runtime"
 	"time"
+
+	"github.com/shirou/gopsutil/cpu"
+	"github.com/shirou/gopsutil/mem"
 )
 
 // PrintMemUsage outputs the current, total and OS memory being used. As well as the number
@@ -27,7 +28,7 @@ func bToMb(b uint64) uint64 {
 type HostInfo struct {
 	Total     int32 // 总内存MB
 	Used      int32 // 已用内存MB
-	Avaliable int32 // 可用内存MB
+	Available int32 // 可用内存MB
 	CpuUsage  int32 // 使用百分比
 	CpuCores  int32 // CPU线程数
 }
@@ -48,7 +49,7 @@ func GetHostInfo() (HostInfo, error) {
 	return HostInfo{
 		Total:     int32(bToMb(v.Total)),
 		Used:      int32(bToMb(v.Used)),
-		Avaliable: int32(bToMb(v.Available)),
+		Available: int32(bToMb(v.Available)),
 		CpuUsage:  int32(math.Round(percents[0])),
 		CpuCores:  int32(cores),
 	}, nil

@@ -7,7 +7,7 @@ import (
 )
 
 func TestRedis(t *testing.T) {
-	err := Builder().OnConnect(func() {
+	err := NewBuilder().OnConnect(func() {
 		fmt.Println("redis connect success")
 	}).Connect()
 

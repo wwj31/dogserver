@@ -1,46 +1,46 @@
 [base]
-dispaly    = "true"
-logpath    = "./log"
-etcdprefix = "dog"
-etcdaddr   = "127.0.0.1:2379"
-natsurl    = "nats://localhost:4222"
-redisaddr  = ["localhost:6379","localhost:6002"]
+display    = "true"
+log_path    = "./log"
+etcd_prefix = "dog"
+etcd_addr   = "127.0.0.1:2379"
+nats_url    = "nats://localhost:4222"
+redis_addr  = ["localhost:6379","localhost:6002"]
 mysql      = "root:123456@tcp(127.0.0.1:3306)/%s?charset=utf8mb4&parseTime=True&loc=Local"
-mongoaddr   = "mongodb://localhost:27017"
-#mongoaddr   = "mongodb+srv://admin:ewqmh388@wwjmongocluster.fpdka24.mongodb.net/admin?replicaSet=atlas-lrdfhp-shard-0&readPreference=primary&connectTimeoutMS=10000&authSource=admin&authMechanism=SCRAM-SHA-1&3t.uriVersion=3&3t.connection.name=atlas-lrdfhp-shard-0&3t.databases=admin&3t.alwaysShowAuthDB=true&3t.alwaysShowDBFromUserRole=true&3t.sslTlsVersion=TLS"
-#mongoaddr   = "mongodb://root:Ewqmh388@s-2vcb275f2bc33814-pub.mongodb.cn-chengdu.rds.aliyuncs.com:3717,s-2vc6836735c055c4-pub.mongodb.cn-chengdu.rds.aliyuncs.com:3717/admin"
+mongo_addr   = "mongodb://localhost:27017"
+#mongo_addr   = "mongodb+srv://admin:ewqmh388@wwjmongocluster.fpdka24.mongodb.net/admin?replicaSet=atlas-lrdfhp-shard-0&readPreference=primary&connectTimeoutMS=10000&authSource=admin&authMechanism=SCRAM-SHA-1&3t.uriVersion=3&3t.connection.name=atlas-lrdfhp-shard-0&3t.databases=admin&3t.alwaysShowAuthDB=true&3t.alwaysShowDBFromUserRole=true&3t.sslTlsVersion=TLS"
+#mongo_addr   = "mongodb://root:Ewqmh388@s-2vcb275f2bc33814-pub.mongodb.cn-chengdu.rds.aliyuncs.com:3717,s-2vc6836735c055c4-pub.mongodb.cn-chengdu.rds.aliyuncs.com:3717/admin"
 database   = "game"
-configjson = "../server/config/confjson"
+config_json = "../server/config/confjson"
 
 
 
 [server]
     [server.login_1]
-        actoraddr  = "127.0.0.1:8100"
-        luapath    = "./root/servers/gate/lua/main.lua"
+        actor_addr  = "127.0.0.1:8100"
+        lua_path    = "./root/servers/gate/lua/main.lua"
 
     [server.gateway_1]
-        #actoraddr = "127.0.0.1:8001" // use for full-mesh mode
-        gateaddr  = "0.0.0.0:7001"     # client连接端口
+        #actor_addr = "127.0.0.1:8001" // use for full-mesh mode
+        gate_addr  = "0.0.0.0:7001"     # client连接端口
 
     [server.gateway_2]
-        #actoraddr = "127.0.0.1:8002" // use for full-mesh mode
-        gateaddr  = "0.0.0.0:7002"     # client连接端口
+        #actor_addr = "127.0.0.1:8002" // use for full-mesh mode
+        gate_addr  = "0.0.0.0:7002"     # client连接端口
 
     [server.game_1]
-        #actoraddr  = "127.0.0.1:8201" // use ofr full-mesh mode
+        #actor_addr  = "127.0.0.1:8201" // use ofr full-mesh mode
 
 
     [server.all_1]
-        #actoraddr  = "127.0.0.1:8000" // use ofr full-mesh mode
-        gateaddr   = "0.0.0.0:9001"
+        #actor_addr  = "127.0.0.1:8000" // use ofr full-mesh mode
+        gate_addr   = "0.0.0.0:9001"
         database   = "game"
 
 #    [server.client_1]
-#        actoraddr  = "127.0.0.1:5001"
+#        actor_addr  = "127.0.0.1:5001"
     [server.client_2]
-#        actoraddr  = "127.0.0.1:5002"
+#        actor_addr  = "127.0.0.1:5002"
 #    [server.client_3]
-#        actoraddr  = "127.0.0.1:5003"
+#        actor_addr  = "127.0.0.1:5003"
     [server.robot_1]
-#        actoraddr  = "127.0.0.1:5003"
+#        actor_addr  = "127.0.0.1:5003"

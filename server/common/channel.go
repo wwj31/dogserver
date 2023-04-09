@@ -1,9 +1,9 @@
 package common
 
-type CHANNEL_TYPE = string
+type ChannelType = string
 
 const (
-	WORLD    CHANNEL_TYPE = "world"    // 世界频道
-	ALLIANCE              = "alliance" // 联盟频道
-	PRIVATE               = "private"  // 私聊频道
+	WorldChat    ChannelType = "world_chat"    // 世界频道
+	AllianceChat             = "alliance_chat" // 联盟频道
+	PrivateChat              = "private_chat"  // 私聊频道
 )

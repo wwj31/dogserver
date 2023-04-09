@@ -4,6 +4,7 @@ import (
 	"github.com/wwj31/dogactor/actor"
 	"github.com/wwj31/dogactor/actor/event"
 	"github.com/wwj31/dogactor/expect"
+
 	"server/common"
 	"server/common/actortype"
 	"server/common/log"
@@ -25,7 +26,7 @@ type Game struct {
 func (s *Game) OnInit() {
 	s.respIdMap = make(map[actor.Id]string)
 	s.System().OnEvent(s.ID(), func(ev event.EvActorSubMqFin) {
-		if actortype.IsActorOf(ev.ActorId, actortype.Player_Actor) {
+		if actortype.IsActorOf(ev.ActorId, actortype.PlayerActor) {
 			if respId, ok := s.respIdMap[ev.ActorId]; ok {
 				_ = s.Response(respId, &outer.Ok{})
 				delete(s.respIdMap, ev.ActorId)
@@ -74,7 +75,6 @@ func (s *Game) checkAndPullPlayer(rid string) (playerId actortype.ActorId, loadi
 			actor.SetMailBoxSize(200),
 			//actor.SetLocalized(),
 		)
-
 		expect.Nil(err)
 		return playerId, true
 	}

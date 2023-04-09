@@ -195,7 +195,7 @@ func (s *Player) store() {
 }
 
 const aliveDuration = 5 * time.Second // 24*time.Hour
-func (s Player) checkAlive() {
+func (s *Player) checkAlive() {
 	duration := tools.Now().Sub(s.keepAlive)
 	if duration > aliveDuration && !s.Online() {
 		//s.Exit()

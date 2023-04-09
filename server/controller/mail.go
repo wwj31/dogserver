@@ -24,21 +24,21 @@ var _ = router.Reg(func(player *player.Player, msg *outer.MailListReq) {
 			Status:       mail.Status,
 		})
 	}
-	player.Send2Client(&outer.MailListResp{Mails: msgMails})
+	player.Send2Client(&outer.MailListRsp{Mails: msgMails})
 	log.Debugw("player request mails ", "player", player.ID(), "mails", mails)
 })
 
 // 已读操作
 var _ = router.Reg(func(player *player.Player, msg *outer.ReadMailReq) {
 	player.Mail().Read(msg.Uuid)
-	player.Send2Client(&outer.ReadMailResp{Uuid: msg.Uuid})
+	player.Send2Client(&outer.ReadMailRsp{Uuid: msg.Uuid})
 	log.Debugw("player read actormail ", "player", player.ID(), "mailId", msg.Uuid)
 })
 
 // 领取邮件道具
 var _ = router.Reg(func(player *player.Player, msg *outer.ReceiveMailItemReq) {
 	player.Mail().ReceiveItem(msg.Uuid)
-	player.Send2Client(&outer.ReceiveMailItemResp{Uuid: msg.Uuid})
+	player.Send2Client(&outer.ReceiveMailItemRsp{Uuid: msg.Uuid})
 	log.Debugw("player recv actormail item", "player", player.ID(), "mailId", msg.Uuid)
 })
 

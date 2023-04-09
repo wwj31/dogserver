@@ -2,9 +2,11 @@ package login
 
 import (
 	"context"
+
 	"github.com/wwj31/dogactor/tools"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+
 	"server/common"
 	"server/common/actortype"
 	"server/common/log"
@@ -50,7 +52,7 @@ func (s *Login) Login(gSession common.GSession, msg *outer.LoginReq) {
 					return
 				}
 
-				gSession.SendToClient(s, &outer.LoginResp{
+				gSession.SendToClient(s, &outer.LoginRsp{
 					UID:       acc.UUID,
 					RID:       acc.LastLoginRID,
 					NewPlayer: newPlayer,
