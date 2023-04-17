@@ -6,7 +6,7 @@ import (
 )
 
 type Model struct {
-	iface.Player
+	Player iface.Player
 }
 
 func New(player iface.Player) Model {
