@@ -35,7 +35,7 @@ func (s *Channel) OnStop() bool {
 }
 
 func (s *Channel) OnHandle(m actor.Message) {
-	switch msg := m.RawMsg().(type) {
+	switch msg := m.Payload().(type) {
 	case *inner.LeaveChannelReq:
 		s.leave(msg.Channel, msg.ActorId)
 

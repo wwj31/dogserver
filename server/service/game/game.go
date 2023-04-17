@@ -49,7 +49,7 @@ func (s *Game) SID() int32 {
 }
 
 func (s *Game) OnHandle(msg actor.Message) {
-	actMsg, _, _, err := common.UnwrappedGateMsg(msg.RawMsg())
+	actMsg, _, _, err := common.UnwrappedGateMsg(msg.Payload())
 	expect.Nil(err)
 
 	switch pbMsg := actMsg.(type) {

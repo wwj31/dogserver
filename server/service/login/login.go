@@ -27,7 +27,7 @@ func (s *Login) OnStop() bool {
 }
 
 func (s *Login) OnHandle(m actor.Message) {
-	rawMsg := m.RawMsg()
+	rawMsg := m.Payload()
 	v, _, gSession, err := common.UnwrappedGateMsg(rawMsg)
 
 	expect.Nil(err)

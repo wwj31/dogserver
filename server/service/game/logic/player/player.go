@@ -68,7 +68,7 @@ func (s *Player) OnHandle(msg actor.Message) {
 		s.keepAlive = tools.Now()
 	}()
 
-	message, msgName, gSession, err := common.UnwrappedGateMsg(msg.RawMsg())
+	message, msgName, gSession, err := common.UnwrappedGateMsg(msg.Payload())
 	expect.Nil(err)
 
 	// 重连的情况，除了EnterGame消息，其他都不处理

@@ -50,7 +50,7 @@ func (s *Client) SendToServer(msgId int32, pb proto.Message) {
 }
 
 func (s *Client) OnHandle(m actor.Message) {
-	switch msg := m.RawMsg().(type) {
+	switch msg := m.Payload().(type) {
 	case *outer.PongRsp:
 		log.Infow("aliving~")
 	case *outer.Fail:

@@ -9,6 +9,9 @@ import (
 type (
 	Player interface {
 		actor.Actor
+		actor.Timer
+		actor.Messenger
+
 		Session
 		RID() string
 
