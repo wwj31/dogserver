@@ -3,10 +3,10 @@ package outer;
 option  go_package = "/outer";
 
 
-message PingReq {
+message HeartReq {
     int64 ClientTimestamp = 1;
 }
-message PongRsp {
+message HeartRsp {
     int64 ClientTimestamp = 1;
     int64 ServerTimestamp = 2;
 }
@@ -27,7 +27,6 @@ message LoginReq {  // tag:login
 }
 
 message LoginRsp {
-
     string  UID          = 1;
     string  RID          = 2;
     bool    NewPlayer    = 3;

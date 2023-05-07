@@ -65,12 +65,12 @@ func (u *UserSession) OnRecv(data []byte) {
 
 	protoIndex := u.gateway.System().ProtoIndex()
 	// 心跳
-	if msgId == outer.Msg_IdPingReq.Int32() {
-		ping := network.NewBytesMessageParse(data, protoIndex).Proto().(*outer.PingReq)
-		pong := network.NewPbMessage(&outer.PongRsp{
+	if msgId == outer.Msg_IdHeartReq.Int32() {
+		ping := network.NewBytesMessageParse(data, protoIndex).Proto().(*outer.HeartReq)
+		pong := network.NewPbMessage(&outer.HeartRsp{
 			ClientTimestamp: ping.ClientTimestamp,
 			ServerTimestamp: tools.Now().UnixMilli(),
-		}, outer.Msg_IdPongRsp.Int32())
+		}, outer.Msg_IdHeartRsp.Int32())
 		err = u.SendMsg(pong.Buffer())
 		u.KeepLive = time.Now()
 		return

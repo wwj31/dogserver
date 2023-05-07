@@ -17,7 +17,7 @@ require (
 	github.com/spf13/viper v1.9.0
 	github.com/stretchr/testify v1.7.0
 	github.com/tealeg/xlsx v1.0.5
-	github.com/wwj31/dogactor v1.4.1
+	github.com/wwj31/dogactor v1.4.2
 	go.mongodb.org/mongo-driver v1.11.0
 	gorm.io/driver/mysql v1.1.3
 	gorm.io/gorm v1.22.3
@@ -33,6 +33,7 @@ require (
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/golang/snappy v0.0.3 // indirect
 	github.com/gopherjs/gopherjs v0.0.0-20181017120253-0766667cb4d1 // indirect
+	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/hashicorp/errwrap v1.0.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect

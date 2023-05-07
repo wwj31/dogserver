@@ -108,7 +108,7 @@ func run(appType string, appId int32) *actor.System {
 		newLogin(system)
 	case actortype.GameActor:
 		newGame(appId, system)
-	case "all":
+	case "allinone":
 		newGateway(appId, system)
 		newGame(appId, system)
 		newLogin(system)

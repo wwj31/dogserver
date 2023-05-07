@@ -9,8 +9,8 @@ enum Msg {
     IdChatRsp = 2;
     IdUseItemReq = 3;// dispatch to player
     IdUseItemRsp = 4;
-    IdPingReq = 5;
-    IdPongRsp = 6;
+    IdHeartReq = 5;
+    IdHeartRsp = 6;
     IdLoginReq = 7;// dispatch to login
     IdLoginRsp = 8;
     IdEnterGameReq = 9;// dispatch to player
