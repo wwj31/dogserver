@@ -37,7 +37,7 @@ func (s *Client) OnInit() {
 
 	// 心跳
 	s.AddTimer(tools.XUID(), tools.Now().Add(20*time.Second), func(dt time.Duration) {
-		s.SendToServer(outer.Msg_IdPingReq.Int32(), &outer.PingReq{})
+		s.SendToServer(outer.Msg_IdHeartReq.Int32(), &outer.HeartReq{})
 	}, -1)
 }
 
@@ -51,7 +51,7 @@ func (s *Client) SendToServer(msgId int32, pb proto.Message) {
 
 func (s *Client) OnHandle(m actor.Message) {
 	switch msg := m.Payload().(type) {
-	case *outer.PongRsp:
+	case *outer.HeartRsp:
 		log.Infow("aliving~")
 	case *outer.Fail:
 		log.Infow("msg respones fail", "err:", msg.String())
