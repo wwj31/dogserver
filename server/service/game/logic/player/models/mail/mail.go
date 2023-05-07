@@ -2,18 +2,14 @@ package mail
 
 import (
 	gogo "github.com/gogo/protobuf/proto"
-	"server/common"
+	"github.com/spf13/cast"
+	"github.com/wwj31/dogactor/container/rank"
+	"github.com/wwj31/dogactor/tools"
 	"server/common/log"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
 	"server/service/game/iface"
-	"server/service/game/logic/player/event"
 	"server/service/game/logic/player/models"
-	"server/service/game/logic/player/models/role/typ"
-
-	"github.com/spf13/cast"
-	"github.com/wwj31/dogactor/container/rank"
-	"github.com/wwj31/dogactor/tools"
 )
 
 type Mail struct {
@@ -30,15 +26,6 @@ func New(base models.Model) *Mail {
 	}
 	mail.data.RID = base.Player.RID()
 
-	common.WatchEvent(base.Player.Observer(), func(ev event.ChangeAttribute) {
-		if ev.Type == typ.Level && ev.NewVal == 10 {
-			mail.NewBuilder().
-				SetMailTitle("🎉恭喜升到10级!🎉").
-				SetContent("这是给你的奖励!").
-				SetItems(map[int64]int64{10001: 100, 10002: 100}).
-				Build()
-		}
-	})
 	return mail
 }
 
@@ -118,11 +105,11 @@ func (s *Mail) ReceiveItem(uuid string) {
 		return
 	}
 	if mail.Status == 2 {
-		s.Player.Send2Client(&outer.Fail{Error: outer.ERROR_MAIL_REPEAT_RECV_ITEM})
+		s.Player.Send2Client(&outer.Fail{Error: outer.ERROR_FAILED})
 		return
 	}
 
-	s.Player.Item().Add(mail.Items, true)
+	//s.Player.Item().Add(mail.Items, true)
 	mail.Status = 2
 }
 

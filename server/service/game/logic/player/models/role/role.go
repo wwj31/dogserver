@@ -6,7 +6,6 @@ import (
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
 	"server/service/game/logic/player/models"
-	"server/service/game/logic/player/models/role/typ"
 )
 
 type Role struct {
@@ -28,9 +27,6 @@ func (s *Role) OnLogin(first bool) {
 	nowStr := tools.TimeFormat(tools.Now())
 	if first {
 		//first
-		s.SetAttribute(typ.Level, 1)
-		s.SetAttribute(typ.Exp, 0)
-		s.SetAttribute(typ.Gold, 0)
 		s.data.CreateAt = nowStr
 	}
 
@@ -42,13 +38,13 @@ func (s *Role) OnLogout() {
 	s.data.LogoutAt = tools.TimeFormat(tools.Now())
 }
 
-func (s *Role) roleInfoPush() *outer.RoleInfoPush {
-	return &outer.RoleInfoPush{
+func (s *Role) roleInfoPush() *outer.RoleInfo {
+	return &outer.RoleInfo{
 		UID:     s.data.UID,
 		RID:     s.data.RID,
-		SId:     s.data.SId,
+		ShortID: s.data.ShortID,
+		Phone:   s.data.Phone,
 		Name:    s.data.Name,
 		Icon:    s.data.Icon,
-		Country: s.data.Country,
 	}
 }

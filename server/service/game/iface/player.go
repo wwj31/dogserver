@@ -24,8 +24,6 @@ type (
 
 		Gamer() Gamer
 		Role() Role
-		Item() Item
 		Mail() Mailer
-		Chat() Chat
 	}
 )

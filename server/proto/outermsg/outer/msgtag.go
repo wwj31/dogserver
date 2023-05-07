@@ -3,12 +3,10 @@
 package outer
 
 var MsgIDTags = map[int32]string{
-	1:  "player",
-	3:  "player",
-	7:  "login",
+	3:  "login",
+	5:  "player",
+	7:  "player",
 	9:  "player",
 	11: "player",
 	13: "player",
-	15: "player",
-	17: "player",
 }

@@ -63,18 +63,6 @@ func (s *Client) enter(arg ...string) {
 	s.SendToServer(outer.Msg_IdEnterGameReq.Int32(), msg)
 }
 
-func (s *Client) item(arg ...string) {
-	if len(arg) != 2 {
-		return
-	}
-	itemId := cast.ToInt64(arg[0])
-	itemcount := cast.ToInt64(arg[1])
-	msg := &outer.UseItemReq{
-		Items: map[int64]int64{itemId: itemcount},
-	}
-	s.SendToServer(outer.Msg_IdUseItemReq.Int32(), msg)
-}
-
 func (s *Client) listMail(arg ...string) {
 	if len(arg) != 1 {
 		return
@@ -117,16 +105,4 @@ func (s *Client) delMail(arg ...string) {
 		Uuids: []string{mailId},
 	}
 	s.SendToServer(outer.Msg_IdDeleteMailReq.Int32(), msg)
-}
-
-func (s *Client) chat(arg ...string) {
-	if len(arg) != 1 {
-		return
-	}
-	content := arg[0]
-	msg := &outer.ChatReq{
-		Content:     content,
-		ChannelType: 1,
-	}
-	s.SendToServer(outer.Msg_IdChatReq.Int32(), msg)
 }

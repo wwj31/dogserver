@@ -11,19 +11,19 @@ message HeartRsp {
     int64 ServerTimestamp = 2;
 }
 
-
-
 message LoginReq {  // tag:login
     // 平台uuid
     string PlatformUUID  = 1;
     // 平台名字
     string PlatformName  = 2;
+    // 设备ID
+    string DeviceID      = 3;
     // 系统
-    string OS            = 3;
+    string OS            = 4;
     // 版本号
-    string ClientVersion = 4;
+    string ClientVersion = 5;
     // 签名token
-    string Token         = 5;
+    string Token         = 6;
 }
 
 message LoginRsp {
@@ -46,16 +46,11 @@ message EnterGameRsp {
 }
 
 // 角色信息
-message RoleInfoPush {
+message RoleInfo{
     string  UID     = 1;
     string  RID     = 2;
-    uint64  SId     = 3;
-    string  Name    = 4;
-    string  Icon    = 5;
-    string  Country = 6;
-}
-
-// 道具信息
-message ItemInfoPush {
-    map<int64,int64> Items = 1;
+    uint64  ShortID = 3;
+    string  Phone   = 4;
+    string  Name    = 5;
+    string  Icon    = 6;
 }

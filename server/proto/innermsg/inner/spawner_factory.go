@@ -15,17 +15,17 @@ func Spawner(name string, newPool ...bool) (interface{}, bool) {
 func Put(name string, x interface{}) {}
 
 var spawner = map[string]factory{
-	"inner.MessageToChannel":   func() interface{} { return &MessageToChannel{} },
 	"inner.LeaveChannelReq":    func() interface{} { return &LeaveChannelReq{} },
 	"inner.JoinChannelResp":    func() interface{} { return &JoinChannelResp{} },
 	"inner.JoinChannelReq":     func() interface{} { return &JoinChannelReq{} },
-	"inner.Error":              func() interface{} { return &Error{} },
-	"inner.BindSessionWithRID": func() interface{} { return &BindSessionWithRID{} },
+	"inner.MessageToChannel":   func() interface{} { return &MessageToChannel{} },
 	"inner.GateMsgWrapper":     func() interface{} { return &GateMsgWrapper{} },
 	"inner.GSessionClosed":     func() interface{} { return &GSessionClosed{} },
 	"inner.PullPlayer":         func() interface{} { return &PullPlayer{} },
+	"inner.BindSessionWithRID": func() interface{} { return &BindSessionWithRID{} },
+	"inner.Error":              func() interface{} { return &Error{} },
+	"inner.RoleInfo":           func() interface{} { return &RoleInfo{} },
+	"inner.Mail":               func() interface{} { return &Mail{} },
 	"inner.ItemInfo":           func() interface{} { return &ItemInfo{} },
 	"inner.MailInfo":           func() interface{} { return &MailInfo{} },
-	"inner.Mail":               func() interface{} { return &Mail{} },
-	"inner.RoleInfo":           func() interface{} { return &RoleInfo{} },
 }

@@ -64,16 +64,8 @@ func (s *Client) OnHandle(m actor.Message) {
 		s.enter()
 	case *outer.EnterGameRsp:
 		log.Infow("EnterGameResp!", "msg", msg.String())
-	case *outer.RoleInfoPush:
+	case *outer.RoleInfo:
 		log.Infow("RoleInfoPush!", "msg", msg.String())
-	case *outer.ItemInfoPush:
-		log.Infow("ItemInfoPush!", "msg", msg.String())
-
-	// 道具
-	case *outer.UseItemRsp:
-		log.Infow("UseItemResp!", "msg", msg.String())
-	case *outer.ItemChangeNotify:
-		log.Infow("ItemChangeNotify!", "msg", msg.String())
 
 	// 邮件
 	case *outer.MailListRsp:
@@ -83,10 +75,6 @@ func (s *Client) OnHandle(m actor.Message) {
 		log.Infow("ReadMailResp!", "msg", msg.String())
 	case *outer.ReceiveMailItemRsp:
 		log.Infow("ReceiveMailItemResp!", "msg", msg.String())
-
-		// 聊天
-	case *outer.ChatNotify:
-		log.Infow("ChatNotify!", "msg", msg.String())
 
 	default:
 		log.Infow("unknown type!", "type", reflect.TypeOf(msg).String(), "msg", msg)
