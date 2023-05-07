@@ -28,18 +28,18 @@ func New() *GateWay {
 	return &GateWay{}
 }
 
-func (s *GateWay) OnInit() {
-	s.sessions = make(map[uint64]*UserSession)
+func (g *GateWay) OnInit() {
+	g.sessions = make(map[uint64]*UserSession)
 
 	addr := toml.Get("gate_addr")
-	s.listener = network.StartTcpListen(addr,
+	g.listener = network.StartTcpListen(addr,
 		func() network.DecodeEncoder { return &network.StreamCode{MaxDecode: 100 * tools.KB} },
-		func() network.SessionHandler { return &UserSession{gateway: s} },
+		func() network.SessionHandler { return &UserSession{gateway: g} },
 	)
 
-	s.AddTimer(tools.XUID(), tools.Now().Add(time.Hour), s.checkDeadSession, -1)
+	g.AddTimer(tools.XUID(), tools.Now().Add(time.Hour), g.checkDeadSession, -1)
 
-	if err := s.listener.Start(); err != nil {
+	if err := g.listener.Start(); err != nil {
 		log.Errorw("gateway listener start failed", "err", err, "addr", addr)
 		return
 	}
@@ -47,18 +47,18 @@ func (s *GateWay) OnInit() {
 }
 
 // 定期检查并清理死链接
-func (s *GateWay) checkDeadSession(dt time.Duration) {
-	for id, session := range s.sessions {
+func (g *GateWay) checkDeadSession(dt time.Duration) {
+	for id, session := range g.sessions {
 		if time.Now().Sub(session.KeepLive) > time.Hour {
 			session.Stop()
-			delete(s.sessions, id)
+			delete(g.sessions, id)
 			log.Warnw(" find dead session", "sesion", id)
 		}
 	}
 }
 
 // OnHandle 主要转发消息至玩家client，少量内部消息处理
-func (s *GateWay) OnHandle(m actor.Message) {
+func (g *GateWay) OnHandle(m actor.Message) {
 	rawMsg := m.Payload()
 	switch msg := rawMsg.(type) {
 	case *inner.GateMsgWrapper:
@@ -70,25 +70,25 @@ func (s *GateWay) OnHandle(m actor.Message) {
 			"msgName", msg.MsgName,
 		}
 
-		if s.ID() != actorId {
+		if g.ID() != actorId {
 			log.Errorw("session disabled gate is not own", logInfo...)
 			return
 		}
-		userSessionHandler := s.sessions[sessionId]
+		userSessionHandler := g.sessions[sessionId]
 		if userSessionHandler == nil {
 			log.Warnw("cannot find sessionId", logInfo...)
 			return
 		}
 
 		log.Infow("server msg -> user", logInfo...)
-		msgId, _ := s.System().ProtoIndex().MsgNameToId(msg.GetMsgName())
+		msgId, _ := g.System().ProtoIndex().MsgNameToId(msg.GetMsgName())
 		_ = userSessionHandler.SendMsg(network.CombineMsgWithId(msgId, msg.Data))
 
 	default:
-		resp := s.InnerHandler(m.GetSourceId(), rawMsg) // 内部消息，单独处理
+		resp := g.InnerHandler(m.GetSourceId(), rawMsg) // 内部消息，单独处理
 		if resp != nil && m.GetRequestId() != "" {
 			log.Debugw("resp ", "reqId", m.GetRequestId())
-			if err := s.Response(m.GetRequestId(), resp); err != nil {
+			if err := g.Response(m.GetRequestId(), resp); err != nil {
 				log.Errorw("respone failed", "err", err)
 			}
 		} //wait_cebjpknm1tui4lpi2eh0@1670855890094264048@gateway_1_Actor#:8888
