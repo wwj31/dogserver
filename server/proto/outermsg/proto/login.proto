@@ -27,17 +27,15 @@ message LoginReq {  // tag:login
 }
 
 message LoginRsp {
-    string  UID          = 1;
-    string  RID          = 2;
-    bool    NewPlayer    = 3;
-    string  Token        = 4;
+    string  RID          = 1;
+    bool    NewPlayer    = 2;
+    string  Token        = 3;
 }
 
 message EnterGameReq { // tag:player
-    string  UID        = 1;
-    string  RID        = 2;
-    bool    NewPlayer  = 3;
-    string  Checksum   = 4;
+    string  RID        = 1;
+    bool    NewPlayer  = 2;
+    string  Checksum   = 3;
 }
 
 message EnterGameRsp {

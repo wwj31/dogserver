@@ -58,7 +58,6 @@ func (s *Client) OnHandle(m actor.Message) {
 	// 登录
 	case *outer.LoginRsp:
 		log.Infow("login success!", "msg", msg.String())
-		s.UID = msg.UID
 		s.RID = msg.RID
 		s.NewPlayer = msg.NewPlayer
 		s.enter()

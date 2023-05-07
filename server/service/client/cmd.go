@@ -55,10 +55,9 @@ func (s *Client) randLogin(arg ...string) {
 
 func (s *Client) enter(arg ...string) {
 	msg := &outer.EnterGameReq{
-		UID:       s.UID,
 		RID:       s.RID,
 		NewPlayer: s.NewPlayer,
-		Checksum:  common.EnterGameToken(s.UID, s.RID, s.NewPlayer),
+		Checksum:  common.EnterGameToken(s.RID, s.NewPlayer),
 	}
 	s.SendToServer(outer.Msg_IdEnterGameReq.Int32(), msg)
 }

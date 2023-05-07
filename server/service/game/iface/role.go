@@ -8,8 +8,6 @@ type Role interface {
 	Modeler
 	RoleId() string
 	SetRoleId(v string)
-	UId() string
-	SetUId(v string)
 
 	Name() string
 	Icon() string
