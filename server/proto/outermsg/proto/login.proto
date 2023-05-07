@@ -45,10 +45,10 @@ message EnterGameRsp {
 
 // 角色信息
 message RoleInfo{
-    string  UID     = 1;
-    string  RID     = 2;
-    uint64  ShortID = 3;
-    string  Phone   = 4;
-    string  Name    = 5;
-    string  Icon    = 6;
+    string  RID     = 1;
+    uint64  ShortID = 2;
+    string  Phone   = 3;
+    string  Name    = 4;
+    string  Icon    = 5;
+    uint64  Gold    = 6;
 }

@@ -40,11 +40,11 @@ func (s *Role) OnLogout() {
 
 func (s *Role) roleInfoPush() *outer.RoleInfo {
 	return &outer.RoleInfo{
-		UID:     s.data.UID,
 		RID:     s.data.RID,
 		ShortID: s.data.ShortID,
 		Phone:   s.data.Phone,
 		Name:    s.data.Name,
 		Icon:    s.data.Icon,
+		Gold:    s.data.Gold,
 	}
 }

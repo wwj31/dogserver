@@ -12,9 +12,10 @@ message RoleInfo
     string Phone   = 4;
     string Name    = 5;
     string Icon    = 6;
-    string CreateAt = 7;
-    string LoginAt  = 8;
-    string LogoutAt = 9;
+    uint64 Gold    = 7;
+    string CreateAt = 8;
+    string LoginAt  = 9;
+    string LogoutAt = 10;
 }
 
 message ItemInfo
