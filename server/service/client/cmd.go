@@ -1,7 +1,6 @@
 package client
 
 import (
-	"fmt"
 	"math/rand"
 	"time"
 
@@ -32,21 +31,15 @@ func (s *Client) login(arg ...string) {
 		return
 	}
 	logReq := &outer.LoginReq{
-		PlatformUUID: arg[0],
-		PlatformName: "test",
-		OS:           "test",
+		OS: "test",
 	}
-	token := common.LoginToken(logReq)
-	logReq.Token = token
 	s.SendToServer(outer.Msg_IdLoginReq.Int32(), logReq)
 }
 
 func (s *Client) randLogin(arg ...string) {
 	for {
 		logReq := &outer.LoginReq{
-			PlatformUUID: fmt.Sprintf("%v", time.Now().UnixNano()),
-			PlatformName: "test",
-			OS:           "test",
+			OS: "test",
 		}
 		s.SendToServer(outer.Msg_IdLoginReq.Int32(), logReq)
 		time.Sleep(time.Duration(rand.Intn(500)) * time.Millisecond)

@@ -6,25 +6,29 @@ message Error
 {
 }
 
-message GateMsgWrapper
-{
+message GateMsgWrapper{
     string GateSession = 1;
     string MsgName     = 2;
     bytes  Data        = 3;
 }
 
-message BindSessionWithRID
-{
+message BindSessionWithRID{
     string GateSession = 1;
     string RID         = 2;
 }
 
-// session断开,gate通知player
-message GSessionClosed
-{
+message KickOutReq{
+    string GateSession = 1;
+    string RID         = 2;
 }
 
-message PullPlayer
-{
+message KickOutRsp{
+}
+
+// session断开,gate通知player
+message GSessionClosed{
+}
+
+message PullPlayer{
     string RID = 1;
 }

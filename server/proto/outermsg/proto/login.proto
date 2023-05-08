@@ -12,24 +12,21 @@ message HeartRsp {
 }
 
 message LoginReq {  // tag:login
-    // 平台uuid
-    string PlatformUUID  = 1;
-    // 平台名字
-    string PlatformName  = 2;
-    // 设备ID
-    string DeviceID      = 3;
-    // 系统
-    string OS            = 4;
-    // 版本号
-    string ClientVersion = 5;
-    // 签名token
-    string Token         = 6;
+    int32  LoginType     = 1; // 登录方式 1.游客、2.phone、3.微信、4.token
+    string WeiXinOpenID  = 2; // 微信的Openid
+    string DeviceID      = 4; // 设备ID
+    string Phone         = 5; // 电话登录
+    string PhoneCode     = 6; // sms短信校验码
+    string Token         = 7; // token
+    string OS            = 8; // 系统
+    string ClientVersion = 9; // 版本号
 }
 
 message LoginRsp {
-    string  RID          = 1;
+    string  RID          = 1;   // role id
     bool    NewPlayer    = 2;
     string  Token        = 3;
+    string  Checksum     = 4;
 }
 
 message EnterGameReq { // tag:player

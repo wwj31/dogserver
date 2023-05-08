@@ -45,11 +45,6 @@ func (s *Login) OnHandle(m actor.Message) {
 
 func (s *Login) LoginReq(sourceId string, gSession common.GSession, msg *outer.LoginReq) error {
 	log.Debugf(msg.String())
-
-	if common.LoginToken(msg) != msg.Token {
-		return fmt.Errorf("login req token failed msg:%v", msg.String())
-	}
-
 	s.Login(gSession, msg)
 	return nil
 }

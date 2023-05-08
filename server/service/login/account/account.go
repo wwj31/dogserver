@@ -4,13 +4,12 @@ const Collection = "account"
 
 type Account struct {
 	UUID          string `bson:"_id"`
-	PlatformID    string
-	PlatformName  string
+	WeiXinOpenID  string `bson:"wei_xin_open_id"`
+	DeviceID      string `bson:"device_id"`
+	Phone         string `bson:"phone"`
 	SID           string
 	OS            string
 	ClientVersion string
-	Language      string
-	Country       string
 	LastLoginRID  string
 	Roles         map[string]Role
 }
