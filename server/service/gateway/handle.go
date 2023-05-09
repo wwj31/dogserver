@@ -31,7 +31,6 @@ func (g *GateWay) InnerHandler(m actor.Message) gogo.Message {
 		_, sessionId := gSession.Split()
 		session, ok := g.sessions[sessionId]
 		if !ok {
-			log.Warnw("bind session with rid not found session", "gateway", g.ID(), "gSession", gSession.String())
 			return &inner.KickOutRsp{}
 		}
 		if session.PlayerId == msg.RID {

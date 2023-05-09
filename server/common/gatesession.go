@@ -2,9 +2,9 @@ package common
 
 import (
 	"fmt"
+	"github.com/golang/protobuf/proto"
 	"strings"
 
-	gogo "github.com/gogo/protobuf/proto"
 	"github.com/spf13/cast"
 	"github.com/wwj31/dogactor/actor"
 
@@ -45,7 +45,7 @@ func (s GSession) Valid() bool {
 	return s != ""
 }
 
-func (s GSession) SendToClient(sender actor.Messenger, pb gogo.Message) {
+func (s GSession) SendToClient(sender actor.Messenger, pb proto.Message) {
 	if s.Invalid() {
 		return
 	}

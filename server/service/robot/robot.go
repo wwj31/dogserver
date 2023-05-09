@@ -35,11 +35,11 @@ func (s *Robot) stateLogin(acc string) {
 	// 随机randtime时间后，开启actor执行游戏
 	randtime := time.Duration(rand.Int63n(1000)+100)*time.Millisecond + time.Duration(atomic.AddInt32(&i, 1))
 	s.AddTimer(tools.XUID(), tools.Now().Add(randtime), func(dt time.Duration) {
-		v, _ := s.clients.LoadOrStore(acc, &client.Client{ACC: acc})
+		v, _ := s.clients.LoadOrStore(acc, &client.Client{DeviceID: acc})
 		cli := v.(*client.Client)
-		expect.Nil(s.System().NewActor(cli.ACC, cli, actor.SetLocalized()))
+		expect.Nil(s.System().NewActor(cli.DeviceID, cli, actor.SetLocalized()))
 
-		fmt.Println("\nlogin", cli.ACC)
+		fmt.Println("\nlogin", cli.DeviceID)
 		// 随机2～8秒后，退出actor logout
 		exitRandTime := time.Duration(rand.Intn(6) + 2)
 		s.AddTimer(tools.XUID(), tools.Now().Add(exitRandTime*time.Second), func(dt time.Duration) {

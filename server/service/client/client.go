@@ -14,25 +14,24 @@ import (
 	"github.com/wwj31/dogactor/tools"
 )
 
-const addr = "127.0.0.1:7001"
+const addr = "ws://127.0.0.1:7001/"
 
 type Client struct {
 	actor.Base
-	cli       network.Client
+	cli       *WsClient
 	UID       string
 	RID       string
 	NewPlayer bool
 	mails     []*outer.Mail
-	ACC       string
+	DeviceID  string
 }
 
 func (s *Client) OnInit() {
-	s.cli = network.NewTcpClient(addr, func() network.DecodeEncoder { return &network.StreamCode{} })
-	s.cli.AddHandler(func() network.SessionHandler { return &SessionHandler{client: s} })
-	expect.Nil(s.cli.Start(false))
+	s.cli = Dial(addr, &SessionHandler{client: s})
+	s.cli.Startup()
 
-	if s.ACC != "" {
-		s.login(s.ACC)
+	if s.DeviceID != "" {
+		s.login(s.DeviceID)
 	}
 
 	// 心跳
@@ -46,7 +45,7 @@ func (s *Client) SendToServer(msgId int32, pb proto.Message) {
 	expect.Nil(err)
 
 	data := network.CombineMsgWithId(msgId, bytes)
-	err = s.cli.SendMsg(data)
+	s.cli.SendMsg(data)
 }
 
 func (s *Client) OnHandle(m actor.Message) {
@@ -60,7 +59,7 @@ func (s *Client) OnHandle(m actor.Message) {
 		log.Infow("login success!", "msg", msg.String())
 		s.RID = msg.RID
 		s.NewPlayer = msg.NewPlayer
-		s.enter()
+		//s.enter()
 	case *outer.EnterGameRsp:
 		log.Infow("EnterGameResp!", "msg", msg.String())
 	case *outer.RoleInfo:

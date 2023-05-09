@@ -56,7 +56,9 @@ func startup() {
 
 	// init mongo
 	if err := mongodb.Builder().Addr(toml.Get("mongo_addr")).
-		Database(toml.Get("database")).EnableSharding().Connect(); err != nil {
+		Database(toml.Get("database")).
+		//EnableSharding().
+		Connect(); err != nil {
 		log.Errorw("mongo connect failed", "err", err)
 		return
 	}
@@ -64,7 +66,8 @@ func startup() {
 	// init redis
 	if err := redis.NewBuilder().
 		Addr(toml.GetArray("redis_addr", "localhost:6379")...).
-		ClusterMode().Connect(); err != nil {
+		//ClusterMode().
+		Connect(); err != nil {
 		log.Errorw("redis connect failed", "err", err)
 		return
 	}
@@ -99,7 +102,7 @@ func run(appType string, appId int32) *actor.System {
 
 	switch appType {
 	case actortype.Client:
-		_ = system.NewActor(actortype.Client, &client.Client{ACC: "Client"}, actor.SetLocalized())
+		_ = system.NewActor(actortype.Client, &client.Client{DeviceID: "Client"}, actor.SetLocalized())
 	case actortype.Robot:
 		_ = system.NewActor(actortype.Robot, &robot.Robot{}, actor.SetLocalized())
 	case actortype.GatewayActor:

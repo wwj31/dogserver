@@ -31,7 +31,9 @@ func (s *Client) login(arg ...string) {
 		return
 	}
 	logReq := &outer.LoginReq{
-		OS: "test",
+		LoginType: 1,
+		DeviceID:  s.DeviceID,
+		OS:        "test",
 	}
 	s.SendToServer(outer.Msg_IdLoginReq.Int32(), logReq)
 }

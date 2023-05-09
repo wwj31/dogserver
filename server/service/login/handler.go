@@ -158,7 +158,8 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 				}
 
 			}
-			oldGateSession := common.GSession(rds.Ins.Get(context.Background(), redisSessionKey(acc.LastLoginRID)).String())
+			val := rds.Ins.Get(context.Background(), redisSessionKey(acc.LastLoginRID)).Val()
+			oldGateSession := common.GSession(val)
 			if oldGateSession.Valid() {
 				gate, _ := oldGateSession.Split()
 				s.RequestWait(gate, &inner.KickOutReq{
@@ -166,7 +167,7 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 					RID:         acc.LastLoginRID,
 				}, 3*time.Second)
 			}
-			rds.Ins.Set(context.Background(), redisSessionKey(acc.LastLoginRID), gSession, 3*24*time.Hour)
+			rds.Ins.Set(context.Background(), redisSessionKey(acc.LastLoginRID), gSession.String(), 3*24*time.Hour)
 
 			_, err = s.RequestWait(acc.SID, &inner.PullPlayer{
 				RID: acc.LastLoginRID,
