@@ -1,4 +1,4 @@
-package redis
+package rds
 
 import (
 	"github.com/go-redsync/redsync/v4"

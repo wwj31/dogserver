@@ -5,7 +5,7 @@ import (
 	"math/rand"
 	"reflect"
 	"server/common/router"
-	"server/db/mgo"
+	"server/mgo"
 	"strings"
 	"time"
 

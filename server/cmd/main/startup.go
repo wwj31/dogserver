@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"server/mgo"
 	"syscall"
 
 	"server/common"
+	"server/common/rds"
 	"server/config/conf"
 
 	"github.com/spf13/cast"
@@ -19,10 +21,8 @@ import (
 	"server/common/actortype"
 	"server/common/log"
 	"server/common/mongodb"
-	"server/common/redis"
 	"server/common/toml"
 	_ "server/controller"
-	"server/db/mgo"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
 	"server/service/client"
@@ -63,7 +63,7 @@ func startup() {
 	}
 
 	// init redis
-	if err := redis.NewBuilder().
+	if err := rds.NewBuilder().
 		Addr(toml.GetArray("redis_addr", "localhost:6379")...).
 		//ClusterMode().
 		Connect(); err != nil {

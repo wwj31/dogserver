@@ -1,6 +1,6 @@
 package rdskey
 
-func LoginKey(key string) string {
+func LockLoginKey(key string) string {
 	return "lock:login:{" + key + "}"
 }
 

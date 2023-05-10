@@ -13,7 +13,7 @@ import (
 	"server/common/actortype"
 	"server/common/log"
 	"server/common/mongodb"
-	rds "server/common/redis"
+	"server/common/rds"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
 	"server/service/login/account"
@@ -36,7 +36,7 @@ const (
 
 func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 	go tools.Try(func() {
-		rds.LockDo(rdskey.LoginKey(req.DeviceID), func() {
+		rds.LockDo(rdskey.LockLoginKey(req.DeviceID), func() {
 			var (
 				acc       *account.Account
 				newPlayer bool

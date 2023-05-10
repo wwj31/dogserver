@@ -119,7 +119,8 @@ func (p *processor) update() {
 			)
 
 			if err != nil {
-				log.Errorw("mongo update failed", "collection", p.collection, "key", v.key, "err", err)
+				log.Errorw("mongo update failed",
+					"collection", p.collection, "key", v.key, "err", err)
 				return
 			}
 		}()
