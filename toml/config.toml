@@ -1,11 +1,10 @@
 [base]
 display    = "true"
-log_path    = "./log"
 etcd_prefix = "dog"
 etcd_addr   = "127.0.0.1:2379"
 nats_url    = "nats://localhost:4222"
 redis_addr  = ["127.0.0.1:6379"]
-mysql      = "root:123456@tcp(127.0.0.1:3306)/%s?charset=utf8mb4&parseTime=True&loc=Local"
+#mysql      = "root:123456@tcp(127.0.0.1:3306)/%s?charset=utf8mb4&parseTime=True&loc=Local"
 mongo_addr   = "mongodb://localhost:27017"
 #mongo_addr   = "mongodb+srv://admin:ewqmh388@wwjmongocluster.fpdka24.mongodb.net/admin?replicaSet=atlas-lrdfhp-shard-0&readPreference=primary&connectTimeoutMS=10000&authSource=admin&authMechanism=SCRAM-SHA-1&3t.uriVersion=3&3t.connection.name=atlas-lrdfhp-shard-0&3t.databases=admin&3t.alwaysShowAuthDB=true&3t.alwaysShowDBFromUserRole=true&3t.sslTlsVersion=TLS"
 #mongo_addr   = "mongodb://root:Ewqmh388@s-2vcb275f2bc33814-pub.mongodb.cn-chengdu.rds.aliyuncs.com:3717,s-2vc6836735c055c4-pub.mongodb.cn-chengdu.rds.aliyuncs.com:3717/admin"
@@ -23,20 +22,6 @@ config_json = "../server/config/confjson"
         #actor_addr = "127.0.0.1:8002" // use for full-mesh mode
         gate_addr  = "0.0.0.0:7002"     # client连接端口
 
-    [server.game_1]
-        #actor_addr  = "127.0.0.1:8201" // use ofr full-mesh mode
-
-
     [server.allInOne_1]
         #actor_addr  = "127.0.0.1:8000" // use ofr full-mesh mode
         gate_addr   = "0.0.0.0:7001"
-        database   = "game"
-
-    [server.client_1]
-#        actor_addr  = "127.0.0.1:5001"
-    [server.client_2]
-#        actor_addr  = "127.0.0.1:5002"
-#    [server.client_3]
-#        actor_addr  = "127.0.0.1:5003"
-    [server.robot_1]
-#        actor_addr  = "127.0.0.1:5003"
