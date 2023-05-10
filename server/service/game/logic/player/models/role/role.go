@@ -23,7 +23,7 @@ func (s *Role) Data() gogo.Message {
 	return &s.data
 }
 
-func (s *Role) OnLogin(first bool) {
+func (s *Role) OnLogin(first bool, enterGameRsp *outer.EnterGameRsp) {
 	nowStr := tools.TimeFormat(tools.Now())
 	if first {
 		//first
@@ -31,7 +31,7 @@ func (s *Role) OnLogin(first bool) {
 	}
 
 	s.data.LoginAt = nowStr
-	s.Player.Send2Client(s.roleInfoPush())
+	enterGameRsp.RoleInfo = s.roleInfoPush()
 }
 
 func (s *Role) OnLogout() {

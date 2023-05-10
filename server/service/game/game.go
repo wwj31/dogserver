@@ -54,6 +54,7 @@ func (s *Game) OnHandle(msg actor.Message) {
 
 	switch pbMsg := actMsg.(type) {
 	case *inner.PullPlayer:
+		log.Debugf("pull player %v", pbMsg.RID)
 		playerId, loading := s.checkAndPullPlayer(pbMsg.RID)
 		if !loading {
 			_ = s.Response(msg.GetRequestId(), &outer.Ok{})

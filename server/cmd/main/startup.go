@@ -27,7 +27,6 @@ import (
 	"server/proto/outermsg/outer"
 	"server/service/client"
 	"server/service/game"
-	"server/service/game/logic/channel"
 	"server/service/gateway"
 	"server/service/login"
 	"server/service/robot"
@@ -72,7 +71,7 @@ func startup() {
 		return
 	}
 
-	monitor(*logPath, logName+"mo")
+	//monitor(*logPath, logName+"mo")
 	//pprof("6060")
 
 	// startup
@@ -90,7 +89,6 @@ func startup() {
 }
 
 func run(appType string, appId int32) *actor.System {
-	// startup the system of actor
 	system, _ := actor.NewSystem(
 		//fullmesh.WithRemote(toml.Get("etcd_addr"), toml.Get("etcd_prefix")),
 		//actor.Addr(toml.Get("actor_addr")),
@@ -140,13 +138,11 @@ func newLogin(system *actor.System) {
 }
 
 func newGateway(appId int32, system *actor.System) {
-	loginActor := gateway.New()
-	_ = system.NewActor(actortype.GatewayName(appId), loginActor, actor.SetMailBoxSize(2000))
+	gateActor := gateway.New()
+	_ = system.NewActor(actortype.GatewayName(appId), gateActor, actor.SetMailBoxSize(2000))
 }
 
 func newGame(appId int32, system *actor.System) {
 	gameActor := game.New(appId)
-	ch := channel.New()
 	_ = system.NewActor(actortype.GameName(appId), gameActor, actor.SetMailBoxSize(1000))
-	_ = system.NewActor(actortype.ChatName(appId), ch, actor.SetMailBoxSize(1000))
 }

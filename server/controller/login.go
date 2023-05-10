@@ -18,10 +18,10 @@ var _ = router.Reg(func(player *player.Player, msg *outer.EnterGameReq) {
 
 	player.Role().SetRoleId(msg.RID)
 
-	player.Login(msg.NewPlayer)
-	player.Send2Client(&outer.EnterGameRsp{
-		NewPlayer: msg.NewPlayer,
-	})
+	enterGameRsp := &outer.EnterGameRsp{}
+	player.Login(msg.NewPlayer, enterGameRsp)
+	log.Debugf("send entergamersp 111")
+	player.Send2Client(enterGameRsp)
 })
 
 // 玩家离线

@@ -17,9 +17,6 @@ type (
 
 		Observer() *common.Observer
 		Send2Client(pb proto.Message)
-
-		Login(first bool)
-		Logout()
 		Online() bool
 
 		Gamer() Gamer

@@ -55,4 +55,5 @@ func (s GSession) SendToClient(sender actor.Messenger, pb proto.Message) {
 	if err := sender.Send(gateway, wrap); err != nil {
 		log.Errorw("gsession send to client failed", "err", err)
 	}
+	log.Debugf("send %T", pb)
 }

@@ -59,20 +59,20 @@ func (s *Client) OnHandle(m actor.Message) {
 		log.Infow("login success!", "msg", msg.String())
 		s.RID = msg.RID
 		s.NewPlayer = msg.NewPlayer
-		//s.enter()
+		s.enter()
 	case *outer.EnterGameRsp:
-		log.Infow("EnterGameResp!", "msg", msg.String())
+		log.Infow("EnterGameRsp!", "msg", msg.String())
 	case *outer.RoleInfo:
 		log.Infow("RoleInfoPush!", "msg", msg.String())
 
 	// 邮件
 	case *outer.MailListRsp:
 		s.mails = append(s.mails, msg.Mails...)
-		log.Infow("MailListResp!", "msg", msg.String())
+		log.Infow("MailListRsp!", "msg", msg.String())
 	case *outer.ReadMailRsp:
-		log.Infow("ReadMailResp!", "msg", msg.String())
+		log.Infow("ReadMailRsp!", "msg", msg.String())
 	case *outer.ReceiveMailItemRsp:
-		log.Infow("ReceiveMailItemResp!", "msg", msg.String())
+		log.Infow("ReceiveMailItemRsp!", "msg", msg.String())
 
 	default:
 		log.Infow("unknown type!", "type", reflect.TypeOf(msg).String(), "msg", msg)

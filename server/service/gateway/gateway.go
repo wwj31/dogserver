@@ -87,7 +87,7 @@ func (g *GateWay) OnHandle(m actor.Message) {
 	default:
 		resp := g.InnerHandler(m) // 内部消息，单独处理
 		if resp != nil && m.GetRequestId() != "" {
-			log.Debugw("resp ", "reqId", m.GetRequestId())
+			//log.Debugw("resp inner msg", "reqId", m.GetRequestId(), "resp", resp)
 			if err := g.Response(m.GetRequestId(), resp); err != nil {
 				log.Errorw("respone failed", "err", err)
 			}

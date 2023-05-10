@@ -15,10 +15,6 @@ config_json = "../server/config/confjson"
 
 
 [server]
-    [server.login_1]
-        actor_addr  = "127.0.0.1:8100"
-        lua_path    = "./root/servers/gate/lua/main.lua"
-
     [server.gateway_1]
         #actor_addr = "127.0.0.1:8001" // use for full-mesh mode
         gate_addr  = "0.0.0.0:7001"     # client连接端口

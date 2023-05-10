@@ -1,6 +1,7 @@
 package gateway
 
 import (
+	"github.com/wwj31/dogactor/actor"
 	"time"
 
 	"server/common"
@@ -24,16 +25,7 @@ func (u *UserSession) OnSessionCreated(s network.Session) {
 	u.Session = s
 	u.KeepLive = time.Now()
 
-	// 这里只做session映射，等待客户端请求登录
 	_ = u.gateway.Send(u.gateway.ID(), func() {
-		// 白名单判断
-		//ip := u.RemoteIP()
-		//ret := u.gateway.CallLua("IPFilter", 1, lua.LString(ip))
-		//if len(ret) > 0 && !lua.LVIsFalse(ret[0]) {
-		//	u.Stop()
-		//	log.KV("ip", u.RemoteIP()).Warn("ip filter")
-		//	return
-		//}
 		u.gateway.sessions[u.Id()] = u
 	})
 }
@@ -84,15 +76,18 @@ func (u *UserSession) OnRecv(data []byte) {
 	gSession := common.GateSession(u.gateway.ID(), u.Id())
 	wrapperMsg := common.NewGateWrapperByBytes(data[4:], msgName, gSession)
 
+	var targetId actor.Id
 	switch tag := outer.MsgIDTags[msgId]; tag {
 	case actortype.LoginActor:
-		err = u.gateway.Send(actortype.LoginActor, wrapperMsg)
+		targetId = actortype.LoginActor
 	case actortype.PlayerActor:
-		err = u.gateway.Send(u.PlayerId, wrapperMsg)
+		targetId = u.PlayerId
 	default:
 		log.Errorw("cannot find the message tag; the message has no target for dispatch", "msgId", msgId, "tag", tag)
 		return
 	}
+
+	err = u.gateway.Send(targetId, wrapperMsg)
 
 	log.Infow("user msg -> server",
 		"msgId", msgId,

@@ -91,7 +91,10 @@ func (s *Player) OnHandle(msg actor.Message) {
 
 	router.Dispatch(s, pt)
 
-	log.Debugw("player handle msg", "player", s.ID(), "msgName", msgName, "pt", pt.String())
+	if msgName == "" {
+		msgName = msg.GetMsgName()
+	}
+	log.Infow("player handle msg", "player", s.ID(), "msgName", msgName, "pt", pt.String())
 	//outer.Put(s.System().ProtoIndex().MsgName(pt), message)
 
 }
@@ -106,15 +109,22 @@ func (s *Player) Observer() *common.Observer {
 
 func (s *Player) Send2Client(pb gogo.Message) {
 	if pb == nil || !s.Online() {
+		log.Debugf("send online ??? %v")
 		return
 	}
+	log.Debugf("send entergamersp 22222")
 	s.gSession.SendToClient(s, pb)
+	log.Debugf("send entergamersp 3333")
 }
 
-func (s *Player) Login(first bool) {
+func (s *Player) GateSession() common.GSession            { return s.gSession }
+func (s *Player) SetGateSession(gSession common.GSession) { s.gSession = gSession }
+func (s *Player) Online() bool                            { return s.Role().LoginAt().After(s.Role().LogoutAt()) }
+
+func (s *Player) Login(first bool, enterGameRsp *outer.EnterGameRsp) {
 	log.Infow("player login", "id", s.roleId)
 	for _, mod := range s.models {
-		mod.OnLogin(first)
+		mod.OnLogin(first, enterGameRsp)
 	}
 
 	s.CancelTimer(s.exitTimerId)
@@ -126,10 +136,6 @@ func (s *Player) Logout() {
 		mod.OnLogout()
 	}
 }
-
-func (s *Player) GateSession() common.GSession            { return s.gSession }
-func (s *Player) SetGateSession(gSession common.GSession) { s.gSession = gSession }
-func (s *Player) Online() bool                            { return s.Role().LoginAt().After(s.Role().LogoutAt()) }
 
 func (s *Player) load() {
 	for _, mod := range s.models {

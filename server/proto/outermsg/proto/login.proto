@@ -37,7 +37,8 @@ message EnterGameReq { // tag:player
 
 message EnterGameRsp {
     // 是否是新玩家
-    bool NewPlayer = 1;
+    bool NewPlayer    = 1;
+    RoleInfo roleInfo = 2; // 角色信息
 }
 
 // 角色信息

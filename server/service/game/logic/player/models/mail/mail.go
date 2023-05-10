@@ -44,7 +44,7 @@ func (s *Mail) Data() gogo.Message {
 	return &s.data
 }
 
-func (s *Mail) OnLogin(first bool) {
+func (s *Mail) OnLogin(first bool, enterGameRsp *outer.EnterGameRsp) {
 	if first {
 		s.data.Mails = make(map[string]*inner.Mail, 4)
 		s.NewBuilder().
