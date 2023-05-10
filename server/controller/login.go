@@ -20,11 +20,12 @@ var _ = router.Reg(func(player *player.Player, msg *outer.EnterGameReq) {
 
 	enterGameRsp := &outer.EnterGameRsp{}
 	player.Login(msg.NewPlayer, enterGameRsp)
-	log.Debugf("send entergamersp 111")
 	player.Send2Client(enterGameRsp)
 })
 
 // 玩家离线
 var _ = router.Reg(func(player *player.Player, msg *inner.GSessionClosed) {
-	player.Logout()
+	if player.GateSession().String() == msg.GetGateSession() {
+		player.Logout()
+	}
 })

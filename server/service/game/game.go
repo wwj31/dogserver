@@ -28,6 +28,7 @@ func (s *Game) OnInit() {
 	s.System().OnEvent(s.ID(), func(ev event.EvActorSubMqFin) {
 		if actortype.IsActorOf(ev.ActorId, actortype.PlayerActor) {
 			if respId, ok := s.respIdMap[ev.ActorId]; ok {
+				log.Debugf("fuck %v", respId)
 				_ = s.Response(respId, &outer.Ok{})
 				delete(s.respIdMap, ev.ActorId)
 			}
@@ -54,7 +55,7 @@ func (s *Game) OnHandle(msg actor.Message) {
 
 	switch pbMsg := actMsg.(type) {
 	case *inner.PullPlayer:
-		log.Debugf("pull player %v", pbMsg.RID)
+		log.Debugf("pull player %v fuck :%v", pbMsg.RID, msg.GetRequestId())
 		playerId, loading := s.checkAndPullPlayer(pbMsg.RID)
 		if !loading {
 			_ = s.Response(msg.GetRequestId(), &outer.Ok{})

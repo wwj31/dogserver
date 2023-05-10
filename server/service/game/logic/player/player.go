@@ -89,14 +89,11 @@ func (s *Player) OnHandle(msg actor.Message) {
 		return
 	}
 
-	router.Dispatch(s, pt)
-
 	if msgName == "" {
 		msgName = msg.GetMsgName()
 	}
-	log.Infow("player handle msg", "player", s.ID(), "msgName", msgName, "pt", pt.String())
-	//outer.Put(s.System().ProtoIndex().MsgName(pt), message)
-
+	log.Infow("input", "player", s.roleId, "msg", reflect.TypeOf(pt), "data", pt.String())
+	router.Dispatch(s, pt)
 }
 
 func (s *Player) RID() string {
@@ -108,13 +105,11 @@ func (s *Player) Observer() *common.Observer {
 }
 
 func (s *Player) Send2Client(pb gogo.Message) {
+	log.Infow("output", "player", s.roleId, "online", s.Online(), "msg", reflect.TypeOf(pb), "data", pb.String())
 	if pb == nil || !s.Online() {
-		log.Debugf("send online ??? %v")
 		return
 	}
-	log.Debugf("send entergamersp 22222")
 	s.gSession.SendToClient(s, pb)
-	log.Debugf("send entergamersp 3333")
 }
 
 func (s *Player) GateSession() common.GSession            { return s.gSession }
@@ -122,7 +117,6 @@ func (s *Player) SetGateSession(gSession common.GSession) { s.gSession = gSessio
 func (s *Player) Online() bool                            { return s.Role().LoginAt().After(s.Role().LogoutAt()) }
 
 func (s *Player) Login(first bool, enterGameRsp *outer.EnterGameRsp) {
-	log.Infow("player login", "id", s.roleId)
 	for _, mod := range s.models {
 		mod.OnLogin(first, enterGameRsp)
 	}

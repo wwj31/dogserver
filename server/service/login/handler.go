@@ -3,6 +3,7 @@ package login
 import (
 	"context"
 	"github.com/golang-jwt/jwt/v4"
+	"server/common/rdskey"
 	"time"
 
 	"github.com/wwj31/dogactor/tools"
@@ -17,14 +18,6 @@ import (
 	"server/proto/outermsg/outer"
 	"server/service/login/account"
 )
-
-func redisKey(key string) string {
-	return "lock:login:{" + key + "}"
-}
-
-func redisSessionKey(rid string) string {
-	return "session:{" + rid + "}"
-}
 
 var secretKey = []byte("fuck you!!!!")
 
@@ -43,7 +36,7 @@ const (
 
 func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 	go tools.Try(func() {
-		rds.LockDo(redisKey(req.DeviceID), func() {
+		rds.LockDo(rdskey.LoginKey(req.DeviceID), func() {
 			var (
 				acc       *account.Account
 				newPlayer bool
@@ -158,7 +151,7 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 				}
 
 			}
-			val := rds.Ins.Get(context.Background(), redisSessionKey(acc.LastLoginRID)).Val()
+			val := rds.Ins.Get(context.Background(), rdskey.SessionKey(acc.LastLoginRID)).Val()
 			oldGateSession := common.GSession(val)
 			if oldGateSession.Valid() {
 				gate, _ := oldGateSession.Split()
@@ -167,7 +160,7 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 					RID:         acc.LastLoginRID,
 				}, 3*time.Second)
 			}
-			rds.Ins.Set(context.Background(), redisSessionKey(acc.LastLoginRID), gSession.String(), 3*24*time.Hour)
+			rds.Ins.Set(context.Background(), rdskey.SessionKey(acc.LastLoginRID), gSession.String(), 3*24*time.Hour)
 
 			_, err = s.RequestWait(acc.SID, &inner.PullPlayer{
 				RID: acc.LastLoginRID,

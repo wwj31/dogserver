@@ -32,8 +32,10 @@ func (u *UserSession) OnSessionCreated(s network.Session) {
 
 func (u *UserSession) OnSessionClosed() {
 	if u.PlayerId != "" {
-		// 通知player
-		_ = u.gateway.Send(u.PlayerId, &inner.GSessionClosed{})
+		gSession := common.GateSession(actortype.GatewayActor, u.Id())
+		_ = u.gateway.Send(u.PlayerId, &inner.GSessionClosed{
+			GateSession: gSession.String(),
+		})
 	}
 
 	_ = u.gateway.Send(u.gateway.ID(), func() {
