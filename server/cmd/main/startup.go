@@ -4,8 +4,11 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
-	"server/mgo"
 	"syscall"
+
+	"github.com/wwj31/dogactor/actor/cluster/fullmesh"
+
+	"server/mgo"
 
 	"server/common"
 	"server/common/rds"
@@ -13,8 +16,6 @@ import (
 
 	"github.com/spf13/cast"
 	"github.com/wwj31/dogactor/actor"
-	"github.com/wwj31/dogactor/actor/cluster/mq"
-	"github.com/wwj31/dogactor/actor/cluster/mq/nats"
 	"github.com/wwj31/dogactor/logger"
 	"github.com/wwj31/dogactor/tools"
 
@@ -90,10 +91,9 @@ func startup() {
 
 func run(appType string, appId int32) *actor.System {
 	system, _ := actor.NewSystem(
-		//fullmesh.WithRemote(toml.Get("etcd_addr"), toml.Get("etcd_prefix")),
-		//actor.Addr(toml.Get("actor_addr")),
+		fullmesh.WithRemote(toml.Get("etcd_addr"), toml.Get("etcd_prefix")),
 		actor.Name(appType+cast.ToString(appId)),
-		mq.WithRemote(toml.Get("nats_url"), nats.New()),
+		//mq.WithRemote(toml.Get("nats_url"), nats.New()),
 		actor.ProtoIndex(newProtoIndex()),
 		actor.LogLevel(logger.InfoLevel),
 	)

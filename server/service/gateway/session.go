@@ -1,8 +1,9 @@
 package gateway
 
 import (
-	"github.com/wwj31/dogactor/actor"
 	"time"
+
+	"github.com/wwj31/dogactor/actor"
 
 	"server/common"
 	"server/common/actortype"
@@ -78,6 +79,13 @@ func (u *UserSession) OnRecv(data []byte) {
 	gSession := common.GateSession(u.gateway.ID(), u.Id())
 	wrapperMsg := common.NewGateWrapperByBytes(data[4:], msgName, gSession)
 
+	log.Infow("user msg -> server",
+		"msgId", msgId,
+		"msgName", msgName,
+		"gSession", gSession,
+		"player", u.PlayerId,
+	)
+
 	var targetId actor.Id
 	switch tag := outer.MsgIDTags[msgId]; tag {
 	case actortype.LoginActor:
@@ -91,10 +99,4 @@ func (u *UserSession) OnRecv(data []byte) {
 
 	err = u.gateway.Send(targetId, wrapperMsg)
 
-	log.Infow("user msg -> server",
-		"msgId", msgId,
-		"msgName", msgName,
-		"gSession", gSession,
-		"player", u.PlayerId,
-	)
 }

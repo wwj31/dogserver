@@ -25,10 +25,10 @@ type Game struct {
 
 func (s *Game) OnInit() {
 	s.respIdMap = make(map[actor.Id]string)
-	s.System().OnEvent(s.ID(), func(ev event.EvActorSubMqFin) {
+	s.System().OnEvent(s.ID(), func(ev event.EvNewActor) {
 		if actortype.IsActorOf(ev.ActorId, actortype.PlayerActor) {
 			if respId, ok := s.respIdMap[ev.ActorId]; ok {
-				log.Debugf("evActorSubMqFin %v", respId)
+				log.Debugf("the new player response to the login %v", respId)
 				_ = s.Response(respId, &outer.Ok{})
 				delete(s.respIdMap, ev.ActorId)
 			}

@@ -62,6 +62,16 @@ func (s *Client) OnHandle(m actor.Message) {
 		s.enter()
 	case *outer.EnterGameRsp:
 		log.Infow("EnterGameRsp!", "msg", msg.String())
+		s.cli.Close()
+
+		s.AddTimer(tools.XUID(), tools.Now().Add(1*time.Second), func(dt time.Duration) {
+			s.cli = Dial(addr, &SessionHandler{client: s})
+			s.cli.Startup()
+
+			if s.DeviceID != "" {
+				s.login(s.DeviceID)
+			}
+		})
 	case *outer.RoleInfo:
 		log.Infow("RoleInfoPush!", "msg", msg.String())
 
