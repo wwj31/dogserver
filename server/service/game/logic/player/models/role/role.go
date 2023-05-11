@@ -3,6 +3,7 @@ package role
 import (
 	gogo "github.com/gogo/protobuf/proto"
 	"github.com/wwj31/dogactor/tools"
+
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
 	"server/service/game/logic/player/models"
@@ -28,6 +29,8 @@ func (s *Role) OnLogin(first bool, enterGameRsp *outer.EnterGameRsp) {
 	if first {
 		//first
 		s.data.CreateAt = nowStr
+
+		// 计算shortID
 	}
 
 	s.data.LoginAt = nowStr

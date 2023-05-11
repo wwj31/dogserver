@@ -2,13 +2,16 @@ package login
 
 import (
 	"context"
-	"github.com/golang-jwt/jwt/v4"
-	"server/common/rdskey"
 	"time"
+
+	"github.com/golang-jwt/jwt/v4"
+
+	"server/common/rdskey"
 
 	"github.com/wwj31/dogactor/tools"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+
 	"server/common"
 	"server/common/actortype"
 	"server/common/log"
@@ -123,13 +126,13 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 				// TODO smsCode存redis里，这里需要校验code是否有效
 			}
 
+			dispathGameID := actortype.GameName(1)
 			if result.Err() == mongo.ErrNoDocuments {
 				acc = account.New()
 				acc.UUID = tools.XUID()
 				acc.WeiXinOpenID = req.WeiXinOpenID
 				acc.DeviceID = req.DeviceID
 				acc.Phone = req.Phone
-				acc.SID = actortype.GameName(1)
 				acc.Roles = make(map[string]account.Role)
 				rid := tools.XUID()
 				acc.Roles[rid] = account.Role{RID: rid}
@@ -162,12 +165,12 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 			}
 			rds.Ins.Set(context.Background(), rdskey.SessionKey(acc.LastLoginRID), gSession.String(), 3*24*time.Hour)
 
-			_, err = s.RequestWait(acc.SID, &inner.PullPlayer{
+			_, err = s.RequestWait(dispathGameID, &inner.PullPlayer{
 				RID: acc.LastLoginRID,
 			})
 
 			if err != nil {
-				log.Errorw("send to game failed ", "err", err, "sid", acc.SID)
+				log.Errorw("send to game failed ", "err", err, "game", dispathGameID)
 				return
 			}
 		})

@@ -7,3 +7,6 @@ func LockLoginKey(key string) string {
 func SessionKey(rid string) string {
 	return "session:{" + rid + "}"
 }
+func ShortIDKey() string {
+	return "shortID"
+}
