@@ -28,7 +28,7 @@ func (s *Game) OnInit() {
 	s.System().OnEvent(s.ID(), func(ev event.EvActorSubMqFin) {
 		if actortype.IsActorOf(ev.ActorId, actortype.PlayerActor) {
 			if respId, ok := s.respIdMap[ev.ActorId]; ok {
-				log.Debugf("fuck %v", respId)
+				log.Debugf("evActorSubMqFin %v", respId)
 				_ = s.Response(respId, &outer.Ok{})
 				delete(s.respIdMap, ev.ActorId)
 			}
