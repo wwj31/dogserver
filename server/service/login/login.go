@@ -4,12 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"math/rand"
-	"time"
-
 	"github.com/go-redis/redis/v9"
 	"github.com/wwj31/dogactor/actor"
 	"github.com/wwj31/dogactor/expect"
+	"math/rand"
 
 	"server/common"
 	"server/common/log"
@@ -75,21 +73,10 @@ func (s *Login) randShortID() {
 	for i := int32(140150); i < 999999; i++ {
 		pool = append(pool, i)
 	}
-	s.shortIDs = shuffleCards(pool)
-}
-
-func shuffleCards(cards []int32) []int32 {
-	rand.Seed(time.Now().UnixNano())
-
-	// 创建一个新的切片来保存洗牌后的结果
-	shuffled := make([]int32, len(cards))
-	copy(shuffled, cards)
-
 	// 使用 Fisher-Yates 算法洗牌
-	for i := len(shuffled) - 1; i > 0; i-- {
+	for i := len(pool) - 1; i > 0; i-- {
 		j := rand.Intn(i + 1)
-		shuffled[i], shuffled[j] = shuffled[j], shuffled[i]
+		pool[i], pool[j] = pool[j], pool[i]
 	}
-
-	return shuffled
+	s.shortIDs = pool
 }
