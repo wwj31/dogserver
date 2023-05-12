@@ -105,7 +105,7 @@ func (s *Mail) ReceiveItem(uuid string) {
 		return
 	}
 	if mail.Status == 2 {
-		s.Player.Send2Client(&outer.Fail{Error: outer.ERROR_FAILED})
+		s.Player.Send2Client(&outer.FailRsp{Error: outer.ERROR_FAILED})
 		return
 	}
 

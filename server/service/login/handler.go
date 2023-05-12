@@ -48,7 +48,7 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 
 			defer func() {
 				if acc == nil {
-					gSession.SendToClient(s, &outer.Fail{
+					gSession.SendToClient(s, &outer.FailRsp{
 						Error: outer.ERROR_FAILED,
 						Info:  err.Error(),
 					})

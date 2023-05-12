@@ -2,9 +2,8 @@ syntax = "proto3";
 package inner;
 option  go_package = "/inner";
 
-message Error
-{
-}
+message Error {}
+message Ok {}
 
 message GateMsgWrapper{
     string GateSession = 1;

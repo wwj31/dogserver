@@ -9,7 +9,6 @@ import (
 	"server/common/actortype"
 	"server/common/log"
 	"server/proto/innermsg/inner"
-	"server/proto/outermsg/outer"
 	"server/service/game/logic/player"
 )
 
@@ -29,7 +28,7 @@ func (s *Game) OnInit() {
 		if actortype.IsActorOf(ev.ActorId, actortype.PlayerActor) {
 			if respId, ok := s.respIdMap[ev.ActorId]; ok {
 				log.Debugf("the new player response to the login %v", respId)
-				_ = s.Response(respId, &outer.Ok{})
+				_ = s.Response(respId, &inner.Ok{})
 				delete(s.respIdMap, ev.ActorId)
 			}
 		}
@@ -58,7 +57,7 @@ func (s *Game) OnHandle(msg actor.Message) {
 		log.Debugf("pull player %v fuck :%v", pbMsg.RID, msg.GetRequestId())
 		playerId, loading := s.checkAndPullPlayer(pbMsg.RID, pbMsg.ShortId)
 		if !loading {
-			_ = s.Response(msg.GetRequestId(), &outer.Ok{})
+			_ = s.Response(msg.GetRequestId(), &inner.Ok{})
 		} else {
 			s.respIdMap[playerId] = msg.GetRequestId()
 		}

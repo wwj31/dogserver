@@ -54,7 +54,7 @@ func (s *Client) OnHandle(m actor.Message) {
 	switch msg := m.Payload().(type) {
 	case *outer.HeartRsp:
 		log.Infow("aliving~")
-	case *outer.Fail:
+	case *outer.FailRsp:
 		log.Infow("msg respones fail", "err:", msg.String())
 	// 登录
 	case *outer.LoginRsp:
@@ -65,16 +65,15 @@ func (s *Client) OnHandle(m actor.Message) {
 		s.enter()
 	case *outer.EnterGameRsp:
 		log.Infow("EnterGameRsp!", "msg", msg.String())
-		s.cli.Close()
-
-		s.AddTimer(tools.XUID(), tools.Now().Add(3*time.Second), func(dt time.Duration) {
-			s.cli = Dial(addr, &SessionHandler{client: s})
-			s.cli.Startup()
-
-			if s.DeviceID != "" {
-				s.login()
-			}
-		})
+		//s.cli.Close()
+		//s.AddTimer(tools.XUID(), tools.Now().Add(3*time.Second), func(dt time.Duration) {
+		//	s.cli = Dial(addr, &SessionHandler{client: s})
+		//	s.cli.Startup()
+		//
+		//	if s.DeviceID != "" {
+		//		s.login()
+		//	}
+		//})
 	case *outer.RoleInfo:
 		log.Infow("RoleInfoPush!", "msg", msg.String())
 

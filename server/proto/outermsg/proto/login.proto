@@ -44,9 +44,9 @@ message EnterGameRsp {
 // 角色信息
 message RoleInfo{
     string  RID     = 1;
-    uint64  ShortID = 2;
+    int64   ShortId = 2;
     string  Phone   = 3;
     string  Name    = 4;
     string  Icon    = 5;
-    uint64  Gold    = 6;
+    int64  Gold     = 6;
 }

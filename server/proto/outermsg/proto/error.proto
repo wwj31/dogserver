@@ -6,13 +6,14 @@ enum ERROR {
    SUCCESS                    = 0;  //执行成功
    FAILED                     = 1;  //协议执行失败，原因模糊
    SECURITY_CODE_CHECK_FAILED = 2;  //安全码校验失败
-   GOLD_NOT_ENOUGH            = 4;  //金币不足
+   LOGIN_TOKEN_INVALID        = 3;  //登录token过期
+   REPEAT_LOGIN               = 4;  //被顶号
+   GOLD_NOT_ENOUGH            = 5;  //金币不足
 }
 
-message Unknown{}
-message Ok {}
-message Fail {
+message FailRsp {
    ERROR  Error = 1;
    string info  = 2;
 }
 
+message Unknown{}

@@ -12,7 +12,7 @@ message RoleInfo
     string Phone   = 4;
     string Name    = 5;
     string Icon    = 6;
-    uint64 Gold     = 7;
+    int64 Gold     = 7;
     string CreateAt = 8;
     string LoginAt  = 9;
     string LogoutAt = 10;

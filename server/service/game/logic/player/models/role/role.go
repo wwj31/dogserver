@@ -45,7 +45,7 @@ func (s *Role) OnLogout() {
 func (s *Role) roleInfoPush() *outer.RoleInfo {
 	return &outer.RoleInfo{
 		RID:     s.data.RID,
-		ShortID: uint64(s.data.ShortID),
+		ShortId: s.data.ShortID,
 		Phone:   s.data.Phone,
 		Name:    s.data.Name,
 		Icon:    s.data.Icon,
