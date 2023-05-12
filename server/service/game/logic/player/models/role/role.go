@@ -17,6 +17,7 @@ type Role struct {
 func New(base models.Model) *Role {
 	mod := &Role{Model: base}
 	mod.data.RID = base.Player.RID()
+	mod.data.ShortID = base.Player.ShortId()
 	return mod
 }
 
@@ -44,7 +45,7 @@ func (s *Role) OnLogout() {
 func (s *Role) roleInfoPush() *outer.RoleInfo {
 	return &outer.RoleInfo{
 		RID:     s.data.RID,
-		ShortID: s.data.ShortID,
+		ShortID: uint64(s.data.ShortID),
 		Phone:   s.data.Phone,
 		Name:    s.data.Name,
 		Icon:    s.data.Icon,

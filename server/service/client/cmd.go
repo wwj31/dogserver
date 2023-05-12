@@ -26,12 +26,14 @@ import (
 //	s.RegistryCmd("chat", s.chat, "")
 //}
 
-func (s *Client) login(arg ...string) {
-	if len(arg) != 1 {
-		return
+func (s *Client) login() {
+	loginType := 1
+	if s.Token != "" {
+		loginType = 4
 	}
+
 	logReq := &outer.LoginReq{
-		LoginType: 1,
+		LoginType: int32(loginType),
 		DeviceID:  s.DeviceID,
 		OS:        "test",
 	}

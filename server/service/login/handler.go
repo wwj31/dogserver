@@ -126,13 +126,14 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 				// TODO smsCode存redis里，这里需要校验code是否有效
 			}
 
-			dispathGameID := actortype.GameName(1)
+			dispatchGameID := actortype.GameName(1)
 			if result.Err() == mongo.ErrNoDocuments {
 				acc = account.New()
 				acc.UUID = tools.XUID()
 				acc.WeiXinOpenID = req.WeiXinOpenID
 				acc.DeviceID = req.DeviceID
 				acc.Phone = req.Phone
+				acc.ShorID = int64(s.GetShortID())
 				acc.Roles = make(map[string]account.Role)
 				rid := tools.XUID()
 				acc.Roles[rid] = account.Role{RID: rid}
@@ -152,8 +153,8 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 					log.Errorw("login find account decode failed", "err", err)
 					return
 				}
-
 			}
+
 			val := rds.Ins.Get(context.Background(), rdskey.SessionKey(acc.LastLoginRID)).Val()
 			oldGateSession := common.GSession(val)
 			if oldGateSession.Valid() {
@@ -165,12 +166,13 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 			}
 			rds.Ins.Set(context.Background(), rdskey.SessionKey(acc.LastLoginRID), gSession.String(), 3*24*time.Hour)
 
-			_, err = s.RequestWait(dispathGameID, &inner.PullPlayer{
-				RID: acc.LastLoginRID,
+			_, err = s.RequestWait(dispatchGameID, &inner.PullPlayer{
+				RID:     acc.LastLoginRID,
+				ShortId: acc.ShorID,
 			})
 
 			if err != nil {
-				log.Errorw("send to game failed ", "err", err, "game", dispathGameID)
+				log.Errorw("send to game failed ", "err", err, "game", dispatchGameID)
 				return
 			}
 		})

@@ -32,4 +32,5 @@ message GSessionClosed{
 
 message PullPlayer{
     string RID = 1;
+    int64 ShortId = 2;
 }

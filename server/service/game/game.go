@@ -56,7 +56,7 @@ func (s *Game) OnHandle(msg actor.Message) {
 	switch pbMsg := actMsg.(type) {
 	case *inner.PullPlayer:
 		log.Debugf("pull player %v fuck :%v", pbMsg.RID, msg.GetRequestId())
-		playerId, loading := s.checkAndPullPlayer(pbMsg.RID)
+		playerId, loading := s.checkAndPullPlayer(pbMsg.RID, pbMsg.ShortId)
 		if !loading {
 			_ = s.Response(msg.GetRequestId(), &outer.Ok{})
 		} else {
@@ -67,13 +67,13 @@ func (s *Game) OnHandle(msg actor.Message) {
 	}
 }
 
-func (s *Game) checkAndPullPlayer(rid string) (playerId actortype.ActorId, loading bool) {
+func (s *Game) checkAndPullPlayer(rid string, shortId int64) (playerId actortype.ActorId, loading bool) {
 	// TODO::检查玩家是否在其他game节点中,并且通知目标下线,需要将玩家所在节点数据存入redis中以便查询
 	playerId = actortype.PlayerId(rid)
 	if !s.System().HasActor(playerId) {
 		err := s.System().NewActor(
 			playerId,
-			player.New(rid, s),
+			player.New(rid, shortId, s),
 			actor.SetMailBoxSize(200),
 			//actor.SetLocalized(),
 		)

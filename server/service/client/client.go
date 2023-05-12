@@ -14,7 +14,8 @@ import (
 	"github.com/wwj31/dogactor/tools"
 )
 
-const addr = "ws://1.14.17.15:7001/"
+// const addr = "ws://1.14.17.15:7001/"
+const addr = "ws://localhost:7001/"
 
 type Client struct {
 	actor.Base
@@ -24,6 +25,7 @@ type Client struct {
 	NewPlayer bool
 	mails     []*outer.Mail
 	DeviceID  string
+	Token     string
 }
 
 func (s *Client) OnInit() {
@@ -31,7 +33,7 @@ func (s *Client) OnInit() {
 	s.cli.Startup()
 
 	if s.DeviceID != "" {
-		s.login(s.DeviceID)
+		s.login()
 	}
 
 	// 心跳
@@ -59,17 +61,18 @@ func (s *Client) OnHandle(m actor.Message) {
 		log.Infow("login success!", "msg", msg.String())
 		s.RID = msg.RID
 		s.NewPlayer = msg.NewPlayer
+		s.Token = msg.Token
 		s.enter()
 	case *outer.EnterGameRsp:
 		log.Infow("EnterGameRsp!", "msg", msg.String())
 		s.cli.Close()
 
-		s.AddTimer(tools.XUID(), tools.Now().Add(1*time.Second), func(dt time.Duration) {
+		s.AddTimer(tools.XUID(), tools.Now().Add(3*time.Second), func(dt time.Duration) {
 			s.cli = Dial(addr, &SessionHandler{client: s})
 			s.cli.Startup()
 
 			if s.DeviceID != "" {
-				s.login(s.DeviceID)
+				s.login()
 			}
 		})
 	case *outer.RoleInfo:

@@ -7,7 +7,10 @@ import (
 	"github.com/go-redis/redis/v9"
 	"github.com/wwj31/dogactor/actor"
 	"github.com/wwj31/dogactor/expect"
+	"github.com/wwj31/dogactor/tools"
 	"math/rand"
+	"sync"
+	"time"
 
 	"server/common"
 	"server/common/log"
@@ -18,7 +21,9 @@ import (
 
 type Login struct {
 	actor.Base
-	shortIDs []int32
+	shortIDs      []int32
+	lastSaveCount int
+	lock          sync.Mutex
 }
 
 func New() *Login {
@@ -31,16 +36,37 @@ func (s *Login) OnInit() {
 	result := rds.Ins.Get(context.Background(), rdskey.ShortIDKey())
 	if result.Err() == redis.Nil {
 		s.randShortID()
-		b, _ := json.Marshal(s.shortIDs)
-		rds.Ins.Set(context.Background(), rdskey.ShortIDKey(), string(b), 0)
+		s.saveShortID()
 	} else {
 		var shortID []int32
 		_ = json.Unmarshal([]byte(result.Val()), &shortID)
 		s.shortIDs = shortID
+		s.lastSaveCount = len(s.shortIDs)
 	}
+
+	// 定期检查，数量发送变化就存
+	s.AddTimer(tools.XUID(), time.Now().Add(time.Minute), func(dt time.Duration) {
+		if s.lastSaveCount != len(s.shortIDs) {
+			s.saveShortID()
+		}
+	})
+}
+
+func (s *Login) saveShortID() {
+	b, _ := json.Marshal(s.shortIDs)
+	rds.Ins.Set(context.Background(), rdskey.ShortIDKey(), string(b), 0)
+	s.lastSaveCount = len(s.shortIDs)
+}
+func (s *Login) GetShortID() int32 {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+	id := s.shortIDs[len(s.shortIDs)-1]
+	s.shortIDs = s.shortIDs[:len(s.shortIDs)-1]
+	return id
 }
 
 func (s *Login) OnStop() bool {
+	s.saveShortID()
 	log.Debugw("login stop", "id", s.ID())
 	return true
 }

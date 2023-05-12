@@ -66,6 +66,7 @@ func startup() {
 	// init redis
 	if err := rds.NewBuilder().
 		Addr(toml.GetArray("redis_addr", "localhost:6379")...).
+		Password(toml.Get("redis_password", "")).
 		//ClusterMode().
 		Connect(); err != nil {
 		log.Errorw("redis connect failed", "err", err)

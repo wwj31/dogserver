@@ -7,7 +7,7 @@ type Account struct {
 	WeiXinOpenID  string `bson:"wei_xin_open_id"`
 	DeviceID      string `bson:"device_id"`
 	Phone         string `bson:"phone"`
-	ShorID        int32  `bson:"shor_id"`
+	ShorID        int64  `bson:"shor_id"`
 	OS            string
 	ClientVersion string
 	LastLoginRID  string

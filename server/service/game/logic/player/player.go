@@ -23,10 +23,11 @@ import (
 	"server/service/game/iface"
 )
 
-func New(roleId string, gamer iface.Gamer) *Player {
+func New(roleId string, shortId int64, gamer iface.Gamer) *Player {
 	p := &Player{
-		roleId: roleId,
-		gamer:  gamer,
+		roleId:  roleId,
+		shortId: shortId,
+		gamer:   gamer,
 	}
 	return p
 }
@@ -40,6 +41,7 @@ type (
 		observer *common.Observer
 
 		roleId      string
+		shortId     int64
 		saveTimerId string
 		exitTimerId string
 		keepAlive   time.Time
@@ -98,6 +100,9 @@ func (s *Player) OnHandle(msg actor.Message) {
 
 func (s *Player) RID() string {
 	return s.roleId
+}
+func (s *Player) ShortId() int64 {
+	return s.shortId
 }
 
 func (s *Player) Observer() *common.Observer {
