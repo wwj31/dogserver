@@ -47,11 +47,11 @@ func (s *Mail) Data() gogo.Message {
 func (s *Mail) OnLogin(first bool, enterGameRsp *outer.EnterGameRsp) {
 	if first {
 		s.data.Mails = make(map[string]*inner.Mail, 4)
-		s.NewBuilder().
-			SetMailTitle("welcome to dog game!").
-			SetContent("best wish for you !").
-			SetItems(map[int64]int64{10001: 1, 10002: 10}).
-			Build()
+		//s.NewBuilder().
+		//	SetMailTitle("welcome to dog game!").
+		//	SetContent("best wish for you !").
+		//	SetItems(map[int64]int64{10001: 1, 10002: 10}).
+		//	Build()
 	}
 }
 
