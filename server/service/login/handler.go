@@ -93,7 +93,6 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 					Token:     signedToken,
 					Checksum:  md5,
 				})
-				log.Debugw("player login success", "RID", acc.LastLoginRID, "UID", acc.UUID)
 			}()
 
 			var result *mongo.SingleResult
@@ -170,6 +169,9 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 				RID:     acc.LastLoginRID,
 				ShortId: acc.ShorID,
 			})
+
+			log.Infow("login success dispatch the player to game",
+				"rid", acc.LastLoginRID, "shortid", acc.ShorID, "to game", dispatchGameID)
 
 			if err != nil {
 				log.Errorw("send to game failed ", "err", err, "game", dispatchGameID)

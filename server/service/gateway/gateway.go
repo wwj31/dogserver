@@ -29,6 +29,7 @@ func New() *GateWay {
 }
 
 func (g *GateWay) OnInit() {
+	log.Infow("gateway OnInit")
 	g.sessions = make(map[uint64]*UserSession)
 
 	addr := toml.Get("gate_addr")
@@ -90,6 +91,6 @@ func (g *GateWay) OnHandle(m actor.Message) {
 			if err := g.Response(m.GetRequestId(), resp); err != nil {
 				log.Errorw("respone failed", "err", err)
 			}
-		} //wait_cebjpknm1tui4lpi2eh0@1670855890094264048@gateway_1_Actor#:8888
+		}
 	}
 }

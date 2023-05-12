@@ -89,7 +89,6 @@ func (s *Login) OnHandle(m actor.Message) {
 }
 
 func (s *Login) LoginReq(sourceId string, gSession common.GSession, msg *outer.LoginReq) error {
-	log.Debugf(msg.String())
 	s.Login(gSession, msg)
 	return nil
 }
