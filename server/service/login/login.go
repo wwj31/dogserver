@@ -95,7 +95,7 @@ func (s *Login) LoginReq(sourceId string, gSession common.GSession, msg *outer.L
 
 func (s *Login) randShortID() {
 	var pool []int32
-	for i := int32(140150); i < 999999; i++ {
+	for i := int32(14015000); i < 99999999; i++ {
 		pool = append(pool, i)
 	}
 	// 使用 Fisher-Yates 算法洗牌
