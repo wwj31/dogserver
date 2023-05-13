@@ -8,5 +8,5 @@ func SessionKey(rid string) string {
 	return "session:" + rid
 }
 func ShortIDKey() string {
-	return "shortID"
+	return "shortId"
 }

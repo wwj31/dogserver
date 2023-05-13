@@ -1,0 +1,9 @@
+syntax = "proto3";
+package outer;
+option  go_package = "/outer";
+
+
+message Base {
+    int32 MsgId = 1;
+    bytes Data  = 2;
+}

@@ -2,6 +2,9 @@ package login
 
 import (
 	"context"
+	"fmt"
+	"github.com/go-redis/redis/v9"
+	"github.com/spf13/cast"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -127,12 +130,33 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 
 			dispatchGameID := actortype.GameName(1)
 			if result.Err() == mongo.ErrNoDocuments {
+				var shortIdVal interface{}
+				shortIdVal, err = rds.Ins.EvalSha(context.Background(), s.sha1, []string{rdskey.ShortIDKey()}).Result()
+				if err == redis.Nil {
+					err = fmt.Errorf("short id pool was empty")
+					log.Errorw(err.Error())
+					return
+				}
+
+				if err != nil {
+					err = fmt.Errorf("shor id get failed :%v", err)
+					log.Errorw(err.Error())
+					return
+				}
+
+				arr, ok := shortIdVal.([]interface{})
+				if !ok || len(arr) != 1 {
+					err = fmt.Errorf("shortIdVal  failed:%v len:%v", shortIdVal, len(arr))
+					log.Errorw(err.Error())
+					return
+				}
+
 				acc = account.New()
 				acc.UUID = tools.XUID()
 				acc.WeiXinOpenID = req.WeiXinOpenID
 				acc.DeviceID = req.DeviceID
 				acc.Phone = req.Phone
-				acc.ShorID = int64(s.GetShortID())
+				acc.ShorID = cast.ToInt64(arr[0])
 				acc.Roles = make(map[string]account.Role)
 				rid := tools.XUID()
 				acc.Roles[rid] = account.Role{RID: rid}

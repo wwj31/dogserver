@@ -1,6 +1,8 @@
 package gateway
 
 import (
+	"github.com/gogo/protobuf/proto"
+	"server/proto/outermsg/outer"
 	"time"
 
 	"server/common"
@@ -74,15 +76,26 @@ func (g *GateWay) OnHandle(m actor.Message) {
 			log.Errorw("session disabled gate is not own", logInfo...)
 			return
 		}
-		userSessionHandler := g.sessions[sessionId]
-		if userSessionHandler == nil {
+		userSession := g.sessions[sessionId]
+		if userSession == nil {
 			log.Warnw("cannot find sessionId", logInfo...)
 			return
 		}
 
 		log.Infow("server msg -> user", logInfo...)
 		msgId, _ := g.System().ProtoIndex().MsgNameToId(msg.GetMsgName())
-		_ = userSessionHandler.SendMsg(network.CombineMsgWithId(msgId, msg.Data))
+		data, err := proto.Marshal(&outer.Base{
+			MsgId: msgId,
+			Data:  msg.Data,
+		})
+
+		if err != nil {
+			log.Errorw("marshal base failed ",
+				"err", err, "player", userSession.PlayerId)
+			return
+		}
+
+		_ = userSession.SendMsg(data)
 
 	default:
 		resp := g.InnerHandler(m) // 内部消息，单独处理

@@ -27,7 +27,7 @@ func (s *Game) OnInit() {
 	s.System().OnEvent(s.ID(), func(ev event.EvNewActor) {
 		if actortype.IsActorOf(ev.ActorId, actortype.PlayerActor) {
 			if respId, ok := s.respIdMap[ev.ActorId]; ok {
-				log.Debugf("the new player response to the login %v", respId)
+				log.Debugf("the player actor startup %v", respId)
 				_ = s.Response(respId, &inner.Ok{})
 				delete(s.respIdMap, ev.ActorId)
 			}

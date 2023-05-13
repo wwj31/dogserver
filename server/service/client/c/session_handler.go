@@ -1,9 +1,11 @@
 package c
 
 import (
+	"github.com/golang/protobuf/proto"
 	"github.com/wwj31/dogactor/expect"
 	"github.com/wwj31/dogactor/network"
 	"server/common/log"
+	"server/proto/outermsg/outer"
 )
 
 type SessionHandler struct {
@@ -19,9 +21,15 @@ func (s SessionHandler) OnSessionClosed() {
 }
 
 func (s SessionHandler) OnRecv(bytes []byte) {
-	msgType := int32(network.Byte4ToUint32(bytes[:4]))
-	pb := s.client.System().ProtoIndex().UnmarshalPbMsg(msgType, bytes[4:])
+	var (
+		base = outer.Base{}
+		err  error
+	)
 
-	err := s.client.Send(s.client.ID(), pb)
+	err = proto.Unmarshal(bytes, &base)
+	expect.Nil(err)
+
+	pb := s.client.System().ProtoIndex().UnmarshalPbMsg(base.MsgId, base.Data)
+	err = s.client.Send(s.client.ID(), pb)
 	expect.Nil(err)
 }

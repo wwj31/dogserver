@@ -10,11 +10,12 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
 	"github.com/wwj31/dogactor/expect"
-	"github.com/wwj31/dogactor/network"
 	"github.com/wwj31/dogactor/tools"
 )
 
 var addr = "ws://1.14.17.15:7001/"
+
+//var addr = ""
 
 type Client struct {
 	actor.Base
@@ -49,7 +50,10 @@ func (s *Client) SendToServer(msgId int32, pb proto.Message) {
 	bytes, err := proto.Marshal(pb)
 	expect.Nil(err)
 
-	data := network.CombineMsgWithId(msgId, bytes)
+	data, _ := proto.Marshal(&outer.Base{
+		MsgId: msgId,
+		Data:  bytes,
+	})
 	s.cli.SendMsg(data)
 }
 

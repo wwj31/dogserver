@@ -37,7 +37,7 @@ func main() {
 
 	_ = system.NewActor("client", &c.Client{
 		Addr:     *addr,
-		DeviceID: "Client",
+		DeviceID: "Client5",
 	}, actor.SetLocalized())
 
 	// safe quit

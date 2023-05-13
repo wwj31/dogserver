@@ -1,6 +1,7 @@
 package gateway
 
 import (
+	"github.com/golang/protobuf/proto"
 	"time"
 
 	"github.com/wwj31/dogactor/actor"
@@ -45,55 +46,59 @@ func (u *UserSession) OnSessionClosed() {
 }
 
 func (u *UserSession) OnRecv(data []byte) {
-	if len(data) < 4 {
-		log.Warnw("invalid data len", "len(data)", len(data), "session", u.Id())
+	var (
+		base = &outer.Base{}
+		err  error
+	)
+	err = proto.Unmarshal(data, base)
+	if err != nil {
+		log.Warnw("base unmarshal failed", "session", u.Id(), "player", u.PlayerId)
+		return
 	}
-
-	msgId := int32(network.Byte4ToUint32(data[:4]))
-
-	var err error
-	defer func() {
-		if err != nil {
-			log.Errorw("OnRecv error", "err", err, "msgId", msgId)
-		}
-	}()
 
 	protoIndex := u.gateway.System().ProtoIndex()
 	// 心跳
-	if msgId == outer.Msg_IdHeartReq.Int32() {
-		ping := network.NewBytesMessageParse(data, protoIndex).Proto().(*outer.HeartReq)
-		pong := network.NewPbMessage(&outer.HeartRsp{
-			ClientTimestamp: ping.ClientTimestamp,
+	if base.MsgId == outer.Msg_IdHeartReq.Int32() {
+		heartReq := &outer.HeartReq{}
+		_ = proto.Unmarshal(base.Data, heartReq)
+		heartRsp, _ := proto.Marshal(&outer.HeartRsp{
+			ClientTimestamp: heartReq.ClientTimestamp,
 			ServerTimestamp: tools.Now().UnixMilli(),
-		}, outer.Msg_IdHeartRsp.Int32())
-		err = u.SendMsg(pong.Buffer())
+		})
+		pong, _ := proto.Marshal(&outer.Base{
+			MsgId: outer.Msg_IdHeartRsp.Int32(),
+			Data:  heartRsp,
+		})
+		err = u.SendMsg(pong)
 		u.KeepLive = time.Now()
 		return
 	}
 
-	msgName, ok := protoIndex.MsgIdToName(msgId)
+	msgName, ok := protoIndex.MsgIdToName(base.MsgId)
 	if !ok {
-		log.Errorw("proto not find struct", "msgId", msgId)
+		log.Errorw("proto not find struct", "msgId", base.MsgId)
 		return
 	}
+
 	gSession := common.GateSession(u.gateway.ID(), u.Id())
 	wrapperMsg := common.NewGateWrapperByBytes(data[4:], msgName, gSession)
 
 	log.Infow("user msg -> server",
-		"msgId", msgId,
+		"msgId", base.MsgId,
 		"msgName", msgName,
 		"gSession", gSession,
 		"player", u.PlayerId,
 	)
 
 	var targetId actor.Id
-	switch tag := outer.MsgIDTags[msgId]; tag {
+	switch tag := outer.MsgIDTags[base.MsgId]; tag {
 	case actortype.LoginActor:
 		targetId = actortype.LoginActor
 	case actortype.PlayerActor:
 		targetId = u.PlayerId
 	default:
-		log.Errorw("cannot find the message tag; the message has no target for dispatch", "msgId", msgId, "tag", tag)
+		log.Errorw(" the message has no target for dispatch",
+			"msgId", base.MsgId, "tag", tag)
 		return
 	}
 
