@@ -54,7 +54,7 @@ func (b *Builder) Connect() (err error) {
 		defer cancel()
 		ping := client.Ping(ctx)
 		if ping.Err() != nil {
-			err = fmt.Errorf("redis connect ping err:%v", ping.Err())
+			err = fmt.Errorf("redis connect ping err:%v opt:%+v", ping.Err(), *b.options())
 		}
 
 		Ins = client
