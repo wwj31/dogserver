@@ -16,9 +16,6 @@ const (
 	PlayerActor  = "player"
 	GatewayActor = "gateway"
 	ChatActor    = "chat"
-
-	Client = "client"
-	Robot  = "robot"
 )
 
 func GameName(id int32) ActorId {

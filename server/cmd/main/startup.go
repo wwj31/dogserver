@@ -26,11 +26,9 @@ import (
 	_ "server/controller"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
-	"server/service/client"
 	"server/service/game"
 	"server/service/gateway"
 	"server/service/login"
-	"server/service/robot"
 )
 
 func startup() {
@@ -100,10 +98,6 @@ func run(appType string, appId int32) *actor.System {
 	)
 
 	switch appType {
-	case actortype.Client:
-		_ = system.NewActor(actortype.Client, &client.Client{DeviceID: "Client"}, actor.SetLocalized())
-	case actortype.Robot:
-		_ = system.NewActor(actortype.Robot, &robot.Robot{}, actor.SetLocalized())
 	case actortype.GatewayActor:
 		newGateway(appId, system)
 	case actortype.LoginActor:
