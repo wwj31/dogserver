@@ -2,6 +2,7 @@ package gateway
 
 import (
 	"github.com/golang/protobuf/proto"
+	"github.com/wwj31/dogactor/expect"
 	"time"
 
 	"github.com/wwj31/dogactor/actor"
@@ -29,10 +30,12 @@ func (u *UserSession) OnSessionCreated(s network.Session) {
 
 	_ = u.gateway.Send(u.gateway.ID(), func() {
 		u.gateway.sessions[u.Id()] = u
+		log.Infow("session opened ", "sessionId", u.Id())
 	})
 }
 
 func (u *UserSession) OnSessionClosed() {
+	log.Infow("session closed ", "sessionId", u.Id(), "player", u.PlayerId)
 	if u.PlayerId != "" {
 		gSession := common.GateSession(actortype.GatewayActor, u.Id())
 		_ = u.gateway.Send(u.PlayerId, &inner.GSessionClosed{
@@ -61,16 +64,21 @@ func (u *UserSession) OnRecv(data []byte) {
 	if base.MsgId == outer.Msg_IdHeartReq.Int32() {
 		heartReq := &outer.HeartReq{}
 		_ = proto.Unmarshal(base.Data, heartReq)
-		heartRsp, _ := proto.Marshal(&outer.HeartRsp{
+		rsp := &outer.HeartRsp{
 			ClientTimestamp: heartReq.ClientTimestamp,
 			ServerTimestamp: tools.Now().UnixMilli(),
-		})
-		pong, _ := proto.Marshal(&outer.Base{
+		}
+
+		heartRsp, _ := proto.Marshal(rsp)
+		pong, bErr := proto.Marshal(&outer.Base{
 			MsgId: outer.Msg_IdHeartRsp.Int32(),
 			Data:  heartRsp,
 		})
+		expect.Nil(bErr)
+
 		err = u.SendMsg(pong)
 		u.KeepLive = time.Now()
+		log.Infow("heart ", "req", heartReq.String(), "rsp", rsp.String())
 		return
 	}
 
@@ -81,7 +89,7 @@ func (u *UserSession) OnRecv(data []byte) {
 	}
 
 	gSession := common.GateSession(u.gateway.ID(), u.Id())
-	wrapperMsg := common.NewGateWrapperByBytes(data[4:], msgName, gSession)
+	wrapperMsg := common.NewGateWrapperByBytes(base.Data, msgName, gSession)
 
 	log.Infow("user msg -> server",
 		"msgId", base.MsgId,

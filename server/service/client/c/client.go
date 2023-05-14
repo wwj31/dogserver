@@ -13,9 +13,9 @@ import (
 	"github.com/wwj31/dogactor/tools"
 )
 
-var addr = "ws://1.14.17.15:7001/"
+//var addr = "ws://1.14.17.15:7001/"
 
-//var addr = ""
+var addr = ""
 
 type Client struct {
 	actor.Base
@@ -72,15 +72,15 @@ func (s *Client) OnHandle(m actor.Message) {
 		s.enter()
 	case *outer.EnterGameRsp:
 		log.Infow("EnterGameRsp!", "msg", msg.String())
-		//s.cli.Close()
-		//s.AddTimer(tools.XUID(), tools.Now().Add(3*time.Second), func(dt time.Duration) {
-		//	s.cli = Dial(addr, &SessionHandler{client: s})
-		//	s.cli.Startup()
-		//
-		//	if s.DeviceID != "" {
-		//		s.login()
-		//	}
-		//})
+		s.cli.Close()
+		s.AddTimer(tools.XUID(), tools.Now().Add(3*time.Second), func(dt time.Duration) {
+			s.cli = Dial(s.Addr, &SessionHandler{client: s})
+			s.cli.Startup()
+
+			if s.DeviceID != "" {
+				s.login()
+			}
+		})
 	case *outer.RoleInfo:
 		log.Infow("RoleInfoPush!", "msg", msg.String())
 

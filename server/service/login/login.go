@@ -11,8 +11,6 @@ import (
 	"server/proto/outermsg/outer"
 )
 
-// 从redis的集合中，随机获取并删除一个值
-
 const GetAndPopRandInt = `
 local result = redis.call('SRANDMEMBER', KEYS[1], 1)  -- 从集合中随机取一个值
 if result then

@@ -29,11 +29,12 @@ import (
 func (s *Client) login() {
 	loginType := 1
 	if s.Token != "" {
-		loginType = 4
+		loginType = 3
 	}
 
 	logReq := &outer.LoginReq{
 		LoginType: int32(loginType),
+		Token:     s.Token,
 		DeviceID:  s.DeviceID,
 		OS:        "test",
 	}

@@ -25,8 +25,6 @@ import (
 	"server/service/login/account"
 )
 
-var secretKey = []byte("fuck you!!!!")
-
 type Claims struct {
 	jwt.RegisteredClaims
 	UID string
@@ -39,6 +37,11 @@ const (
 	TokenLogin  = 3
 	WeiXinLogin = 4
 )
+
+// 登录规则
+// 1.游客登录使用DeviceID，游客账号可以绑定未使用过的微信和电话
+// 2.微信登录创建的角色，不能在绑定DeviceID，可以绑定为使用过的电话
+// 3.电话登录创建的角色，不能在绑定DeviceID，可以绑定为使用过的微信
 
 func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 	go tools.Try(func() {
@@ -56,75 +59,46 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 						Info:  err.Error(),
 					})
 				}
-
-				gateId, _ := gSession.Split()
-				_, err = s.RequestWait(gateId, &inner.BindSessionWithRID{
-					GateSession: gSession.String(),
-					RID:         acc.LastLoginRID,
-				})
-				if err != nil {
-					log.Errorw("bind session with rid failed",
-						"gsession", gSession.String(),
-						"RID", acc.LastLoginRID,
-						"err", err)
-					return
-				}
-
-				// 创建 JWT 声明
-				claims := &Claims{
-					RegisteredClaims: jwt.RegisteredClaims{
-						ExpiresAt: jwt.NewNumericDate(time.Now().Add(2 * 24 * time.Hour)),
-					},
-					UID: acc.UUID,
-					RID: acc.LastLoginRID,
-				}
-
-				token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-				signedToken, err := token.SignedString(secretKey)
-				if err != nil {
-					log.Errorw("jwt signedString failed",
-						"gsession", gSession.String(),
-						"RID", acc.LastLoginRID,
-						"err", err)
-					return
-				}
-
-				md5 := common.EnterGameToken(acc.LastLoginRID, newPlayer)
-				gSession.SendToClient(s, &outer.LoginRsp{
-					RID:       acc.LastLoginRID,
-					NewPlayer: newPlayer,
-					Token:     signedToken,
-					Checksum:  md5,
-				})
+				s.responseLoginToClient(acc, newPlayer, gSession)
 			}()
 
 			var result *mongo.SingleResult
+			acc = account.New()
 			switch req.LoginType {
 			case GuestLogin:
 				result = mongodb.Ins.Collection(account.Collection).FindOne(context.Background(), bson.M{"device_id": req.DeviceID})
+				if result.Err() == mongo.ErrNoDocuments {
+					acc.DeviceID = req.DeviceID
+				}
 			case TokenLogin:
 				// 解析并验证 JWT
-				parsedToken, err := jwt.ParseWithClaims(req.Token, &Claims{}, func(token *jwt.Token) (interface{}, error) {
-					return secretKey, nil
-				})
+				var claims *Claims
+				claims, err = common.JWTParseToken(req.Token, &Claims{})
 				if err != nil {
 					log.Errorw("token login failed ", "err", err, "req", req.String())
 					return
 				}
-				claims, ok := parsedToken.Claims.(*Claims)
-				if !ok {
-					log.Warnw("asset token failed ", "parsedToken", parsedToken, "req", req.String())
-					return
-				}
-				if !parsedToken.Valid {
-					log.Warnw("invalid token ", "expire_at", claims.ExpiresAt.Time, "req", req.String())
-					return
-				}
+
 				result = mongodb.Ins.Collection(account.Collection).FindOne(context.Background(), bson.M{"_id": claims.UID})
 			case WeiXinLogin:
+				if req.WeiXinOpenID == "" {
+					err = fmt.Errorf("weixin login failed, openID is nil")
+					return
+				}
 				result = mongodb.Ins.Collection(account.Collection).FindOne(context.Background(), bson.M{"wei_xin_open_id": req.WeiXinOpenID})
+				if result.Err() == mongo.ErrNoDocuments {
+					acc.WeiXinOpenID = req.WeiXinOpenID
+				}
 			case PhoneLogin:
+				if _, err = cast.ToInt64E(req.Phone); err != nil {
+					err = fmt.Errorf("phone login failed, invalid phone :%v", err)
+					return
+				}
+
 				result = mongodb.Ins.Collection(account.Collection).FindOne(context.Background(), bson.M{"phone": req.Phone})
+				if result.Err() == mongo.ErrNoDocuments {
+					acc.Phone = req.Phone
+				}
 				// TODO smsCode存redis里，这里需要校验code是否有效
 			}
 
@@ -151,11 +125,7 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 					return
 				}
 
-				acc = account.New()
 				acc.UUID = tools.XUID()
-				acc.WeiXinOpenID = req.WeiXinOpenID
-				acc.DeviceID = req.DeviceID
-				acc.Phone = req.Phone
 				acc.ShorID = cast.ToInt64(arr[0])
 				acc.Roles = make(map[string]account.Role)
 				rid := tools.XUID()
@@ -171,7 +141,6 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 					return
 				}
 
-				acc = &account.Account{}
 				if err = result.Decode(acc); err != nil {
 					log.Errorw("login find account decode failed", "err", err)
 					return
@@ -195,12 +164,51 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 			})
 
 			log.Infow("login success dispatch the player to game",
-				"rid", acc.LastLoginRID, "shortid", acc.ShorID, "to game", dispatchGameID)
+				"rid", acc.LastLoginRID, "shortid", acc.ShorID, "req", req.String(), "to game", dispatchGameID)
 
 			if err != nil {
 				log.Errorw("send to game failed ", "err", err, "game", dispatchGameID)
 				return
 			}
 		})
+	})
+}
+
+func (s *Login) responseLoginToClient(acc *account.Account, newPlayer bool, gSession common.GSession) {
+	gateId, _ := gSession.Split()
+	_, err := s.RequestWait(gateId, &inner.BindSessionWithRID{
+		GateSession: gSession.String(),
+		RID:         acc.LastLoginRID,
+	})
+	if err != nil {
+		log.Errorw("bind session with rid failed",
+			"gsession", gSession.String(),
+			"RID", acc.LastLoginRID,
+			"err", err)
+		return
+	}
+
+	// 创建 JWT 声明
+	claims := &Claims{
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(7 * 24 * time.Hour)),
+		},
+		UID: acc.UUID,
+		RID: acc.LastLoginRID,
+	}
+
+	signedToken, signErr := common.JWTSignedToken(claims)
+	if signErr != nil {
+		log.Errorw("jwt signed token failed",
+			"RID", acc.LastLoginRID,
+			"err", err)
+	}
+
+	md5 := common.EnterGameToken(acc.LastLoginRID, newPlayer)
+	gSession.SendToClient(s, &outer.LoginRsp{
+		RID:       acc.LastLoginRID,
+		NewPlayer: newPlayer,
+		Token:     signedToken,
+		Checksum:  md5,
 	})
 }
