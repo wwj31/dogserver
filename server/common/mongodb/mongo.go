@@ -2,8 +2,10 @@ package mongodb
 
 import (
 	"context"
+	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"reflect"
 	"server/common/log"
 	"sync"
 )
@@ -60,4 +62,42 @@ func (m *mongoDB) Collection(name string) *mongo.Collection {
 	}
 
 	return coll
+}
+
+func (m *mongoDB) CreateIndex(name string, tagStruct interface{}) error {
+	coll := m.Collection(name)
+	var models []mongo.IndexModel
+
+	t := reflect.TypeOf(tagStruct)
+	if t.Kind() == reflect.Ptr {
+		t = t.Elem()
+	}
+	if t.Kind() != reflect.Struct {
+		return fmt.Errorf("tagStruct is not a struct kind:%v", t.Kind())
+	}
+
+	numFields := t.NumField()
+
+	for i := 0; i < numFields; i++ {
+		field := t.Field(i)
+		tag := field.Tag.Get("index")
+
+		if tag == "true" {
+			bsonName := field.Tag.Get("bson")
+			if bsonName == "" {
+				bsonName = field.Name
+			}
+
+			keys := bson.D{{Key: bsonName, Value: 1}}
+			indexModel := mongo.IndexModel{Keys: keys}
+			models = append(models, indexModel)
+		}
+	}
+
+	_, err := coll.Indexes().CreateMany(context.Background(), models)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

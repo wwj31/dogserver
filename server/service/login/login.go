@@ -9,6 +9,7 @@ import (
 	"server/common/log"
 	"server/common/rds"
 	"server/proto/outermsg/outer"
+	"server/service/login/account"
 )
 
 const GetAndPopRandInt = `
@@ -30,6 +31,7 @@ func New() *Login {
 
 func (s *Login) OnInit() {
 	log.Infow("login OnInit")
+	account.CreateIndex()
 	s.sha1 = rds.Ins.ScriptLoad(context.Background(), GetAndPopRandInt).Val()
 }
 

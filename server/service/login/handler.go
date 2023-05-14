@@ -182,7 +182,7 @@ func (s *Login) responseLoginToClient(acc *account.Account, newPlayer bool, gSes
 	})
 	if err != nil {
 		log.Errorw("bind session with rid failed",
-			"gsession", gSession.String(),
+			"gSession", gSession.String(),
 			"RID", acc.LastLoginRID,
 			"err", err)
 		return
