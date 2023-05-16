@@ -9,6 +9,7 @@ enum ERROR {
    LOGIN_TOKEN_INVALID        = 3;  //登录token过期
    REPEAT_LOGIN               = 4;  //被顶号
    GOLD_NOT_ENOUGH            = 5;  //金币不足
+   INVALID_PHONE              = 6;  //无效的电话
 }
 
 message FailRsp {
