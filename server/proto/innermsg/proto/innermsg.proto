@@ -2,6 +2,8 @@ syntax = "proto3";
 package inner;
 option  go_package = "/inner";
 
+import "account.proto";
+
 message Error {}
 message Ok {}
 
@@ -30,6 +32,6 @@ message GSessionClosed{
 }
 
 message PullPlayer{
-    string RID = 1;
-    int64 ShortId = 2;
+    Account Account        = 1;
+    LoginRoleInfo RoleInfo = 2;
 }

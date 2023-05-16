@@ -1,8 +1,11 @@
 package account
 
 import (
+	"time"
+
 	"server/common/log"
 	"server/common/mongodb"
+	"server/proto/innermsg/inner"
 )
 
 const Collection = "account"
@@ -12,7 +15,6 @@ type Account struct {
 	WeiXinOpenID  string `bson:"wei_xin_open_id" index:"true"`
 	DeviceID      string `bson:"device_id" index:"true"`
 	Phone         string `bson:"phone" index:"true"`
-	ShorID        int64  `bson:"shor_id" index:"true"`
 	LastLoginRID  string `bson:"last_login_rid" index:"true"`
 	OS            string
 	ClientVersion string
@@ -25,10 +27,20 @@ func CreateIndex() {
 		log.Errorf("create mongo index failed", "coll", Collection, "err", err)
 	}
 }
+func (a *Account) ToPb() *inner.Account {
+	return &inner.Account{
+		UID:           a.UUID,
+		DeviceID:      a.DeviceID,
+		Phone:         a.Phone,
+		OS:            a.OS,
+		ClientVersion: a.ClientVersion,
+	}
+}
 
 type Role struct {
 	RID      string
-	CreateAt string
+	ShorID   int64
+	CreateAt time.Time
 }
 
 func New() *Account {

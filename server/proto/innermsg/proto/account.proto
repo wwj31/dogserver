@@ -1,0 +1,17 @@
+syntax = "proto3";
+package inner;
+option  go_package = "/inner";
+
+message Account
+{
+    string UID           =  1;
+    string DeviceID      =  2;
+    string Phone         =  3;
+    string OS            =  4;
+    string ClientVersion =  5;
+}
+
+message LoginRoleInfo {
+    string RID     =  1;
+    int64  ShortID =  2;
+}

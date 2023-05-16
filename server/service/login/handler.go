@@ -3,9 +3,10 @@ package login
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/go-redis/redis/v9"
 	"github.com/spf13/cast"
-	"time"
 
 	"github.com/golang-jwt/jwt/v4"
 
@@ -47,9 +48,10 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 	go tools.Try(func() {
 		rds.LockDo(rdskey.LockLoginKey(req.DeviceID), func() {
 			var (
-				acc       *account.Account
-				newPlayer bool
-				err       error
+				acc        *account.Account
+				newPlayer  bool
+				newShortID int64
+				err        error
 			)
 
 			defer func() {
@@ -126,10 +128,10 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 				}
 
 				acc.UUID = tools.XUID()
-				acc.ShorID = cast.ToInt64(arr[0])
 				acc.Roles = make(map[string]account.Role)
 				rid := tools.XUID()
-				acc.Roles[rid] = account.Role{RID: rid}
+				newShortID = cast.ToInt64(arr[0])
+				acc.Roles[rid] = account.Role{RID: rid, ShorID: newShortID, CreateAt: time.Now()}
 				acc.LastLoginRID = rid
 				if _, err = mongodb.Ins.Collection(account.Collection).InsertOne(context.Background(), acc); err != nil {
 					log.Errorw("login insert new account failed ", "UUID", acc.UUID, "err", err)
@@ -147,6 +149,7 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 				}
 			}
 
+			// 获得最后一次登录的gSession,踢掉旧链接
 			val := rds.Ins.Get(context.Background(), rdskey.SessionKey(acc.LastLoginRID)).Val()
 			oldGateSession := common.GSession(val)
 			if oldGateSession.Valid() {
@@ -159,12 +162,15 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 			rds.Ins.Set(context.Background(), rdskey.SessionKey(acc.LastLoginRID), gSession.String(), 3*24*time.Hour)
 
 			_, err = s.RequestWait(dispatchGameID, &inner.PullPlayer{
-				RID:     acc.LastLoginRID,
-				ShortId: acc.ShorID,
+				Account: acc.ToPb(),
+				RoleInfo: &inner.LoginRoleInfo{
+					RID:     acc.LastLoginRID,
+					ShortID: acc.Roles[acc.LastLoginRID].ShorID,
+				},
 			})
 
 			log.Infow("login success dispatch the player to game",
-				"rid", acc.LastLoginRID, "shortid", acc.ShorID, "req", req.String(), "to game", dispatchGameID)
+				"new", newPlayer, "role", acc.Roles[acc.LastLoginRID], "req", req.String(), "to game", dispatchGameID)
 
 			if err != nil {
 				log.Errorw("send to game failed ", "err", err, "game", dispatchGameID)

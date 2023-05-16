@@ -3,8 +3,10 @@ package login
 import (
 	"context"
 	"fmt"
+
 	"github.com/wwj31/dogactor/actor"
 	"github.com/wwj31/dogactor/expect"
+
 	"server/common"
 	"server/common/log"
 	"server/common/rds"
@@ -48,6 +50,8 @@ func (s *Login) OnHandle(m actor.Message) {
 	switch msg := v.(type) {
 	case *outer.LoginReq:
 		err = s.LoginReq(m.GetSourceId(), gSession, msg)
+	case *outer.SendSMS:
+		// TODO 像sms服务请求code 并发送短信
 	default:
 		err = fmt.Errorf("undefined localmsg type %v", msg)
 	}

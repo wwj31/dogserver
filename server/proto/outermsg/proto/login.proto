@@ -11,6 +11,10 @@ message HeartRsp {
     int64 ServerTimestamp = 2;
 }
 
+message SendSMS {  // tag:login
+    string Phone         = 1; //
+}
+
 message LoginReq {  // tag:login
     int32  LoginType     = 1; // 登录方式 1.游客、2.phone、3.微信、4.token
     string WeiXinOpenID  = 2; // 微信的Openid
