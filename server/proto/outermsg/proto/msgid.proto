@@ -5,20 +5,20 @@ option  go_package = "/outer";
 
 enum Msg {
     IdUnknown = 0;
-    IdFailRsp = 1;
-    IdBindPhoneReq = 2;// dispatch to player
-    IdBindPhoneRsp = 3;
-    IdHeartReq = 4;
-    IdHeartRsp = 5;
-    IdLoginReq = 6;// dispatch to login
-    IdLoginRsp = 7;
-    IdEnterGameReq = 8;// dispatch to player
-    IdEnterGameRsp = 9;
-    IdMailListReq = 10;// dispatch to player
-    IdMailListRsp = 11;
-    IdReadMailReq = 12;// dispatch to player
-    IdReadMailRsp = 13;
-    IdReceiveMailItemReq = 14;// dispatch to player
-    IdReceiveMailItemRsp = 15;
-    IdDeleteMailReq = 16;// dispatch to player
+    IdFailRsp = 160109657;
+    IdBindPhoneReq = 403639403;// dispatch to player
+    IdBindPhoneRsp = 34531592;
+    IdHeartReq = 31040569;
+    IdHeartRsp = 400148124;
+    IdLoginReq = 1510628254;// dispatch to login
+    IdLoginRsp = 1275741587;
+    IdEnterGameReq = 117622385;// dispatch to player
+    IdEnterGameRsp = 2097329717;
+    IdMailListReq = 1443645576;// dispatch to player
+    IdMailListRsp = 1812753385;
+    IdReadMailReq = 1963047789;// dispatch to player
+    IdReadMailRsp = 1661050550;
+    IdReceiveMailItemReq = 1679531254;// dispatch to player
+    IdReceiveMailItemRsp = 1981528235;
+    IdDeleteMailReq = 1054436458;// dispatch to player
 }
