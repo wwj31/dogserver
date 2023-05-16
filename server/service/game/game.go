@@ -54,8 +54,8 @@ func (s *Game) OnHandle(msg actor.Message) {
 
 	switch pbMsg := actMsg.(type) {
 	case *inner.PullPlayer:
-		log.Debugf("pull player %v ", pbMsg.RID)
-		playerId, loading := s.checkAndPullPlayer(pbMsg.RID, pbMsg.ShortId)
+		log.Debugf("pull player %v ", pbMsg.RoleInfo.RID)
+		playerId, loading := s.checkAndPullPlayer(pbMsg.Account, pbMsg.RoleInfo)
 		if !loading {
 			_ = s.Response(msg.GetRequestId(), &inner.Ok{})
 		} else {
@@ -66,14 +66,14 @@ func (s *Game) OnHandle(msg actor.Message) {
 	}
 }
 
-func (s *Game) checkAndPullPlayer(rid string, shortId int64) (playerId actortype.ActorId, loading bool) {
+func (s *Game) checkAndPullPlayer(acc *inner.Account, roleInfo *inner.LoginRoleInfo) (playerId actortype.ActorId, loading bool) {
 	// TODO::检查玩家是否在其他game节点中,并且通知目标下线,需要将玩家所在节点数据存入redis中以便查询
-	playerId = actortype.PlayerId(rid)
+	playerId = actortype.PlayerId(roleInfo.RID)
 	if !s.System().HasActor(playerId) {
 		err := s.System().NewActor(
 			playerId,
-			player.New(rid, shortId, s),
-			actor.SetMailBoxSize(200),
+			player.New(acc, roleInfo, s),
+			actor.SetMailBoxSize(300),
 			//actor.SetLocalized(),
 		)
 		expect.Nil(err)

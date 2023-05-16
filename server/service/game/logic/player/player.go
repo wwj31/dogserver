@@ -23,11 +23,12 @@ import (
 	"server/service/game/iface"
 )
 
-func New(roleId string, shortId int64, gamer iface.Gamer) *Player {
+func New(account *inner.Account, info *inner.LoginRoleInfo, gamer iface.Gamer) *Player {
 	p := &Player{
-		roleId:  roleId,
-		shortId: shortId,
-		gamer:   gamer,
+		roleId:      info.RID,
+		shortId:     info.ShortID,
+		accountInfo: account,
+		gamer:       gamer,
 	}
 	return p
 }
@@ -42,6 +43,8 @@ type (
 
 		roleId      string
 		shortId     int64
+		accountInfo *inner.Account
+
 		saveTimerId string
 		exitTimerId string
 		keepAlive   time.Time
@@ -126,6 +129,10 @@ func (s *Player) Login(first bool, enterGameRsp *outer.EnterGameRsp) {
 		mod.OnLogin(first, enterGameRsp)
 	}
 
+	if first {
+		s.store()
+	}
+
 	s.CancelTimer(s.exitTimerId)
 }
 
@@ -134,6 +141,8 @@ func (s *Player) Logout() {
 	for _, mod := range s.models {
 		mod.OnLogout()
 	}
+
+	s.store()
 }
 
 func (s *Player) load() {

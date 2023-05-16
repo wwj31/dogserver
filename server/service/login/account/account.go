@@ -16,6 +16,7 @@ type Account struct {
 	DeviceID      string `bson:"device_id" index:"true"`
 	Phone         string `bson:"phone" index:"true"`
 	LastLoginRID  string `bson:"last_login_rid" index:"true"`
+	LastShortID   int64  `bson:"last_short_id" index:"true"`
 	OS            string
 	ClientVersion string
 	Roles         map[string]Role

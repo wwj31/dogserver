@@ -4,6 +4,7 @@ import (
 	"github.com/gogo/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
 	"server/common"
+	"server/proto/innermsg/inner"
 )
 
 type (
@@ -20,6 +21,7 @@ type (
 		Send2Client(pb proto.Message)
 		Online() bool
 
+		Account() *inner.Account
 		Gamer() Gamer
 		Role() Role
 		Mail() Mailer

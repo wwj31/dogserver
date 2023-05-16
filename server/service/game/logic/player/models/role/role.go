@@ -30,19 +30,18 @@ func (s *Role) OnLogin(first bool, enterGameRsp *outer.EnterGameRsp) {
 	if first {
 		//first
 		s.data.CreateAt = nowStr
-
-		// 计算shortID
+		s.data.Phone = s.Player.Account().Phone
 	}
 
 	s.data.LoginAt = nowStr
-	enterGameRsp.RoleInfo = s.roleInfoPush()
+	enterGameRsp.RoleInfo = s.roleInfo()
 }
 
 func (s *Role) OnLogout() {
 	s.data.LogoutAt = tools.TimeFormat(tools.Now())
 }
 
-func (s *Role) roleInfoPush() *outer.RoleInfo {
+func (s *Role) roleInfo() *outer.RoleInfo {
 	return &outer.RoleInfo{
 		RID:     s.data.RID,
 		ShortId: s.data.ShortID,

@@ -132,6 +132,7 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 				rid := tools.XUID()
 				newShortID = cast.ToInt64(arr[0])
 				acc.Roles[rid] = account.Role{RID: rid, ShorID: newShortID, CreateAt: time.Now()}
+				acc.LastShortID = acc.Roles[rid].ShorID
 				acc.LastLoginRID = rid
 				if _, err = mongodb.Ins.Collection(account.Collection).InsertOne(context.Background(), acc); err != nil {
 					log.Errorw("login insert new account failed ", "UUID", acc.UUID, "err", err)
