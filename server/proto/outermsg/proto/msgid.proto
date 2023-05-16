@@ -6,7 +6,7 @@ option  go_package = "/outer";
 enum Msg {
     IdUnknown = 0;
     IdFailRsp = 1;
-    IdBindPhoneReq = 2;
+    IdBindPhoneReq = 2;// dispatch to player
     IdBindPhoneRsp = 3;
     IdHeartReq = 4;
     IdHeartRsp = 5;

@@ -27,7 +27,7 @@ type Msg int32
 const (
 	Msg_IdUnknown            Msg = 0
 	Msg_IdFailRsp            Msg = 1
-	Msg_IdBindPhoneReq       Msg = 2
+	Msg_IdBindPhoneReq       Msg = 2 // dispatch to player
 	Msg_IdBindPhoneRsp       Msg = 3
 	Msg_IdHeartReq           Msg = 4
 	Msg_IdHeartRsp           Msg = 5

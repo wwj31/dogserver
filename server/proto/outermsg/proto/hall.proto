@@ -3,7 +3,7 @@ package outer;
 option  go_package = "/outer";
 
 // 绑定手机号
-message BindPhoneReq {
+message BindPhoneReq {// tag:player
     string phone = 1;
 }
 
