@@ -14,9 +14,8 @@ import (
 
 // 绑定手机号
 var _ = router.Reg(func(player *player.Player, msg *outer.BindPhoneReq) {
-	player.Role().SetPhone(msg.Phone)
 	_, err := mongodb.Ins.Collection(account.Collection).
-		UpdateByID(context.Background(), player.Account().UID, bson.M{"phone": msg.GetPhone()})
+		UpdateByID(context.Background(), player.Account().UID, bson.M{"$set": bson.M{"phone": msg.GetPhone()}})
 	if err != nil {
 		log.Warnw("bing phone failed", "err", err, "rid", player.RID(), "phone", msg.Phone)
 		player.Send2Client(&outer.FailRsp{
@@ -33,7 +32,7 @@ var _ = router.Reg(func(player *player.Player, msg *outer.BindPhoneReq) {
 	}
 
 	player.Role().SetPhone(msg.Phone)
-	player.Send2Client(&outer.BindPhoneRsp{})
+	player.Send2Client(&outer.BindPhoneRsp{Phone: msg.Phone})
 })
 
 func validatePhoneNumber(phoneNumber string) bool {

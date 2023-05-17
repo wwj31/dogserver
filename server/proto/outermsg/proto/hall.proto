@@ -8,4 +8,5 @@ message BindPhoneReq {// tag:player
 }
 
 message BindPhoneRsp {
+    string phone = 1;
 }

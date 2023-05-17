@@ -27,6 +27,7 @@ type Client struct {
 	mails     []*outer.Mail
 	DeviceID  string
 	Token     string
+	Phone     string
 }
 
 func (s *Client) OnInit() {
@@ -72,8 +73,9 @@ func (s *Client) OnHandle(m actor.Message) {
 		s.enter()
 	case *outer.EnterGameRsp:
 		log.Infow("EnterGameRsp!", "msg", msg.String())
-		s.cli.Close()
+		s.SendToServer(outer.Msg_IdBindPhoneReq.Int32(), &outer.BindPhoneReq{Phone: "15680871780"})
 		s.AddTimer(tools.XUID(), tools.Now().Add(3*time.Second), func(dt time.Duration) {
+			s.cli.Close()
 			s.cli = Dial(s.Addr, &SessionHandler{client: s})
 			s.cli.Startup()
 
@@ -81,9 +83,9 @@ func (s *Client) OnHandle(m actor.Message) {
 				s.login()
 			}
 		})
-	case *outer.RoleInfo:
-		log.Infow("RoleInfoPush!", "msg", msg.String())
 
+	case *outer.BindPhoneRsp:
+		log.Infow("BindPhoneRsp!", "msg", msg.String())
 	// 邮件
 	case *outer.MailListRsp:
 		s.mails = append(s.mails, msg.Mails...)
