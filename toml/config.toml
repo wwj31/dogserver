@@ -2,7 +2,7 @@
 display         = "true"
 etcd_prefix     = "dog"
 etcd_addr       = "127.0.0.1:2379"
-nats_url        = "nats://localhost:4222"
+#nats_url        = "nats://localhost:4222"
 redis_addr      = ["127.0.0.1:6379"]
 redis_password  = ""
 #mysql      = "root:123456@tcp(127.0.0.1:3306)/%s?charset=utf8mb4&parseTime=True&loc=Local"
