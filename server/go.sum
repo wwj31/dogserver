@@ -410,8 +410,8 @@ github.com/tklauser/go-sysconf v0.3.9 h1:JeUVdAOWhhxVcU6Eqr/ATFHgXk/mmiItdKeJPev
 github.com/tklauser/go-sysconf v0.3.9/go.mod h1:11DU/5sG7UexIrp/O6g35hrWzu0JxlwQ3LSFUzyeuhs=
 github.com/tklauser/numcpus v0.3.0 h1:ILuRUQBtssgnxw0XXIjKUC56fgnOrFoQQ/4+DeU2biQ=
 github.com/tklauser/numcpus v0.3.0/go.mod h1:yFGUr7TUHQRAhyqBcEg0Ge34zDBAsIvJJcyE6boqnA8=
-github.com/wwj31/dogactor v1.4.11 h1:fNnR+h51H277yLQDg7WdTeZMvYt+nbNZxF27Y1TsaiI=
-github.com/wwj31/dogactor v1.4.11/go.mod h1:wFjIOSa5ulA4eLyHShuVAHCmIByQIehZbvCoLQA3oH4=
+github.com/wwj31/dogactor v1.4.12 h1:HHSkMOqxau+Upm6R6OYJ2lixlIe2uqTXI6H690l7APM=
+github.com/wwj31/dogactor v1.4.12/go.mod h1:wFjIOSa5ulA4eLyHShuVAHCmIByQIehZbvCoLQA3oH4=
 github.com/xdg-go/pbkdf2 v1.0.0 h1:Su7DPu48wXMwC3bs7MCNG+z4FhcyEuz5dlvchbq0B0c=
 github.com/xdg-go/pbkdf2 v1.0.0/go.mod h1:jrpuAogTd400dnrH08LKmI/xc1MbPOebTwRqcT5RDeI=
 github.com/xdg-go/scram v1.1.1 h1:VOMT+81stJgXW3CpHyqHN3AXDYIMsx56mEFrB37Mb/E=

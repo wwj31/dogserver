@@ -95,6 +95,7 @@ func run(appType string, appId int32) *actor.System {
 		//mq.WithRemote(toml.Get("nats_url"), nats.New()),
 		actor.ProtoIndex(newProtoIndex()),
 		actor.LogLevel(logger.InfoLevel),
+		actor.LogFileName("./syslog", appType+".log"),
 	)
 
 	switch appType {
