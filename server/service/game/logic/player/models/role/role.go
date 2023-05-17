@@ -3,10 +3,10 @@ package role
 import (
 	gogo "github.com/gogo/protobuf/proto"
 	"github.com/wwj31/dogactor/tools"
+
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
 	"server/service/game/logic/player/models"
-	"server/service/game/logic/player/models/role/typ"
 )
 
 type Role struct {
@@ -17,6 +17,7 @@ type Role struct {
 func New(base models.Model) *Role {
 	mod := &Role{Model: base}
 	mod.data.RID = base.Player.RID()
+	mod.data.ShortID = base.Player.ShortId()
 	return mod
 }
 
@@ -24,31 +25,29 @@ func (s *Role) Data() gogo.Message {
 	return &s.data
 }
 
-func (s *Role) OnLogin(first bool) {
+func (s *Role) OnLogin(first bool, enterGameRsp *outer.EnterGameRsp) {
 	nowStr := tools.TimeFormat(tools.Now())
 	if first {
 		//first
-		s.SetAttribute(typ.Level, 1)
-		s.SetAttribute(typ.Exp, 0)
-		s.SetAttribute(typ.Gold, 0)
 		s.data.CreateAt = nowStr
+		s.data.Phone = s.Player.Account().Phone
 	}
 
 	s.data.LoginAt = nowStr
-	s.Player.Send2Client(s.roleInfoPush())
+	enterGameRsp.RoleInfo = s.roleInfo()
 }
 
 func (s *Role) OnLogout() {
 	s.data.LogoutAt = tools.TimeFormat(tools.Now())
 }
 
-func (s *Role) roleInfoPush() *outer.RoleInfoPush {
-	return &outer.RoleInfoPush{
-		UID:     s.data.UID,
+func (s *Role) roleInfo() *outer.RoleInfo {
+	return &outer.RoleInfo{
 		RID:     s.data.RID,
-		SId:     s.data.SId,
+		ShortId: s.data.ShortID,
+		Phone:   s.data.Phone,
 		Name:    s.data.Name,
 		Icon:    s.data.Icon,
-		Country: s.data.Country,
+		Gold:    s.data.Gold,
 	}
 }

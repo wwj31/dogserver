@@ -16,9 +16,6 @@ const (
 	PlayerActor  = "player"
 	GatewayActor = "gateway"
 	ChatActor    = "chat"
-
-	Client = "client"
-	Robot  = "robot"
 )
 
 func GameName(id int32) ActorId {
@@ -40,11 +37,10 @@ func ChatName(id int32) ActorId {
 	return fmt.Sprintf("%v_%v_Actor", ChatActor, id)
 }
 
-func AId(actorId ActorId, typ string) (str string) {
-	t := strings.Trim(actorId, typ)
-	s := strings.Split(t, "_")
-	if len(s) == 2 {
-		str = s[0]
+func RID(actorId ActorId) (str string) {
+	s := strings.Split(actorId, "_")
+	if len(s) == 3 {
+		str = s[1]
 	}
 	return
 }

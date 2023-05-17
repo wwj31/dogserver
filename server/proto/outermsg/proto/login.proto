@@ -11,51 +11,46 @@ message HeartRsp {
     int64 ServerTimestamp = 2;
 }
 
-
+message SendSMS {  // tag:login
+    string Phone         = 1; //
+}
 
 message LoginReq {  // tag:login
-    // 平台uuid
-    string PlatformUUID  = 1;
-    // 平台名字
-    string PlatformName  = 2;
-    // 系统
-    string OS            = 3;
-    // 版本号
-    string ClientVersion = 4;
-    // 签名token
-    string Token         = 5;
+    int32  LoginType     = 1; // 登录方式 1.游客、2.phone、3.微信、4.token
+    string WeiXinOpenID  = 2; // 微信的Openid
+    string DeviceID      = 4; // 设备ID
+    string Phone         = 5; // 电话登录
+    string PhoneCode     = 6; // sms短信校验码
+    string Token         = 7; // token
+    string OS            = 8; // 系统
+    string ClientVersion = 9; // 版本号
 }
 
 message LoginRsp {
-    string  UID          = 1;
-    string  RID          = 2;
-    bool    NewPlayer    = 3;
-    string  Token        = 4;
+    string  RID          = 1;   // role id
+    bool    NewPlayer    = 2;
+    string  Token        = 3;
+    string  Checksum     = 4;
 }
 
 message EnterGameReq { // tag:player
-    string  UID        = 1;
-    string  RID        = 2;
-    bool    NewPlayer  = 3;
-    string  Checksum   = 4;
+    string  RID        = 1;
+    bool    NewPlayer  = 2;
+    string  Checksum   = 3;
 }
 
 message EnterGameRsp {
     // 是否是新玩家
-    bool NewPlayer = 1;
+    bool NewPlayer    = 1;
+    RoleInfo roleInfo = 2; // 角色信息
 }
 
 // 角色信息
-message RoleInfoPush {
-    string  UID     = 1;
-    string  RID     = 2;
-    uint64  SId     = 3;
+message RoleInfo{
+    string  RID     = 1;
+    int64   ShortId = 2;
+    string  Phone   = 3;
     string  Name    = 4;
     string  Icon    = 5;
-    string  Country = 6;
-}
-
-// 道具信息
-message ItemInfoPush {
-    map<int64,int64> Items = 1;
+    int64  Gold     = 6;
 }

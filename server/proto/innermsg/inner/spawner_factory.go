@@ -15,17 +15,22 @@ func Spawner(name string, newPool ...bool) (interface{}, bool) {
 func Put(name string, x interface{}) {}
 
 var spawner = map[string]factory{
-	"inner.MessageToChannel":   func() interface{} { return &MessageToChannel{} },
+	"inner.Account":            func() interface{} { return &Account{} },
+	"inner.LoginRoleInfo":      func() interface{} { return &LoginRoleInfo{} },
 	"inner.LeaveChannelReq":    func() interface{} { return &LeaveChannelReq{} },
 	"inner.JoinChannelResp":    func() interface{} { return &JoinChannelResp{} },
+	"inner.MessageToChannel":   func() interface{} { return &MessageToChannel{} },
 	"inner.JoinChannelReq":     func() interface{} { return &JoinChannelReq{} },
+	"inner.PullPlayer":         func() interface{} { return &PullPlayer{} },
 	"inner.Error":              func() interface{} { return &Error{} },
 	"inner.BindSessionWithRID": func() interface{} { return &BindSessionWithRID{} },
-	"inner.GateMsgWrapper":     func() interface{} { return &GateMsgWrapper{} },
 	"inner.GSessionClosed":     func() interface{} { return &GSessionClosed{} },
-	"inner.PullPlayer":         func() interface{} { return &PullPlayer{} },
-	"inner.ItemInfo":           func() interface{} { return &ItemInfo{} },
-	"inner.MailInfo":           func() interface{} { return &MailInfo{} },
+	"inner.GateMsgWrapper":     func() interface{} { return &GateMsgWrapper{} },
+	"inner.Ok":                 func() interface{} { return &Ok{} },
+	"inner.KickOutReq":         func() interface{} { return &KickOutReq{} },
+	"inner.KickOutRsp":         func() interface{} { return &KickOutRsp{} },
 	"inner.Mail":               func() interface{} { return &Mail{} },
 	"inner.RoleInfo":           func() interface{} { return &RoleInfo{} },
+	"inner.MailInfo":           func() interface{} { return &MailInfo{} },
+	"inner.ItemInfo":           func() interface{} { return &ItemInfo{} },
 }

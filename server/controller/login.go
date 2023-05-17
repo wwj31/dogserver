@@ -11,21 +11,19 @@ import (
 
 // 玩家登录
 var _ = router.Reg(func(player *player.Player, msg *outer.EnterGameReq) {
-	if common.EnterGameToken(msg.UID, msg.RID, msg.NewPlayer) != msg.Checksum {
+	if common.EnterGameToken(msg.RID, msg.NewPlayer) != msg.Checksum {
 		log.Warnw("checksum md5 check failed", "msg", msg.String())
 		return
 	}
 
-	player.Role().SetRoleId(msg.RID)
-	player.Role().SetUId(msg.UID)
-
-	player.Login(msg.NewPlayer)
-	player.Send2Client(&outer.EnterGameRsp{
-		NewPlayer: msg.NewPlayer,
-	})
+	enterGameRsp := &outer.EnterGameRsp{}
+	player.Login(msg.NewPlayer, enterGameRsp)
+	player.Send2Client(enterGameRsp)
 })
 
 // 玩家离线
 var _ = router.Reg(func(player *player.Player, msg *inner.GSessionClosed) {
-	player.Logout()
+	if player.GateSession().String() == msg.GetGateSession() {
+		player.Logout()
+	}
 })

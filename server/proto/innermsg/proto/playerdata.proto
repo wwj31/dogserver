@@ -6,13 +6,13 @@ import "gogo.proto";
 
 message RoleInfo
 {
-    string RID     = 1 [(gogoproto.moretags) = 'bson:"_id"'];
-    string UID     = 2 ;
-    uint64 SId     = 3;
-    string Name    = 4;
-    string Icon    = 5;
-    string Country = 6;
-    map<int64,int64> Attributes = 7; // 属性集
+    string RID      = 1 [(gogoproto.moretags) = 'bson:"_id"'];
+    string UID      = 2;
+    int64  ShortID  = 3;
+    string Phone    = 4;
+    string Name     = 5;
+    string Icon     = 6;
+    int64  Gold     = 7;
     string CreateAt = 8;
     string LoginAt  = 9;
     string LogoutAt = 10;

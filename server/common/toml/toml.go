@@ -27,9 +27,11 @@ func Init(path string, appType string, appId int) {
 	name := appType + "_" + cast.ToString(appId)
 	v, ok := server[name]
 	if !ok {
-		panic(fmt.Errorf("not find %v_%v", appType, appId))
+		Config = map[string]interface{}{}
+	} else {
+		Config = v.(map[string]interface{})
 	}
-	Config = v.(map[string]interface{})
+
 }
 
 func Get(k string, defaultValue ...string) string {

@@ -4,6 +4,7 @@ import (
 	"github.com/gogo/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
 	"server/common"
+	"server/proto/innermsg/inner"
 )
 
 type (
@@ -14,18 +15,15 @@ type (
 
 		Session
 		RID() string
+		ShortId() int64
 
 		Observer() *common.Observer
 		Send2Client(pb proto.Message)
-
-		Login(first bool)
-		Logout()
 		Online() bool
 
+		Account() *inner.Account
 		Gamer() Gamer
 		Role() Role
-		Item() Item
 		Mail() Mailer
-		Chat() Chat
 	}
 )

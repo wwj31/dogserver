@@ -6,31 +6,29 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/wwj31/dogactor/actor/cluster/fullmesh"
+
+	"server/mgo"
+
 	"server/common"
+	"server/common/rds"
 	"server/config/conf"
 
 	"github.com/spf13/cast"
 	"github.com/wwj31/dogactor/actor"
-	"github.com/wwj31/dogactor/actor/cluster/mq"
-	"github.com/wwj31/dogactor/actor/cluster/mq/nats"
 	"github.com/wwj31/dogactor/logger"
 	"github.com/wwj31/dogactor/tools"
 
 	"server/common/actortype"
 	"server/common/log"
 	"server/common/mongodb"
-	"server/common/redis"
 	"server/common/toml"
 	_ "server/controller"
-	"server/db/mgo"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
-	"server/service/client"
 	"server/service/game"
-	"server/service/game/logic/channel"
 	"server/service/gateway"
 	"server/service/login"
-	"server/service/robot"
 )
 
 func startup() {
@@ -56,20 +54,24 @@ func startup() {
 
 	// init mongo
 	if err := mongodb.Builder().Addr(toml.Get("mongo_addr")).
-		Database(toml.Get("database")).EnableSharding().Connect(); err != nil {
+		Database(toml.Get("database")).
+		//EnableSharding().
+		Connect(); err != nil {
 		log.Errorw("mongo connect failed", "err", err)
 		return
 	}
 
 	// init redis
-	if err := redis.NewBuilder().
+	if err := rds.NewBuilder().
 		Addr(toml.GetArray("redis_addr", "localhost:6379")...).
-		ClusterMode().Connect(); err != nil {
+		Password(toml.Get("redis_password", "")).
+		//ClusterMode().
+		Connect(); err != nil {
 		log.Errorw("redis connect failed", "err", err)
 		return
 	}
 
-	monitor(*logPath, logName+"mo")
+	//monitor(*logPath, logName+"mo")
 	//pprof("6060")
 
 	// startup
@@ -87,21 +89,16 @@ func startup() {
 }
 
 func run(appType string, appId int32) *actor.System {
-	// startup the system of actor
 	system, _ := actor.NewSystem(
-		//fullmesh.WithRemote(toml.Get("etcd_addr"), toml.Get("etcd_prefix")),
-		//actor.Addr(toml.Get("actor_addr")),
+		fullmesh.WithRemote(toml.Get("etcd_addr"), toml.Get("etcd_prefix")),
 		actor.Name(appType+cast.ToString(appId)),
-		mq.WithRemote(toml.Get("nats_url"), nats.New()),
+		//mq.WithRemote(toml.Get("nats_url"), nats.New()),
 		actor.ProtoIndex(newProtoIndex()),
 		actor.LogLevel(logger.InfoLevel),
+		actor.LogFileName("./syslog", appType+".log"),
 	)
 
 	switch appType {
-	case actortype.Client:
-		_ = system.NewActor(actortype.Client, &client.Client{ACC: "Client"}, actor.SetLocalized())
-	case actortype.Robot:
-		_ = system.NewActor(actortype.Robot, &robot.Robot{}, actor.SetLocalized())
 	case actortype.GatewayActor:
 		newGateway(appId, system)
 	case actortype.LoginActor:
@@ -137,13 +134,11 @@ func newLogin(system *actor.System) {
 }
 
 func newGateway(appId int32, system *actor.System) {
-	loginActor := gateway.New()
-	_ = system.NewActor(actortype.GatewayName(appId), loginActor, actor.SetMailBoxSize(2000))
+	gateActor := gateway.New()
+	_ = system.NewActor(actortype.GatewayName(appId), gateActor, actor.SetMailBoxSize(2000))
 }
 
 func newGame(appId int32, system *actor.System) {
 	gameActor := game.New(appId)
-	ch := channel.New()
 	_ = system.NewActor(actortype.GameName(appId), gameActor, actor.SetMailBoxSize(1000))
-	_ = system.NewActor(actortype.ChatName(appId), ch, actor.SetMailBoxSize(1000))
 }

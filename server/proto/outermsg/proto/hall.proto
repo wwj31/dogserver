@@ -1,0 +1,11 @@
+syntax = "proto3";
+package outer;
+option  go_package = "/outer";
+
+// 绑定手机号
+message BindPhoneReq {// tag:player
+    string phone = 1;
+}
+
+message BindPhoneRsp {
+}

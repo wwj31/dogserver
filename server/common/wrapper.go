@@ -2,8 +2,7 @@ package common
 
 import (
 	"fmt"
-
-	"github.com/gogo/protobuf/proto"
+	"github.com/golang/protobuf/proto"
 
 	"server/common/log"
 	"server/proto/innermsg/inner"

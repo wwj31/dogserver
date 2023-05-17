@@ -1,6 +1,8 @@
 package gateway
 
 import (
+	"github.com/gogo/protobuf/proto"
+	"server/proto/outermsg/outer"
 	"time"
 
 	"server/common"
@@ -29,11 +31,12 @@ func New() *GateWay {
 }
 
 func (g *GateWay) OnInit() {
+	log.Infow("gateway OnInit")
 	g.sessions = make(map[uint64]*UserSession)
 
 	addr := toml.Get("gate_addr")
-	g.listener = network.StartTcpListen(addr,
-		func() network.DecodeEncoder { return &network.StreamCode{MaxDecode: 100 * tools.KB} },
+	g.listener = network.StartWSListen(addr,
+		func() network.DecodeEncoder { return &network.WSCode{MaxDecode: 100 * tools.KB} },
 		func() network.SessionHandler { return &UserSession{gateway: g} },
 	)
 
@@ -43,7 +46,6 @@ func (g *GateWay) OnInit() {
 		log.Errorw("gateway listener start failed", "err", err, "addr", addr)
 		return
 	}
-	log.Infow("gateway OnInit ", "addr", addr)
 }
 
 // 定期检查并清理死链接
@@ -59,8 +61,8 @@ func (g *GateWay) checkDeadSession(dt time.Duration) {
 
 // OnHandle 主要转发消息至玩家client，少量内部消息处理
 func (g *GateWay) OnHandle(m actor.Message) {
-	rawMsg := m.Payload()
-	switch msg := rawMsg.(type) {
+	payload := m.Payload()
+	switch msg := payload.(type) {
 	case *inner.GateMsgWrapper:
 		// 用户消息直接转发前端
 		actorId, sessionId := common.GSession(msg.GateSession).Split()
@@ -74,23 +76,34 @@ func (g *GateWay) OnHandle(m actor.Message) {
 			log.Errorw("session disabled gate is not own", logInfo...)
 			return
 		}
-		userSessionHandler := g.sessions[sessionId]
-		if userSessionHandler == nil {
+		userSession := g.sessions[sessionId]
+		if userSession == nil {
 			log.Warnw("cannot find sessionId", logInfo...)
 			return
 		}
 
 		log.Infow("server msg -> user", logInfo...)
 		msgId, _ := g.System().ProtoIndex().MsgNameToId(msg.GetMsgName())
-		_ = userSessionHandler.SendMsg(network.CombineMsgWithId(msgId, msg.Data))
+		data, err := proto.Marshal(&outer.Base{
+			MsgId: msgId,
+			Data:  msg.Data,
+		})
+
+		if err != nil {
+			log.Errorw("marshal base failed ",
+				"err", err, "player", userSession.PlayerId)
+			return
+		}
+
+		_ = userSession.SendMsg(data)
 
 	default:
-		resp := g.InnerHandler(m.GetSourceId(), rawMsg) // 内部消息，单独处理
+		resp := g.InnerHandler(m) // 内部消息，单独处理
 		if resp != nil && m.GetRequestId() != "" {
-			log.Debugw("resp ", "reqId", m.GetRequestId())
+			//log.Debugw("resp inner msg", "reqId", m.GetRequestId(), "resp", resp)
 			if err := g.Response(m.GetRequestId(), resp); err != nil {
 				log.Errorw("respone failed", "err", err)
 			}
-		} //wait_cebjpknm1tui4lpi2eh0@1670855890094264048@gateway_1_Actor#:8888
+		}
 	}
 }

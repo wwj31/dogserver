@@ -5,7 +5,7 @@ import (
 	"math/rand"
 	"reflect"
 	"server/common/router"
-	"server/db/mgo"
+	"server/mgo"
 	"strings"
 	"time"
 
@@ -23,10 +23,12 @@ import (
 	"server/service/game/iface"
 )
 
-func New(roleId string, gamer iface.Gamer) *Player {
+func New(account *inner.Account, info *inner.LoginRoleInfo, gamer iface.Gamer) *Player {
 	p := &Player{
-		roleId: roleId,
-		gamer:  gamer,
+		roleId:      info.RID,
+		shortId:     info.ShortID,
+		accountInfo: account,
+		gamer:       gamer,
 	}
 	return p
 }
@@ -40,6 +42,9 @@ type (
 		observer *common.Observer
 
 		roleId      string
+		shortId     int64
+		accountInfo *inner.Account
+
 		saveTimerId string
 		exitTimerId string
 		keepAlive   time.Time
@@ -89,15 +94,18 @@ func (s *Player) OnHandle(msg actor.Message) {
 		return
 	}
 
+	if msgName == "" {
+		msgName = msg.GetMsgName()
+	}
+	log.Infow("input", "player", s.roleId, "msg", reflect.TypeOf(pt), "data", pt.String())
 	router.Dispatch(s, pt)
-
-	log.Debugw("player handle msg", "player", s.ID(), "msgName", msgName, "pt", pt.String())
-	//outer.Put(s.System().ProtoIndex().MsgName(pt), message)
-
 }
 
 func (s *Player) RID() string {
 	return s.roleId
+}
+func (s *Player) ShortId() int64 {
+	return s.shortId
 }
 
 func (s *Player) Observer() *common.Observer {
@@ -105,16 +113,24 @@ func (s *Player) Observer() *common.Observer {
 }
 
 func (s *Player) Send2Client(pb gogo.Message) {
+	log.Infow("output", "player", s.roleId, "online", s.Online(), "msg", reflect.TypeOf(pb), "data", pb.String())
 	if pb == nil || !s.Online() {
 		return
 	}
 	s.gSession.SendToClient(s, pb)
 }
 
-func (s *Player) Login(first bool) {
-	log.Infow("player login", "id", s.roleId)
+func (s *Player) GateSession() common.GSession            { return s.gSession }
+func (s *Player) SetGateSession(gSession common.GSession) { s.gSession = gSession }
+func (s *Player) Online() bool                            { return s.Role().LoginAt().After(s.Role().LogoutAt()) }
+
+func (s *Player) Login(first bool, enterGameRsp *outer.EnterGameRsp) {
 	for _, mod := range s.models {
-		mod.OnLogin(first)
+		mod.OnLogin(first, enterGameRsp)
+	}
+
+	if first {
+		s.store()
 	}
 
 	s.CancelTimer(s.exitTimerId)
@@ -125,11 +141,9 @@ func (s *Player) Logout() {
 	for _, mod := range s.models {
 		mod.OnLogout()
 	}
-}
 
-func (s *Player) GateSession() common.GSession            { return s.gSession }
-func (s *Player) SetGateSession(gSession common.GSession) { s.gSession = gSession }
-func (s *Player) Online() bool                            { return s.Role().LoginAt().After(s.Role().LogoutAt()) }
+	s.store()
+}
 
 func (s *Player) load() {
 	for _, mod := range s.models {
