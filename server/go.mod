@@ -7,6 +7,7 @@ require (
 	github.com/go-redis/redis/v8 v8.11.4
 	github.com/go-redis/redis/v9 v9.0.0-beta.2
 	github.com/go-redsync/redsync/v4 v4.7.1
+	github.com/go-sql-driver/mysql v1.7.1
 	github.com/gogo/protobuf v1.3.2
 	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/golang/mock v1.6.0
@@ -19,6 +20,8 @@ require (
 	github.com/spf13/viper v1.9.0
 	github.com/stretchr/testify v1.7.0
 	github.com/tealeg/xlsx v1.0.5
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.659
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/sms v1.0.659
 	github.com/wwj31/dogactor v1.4.12
 	go.mongodb.org/mongo-driver v1.11.0
 	google.golang.org/protobuf v1.28.0

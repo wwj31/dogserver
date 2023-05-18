@@ -3,13 +3,13 @@ package outer;
 option  go_package = "/outer";
 
 enum ERROR {
-   SUCCESS                    = 0;  //执行成功
-   FAILED                     = 1;  //协议执行失败，原因模糊
-   SECURITY_CODE_CHECK_FAILED = 2;  //安全码校验失败
-   LOGIN_TOKEN_INVALID        = 3;  //登录token过期
-   REPEAT_LOGIN               = 4;  //被顶号
-   GOLD_NOT_ENOUGH            = 5;  //金币不足
-   INVALID_PHONE              = 6;  //无效的电话
+   FAILED                     = 0;  //协议执行失败，原因模糊
+   SECURITY_CODE_CHECK_FAILED = 1;  //安全码校验失败
+   LOGIN_TOKEN_INVALID        = 2;  //登录token过期
+   REPEAT_LOGIN               = 3;  //被顶号
+   GOLD_NOT_ENOUGH            = 4;  //金币不足
+   INVALID_PHONE              = 5;  //无效的电话
+   SMS_SEND_FAILED            = 6;  //sms校验失败
 }
 
 message FailRsp {

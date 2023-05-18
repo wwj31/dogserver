@@ -11,8 +11,11 @@ message HeartRsp {
     int64 ServerTimestamp = 2;
 }
 
-message SendSMS {  // tag:login
+message SendSMSReq {  // tag:login
     string Phone         = 1; //
+}
+
+message SendSMSRsp {
 }
 
 message LoginReq {  // tag:login
