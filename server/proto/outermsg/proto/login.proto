@@ -18,12 +18,12 @@ message SendSMS {  // tag:login
 message LoginReq {  // tag:login
     int32  LoginType     = 1; // 登录方式 1.游客、2.phone、3.微信、4.token
     string WeiXinOpenID  = 2; // 微信的Openid
-    string DeviceID      = 4; // 设备ID
-    string Phone         = 5; // 电话登录
-    string PhoneCode     = 6; // sms短信校验码
-    string Token         = 7; // token
-    string OS            = 8; // 系统
-    string ClientVersion = 9; // 版本号
+    string DeviceID      = 3; // 设备ID
+    string Phone         = 4; // 电话登录
+    string PhoneCode     = 5; // sms短信校验码
+    string Token         = 6; // token
+    string OS            = 7; // 系统
+    string ClientVersion = 8; // 版本号
 }
 
 message LoginRsp {
