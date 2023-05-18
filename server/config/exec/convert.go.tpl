@@ -61,6 +61,10 @@ func (t array_float) Range(fn func(int, float32) (stop bool)) {
 }
 
 func (t int2int) Range(fn func(int64, int64) (stop bool)) {
+    if t == nil {
+        return
+    }
+
 	for k, v := range t {
 		if fn(k, v) {
 			break
@@ -69,6 +73,10 @@ func (t int2int) Range(fn func(int64, int64) (stop bool)) {
 }
 
 func (t int2str) Range(fn func(int64, string) (stop bool)) {
+    if t == nil {
+        return
+    }
+
 	for k, v := range t {
 		if fn(k, v) {
 			break
@@ -77,6 +85,10 @@ func (t int2str) Range(fn func(int64, string) (stop bool)) {
 }
 
 func (t str2int) Range(fn func(string, int64) (stop bool)) {
+    if t == nil {
+        return
+    }
+
 	for k, v := range t {
 		if fn(k, v) {
 			break
@@ -85,6 +97,10 @@ func (t str2int) Range(fn func(string, int64) (stop bool)) {
 }
 
 func (t str2str) Range(fn func(string, string) (stop bool)) {
+    if t == nil {
+        return
+    }
+
 	for k, v := range t {
 		if fn(k, v) {
 			break
