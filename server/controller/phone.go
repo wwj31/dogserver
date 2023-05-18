@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"go.mongodb.org/mongo-driver/mongo"
 	"regexp"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -16,8 +17,22 @@ import (
 
 // 绑定手机号
 var _ = router.Reg(func(player *player.Player, msg *outer.BindPhoneReq) {
+	result := mongodb.Ins.Collection(account.Collection).FindOne(context.Background(), bson.M{"phone": msg.GetPhone()})
+	if result.Err() != mongo.ErrNoDocuments {
+		player.Send2Client(&outer.FailRsp{Error: outer.ERROR_PHONE_WAS_BOUND})
+		return
+	}
+
+	if msg.Password == "" {
+		player.Send2Client(&outer.FailRsp{Error: outer.ERROR_PHONE_PASSWORD_IS_EMPTY})
+		return
+	}
+
 	_, err := mongodb.Ins.Collection(account.Collection).
-		UpdateByID(context.Background(), player.Account().UID, bson.M{"$set": bson.M{"phone": msg.GetPhone()}})
+		UpdateByID(context.Background(), player.Account().UID, bson.M{"$set": bson.M{
+			"phone":          msg.GetPhone(),
+			"phone_password": msg.GetPassword(),
+		}})
 	if err != nil {
 		log.Warnw("bing phone failed", "err", err, "rid", player.RID(), "phone", msg.Phone)
 		player.Send2Client(&outer.FailRsp{

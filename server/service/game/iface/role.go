@@ -12,6 +12,7 @@ type Role interface {
 
 	Name() string
 	Icon() string
+	SetIcon(icon string)
 	CreateAt() time.Time
 	LoginAt() time.Time
 	LogoutAt() time.Time

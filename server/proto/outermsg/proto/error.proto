@@ -9,7 +9,8 @@ enum ERROR {
    REPEAT_LOGIN               = 3;  //被顶号
    GOLD_NOT_ENOUGH            = 4;  //金币不足
    INVALID_PHONE              = 5;  //无效的电话
-   SMS_SEND_FAILED            = 6;  //sms校验失败
+   PHONE_WAS_BOUND            = 7;  //手机被绑定
+   PHONE_PASSWORD_IS_EMPTY    = 8;  //绑定手机账号，密码不能为空
 }
 
 message FailRsp {

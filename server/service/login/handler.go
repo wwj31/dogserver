@@ -92,16 +92,11 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 					acc.WeiXinOpenID = req.WeiXinOpenID
 				}
 			case PhoneLogin:
-				if _, err = cast.ToInt64E(req.Phone); err != nil {
-					err = fmt.Errorf("phone login failed, invalid phone :%v", err)
-					return
-				}
-
 				result = mongodb.Ins.Collection(account.Collection).FindOne(context.Background(), bson.M{"phone": req.Phone})
 				if result.Err() == mongo.ErrNoDocuments {
-					acc.Phone = req.Phone
+					err = fmt.Errorf("未找到账号:%v", req.Phone)
+					return
 				}
-				// TODO smsCode存redis里，这里需要校验code是否有效
 			}
 
 			dispatchGameID := actortype.GameName(1)

@@ -11,19 +11,12 @@ message HeartRsp {
     int64 ServerTimestamp = 2;
 }
 
-message SendSMSReq {  // tag:login
-    string Phone         = 1; //
-}
-
-message SendSMSRsp {
-}
-
 message LoginReq {  // tag:login
     int32  LoginType     = 1; // 登录方式 1.游客、2.phone、3.微信、4.token
     string WeiXinOpenID  = 2; // 微信的Openid
     string DeviceID      = 3; // 设备ID
     string Phone         = 4; // 电话登录
-    string PhoneCode     = 5; // sms短信校验码
+    string PhonePassword = 5; // 绑定的密码
     string Token         = 6; // token
     string OS            = 7; // 系统
     string ClientVersion = 8; // 版本号

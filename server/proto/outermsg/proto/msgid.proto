@@ -6,12 +6,12 @@ option  go_package = "/outer";
 enum Msg {
     IdUnknown = 0;
     IdFailRsp = 160109657;
+    IdSetIconReq = 1416869591;// dispatch to player
+    IdSetIconRsp = 1718866572;
     IdBindPhoneReq = 403639403;// dispatch to player
     IdBindPhoneRsp = 34531592;
     IdHeartReq = 31040569;
     IdHeartRsp = 400148124;
-    IdSendSMSReq = 8473000;// dispatch to login
-    IdSendSMSRsp = 377580553;
     IdLoginReq = 1510628254;// dispatch to login
     IdLoginRsp = 1275741587;
     IdEnterGameReq = 117622385;// dispatch to player

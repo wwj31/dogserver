@@ -15,6 +15,7 @@ type Account struct {
 	WeiXinOpenID  string `bson:"wei_xin_open_id" index:"true"`
 	DeviceID      string `bson:"device_id" index:"true"`
 	Phone         string `bson:"phone" index:"true"`
+	PhonePassword string `bson:"phone_password"`
 	LastLoginRID  string `bson:"last_login_rid" index:"true"`
 	LastShortID   int64  `bson:"last_short_id" index:"true"`
 	OS            string

@@ -1,6 +1,7 @@
 package role
 
 import (
+	"github.com/spf13/cast"
 	"math/rand"
 
 	gogo "github.com/gogo/protobuf/proto"
@@ -43,6 +44,7 @@ func (s *Role) OnLogin(first bool, enterGameRsp *outer.EnterGameRsp) {
 		s.data.CreateAt = nowStr
 		s.data.Phone = s.Player.Account().Phone
 		s.data.Name = randName()
+		s.data.Icon = cast.ToString(rand.Int31n(10) + 1)
 	}
 
 	s.data.LoginAt = nowStr

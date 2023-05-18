@@ -4,15 +4,12 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/gogo/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
 	"github.com/wwj31/dogactor/expect"
 
 	"server/common"
 	"server/common/log"
 	"server/common/rds"
-	"server/common/rdskey"
-	"server/common/sms"
 	"server/proto/outermsg/outer"
 	"server/service/login/account"
 )
@@ -53,15 +50,6 @@ func (s *Login) OnHandle(m actor.Message) {
 	switch msg := v.(type) {
 	case *outer.LoginReq:
 		err = s.LoginReq(m.GetSourceId(), gSession, msg)
-	case *outer.SendSMSReq:
-		err = sms.TencentSMS(rdskey.LoginSMSKey(msg.Phone), msg.Phone)
-		var rsp proto.Message
-		if err != nil {
-			rsp = &outer.SendSMSRsp{}
-		} else {
-			rsp = &outer.FailRsp{Error: outer.ERROR_SMS_SEND_FAILED, Info: err.Error()}
-		}
-		gSession.SendToClient(s, rsp)
 	default:
 		err = fmt.Errorf("undefined localmsg type %v", msg)
 	}

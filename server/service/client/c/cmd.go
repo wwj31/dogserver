@@ -29,7 +29,7 @@ import (
 func (s *Client) login() {
 	loginType := 1
 	if s.Token != "" {
-		loginType = 3
+		loginType = 4
 	}
 
 	logReq := &outer.LoginReq{
