@@ -11,6 +11,7 @@ enum ERROR {
    INVALID_PHONE              = 5;  //无效的电话
    PHONE_WAS_BOUND            = 7;  //手机被绑定
    PHONE_PASSWORD_IS_EMPTY    = 8;  //绑定手机账号，密码不能为空
+   PHONE_NOT_FOUND            = 9;  //未找到账号
 }
 
 message FailRsp {

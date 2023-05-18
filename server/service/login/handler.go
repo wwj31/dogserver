@@ -56,11 +56,12 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 			)
 
 			defer func() {
-				if acc == nil {
+				if err != nil {
 					gSession.SendToClient(s, &outer.FailRsp{
 						Error: errCode,
 						Info:  err.Error(),
 					})
+					return
 				}
 				s.responseLoginToClient(acc, newPlayer, gSession)
 			}()
@@ -84,7 +85,7 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 				}
 
 				result = mongodb.Ins.Collection(account.Collection).FindOne(context.Background(), bson.M{"_id": claims.UID})
-				if result.Err() == mongo.ErrNoDocuments {
+				if err = result.Err(); err == mongo.ErrNoDocuments {
 					log.Warnw("token login can not find account", "err", err, "req", req.String())
 					errCode = outer.ERROR_LOGIN_TOKEN_INVALID
 					return
@@ -100,8 +101,8 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 				}
 			case PhoneLogin:
 				result = mongodb.Ins.Collection(account.Collection).FindOne(context.Background(), bson.M{"phone": req.Phone})
-				if result.Err() == mongo.ErrNoDocuments {
-					err = fmt.Errorf("未找到账号:%v", req.Phone)
+				if err = result.Err(); err == mongo.ErrNoDocuments {
+					errCode = outer.ERROR_PHONE_NOT_FOUND
 					return
 				}
 			}
@@ -111,7 +112,6 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 				var shortIdVal interface{}
 				shortIdVal, err = rds.Ins.EvalSha(context.Background(), s.sha1, []string{rdskey.ShortIDKey()}).Result()
 				if err == redis.Nil {
-					err = fmt.Errorf("short id pool was empty")
 					log.Errorw(err.Error())
 					return
 				}
@@ -139,10 +139,11 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 				log.Infof("acc device %v", acc.DeviceID)
 				if _, err = mongodb.Ins.Collection(account.Collection).InsertOne(context.Background(), acc); err != nil {
 					log.Errorw("login insert new account failed ", "UUID", acc.UUID, "err", err)
+					return
 				}
 				newPlayer = true
 			} else {
-				if result.Err() != nil {
+				if err = result.Err(); err != nil {
 					log.Errorw("login mongo find failed", "err", result.Err())
 					return
 				}
