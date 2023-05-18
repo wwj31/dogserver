@@ -30,9 +30,6 @@ type Client struct {
 }
 
 func (s *Client) OnInit() {
-	if addr != "" {
-		s.Addr = addr
-	}
 	s.cli = Dial(s.Addr, &SessionHandler{client: s})
 	s.cli.Startup()
 
