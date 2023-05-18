@@ -52,12 +52,13 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 				newPlayer  bool
 				newShortID int64
 				err        error
+				errCode    outer.ERROR
 			)
 
 			defer func() {
 				if acc == nil {
 					gSession.SendToClient(s, &outer.FailRsp{
-						Error: outer.ERROR_FAILED,
+						Error: errCode,
 						Info:  err.Error(),
 					})
 				}
@@ -78,10 +79,16 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 				claims, err = common.JWTParseToken(req.Token, &Claims{})
 				if err != nil {
 					log.Errorw("token login failed ", "err", err, "req", req.String())
+					errCode = outer.ERROR_LOGIN_TOKEN_INVALID
 					return
 				}
 
 				result = mongodb.Ins.Collection(account.Collection).FindOne(context.Background(), bson.M{"_id": claims.UID})
+				if result.Err() == mongo.ErrNoDocuments {
+					log.Errorw("token login can not find account", "err", err, "req", req.String())
+					errCode = outer.ERROR_LOGIN_TOKEN_INVALID
+					return
+				}
 			case WeiXinLogin:
 				if req.WeiXinOpenID == "" {
 					err = fmt.Errorf("weixin login failed, openID is nil")
@@ -129,6 +136,7 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 				acc.Roles[rid] = account.Role{RID: rid, ShorID: newShortID, CreateAt: time.Now()}
 				acc.LastShortID = acc.Roles[rid].ShorID
 				acc.LastLoginRID = rid
+				log.Infof("acc device %v", acc.DeviceID)
 				if _, err = mongodb.Ins.Collection(account.Collection).InsertOne(context.Background(), acc); err != nil {
 					log.Errorw("login insert new account failed ", "UUID", acc.UUID, "err", err)
 				}
