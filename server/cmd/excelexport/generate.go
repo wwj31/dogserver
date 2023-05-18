@@ -121,7 +121,7 @@ func (s *Generate) BuildTypeStruct(sheet *xlsx.Sheet, fileName string) error {
 	// 遍历列
 	for i := 0; i < sheet.MaxCol; i++ {
 		// 没有字段，不解析
-		if strings.TrimSpace(sheet.Cell(FIELDNAME, i).Value) == "" {
+		if strings.TrimSpace(sheet.Cell(FieldName, i).Value) == "" {
 			continue
 		}
 		var meta []string
@@ -141,14 +141,14 @@ func (s *Generate) BuildTypeStruct(sheet *xlsx.Sheet, fileName string) error {
 	}
 	structType += "\n"
 
-	fieldName := firstRuneToUpper(strings.TrimSpace(sheet.Cell(FIELDNAME, 0).Value))
+	fieldName := firstRuneToUpper(strings.TrimSpace(sheet.Cell(FieldName, 0).Value))
 
 	var (
 		keyType string
 		ok      bool
 	)
 
-	fieldType := strings.TrimSpace(sheet.Cell(FIELDTYPE, 0).Value)
+	fieldType := strings.TrimSpace(sheet.Cell(FieldType, 0).Value)
 	if fieldType != STR && fieldType != INT {
 		return fmt.Errorf("主键类型错误:%v %v %v", fieldType, fileName, sheet.Name)
 	}
@@ -196,8 +196,8 @@ func (s *Generate) BuildJsonStruct(sheet *xlsx.Sheet, fileName string) error {
 			if strings.TrimSpace(sheet.Cell(1, j).Value) == "" {
 				continue
 			}
-			fieldName := strings.TrimSpace(sheet.Cell(FIELDNAME, j).Value)
-			fieldType := strings.TrimSpace(sheet.Cell(FIELDTYPE, j).Value)
+			fieldName := strings.TrimSpace(sheet.Cell(FieldName, j).Value)
+			fieldType := strings.TrimSpace(sheet.Cell(FieldType, j).Value)
 			convertFun := TypeConvert[fieldType]
 			if convertFun == nil {
 				return fmt.Errorf("can not find fieldType:[%v] fieldName:[%v]", fileName, fieldType)
@@ -226,7 +226,7 @@ func (s *Generate) BuildConfigConst(sheet *xlsx.Sheet) error {
 	// 遍历列 找到STR_SERVER_CONST
 	constData := ""
 	for col := 0; col < sheet.MaxCol; col++ {
-		if sheet.Cell(FIELDNAME, col).Value == "STR_SERVER_CONST" {
+		if sheet.Cell(FieldName, col).Value == "STR_SERVER_CONST" {
 			// 遍历行
 			for row := lineNumber; row < sheet.MaxRow; row++ {
 				cell := sheet.Cell(row, col)

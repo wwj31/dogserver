@@ -10,9 +10,9 @@ import (
 )
 
 const (
-	COMMENT   = 0 // 字段注释
-	FIELDTYPE = 1 // 字段类型
-	FIELDNAME = 2 // 字段名
+	Comment   = 0 // 字段注释
+	FieldType = 1 // 字段类型
+	FieldName = 2 // 字段名
 
 )
 
@@ -27,9 +27,9 @@ func parsing(data [][]string, structName string) (result string, err error) {
 			return "", fmt.Errorf("parsing sheetName:%v col's len:%d is err", value, len(value))
 		}
 
-		comment := value[COMMENT]
-		fieldType := value[FIELDTYPE]
-		fieldName := value[FIELDNAME]
+		comment := value[Comment]
+		fieldType := value[FieldType]
+		fieldName := value[FieldName]
 
 		typ, exist := TypeIndex[fieldType]
 		if !exist {
