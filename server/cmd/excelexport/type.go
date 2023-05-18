@@ -18,15 +18,15 @@ type str2str map[string]string
 
 const (
 	INT        = "int"
-	STR        = "str"
+	STR        = "string"
 	FLOAT      = "float"
-	ARRAYINT   = "int[]"
-	ARRAYSTR   = "str[]"
-	ARRAYFLOAT = "float[]"
-	INT2INT    = "int2int"
-	INT2STR    = "int2str"
-	STR2INT    = "str2int"
-	STR2STR    = "str2str"
+	ARRAYINT   = "[int]"
+	ARRAYSTR   = "[string]"
+	ARRAYFLOAT = "[float]"
+	INT2INT    = "map[int]int"
+	INT2STR    = "map[int]string"
+	STR2INT    = "map[string]int"
+	STR2STR    = "map[string]string"
 
 	ARRAY_SPLIT = "|"
 	MAP_SPLIT   = ":"
@@ -84,7 +84,7 @@ var TypeConvert = map[string]fnConvert{
 	STR2STR:    convert_string2string,
 }
 
-//return int64
+// return int64
 func convert_int(val string) (interface{}, error) {
 	val = strings.TrimSpace(val)
 	if val == "" {
@@ -98,12 +98,12 @@ func convert_int(val string) (interface{}, error) {
 	return int64(i), nil
 }
 
-//return string
+// return string
 func convert_string(val string) (interface{}, error) {
 	return val, nil
 }
 
-//return float32
+// return float32
 func convert_float(val string) (interface{}, error) {
 	val = strings.TrimSpace(val)
 	if val == "" {
@@ -117,7 +117,7 @@ func convert_float(val string) (interface{}, error) {
 	return float32(i), nil
 }
 
-//return []int64
+// return []int64
 func convert_intSlice(val string) (interface{}, error) {
 	val = strings.TrimSpace(val)
 	if val == "" {
@@ -136,7 +136,7 @@ func convert_intSlice(val string) (interface{}, error) {
 	return intslice, nil
 }
 
-//return []string
+// return []string
 func convert_stringSlice(val string) (interface{}, error) {
 	val = strings.TrimSpace(val)
 	if val == "" {
@@ -151,7 +151,7 @@ func convert_stringSlice(val string) (interface{}, error) {
 	return strslice, nil
 }
 
-//return []float32
+// return []float32
 func convert_floatSlice(val string) (interface{}, error) {
 	val = strings.TrimSpace(val)
 	if val == "" {
@@ -170,7 +170,7 @@ func convert_floatSlice(val string) (interface{}, error) {
 	return floatSlice, nil
 }
 
-//return map[int64]int64
+// return map[int64]int64
 func convert_int2int(val string) (interface{}, error) {
 	val = strings.TrimSpace(val)
 	if val == "" {
@@ -198,7 +198,7 @@ func convert_int2int(val string) (interface{}, error) {
 	return int2int, nil
 }
 
-//return map[int64]string
+// return map[int64]string
 func convert_int2string(val string) (interface{}, error) {
 	val = strings.TrimSpace(val)
 	if val == "" {
@@ -221,7 +221,7 @@ func convert_int2string(val string) (interface{}, error) {
 	return int2string, nil
 }
 
-//return map[string]int64
+// return map[string]int64
 func convert_string2int(val string) (interface{}, error) {
 	val = strings.TrimSpace(val)
 	if val == "" {
@@ -244,7 +244,7 @@ func convert_string2int(val string) (interface{}, error) {
 	return string2int, nil
 }
 
-//return map[string]string
+// return map[string]string
 func convert_string2string(val string) (interface{}, error) {
 	val = strings.TrimSpace(val)
 	if val == "" {

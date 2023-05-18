@@ -34,7 +34,7 @@ type _Test struct {
 	Test11 array_float // 附件
 }
 
-// ID
+//ID
 func (c *Test) Id() int64 { return c.data.Id }
 
 // 测试字段1

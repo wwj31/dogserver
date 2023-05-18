@@ -198,8 +198,12 @@ func (s *Generate) BuildJsonStruct(sheet *xlsx.Sheet, fileName string) error {
 			}
 			fieldName := strings.TrimSpace(sheet.Cell(FIELDNAME, j).Value)
 			fieldType := strings.TrimSpace(sheet.Cell(FIELDTYPE, j).Value)
+			convertFun := TypeConvert[fieldType]
+			if convertFun == nil {
+				return fmt.Errorf("can not find fieldType:[%v] fieldName:[%v]", fileName, fieldType)
+			}
 
-			if m[fieldName], err = TypeConvert[fieldType](strings.TrimSpace(sheet.Cell(i, j).Value)); err != nil {
+			if m[fieldName], err = convertFun(strings.TrimSpace(sheet.Cell(i, j).Value)); err != nil {
 				return fmt.Errorf("TypeConvert error=%v i=%v  j=%v name=%v value=%v file=%v",
 					err, i, j, fieldName, sheet.Cell(i, j).Value, fileName)
 			}
