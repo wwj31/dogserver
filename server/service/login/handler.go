@@ -78,14 +78,14 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 				var claims *Claims
 				claims, err = common.JWTParseToken(req.Token, &Claims{})
 				if err != nil {
-					log.Errorw("token login failed ", "err", err, "req", req.String())
+					log.Warnw("token login failed ", "err", err, "req", req.String())
 					errCode = outer.ERROR_LOGIN_TOKEN_INVALID
 					return
 				}
 
 				result = mongodb.Ins.Collection(account.Collection).FindOne(context.Background(), bson.M{"_id": claims.UID})
 				if result.Err() == mongo.ErrNoDocuments {
-					log.Errorw("token login can not find account", "err", err, "req", req.String())
+					log.Warnw("token login can not find account", "err", err, "req", req.String())
 					errCode = outer.ERROR_LOGIN_TOKEN_INVALID
 					return
 				}
