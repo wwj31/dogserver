@@ -35,8 +35,8 @@ type Claims struct {
 const (
 	GuestLogin  = 1
 	PhoneLogin  = 2
-	TokenLogin  = 3
-	WeiXinLogin = 4
+	WeiXinLogin = 3
+	TokenLogin  = 4
 )
 
 // 登录规则
