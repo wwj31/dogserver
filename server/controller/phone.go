@@ -68,7 +68,7 @@ func validatePhoneNumber(phoneNumber string) bool {
 }
 
 func validatePassword(password string) bool {
-	if len(password) < 6 {
+	if len(password) < 1 {
 		return false
 	}
 	return true
