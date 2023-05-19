@@ -11,7 +11,7 @@ import (
 
 func TestSetPosition(t *testing.T) {
 	b, _ := json.Marshal(map[string]interface{}{
-		"shortId":  12345,
+		"shortId":  1744602,
 		"position": "大哥",
 	})
 	req, err := http.NewRequest(http.MethodPost, "http://localhost:9999/alliance/position", bytes.NewReader(b))

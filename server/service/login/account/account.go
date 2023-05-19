@@ -10,7 +10,7 @@ import (
 
 const Collection = "account"
 const LastShortId = "last_short_id"
-const LastLoginId = "last_login_id"
+const LastLoginRId = "last_login_rid"
 const Phone = "phone"
 
 type Account struct {

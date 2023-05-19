@@ -10,7 +10,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/wwj31/dogactor/actor"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
 
 	"server/common/log"
 	"server/common/mongodb"
@@ -64,34 +63,33 @@ func (s *Door) OnInit() {
 func getRIDByShortId(shortId int64) string {
 	cur, err := mongodb.Ins.Collection(account.Collection).Aggregate(context.Background(), []bson.M{
 		{
-			"$match": bson.M{"_id": shortId},
+			"$match": bson.M{account.LastShortId: shortId},
 		},
 		{
 			"$project": bson.M{
-				"_id":               1,
-				account.LastLoginId: 1,
+				"_id":                1,
+				account.LastLoginRId: 1,
 			},
 		},
 	})
 
 	defer cur.Close(context.Background())
-
-	if cur.Err() == mongo.ErrNoDocuments {
-		return ""
-	}
-
 	if err != nil {
 		log.Errorf("getRIDByShortId aggregate failed", "err", err)
 		return ""
 	}
 
-	acc := &account.Account{}
-	if err := cur.Decode(acc); err != nil {
-		log.Errorw("getRIDByShortId decode failed", "shortId", shortId, "err", err)
-		return ""
+	if cur.Next(context.Background()) {
+		acc := &account.Account{}
+		if err := cur.Decode(acc); err != nil {
+			log.Errorw("getRIDByShortId decode failed", "shortId", shortId, "err", err)
+			return ""
+		}
+		return acc.LastLoginRID
 	}
 
-	return acc.LastLoginRID
+	log.Warnw("can not find rid ", "shortid", shortId)
+	return ""
 }
 
 func (s *Door) OnStop() bool {
