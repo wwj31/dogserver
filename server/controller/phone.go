@@ -18,7 +18,7 @@ import (
 
 // 绑定手机号
 var _ = router.Reg(func(player *player.Player, msg *outer.BindPhoneReq) {
-	result := mongodb.Ins.Collection(account.Collection).FindOne(context.Background(), bson.M{"phone": msg.GetPhone()})
+	result := mongodb.Ins.Collection(account.Collection).FindOne(context.Background(), bson.M{account.Phone: msg.GetPhone()})
 	if result.Err() != mongo.ErrNoDocuments {
 		player.Send2Client(&outer.FailRsp{Error: outer.ERROR_PHONE_WAS_BOUND})
 		return

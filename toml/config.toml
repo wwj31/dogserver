@@ -16,13 +16,10 @@ config_json     = "../server/config/confjson"
 
 [server]
     [server.gateway_1]
-        #actor_addr = "127.0.0.1:8001" // use for full-mesh mode
         gate_addr  = "0.0.0.0:7001"     # client连接端口
 
     [server.gateway_2]
-        #actor_addr = "127.0.0.1:8002" // use for full-mesh mode
         gate_addr  = "0.0.0.0:7002"     # client连接端口
 
     [server.allInOne_1]
-        #actor_addr  = "127.0.0.1:8000" // use ofr full-mesh mode
         gate_addr   = "0.0.0.0:7001"

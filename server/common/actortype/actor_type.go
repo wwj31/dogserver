@@ -10,12 +10,11 @@ import (
 type ActorId = string
 
 const (
-	WorldActor   = "world"
 	LoginActor   = "login"
 	GameActor    = "game"
 	PlayerActor  = "player"
 	GatewayActor = "gateway"
-	ChatActor    = "chat"
+	DoorActor    = "door"
 )
 
 func GameName(id int32) ActorId {
@@ -26,15 +25,12 @@ func PlayerId(id string) ActorId {
 	return fmt.Sprintf("%v_%v_Actor", PlayerActor, id)
 }
 
-func WorldName(id int32) ActorId {
-	return fmt.Sprintf("%v_%v_Actor", WorldActor, id)
-}
-
 func GatewayName(id int32) ActorId {
 	return fmt.Sprintf("%v_%v_Actor", GatewayActor, id)
 }
-func ChatName(id int32) ActorId {
-	return fmt.Sprintf("%v_%v_Actor", ChatActor, id)
+
+func DoorName() ActorId {
+	return fmt.Sprintf("%v_Actor", DoorActor)
 }
 
 func RID(actorId ActorId) (str string) {

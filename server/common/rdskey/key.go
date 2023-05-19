@@ -11,7 +11,3 @@ func SessionKey(rid string) string {
 func ShortIDKey() string {
 	return "shortId"
 }
-
-func LoginSMSKey(str string) string {
-	return "loginSMS:" + str
-}

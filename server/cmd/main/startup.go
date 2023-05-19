@@ -9,6 +9,7 @@ import (
 	"github.com/wwj31/dogactor/actor/cluster/fullmesh"
 
 	"server/mgo"
+	"server/service/door"
 
 	"server/common"
 	"server/common/rds"
@@ -105,10 +106,13 @@ func run(appType string, appId int32) *actor.System {
 		newLogin(system)
 	case actortype.GameActor:
 		newGame(appId, system)
+	case actortype.DoorActor:
+		newDoor(system)
 	case "allinone":
 		newGateway(appId, system)
 		newGame(appId, system)
 		newLogin(system)
+		newDoor(system)
 	}
 	return system
 }
@@ -141,4 +145,9 @@ func newGateway(appId int32, system *actor.System) {
 func newGame(appId int32, system *actor.System) {
 	gameActor := game.New(appId)
 	_ = system.NewActor(actortype.GameName(appId), gameActor, actor.SetMailBoxSize(1000))
+}
+
+func newDoor(system *actor.System) {
+	gameActor := door.New()
+	_ = system.NewActor(actortype.DoorName(), gameActor, actor.SetMailBoxSize(100))
 }

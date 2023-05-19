@@ -9,6 +9,9 @@ import (
 )
 
 const Collection = "account"
+const LastShortId = "last_short_id"
+const LastLoginId = "last_login_id"
+const Phone = "phone"
 
 type Account struct {
 	UUID          string `bson:"_id"`

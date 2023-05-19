@@ -99,7 +99,7 @@ func (s *Player) OnHandle(msg actor.Message) {
 	if msgName == "" {
 		msgName = msg.GetMsgName()
 	}
-	log.Infow("input", "player", s.roleId, "msg", reflect.TypeOf(pt), "data", pt.String())
+	log.Infow("input", "rid", s.roleId, "msg", reflect.TypeOf(pt), "data", pt.String())
 	router.Dispatch(s, pt)
 }
 
@@ -115,7 +115,7 @@ func (s *Player) Observer() *common.Observer {
 }
 
 func (s *Player) Send2Client(pb gogo.Message) {
-	log.Infow("output", "player", s.roleId, "online", s.Online(), "msg", reflect.TypeOf(pb), "data", pb.String())
+	log.Infow("output", "rid", s.roleId, "online", s.Online(), "msg", reflect.TypeOf(pb), "data", pb.String())
 	if pb == nil || !s.Online() {
 		return
 	}
