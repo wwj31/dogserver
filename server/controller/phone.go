@@ -2,8 +2,9 @@ package controller
 
 import (
 	"context"
-	"go.mongodb.org/mongo-driver/mongo"
 	"regexp"
+
+	"go.mongodb.org/mongo-driver/mongo"
 
 	"go.mongodb.org/mongo-driver/bson"
 
@@ -44,7 +45,12 @@ var _ = router.Reg(func(player *player.Player, msg *outer.BindPhoneReq) {
 
 	if !validatePhoneNumber(msg.Phone) {
 		log.Warnw("bing phone validate failed", "rid", player.RID(), "phone", msg.Phone)
-		player.Send2Client(&outer.FailRsp{Error: outer.ERROR_INVALID_PHONE})
+		player.Send2Client(&outer.FailRsp{Error: outer.ERROR_INVALID_PHONE_FORMAT})
+		return
+	}
+
+	if !validatePassword(msg.Password) {
+		player.Send2Client(&outer.FailRsp{Error: outer.ERROR_INVALID_PASSWORD_FORMAT})
 		return
 	}
 
@@ -59,4 +65,10 @@ func validatePhoneNumber(phoneNumber string) bool {
 
 	// 检查给定的字符串是否匹配电话号码模式
 	return regex.MatchString(phoneNumber)
+}
+
+func validatePassword(password string) bool {
+	if len(password) < 8 {
+		return false
+	}
 }

@@ -8,7 +8,8 @@ enum ERROR {
    LOGIN_TOKEN_INVALID        = 2;  //登录token过期
    REPEAT_LOGIN               = 3;  //被顶号
    GOLD_NOT_ENOUGH            = 4;  //金币不足
-   INVALID_PHONE              = 5;  //无效的电话
+   INVALID_PHONE_FORMAT       = 5;  //无效的电话格式
+   INVALID_PASSWORD_FORMAT    = 6;  //无效的密码格式
    PHONE_WAS_BOUND            = 7;  //手机被绑定
    PHONE_PASSWORD_IS_EMPTY    = 8;  //绑定手机账号，密码不能为空
    PHONE_NOT_FOUND            = 9;  //未找到账号
