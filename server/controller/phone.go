@@ -29,6 +29,17 @@ var _ = router.Reg(func(player *player.Player, msg *outer.BindPhoneReq) {
 		return
 	}
 
+	if !validatePhoneNumber(msg.Phone) {
+		log.Warnw("bing phone validate failed", "rid", player.RID(), "phone", msg.Phone)
+		player.Send2Client(&outer.FailRsp{Error: outer.ERROR_INVALID_PHONE_FORMAT})
+		return
+	}
+
+	if !validatePassword(msg.Password) {
+		player.Send2Client(&outer.FailRsp{Error: outer.ERROR_INVALID_PASSWORD_FORMAT})
+		return
+	}
+
 	_, err := mongodb.Ins.Collection(account.Collection).
 		UpdateByID(context.Background(), player.Account().UID, bson.M{"$set": bson.M{
 			"phone":          msg.GetPhone(),
@@ -40,17 +51,6 @@ var _ = router.Reg(func(player *player.Player, msg *outer.BindPhoneReq) {
 			Error: outer.ERROR_FAILED,
 			Info:  err.Error(),
 		})
-		return
-	}
-
-	if !validatePhoneNumber(msg.Phone) {
-		log.Warnw("bing phone validate failed", "rid", player.RID(), "phone", msg.Phone)
-		player.Send2Client(&outer.FailRsp{Error: outer.ERROR_INVALID_PHONE_FORMAT})
-		return
-	}
-
-	if !validatePassword(msg.Password) {
-		player.Send2Client(&outer.FailRsp{Error: outer.ERROR_INVALID_PASSWORD_FORMAT})
 		return
 	}
 
@@ -68,7 +68,8 @@ func validatePhoneNumber(phoneNumber string) bool {
 }
 
 func validatePassword(password string) bool {
-	if len(password) < 8 {
+	if len(password) < 6 {
 		return false
 	}
+	return true
 }

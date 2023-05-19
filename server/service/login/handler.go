@@ -5,9 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/go-redis/redis/v9"
-	"github.com/spf13/cast"
-
 	"github.com/golang-jwt/jwt/v4"
 
 	"server/common/rdskey"
@@ -48,21 +45,18 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 	go tools.Try(func() {
 		rds.LockDo(rdskey.LockLoginKey(req.DeviceID), func() {
 			var (
-				acc        *account.Account
-				newPlayer  bool
-				newShortID int64
-				err        error
-				errCode    outer.ERROR
+				acc       *account.Account
+				newPlayer bool
+				err       error
+				errCode   outer.ERROR
 			)
 
 			defer func() {
 				if err != nil {
-					gSession.SendToClient(s, &outer.FailRsp{
-						Error: errCode,
-						Info:  err.Error(),
-					})
+					gSession.SendToClient(s, &outer.FailRsp{Error: errCode, Info: err.Error()})
 					return
 				}
+
 				s.responseLoginToClient(acc, newPlayer, gSession)
 			}()
 
@@ -74,6 +68,14 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 				if result.Err() == mongo.ErrNoDocuments {
 					acc.DeviceID = req.DeviceID
 				}
+
+			case PhoneLogin:
+				result = mongodb.Ins.Collection(account.Collection).FindOne(context.Background(), bson.M{"phone": req.Phone})
+				if err = result.Err(); err == mongo.ErrNoDocuments {
+					errCode = outer.ERROR_PHONE_NOT_FOUND
+					return
+				}
+
 			case TokenLogin:
 				// 解析并验证 JWT
 				var claims *Claims
@@ -95,50 +97,18 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 					err = fmt.Errorf("weixin login failed, openID is nil")
 					return
 				}
+				return
+
 				result = mongodb.Ins.Collection(account.Collection).FindOne(context.Background(), bson.M{"wei_xin_open_id": req.WeiXinOpenID})
 				if result.Err() == mongo.ErrNoDocuments {
 					acc.WeiXinOpenID = req.WeiXinOpenID
 				}
-			case PhoneLogin:
-				result = mongodb.Ins.Collection(account.Collection).FindOne(context.Background(), bson.M{"phone": req.Phone})
-				if err = result.Err(); err == mongo.ErrNoDocuments {
-					errCode = outer.ERROR_PHONE_NOT_FOUND
-					return
-				}
 			}
 
-			dispatchGameID := actortype.GameName(1)
 			if result.Err() == mongo.ErrNoDocuments {
-				var shortIdVal interface{}
-				shortIdVal, err = rds.Ins.EvalSha(context.Background(), s.sha1, []string{rdskey.ShortIDKey()}).Result()
-				if err == redis.Nil {
-					log.Errorw(err.Error())
-					return
-				}
-
+				err = s.initAccount(acc)
 				if err != nil {
-					err = fmt.Errorf("shor id get failed :%v", err)
-					log.Errorw(err.Error())
-					return
-				}
-
-				arr, ok := shortIdVal.([]interface{})
-				if !ok || len(arr) != 1 {
-					err = fmt.Errorf("shortIdVal  failed:%v len:%v", shortIdVal, len(arr))
-					log.Errorw(err.Error())
-					return
-				}
-
-				acc.UUID = tools.XUID()
-				acc.Roles = make(map[string]account.Role)
-				rid := tools.XUID()
-				newShortID = cast.ToInt64(arr[0])
-				acc.Roles[rid] = account.Role{RID: rid, ShorID: newShortID, CreateAt: time.Now()}
-				acc.LastShortID = acc.Roles[rid].ShorID
-				acc.LastLoginRID = rid
-				log.Infof("acc device %v", acc.DeviceID)
-				if _, err = mongodb.Ins.Collection(account.Collection).InsertOne(context.Background(), acc); err != nil {
-					log.Errorw("login insert new account failed ", "UUID", acc.UUID, "err", err)
+					errCode = outer.ERROR_NEW_ACCOUNT_FAILED
 					return
 				}
 				newPlayer = true
@@ -151,6 +121,11 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 				if err = result.Decode(acc); err != nil {
 					log.Errorw("login find account decode failed", "err", err)
 					return
+				}
+
+				// 手机账号登录，需要单独校验密码是否正确
+				if req.LoginType == PhoneLogin && req.PhonePassword != acc.PhonePassword {
+
 				}
 			}
 
@@ -166,6 +141,7 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 			}
 			rds.Ins.Set(context.Background(), rdskey.SessionKey(acc.LastLoginRID), gSession.String(), 3*24*time.Hour)
 
+			dispatchGameID := actortype.GameName(1)
 			_, err = s.RequestWait(dispatchGameID, &inner.PullPlayer{
 				Account: acc.ToPb(),
 				RoleInfo: &inner.LoginRoleInfo{
@@ -186,6 +162,8 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 }
 
 func (s *Login) responseLoginToClient(acc *account.Account, newPlayer bool, gSession common.GSession) {
+	// 走到这里，说明已经登录成功，
+	// 通知gateway，绑定关联Session的用户信息
 	gateId, _ := gSession.Split()
 	_, err := s.RequestWait(gateId, &inner.BindSessionWithRID{
 		GateSession: gSession.String(),
@@ -199,10 +177,10 @@ func (s *Login) responseLoginToClient(acc *account.Account, newPlayer bool, gSes
 		return
 	}
 
-	// 创建 JWT 声明
+	// 重新给前端创建新的Token
 	claims := &Claims{
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(7 * 24 * time.Hour)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(15 * 24 * time.Hour)),
 		},
 		UID: acc.UUID,
 		RID: acc.LastLoginRID,

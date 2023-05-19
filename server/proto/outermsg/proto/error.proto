@@ -3,16 +3,17 @@ package outer;
 option  go_package = "/outer";
 
 enum ERROR {
-   FAILED                     = 0;  //协议执行失败，原因模糊
-   SECURITY_CODE_CHECK_FAILED = 1;  //安全码校验失败
-   LOGIN_TOKEN_INVALID        = 2;  //登录token过期
-   REPEAT_LOGIN               = 3;  //被顶号
-   GOLD_NOT_ENOUGH            = 4;  //金币不足
-   INVALID_PHONE_FORMAT       = 5;  //无效的电话格式
-   INVALID_PASSWORD_FORMAT    = 6;  //无效的密码格式
-   PHONE_WAS_BOUND            = 7;  //手机被绑定
-   PHONE_PASSWORD_IS_EMPTY    = 8;  //绑定手机账号，密码不能为空
-   PHONE_NOT_FOUND            = 9;  //未找到账号
+   FAILED                     = 0;  // 协议执行失败，原因模糊
+   LOGIN_TOKEN_INVALID        = 1;  // 登录token过期
+   REPEAT_LOGIN               = 2;  // 被顶号
+   INVALID_PHONE_FORMAT       = 3;  // 无效的电话格式
+   INVALID_PASSWORD_FORMAT    = 4;  // 无效的密码格式
+   PHONE_WAS_BOUND            = 5;  // 手机被绑定
+   PHONE_PASSWORD_IS_EMPTY    = 6;  // 绑定手机账号，密码不能为空
+   PHONE_PASSWORD_ERROR       = 7;  // 手机账号登录密码错误
+   PHONE_NOT_FOUND            = 8;  // 未找到账号
+   NEW_ACCOUNT_FAILED         = 9;  // 创建账号失败
+   GOLD_NOT_ENOUGH            = 10; // 金币不足
 }
 
 message FailRsp {
