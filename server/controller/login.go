@@ -10,20 +10,22 @@ import (
 )
 
 // 玩家登录
-var _ = router.Reg(func(player *player.Player, msg *outer.EnterGameReq) {
+var _ = router.Reg(func(player *player.Player, msg *outer.EnterGameReq) any {
 	if common.EnterGameToken(msg.RID, msg.NewPlayer) != msg.Checksum {
 		log.Warnw("checksum md5 check failed", "msg", msg.String())
-		return
+		return &outer.FailRsp{}
 	}
 
 	enterGameRsp := &outer.EnterGameRsp{}
 	player.Login(msg.NewPlayer, enterGameRsp)
-	player.Send2Client(enterGameRsp)
+
+	return enterGameRsp
 })
 
 // 玩家离线
-var _ = router.Reg(func(player *player.Player, msg *inner.GSessionClosed) {
+var _ = router.Reg(func(player *player.Player, msg *inner.GSessionClosed) any {
 	if player.GateSession().String() == msg.GetGateSession() {
 		player.Logout()
 	}
+	return nil
 })

@@ -1,7 +1,7 @@
 package iface
 
 import (
-	"github.com/gogo/protobuf/proto"
+	"github.com/golang/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
 	"server/common"
 	"server/proto/innermsg/inner"
@@ -25,5 +25,6 @@ type (
 		Gamer() Gamer
 		Role() Role
 		Mail() Mailer
+		Alliance() Alliance
 	}
 )

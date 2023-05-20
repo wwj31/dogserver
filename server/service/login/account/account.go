@@ -35,7 +35,7 @@ func CreateIndex() {
 func (a *Account) ToPb() *inner.Account {
 	return &inner.Account{
 		UID:           a.UUID,
-		DeviceID:      a.DeviceID,
+		DeviceId:      a.DeviceID,
 		Phone:         a.Phone,
 		OS:            a.OS,
 		ClientVersion: a.ClientVersion,

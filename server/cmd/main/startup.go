@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"server/service/alliance"
 	"syscall"
 
 	"github.com/wwj31/dogactor/actor/cluster/fullmesh"
@@ -108,11 +109,14 @@ func run(appType string, appId int32) *actor.System {
 		newGame(appId, system)
 	case actortype.DoorActor:
 		newDoor(system)
+	case actortype.AllianceActor:
+		newAlliance(appId, system)
 	case "allinone":
 		newGateway(appId, system)
 		newGame(appId, system)
 		newLogin(system)
 		newDoor(system)
+		newAlliance(appId, system)
 	}
 	return system
 }
@@ -148,6 +152,11 @@ func newGame(appId int32, system *actor.System) {
 }
 
 func newDoor(system *actor.System) {
-	gameActor := door.New()
-	_ = system.NewActor(actortype.DoorName(), gameActor, actor.SetMailBoxSize(100))
+	doorActor := door.New()
+	_ = system.NewActor(actortype.DoorName(), doorActor, actor.SetMailBoxSize(100))
+}
+
+func newAlliance(appId int32, system *actor.System) {
+	allianceActor := alliance.New(appId)
+	_ = system.NewActor(actortype.AllianceName(appId), allianceActor, actor.SetMailBoxSize(1000))
 }

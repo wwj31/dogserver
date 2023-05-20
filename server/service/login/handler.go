@@ -36,11 +36,6 @@ const (
 	TokenLogin  = 4
 )
 
-// 登录规则
-// 1.游客登录使用DeviceID，游客账号可以绑定未使用过的微信和电话
-// 2.微信登录创建的角色，不能在绑定DeviceID，可以绑定为使用过的电话
-// 3.电话登录创建的角色，不能在绑定DeviceID，可以绑定为使用过的微信
-
 func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 	go tools.Try(func() {
 		rds.LockDo(rdskey.LockLoginKey(req.DeviceID), func() {
@@ -125,7 +120,9 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 
 				// 手机账号登录，需要单独校验密码是否正确
 				if req.LoginType == PhoneLogin && req.PhonePassword != acc.PhonePassword {
-
+					log.Warnw("password error", "req passoword", req.PhonePassword, "pwd", acc.PhonePassword)
+					errCode = outer.ERROR_PHONE_PASSWORD_ERROR
+					return
 				}
 			}
 
@@ -146,7 +143,7 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 				Account: acc.ToPb(),
 				RoleInfo: &inner.LoginRoleInfo{
 					RID:     acc.LastLoginRID,
-					ShortID: acc.Roles[acc.LastLoginRID].ShorID,
+					ShortId: acc.Roles[acc.LastLoginRID].ShorID,
 				},
 			})
 

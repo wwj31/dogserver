@@ -11,8 +11,9 @@ import (
 )
 
 var router = sync.Map{}
+var result = sync.Map{}
 
-func Reg[ACTOR actor.Actor, MSG gogo.Message](fn func(actor ACTOR, msg MSG), repeat ...bool) bool {
+func Reg[ACTOR actor.Actor, MSG gogo.Message](fn func(actor ACTOR, msg MSG) any, repeat ...bool) bool {
 	var (
 		msg     MSG
 		act     ACTOR
@@ -31,9 +32,18 @@ func Reg[ACTOR actor.Actor, MSG gogo.Message](fn func(actor ACTOR, msg MSG), rep
 	}
 
 	handlers.Store(actName, func(actor actor.Actor, message gogo.Message) {
-		fn(actor.(ACTOR), message.(MSG))
+		rsp := fn(actor.(ACTOR), message.(MSG))
+		val, ex := result.Load(actor.ID())
+		if ex {
+			response := val.(func(any))
+			response(rsp)
+		}
 	})
 	return true
+}
+
+func Result(a actor.Actor, fn func(result any)) {
+	result.Store(a.ID(), fn)
 }
 
 func Dispatch(a actor.Actor, msg gogo.Message) {

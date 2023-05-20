@@ -26,7 +26,7 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 type RoleInfo struct {
 	RID      string `protobuf:"bytes,1,opt,name=RID,proto3" json:"RID,omitempty" bson:"_id"`
 	UID      string `protobuf:"bytes,2,opt,name=UID,proto3" json:"UID,omitempty"`
-	ShortID  int64  `protobuf:"varint,3,opt,name=ShortID,proto3" json:"ShortID,omitempty"`
+	ShortId  int64  `protobuf:"varint,3,opt,name=ShortId,proto3" json:"ShortId,omitempty"`
 	Phone    string `protobuf:"bytes,4,opt,name=Phone,proto3" json:"Phone,omitempty"`
 	Name     string `protobuf:"bytes,5,opt,name=Name,proto3" json:"Name,omitempty"`
 	Icon     string `protobuf:"bytes,6,opt,name=Icon,proto3" json:"Icon,omitempty"`
@@ -83,9 +83,9 @@ func (m *RoleInfo) GetUID() string {
 	return ""
 }
 
-func (m *RoleInfo) GetShortID() int64 {
+func (m *RoleInfo) GetShortId() int64 {
 	if m != nil {
-		return m.ShortID
+		return m.ShortId
 	}
 	return 0
 }
@@ -139,23 +139,23 @@ func (m *RoleInfo) GetLogoutAt() string {
 	return ""
 }
 
-type ItemInfo struct {
-	RID   string          `protobuf:"bytes,1,opt,name=RID,proto3" json:"RID,omitempty" bson:"_id"`
-	Items map[int64]int64 `protobuf:"bytes,2,rep,name=Items,proto3" json:"Items,omitempty" protobuf_key:"varint,1,opt,name=key,proto3" protobuf_val:"varint,2,opt,name=value,proto3"`
+type AllianceInfo struct {
+	RID        string `protobuf:"bytes,1,opt,name=RID,proto3" json:"RID,omitempty" bson:"_id"`
+	AllianceId int32  `protobuf:"varint,2,opt,name=AllianceId,proto3" json:"AllianceId,omitempty"`
 }
 
-func (m *ItemInfo) Reset()         { *m = ItemInfo{} }
-func (m *ItemInfo) String() string { return proto.CompactTextString(m) }
-func (*ItemInfo) ProtoMessage()    {}
-func (*ItemInfo) Descriptor() ([]byte, []int) {
+func (m *AllianceInfo) Reset()         { *m = AllianceInfo{} }
+func (m *AllianceInfo) String() string { return proto.CompactTextString(m) }
+func (*AllianceInfo) ProtoMessage()    {}
+func (*AllianceInfo) Descriptor() ([]byte, []int) {
 	return fileDescriptor_0a7260d8149d0369, []int{1}
 }
-func (m *ItemInfo) XXX_Unmarshal(b []byte) error {
+func (m *AllianceInfo) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *ItemInfo) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *AllianceInfo) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_ItemInfo.Marshal(b, m, deterministic)
+		return xxx_messageInfo_AllianceInfo.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -165,41 +165,41 @@ func (m *ItemInfo) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 		return b[:n], nil
 	}
 }
-func (m *ItemInfo) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ItemInfo.Merge(m, src)
+func (m *AllianceInfo) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AllianceInfo.Merge(m, src)
 }
-func (m *ItemInfo) XXX_Size() int {
+func (m *AllianceInfo) XXX_Size() int {
 	return m.Size()
 }
-func (m *ItemInfo) XXX_DiscardUnknown() {
-	xxx_messageInfo_ItemInfo.DiscardUnknown(m)
+func (m *AllianceInfo) XXX_DiscardUnknown() {
+	xxx_messageInfo_AllianceInfo.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_ItemInfo proto.InternalMessageInfo
+var xxx_messageInfo_AllianceInfo proto.InternalMessageInfo
 
-func (m *ItemInfo) GetRID() string {
+func (m *AllianceInfo) GetRID() string {
 	if m != nil {
 		return m.RID
 	}
 	return ""
 }
 
-func (m *ItemInfo) GetItems() map[int64]int64 {
+func (m *AllianceInfo) GetAllianceId() int32 {
 	if m != nil {
-		return m.Items
+		return m.AllianceId
 	}
-	return nil
+	return 0
 }
 
 type Mail struct {
-	UUID         string          `protobuf:"bytes,1,opt,name=UUID,proto3" json:"UUID,omitempty"`
-	CreateAt     int64           `protobuf:"varint,2,opt,name=CreateAt,proto3" json:"CreateAt,omitempty"`
-	SenderRoleId string          `protobuf:"bytes,3,opt,name=SenderRoleId,proto3" json:"SenderRoleId,omitempty"`
-	Name         string          `protobuf:"bytes,4,opt,name=Name,proto3" json:"Name,omitempty"`
-	Title        string          `protobuf:"bytes,5,opt,name=Title,proto3" json:"Title,omitempty"`
-	Content      string          `protobuf:"bytes,6,opt,name=Content,proto3" json:"Content,omitempty"`
-	Items        map[int64]int64 `protobuf:"bytes,7,rep,name=Items,proto3" json:"Items,omitempty" protobuf_key:"varint,1,opt,name=key,proto3" protobuf_val:"varint,2,opt,name=value,proto3"`
-	Status       int32           `protobuf:"varint,8,opt,name=Status,proto3" json:"Status,omitempty"`
+	UUID      string          `protobuf:"bytes,1,opt,name=UUID,proto3" json:"UUID,omitempty"`
+	CreateAt  int64           `protobuf:"varint,2,opt,name=CreateAt,proto3" json:"CreateAt,omitempty"`
+	SenderRID string          `protobuf:"bytes,3,opt,name=SenderRID,proto3" json:"SenderRID,omitempty"`
+	Name      string          `protobuf:"bytes,4,opt,name=Name,proto3" json:"Name,omitempty"`
+	Title     string          `protobuf:"bytes,5,opt,name=Title,proto3" json:"Title,omitempty"`
+	Content   string          `protobuf:"bytes,6,opt,name=Content,proto3" json:"Content,omitempty"`
+	Items     map[int64]int64 `protobuf:"bytes,7,rep,name=Items,proto3" json:"Items,omitempty" protobuf_key:"varint,1,opt,name=key,proto3" protobuf_val:"varint,2,opt,name=value,proto3"`
+	Status    int32           `protobuf:"varint,8,opt,name=Status,proto3" json:"Status,omitempty"`
 }
 
 func (m *Mail) Reset()         { *m = Mail{} }
@@ -249,9 +249,9 @@ func (m *Mail) GetCreateAt() int64 {
 	return 0
 }
 
-func (m *Mail) GetSenderRoleId() string {
+func (m *Mail) GetSenderRID() string {
 	if m != nil {
-		return m.SenderRoleId
+		return m.SenderRID
 	}
 	return ""
 }
@@ -345,8 +345,7 @@ func (m *MailInfo) GetMails() map[string]*Mail {
 
 func init() {
 	proto.RegisterType((*RoleInfo)(nil), "inner.RoleInfo")
-	proto.RegisterType((*ItemInfo)(nil), "inner.ItemInfo")
-	proto.RegisterMapType((map[int64]int64)(nil), "inner.ItemInfo.ItemsEntry")
+	proto.RegisterType((*AllianceInfo)(nil), "inner.AllianceInfo")
 	proto.RegisterType((*Mail)(nil), "inner.Mail")
 	proto.RegisterMapType((map[int64]int64)(nil), "inner.Mail.ItemsEntry")
 	proto.RegisterType((*MailInfo)(nil), "inner.MailInfo")
@@ -357,36 +356,36 @@ func init() { proto.RegisterFile("playerdata.proto", fileDescriptor_0a7260d8149d
 
 var fileDescriptor_0a7260d8149d0369 = []byte{
 	// 478 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x53, 0x31, 0x6f, 0xd3, 0x40,
-	0x18, 0xcd, 0xc5, 0x71, 0xe2, 0x7c, 0x41, 0xa8, 0x3a, 0x55, 0xd5, 0xc9, 0x83, 0x31, 0x9e, 0x32,
-	0xa0, 0x80, 0xca, 0x52, 0x75, 0x4b, 0x9b, 0x0a, 0x59, 0x2a, 0x08, 0x5d, 0xc8, 0xc2, 0x82, 0x5c,
-	0x7c, 0xa4, 0x16, 0xee, 0x5d, 0x65, 0x5f, 0x90, 0xf2, 0x2f, 0x18, 0x99, 0xd8, 0xf8, 0x2f, 0x8c,
-	0x1d, 0x99, 0x10, 0x4a, 0xfe, 0x01, 0x33, 0x03, 0xba, 0xef, 0x72, 0x8d, 0x0b, 0x4b, 0xa4, 0x6e,
-	0xef, 0x3d, 0x7f, 0xdf, 0x77, 0x2f, 0xef, 0x29, 0xb0, 0x77, 0x5d, 0x66, 0x4b, 0x51, 0xe5, 0x99,
-	0xce, 0x46, 0xd7, 0x95, 0xd2, 0x8a, 0xfa, 0x85, 0x94, 0xa2, 0x0a, 0x61, 0xae, 0xe6, 0xca, 0x4a,
-	0xc9, 0x1f, 0x02, 0x01, 0x57, 0xa5, 0x48, 0xe5, 0x07, 0x45, 0x63, 0xf0, 0x78, 0x3a, 0x61, 0x24,
-	0x26, 0xc3, 0xfe, 0xc9, 0xc3, 0xdf, 0x3f, 0x1f, 0xc1, 0x45, 0xad, 0xe4, 0x71, 0xf2, 0xae, 0xc8,
-	0x13, 0x6e, 0x3e, 0xd1, 0x3d, 0xf0, 0x66, 0xe9, 0x84, 0xb5, 0xcd, 0x04, 0x37, 0x90, 0x32, 0xe8,
-	0x4d, 0x2f, 0x55, 0xa5, 0xd3, 0x09, 0xf3, 0x62, 0x32, 0xf4, 0xb8, 0xa3, 0x74, 0x1f, 0xfc, 0xd7,
-	0x97, 0x4a, 0x0a, 0xd6, 0xc1, 0x69, 0x4b, 0x28, 0x85, 0xce, 0xab, 0xec, 0x4a, 0x30, 0x1f, 0x45,
-	0xc4, 0x46, 0x4b, 0xdf, 0x2b, 0xc9, 0xba, 0x56, 0x33, 0xd8, 0x68, 0x2f, 0x54, 0x99, 0xb3, 0x1e,
-	0x1e, 0x45, 0x4c, 0x43, 0x08, 0x4e, 0x2b, 0x91, 0x69, 0x31, 0xd6, 0x2c, 0xc0, 0xd9, 0x5b, 0x6e,
-	0x7c, 0x9c, 0xab, 0x79, 0x21, 0xc7, 0x9a, 0xf5, 0xf1, 0x93, 0xa3, 0x66, 0xeb, 0x5c, 0xcd, 0xd5,
-	0x42, 0x8f, 0x35, 0x03, 0xbb, 0xe5, 0x78, 0xf2, 0x85, 0x40, 0x90, 0x6a, 0x71, 0xb5, 0xe3, 0xcf,
-	0x7f, 0x06, 0xbe, 0x99, 0xae, 0x59, 0x3b, 0xf6, 0x86, 0x83, 0xc3, 0x70, 0x84, 0x81, 0x8e, 0xdc,
-	0x05, 0x04, 0xf5, 0x99, 0xd4, 0xd5, 0x92, 0xdb, 0xc1, 0xf0, 0x08, 0x60, 0x2b, 0x9a, 0xf8, 0x3e,
-	0x8a, 0x25, 0xbe, 0xe0, 0x71, 0x03, 0x4d, 0x48, 0x9f, 0xb2, 0x72, 0x21, 0x30, 0x52, 0x8f, 0x5b,
-	0x72, 0xdc, 0x3e, 0x22, 0xc9, 0xd7, 0x36, 0x74, 0x5e, 0x66, 0x45, 0x69, 0x92, 0x98, 0xcd, 0x9c,
-	0x2f, 0x8e, 0xf8, 0x4e, 0x12, 0x76, 0x73, 0x9b, 0x44, 0x02, 0x0f, 0xa6, 0x42, 0xe6, 0xa2, 0xc2,
-	0x5e, 0x73, 0xac, 0xa5, 0xcf, 0xef, 0x68, 0xb7, 0x2d, 0x74, 0x1a, 0x2d, 0xec, 0x83, 0xff, 0xa6,
-	0xd0, 0xa5, 0xab, 0xc6, 0x12, 0x93, 0xeb, 0xa9, 0x92, 0x5a, 0x48, 0xbd, 0xa9, 0xc7, 0x51, 0xfa,
-	0xc4, 0x85, 0xd1, 0xc3, 0x30, 0x0e, 0x36, 0x61, 0x18, 0xcf, 0xff, 0x07, 0x41, 0x0f, 0xa0, 0x3b,
-	0xd5, 0x99, 0x5e, 0xd4, 0xd8, 0x9c, 0xcf, 0x37, 0xec, 0x1e, 0x01, 0x7d, 0x23, 0x10, 0x98, 0xc7,
-	0x76, 0xef, 0xce, 0x4c, 0xff, 0xdb, 0x9d, 0xbb, 0x80, 0xc0, 0x59, 0x46, 0x1c, 0x9e, 0x01, 0x6c,
-	0xc5, 0xa6, 0xb5, 0xbe, 0xb5, 0xf6, 0xb8, 0x69, 0x6d, 0x70, 0x38, 0x68, 0x5c, 0x6c, 0xf8, 0x3c,
-	0x89, 0xbf, 0xaf, 0x22, 0x72, 0xb3, 0x8a, 0xc8, 0xaf, 0x55, 0x44, 0x3e, 0xaf, 0xa3, 0xd6, 0xcd,
-	0x3a, 0x6a, 0xfd, 0x58, 0x47, 0xad, 0xb7, 0xdd, 0xa7, 0xb8, 0x71, 0xd1, 0xc5, 0xff, 0xe2, 0xf3,
-	0xbf, 0x01, 0x00, 0x00, 0xff, 0xff, 0x3a, 0xe2, 0x35, 0x53, 0xb2, 0x03, 0x00, 0x00,
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x53, 0xcb, 0x6e, 0xd3, 0x40,
+	0x14, 0xcd, 0xd8, 0x71, 0x1e, 0x37, 0x08, 0x55, 0xa3, 0xaa, 0x1a, 0x59, 0xc8, 0x18, 0xaf, 0xb2,
+	0x40, 0x01, 0x95, 0x4d, 0xd5, 0x5d, 0xfa, 0x10, 0xb2, 0x54, 0x50, 0x35, 0x21, 0x1b, 0x36, 0x68,
+	0x5a, 0x0f, 0xa9, 0x85, 0x3b, 0x53, 0x39, 0x13, 0xa4, 0xfc, 0x05, 0x4b, 0x7e, 0x80, 0x7f, 0x61,
+	0xd9, 0x25, 0x2b, 0x84, 0x92, 0x3f, 0x60, 0xcd, 0x02, 0xdd, 0xeb, 0x38, 0x71, 0x77, 0xdd, 0x9d,
+	0x73, 0xee, 0xc3, 0xe7, 0x1e, 0x8d, 0x61, 0xef, 0xae, 0x50, 0x4b, 0x5d, 0x66, 0xca, 0xa9, 0xd1,
+	0x5d, 0x69, 0x9d, 0xe5, 0x41, 0x6e, 0x8c, 0x2e, 0x43, 0x98, 0xd9, 0x99, 0xad, 0xa4, 0xe4, 0x1f,
+	0x83, 0x9e, 0xb4, 0x85, 0x4e, 0xcd, 0x67, 0xcb, 0x63, 0xf0, 0x65, 0x7a, 0x26, 0x58, 0xcc, 0x86,
+	0xfd, 0x93, 0xa7, 0x7f, 0x7f, 0x3f, 0x87, 0xab, 0xb9, 0x35, 0xc7, 0xc9, 0xa7, 0x3c, 0x4b, 0x24,
+	0x96, 0xf8, 0x1e, 0xf8, 0xd3, 0xf4, 0x4c, 0x78, 0xd8, 0x21, 0x11, 0x72, 0x01, 0xdd, 0xc9, 0x8d,
+	0x2d, 0x5d, 0x9a, 0x09, 0x3f, 0x66, 0x43, 0x5f, 0xd6, 0x94, 0xef, 0x43, 0x70, 0x79, 0x63, 0x8d,
+	0x16, 0x6d, 0xea, 0xae, 0x08, 0xe7, 0xd0, 0x7e, 0xaf, 0x6e, 0xb5, 0x08, 0x48, 0x24, 0x8c, 0x5a,
+	0x7a, 0x6d, 0x8d, 0xe8, 0x54, 0x1a, 0x62, 0xd4, 0xde, 0xda, 0x22, 0x13, 0x5d, 0x5a, 0x4a, 0x98,
+	0x87, 0xd0, 0x3b, 0x2d, 0xb5, 0x72, 0x7a, 0xec, 0x44, 0x8f, 0x7a, 0xb7, 0x1c, 0x7d, 0x5c, 0xd8,
+	0x59, 0x6e, 0xc6, 0x4e, 0xf4, 0xa9, 0x54, 0x53, 0x9c, 0xba, 0xb0, 0x33, 0xbb, 0x70, 0x63, 0x27,
+	0xa0, 0x9a, 0xaa, 0x79, 0x72, 0x09, 0x4f, 0xc6, 0x45, 0x91, 0x2b, 0x73, 0xfd, 0xd8, 0x04, 0x22,
+	0x80, 0xed, 0x44, 0x46, 0x41, 0x04, 0xb2, 0xa1, 0x24, 0xdf, 0x3d, 0x68, 0xbf, 0x53, 0x79, 0x81,
+	0x07, 0x4c, 0xa7, 0xf5, 0x2e, 0x49, 0xf8, 0xc1, 0x01, 0x1e, 0x1d, 0xb6, 0x3b, 0xe0, 0x19, 0xf4,
+	0x27, 0xda, 0x64, 0xba, 0x44, 0x03, 0x3e, 0x0d, 0xed, 0x84, 0x6d, 0x6c, 0xed, 0x46, 0x6c, 0xfb,
+	0x10, 0x7c, 0xc8, 0x5d, 0x51, 0x67, 0x59, 0x11, 0x0c, 0xe2, 0xd4, 0x1a, 0xa7, 0x8d, 0xdb, 0xe4,
+	0x59, 0x53, 0xfe, 0x12, 0x82, 0xd4, 0xe9, 0xdb, 0xb9, 0xe8, 0xc6, 0xfe, 0x70, 0x70, 0x78, 0x30,
+	0xa2, 0xe7, 0x30, 0x42, 0xb7, 0x23, 0x2a, 0x9c, 0x1b, 0x57, 0x2e, 0x65, 0xd5, 0xc4, 0x0f, 0xa0,
+	0x33, 0x71, 0xca, 0x2d, 0xe6, 0x14, 0x75, 0x20, 0x37, 0x2c, 0x3c, 0x02, 0xd8, 0x35, 0xe3, 0x83,
+	0xf8, 0xa2, 0x97, 0x74, 0xa4, 0x2f, 0x11, 0xa2, 0xab, 0xaf, 0xaa, 0x58, 0xe8, 0xcd, 0x81, 0x15,
+	0x39, 0xf6, 0x8e, 0x58, 0xf2, 0x83, 0x41, 0x0f, 0x3f, 0xf6, 0xc8, 0xa4, 0x5f, 0x43, 0x80, 0xdd,
+	0x73, 0xe1, 0x91, 0xdd, 0xb0, 0x61, 0x17, 0x37, 0x10, 0xa8, 0x2d, 0x13, 0x0e, 0xcf, 0x01, 0x76,
+	0x62, 0xd3, 0x5a, 0xbf, 0xb2, 0xf6, 0xa2, 0x69, 0x6d, 0x70, 0x38, 0x68, 0x6c, 0x6c, 0xf8, 0x3c,
+	0x89, 0x7f, 0xae, 0x22, 0x76, 0xbf, 0x8a, 0xd8, 0x9f, 0x55, 0xc4, 0xbe, 0xad, 0xa3, 0xd6, 0xfd,
+	0x3a, 0x6a, 0xfd, 0x5a, 0x47, 0xad, 0x8f, 0x9d, 0x57, 0x34, 0x71, 0xd5, 0xa1, 0x9f, 0xe7, 0xcd,
+	0xff, 0x00, 0x00, 0x00, 0xff, 0xff, 0x84, 0x79, 0x52, 0xc4, 0x63, 0x03, 0x00, 0x00,
 }
 
 func (m *RoleInfo) Marshal() (dAtA []byte, err error) {
@@ -456,8 +455,8 @@ func (m *RoleInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x22
 	}
-	if m.ShortID != 0 {
-		i = encodeVarintPlayerdata(dAtA, i, uint64(m.ShortID))
+	if m.ShortId != 0 {
+		i = encodeVarintPlayerdata(dAtA, i, uint64(m.ShortId))
 		i--
 		dAtA[i] = 0x18
 	}
@@ -478,7 +477,7 @@ func (m *RoleInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *ItemInfo) Marshal() (dAtA []byte, err error) {
+func (m *AllianceInfo) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -488,30 +487,20 @@ func (m *ItemInfo) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *ItemInfo) MarshalTo(dAtA []byte) (int, error) {
+func (m *AllianceInfo) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *ItemInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *AllianceInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.Items) > 0 {
-		for k := range m.Items {
-			v := m.Items[k]
-			baseI := i
-			i = encodeVarintPlayerdata(dAtA, i, uint64(v))
-			i--
-			dAtA[i] = 0x10
-			i = encodeVarintPlayerdata(dAtA, i, uint64(k))
-			i--
-			dAtA[i] = 0x8
-			i = encodeVarintPlayerdata(dAtA, i, uint64(baseI-i))
-			i--
-			dAtA[i] = 0x12
-		}
+	if m.AllianceId != 0 {
+		i = encodeVarintPlayerdata(dAtA, i, uint64(m.AllianceId))
+		i--
+		dAtA[i] = 0x10
 	}
 	if len(m.RID) > 0 {
 		i -= len(m.RID)
@@ -584,10 +573,10 @@ func (m *Mail) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x22
 	}
-	if len(m.SenderRoleId) > 0 {
-		i -= len(m.SenderRoleId)
-		copy(dAtA[i:], m.SenderRoleId)
-		i = encodeVarintPlayerdata(dAtA, i, uint64(len(m.SenderRoleId)))
+	if len(m.SenderRID) > 0 {
+		i -= len(m.SenderRID)
+		copy(dAtA[i:], m.SenderRID)
+		i = encodeVarintPlayerdata(dAtA, i, uint64(len(m.SenderRID)))
 		i--
 		dAtA[i] = 0x1a
 	}
@@ -687,8 +676,8 @@ func (m *RoleInfo) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovPlayerdata(uint64(l))
 	}
-	if m.ShortID != 0 {
-		n += 1 + sovPlayerdata(uint64(m.ShortID))
+	if m.ShortId != 0 {
+		n += 1 + sovPlayerdata(uint64(m.ShortId))
 	}
 	l = len(m.Phone)
 	if l > 0 {
@@ -720,7 +709,7 @@ func (m *RoleInfo) Size() (n int) {
 	return n
 }
 
-func (m *ItemInfo) Size() (n int) {
+func (m *AllianceInfo) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -730,13 +719,8 @@ func (m *ItemInfo) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovPlayerdata(uint64(l))
 	}
-	if len(m.Items) > 0 {
-		for k, v := range m.Items {
-			_ = k
-			_ = v
-			mapEntrySize := 1 + sovPlayerdata(uint64(k)) + 1 + sovPlayerdata(uint64(v))
-			n += mapEntrySize + 1 + sovPlayerdata(uint64(mapEntrySize))
-		}
+	if m.AllianceId != 0 {
+		n += 1 + sovPlayerdata(uint64(m.AllianceId))
 	}
 	return n
 }
@@ -754,7 +738,7 @@ func (m *Mail) Size() (n int) {
 	if m.CreateAt != 0 {
 		n += 1 + sovPlayerdata(uint64(m.CreateAt))
 	}
-	l = len(m.SenderRoleId)
+	l = len(m.SenderRID)
 	if l > 0 {
 		n += 1 + l + sovPlayerdata(uint64(l))
 	}
@@ -911,9 +895,9 @@ func (m *RoleInfo) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 3:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ShortID", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field ShortId", wireType)
 			}
-			m.ShortID = 0
+			m.ShortId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowPlayerdata
@@ -923,7 +907,7 @@ func (m *RoleInfo) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.ShortID |= int64(b&0x7F) << shift
+				m.ShortId |= int64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1160,7 +1144,7 @@ func (m *RoleInfo) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *ItemInfo) Unmarshal(dAtA []byte) error {
+func (m *AllianceInfo) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1183,10 +1167,10 @@ func (m *ItemInfo) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: ItemInfo: wiretype end group for non-group")
+			return fmt.Errorf("proto: AllianceInfo: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: ItemInfo: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: AllianceInfo: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1222,10 +1206,10 @@ func (m *ItemInfo) Unmarshal(dAtA []byte) error {
 			m.RID = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Items", wireType)
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AllianceId", wireType)
 			}
-			var msglen int
+			m.AllianceId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowPlayerdata
@@ -1235,91 +1219,11 @@ func (m *ItemInfo) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				msglen |= int(b&0x7F) << shift
+				m.AllianceId |= int32(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if msglen < 0 {
-				return ErrInvalidLengthPlayerdata
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthPlayerdata
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.Items == nil {
-				m.Items = make(map[int64]int64)
-			}
-			var mapkey int64
-			var mapvalue int64
-			for iNdEx < postIndex {
-				entryPreIndex := iNdEx
-				var wire uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return ErrIntOverflowPlayerdata
-					}
-					if iNdEx >= l {
-						return io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					wire |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				fieldNum := int32(wire >> 3)
-				if fieldNum == 1 {
-					for shift := uint(0); ; shift += 7 {
-						if shift >= 64 {
-							return ErrIntOverflowPlayerdata
-						}
-						if iNdEx >= l {
-							return io.ErrUnexpectedEOF
-						}
-						b := dAtA[iNdEx]
-						iNdEx++
-						mapkey |= int64(b&0x7F) << shift
-						if b < 0x80 {
-							break
-						}
-					}
-				} else if fieldNum == 2 {
-					for shift := uint(0); ; shift += 7 {
-						if shift >= 64 {
-							return ErrIntOverflowPlayerdata
-						}
-						if iNdEx >= l {
-							return io.ErrUnexpectedEOF
-						}
-						b := dAtA[iNdEx]
-						iNdEx++
-						mapvalue |= int64(b&0x7F) << shift
-						if b < 0x80 {
-							break
-						}
-					}
-				} else {
-					iNdEx = entryPreIndex
-					skippy, err := skipPlayerdata(dAtA[iNdEx:])
-					if err != nil {
-						return err
-					}
-					if (skippy < 0) || (iNdEx+skippy) < 0 {
-						return ErrInvalidLengthPlayerdata
-					}
-					if (iNdEx + skippy) > postIndex {
-						return io.ErrUnexpectedEOF
-					}
-					iNdEx += skippy
-				}
-			}
-			m.Items[mapkey] = mapvalue
-			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipPlayerdata(dAtA[iNdEx:])
@@ -1423,7 +1327,7 @@ func (m *Mail) Unmarshal(dAtA []byte) error {
 			}
 		case 3:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field SenderRoleId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field SenderRID", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1451,7 +1355,7 @@ func (m *Mail) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.SenderRoleId = string(dAtA[iNdEx:postIndex])
+			m.SenderRID = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 4:
 			if wireType != 2 {

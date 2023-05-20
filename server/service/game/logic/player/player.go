@@ -2,8 +2,10 @@ package player
 
 import (
 	"context"
+	"github.com/golang/protobuf/proto"
 	"math/rand"
 	"reflect"
+	"server/common/actortype"
 	"strings"
 	"time"
 
@@ -28,7 +30,7 @@ import (
 func New(account *inner.Account, info *inner.LoginRoleInfo, gamer iface.Gamer) *Player {
 	p := &Player{
 		roleId:      info.RID,
-		shortId:     info.ShortID,
+		shortId:     info.ShortId,
 		accountInfo: account,
 		gamer:       gamer,
 	}
@@ -40,7 +42,7 @@ type (
 		actor.Base
 		gamer    iface.Gamer
 		gSession common.GSession       // 网络session
-		models   [allmod]iface.Modeler // 玩家所有功能模块
+		models   [allMod]iface.Modeler // 玩家所有功能模块
 		observer *common.Observer
 
 		roleId      string
@@ -50,6 +52,8 @@ type (
 		saveTimerId string
 		exitTimerId string
 		keepAlive   time.Time
+
+		currentMsg actor.Message
 	}
 )
 
@@ -62,7 +66,34 @@ func (s *Player) OnInit() {
 
 	// 定时回存
 	s.storeTicker()
+
+	router.Result(s, s.responseHandle)
 	log.Infow("player actor activated", "id", s.ID())
+}
+
+// 所有消息,处理完统一返回流程
+func (s *Player) responseHandle(resultMsg any) {
+	msg, ok := resultMsg.(proto.Message)
+	if !ok {
+		return
+	}
+
+	// 如果说网关消息，直接将消息转发给session, 其他服务消息，走内部通讯接口
+	if actortype.IsActorOf(s.currentMsg.GetSourceId(), actortype.GatewayActor) {
+		s.Send2Client(msg)
+	} else {
+		var err error
+		if s.currentMsg.GetRequestId() != "" {
+			err = s.Response(s.currentMsg.GetRequestId(), msg)
+		} else {
+			err = s.Send(s.currentMsg.GetSourceId(), msg)
+		}
+
+		if err != nil {
+			log.Warnw("response to actor failed",
+				"source", s.currentMsg.GetSourceId(), "msg name", s.currentMsg.GetMsgName())
+		}
+	}
 }
 
 func (s *Player) OnStop() bool {
@@ -71,6 +102,7 @@ func (s *Player) OnStop() bool {
 }
 
 func (s *Player) OnHandle(msg actor.Message) {
+	s.currentMsg = msg
 	defer func() {
 		s.keepAlive = tools.Now()
 	}()
@@ -90,7 +122,7 @@ func (s *Player) OnHandle(msg actor.Message) {
 		s.SetGateSession(gSession)
 	}
 
-	pt, ok := message.(gogo.Message)
+	pt, ok := message.(proto.Message)
 	if !ok {
 		log.Warnw("unknown msg", "msg", reflect.TypeOf(message).String())
 		return
@@ -114,7 +146,7 @@ func (s *Player) Observer() *common.Observer {
 	return s.observer
 }
 
-func (s *Player) Send2Client(pb gogo.Message) {
+func (s *Player) Send2Client(pb proto.Message) {
 	log.Infow("output", "rid", s.roleId, "online", s.Online(), "msg", reflect.TypeOf(pb), "data", pb.String())
 	if pb == nil || !s.Online() {
 		return

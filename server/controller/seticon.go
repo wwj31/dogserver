@@ -7,7 +7,7 @@ import (
 )
 
 // 设置头像
-var _ = router.Reg(func(player *player.Player, msg *outer.SetIconReq) {
+var _ = router.Reg(func(player *player.Player, msg *outer.SetIconReq) any {
 	player.Role().SetIcon(msg.Icon)
-	player.Send2Client(&outer.BindPhoneRsp{Phone: msg.Icon})
+	return &outer.BindPhoneRsp{Phone: msg.Icon}
 })
