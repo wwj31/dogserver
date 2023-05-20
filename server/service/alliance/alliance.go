@@ -26,7 +26,7 @@ type (
 		allianceId int32
 		members    map[string]*Member
 		sessions   map[common.GSession]*Member // 关联登录成功的在线玩家
-		masterRID  string
+		masterRID  *Member
 
 		currentMsg      actor.Message
 		currentGSession common.GSession
@@ -55,6 +55,9 @@ func (a *Alliance) OnInit() {
 
 	for _, member := range members {
 		a.members[member.RID] = member
+		if member.Position == Master {
+			a.masterRID = member
+		}
 		log.Debugf("load member %+v", *member)
 	}
 
