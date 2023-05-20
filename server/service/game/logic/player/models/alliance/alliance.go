@@ -24,6 +24,7 @@ func (s *Alliance) AllianceId() int32 {
 }
 func (s *Alliance) SetAllianceId(id int32) {
 	s.data.AllianceId = id
+	s.Player.UpdateInfoToRedis()
 }
 
 func (s *Alliance) Data() gogo.Message {

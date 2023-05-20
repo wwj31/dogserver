@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"reflect"
 	"server/common/actortype"
+	"server/common/rdskey"
 	"strings"
 	"time"
 
@@ -165,6 +166,7 @@ func (s *Player) Login(first bool, enterGameRsp *outer.EnterGameRsp) {
 	}
 
 	s.CancelTimer(s.exitTimerId)
+	s.UpdateInfoToRedis()
 }
 
 func (s *Player) Logout() {
@@ -173,8 +175,21 @@ func (s *Player) Logout() {
 	for _, mod := range s.models {
 		mod.OnLogout()
 	}
-
 	s.store()
+	s.UpdateInfoToRedis()
+}
+
+func (s *Player) UpdateInfoToRedis() {
+	rdskey.SetPlayerInfo(&inner.PlayerInfo{
+		RID:        s.roleId,
+		ShortId:    s.shortId,
+		Name:       s.Role().Name(),
+		Icon:       s.Role().Icon(),
+		AllianceId: s.Alliance().AllianceId(),
+		LoginAt:    tools.TimeFormat(s.Role().LoginAt()),
+		LogoutAt:   tools.TimeFormat(s.Role().LogoutAt()),
+		GSession:   s.gSession.String(),
+	})
 }
 
 func (s *Player) load() {

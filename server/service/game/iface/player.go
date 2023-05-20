@@ -20,6 +20,7 @@ type (
 		Observer() *common.Observer
 		Send2Client(pb proto.Message)
 		Online() bool
+		UpdateInfoToRedis()
 
 		Account() *inner.Account
 		Gamer() Gamer

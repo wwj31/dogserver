@@ -17,3 +17,10 @@ var _ = router.Reg(func(alliance *alliance.Alliance, msg *inner.OfflineNtf) any 
 	alliance.PlayerOffline(common.GSession(msg.GateSession), msg.RID)
 	return nil
 })
+
+var _ = router.Reg(func(alliance *alliance.Alliance, msg *inner.SetMemberReq) any {
+	for _, player := range msg.Players {
+		alliance.SetMember(player)
+	}
+	return &inner.SetMemberRsp{}
+})

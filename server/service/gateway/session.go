@@ -37,7 +37,7 @@ func (u *UserSession) OnSessionCreated(s network.Session) {
 func (u *UserSession) OnSessionClosed() {
 	log.Infow("session closed ", "sessionId", u.Id(), "player", u.PlayerId)
 	if u.PlayerId != "" {
-		gSession := common.GateSession(actortype.GatewayActor, u.Id())
+		gSession := common.GateSession(u.gateway.ID(), u.Id())
 		_ = u.gateway.Send(u.PlayerId, &inner.GSessionClosed{
 			GateSession: gSession.String(),
 		})

@@ -6,6 +6,18 @@ option  go_package = "/inner";
 message Error {}
 message Ok {}
 
+message PlayerInfo{
+    string RID        = 1;
+    int64  ShortId    = 2;
+    string Name       = 3;
+    string Icon       = 4;
+    int32  AllianceId = 5;
+    string LoginAt    = 6;
+    string LogoutAt   = 7;
+    string GSession   = 8;
+}
+
+
 message GateMsgWrapper{
     string GateSession = 1;
     string MsgName     = 2;

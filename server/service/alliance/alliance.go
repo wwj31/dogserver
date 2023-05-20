@@ -17,7 +17,7 @@ import (
 )
 
 func New(id int32) *Alliance {
-	return &Alliance{allianceId: id}
+	return &Alliance{allianceId: id, members: make(map[string]*Member)}
 }
 
 type (
@@ -33,8 +33,8 @@ type (
 	}
 )
 
-func (s *Alliance) OnInit() {
-	mongoDBName := fmt.Sprintf("alliance_%v", s.allianceId)
+func (a *Alliance) OnInit() {
+	mongoDBName := fmt.Sprintf("alliance_%v", a.allianceId)
 	cur, err := mongodb.Ins.Collection(mongoDBName).Find(context.Background(), bson.M{})
 	if err != nil {
 		log.Errorw("load all alliance member failed", "err", err)
@@ -54,58 +54,58 @@ func (s *Alliance) OnInit() {
 	}
 
 	for _, member := range members {
-		s.members[member.RID] = member
+		a.members[member.RID] = member
 		log.Debugf("load member %+v", *member)
 	}
 
-	log.Debugf("Alliance OnInit %v members:%v", s.ID(), len(s.members))
+	log.Debugf("Alliance OnInit %v members:%v", a.ID(), len(a.members))
 }
 
 // 所有消息,处理完统一返回流程
-func (s *Alliance) responseHandle(resultMsg any) {
+func (a *Alliance) responseHandle(resultMsg any) {
 	msg, ok := resultMsg.(proto.Message)
 	if !ok {
 		return
 	}
 
 	// 网关消息，直接将消息转发给session, 其他服务消息，走内部通讯接口
-	if actortype.IsActorOf(s.currentMsg.GetSourceId(), actortype.GatewayActor) {
-		s.Send2Client(s.currentGSession, msg)
+	if actortype.IsActorOf(a.currentMsg.GetSourceId(), actortype.GatewayActor) {
+		a.Send2Client(a.currentGSession, msg)
 	} else {
 		var err error
-		if s.currentMsg.GetRequestId() != "" {
-			err = s.Response(s.currentMsg.GetRequestId(), msg)
+		if a.currentMsg.GetRequestId() != "" {
+			err = a.Response(a.currentMsg.GetRequestId(), msg)
 		} else {
-			err = s.Send(s.currentMsg.GetSourceId(), msg)
+			err = a.Send(a.currentMsg.GetSourceId(), msg)
 		}
 
 		if err != nil {
 			log.Warnw("response to actor failed",
-				"source", s.currentMsg.GetSourceId(), "msg name", s.currentMsg.GetMsgName())
+				"source", a.currentMsg.GetSourceId(), "msg name", a.currentMsg.GetMsgName())
 		}
 	}
 }
-func (s *Alliance) Send2Client(gSession common.GSession, msg proto.Message) {
-	member, ok := s.sessions[gSession]
+func (a *Alliance) Send2Client(gSession common.GSession, msg proto.Message) {
+	member, ok := a.sessions[gSession]
 	if !ok {
 		return
 	}
 
-	log.Infow("output", "alliance", s.ID(), "msg", reflect.TypeOf(msg), "data", msg.String())
-	member.GSession.SendToClient(s, msg)
+	log.Infow("output", "alliance", a.ID(), "msg", reflect.TypeOf(msg), "data", msg.String())
+	member.GSession.SendToClient(a, msg)
 }
 
-func (s *Alliance) OnStop() bool {
-	log.Infof("stop Alliance %v", s.ID())
+func (a *Alliance) OnStop() bool {
+	log.Infof("stop Alliance %v", a.ID())
 	return true
 }
 
-func (s *Alliance) OnHandle(msg actor.Message) {
-	s.currentMsg = msg
+func (a *Alliance) OnHandle(msg actor.Message) {
+	a.currentMsg = msg
 
 	message, _, gSession, err := common.UnwrappedGateMsg(msg.Payload())
 	expect.Nil(err)
-	s.currentGSession = gSession
+	a.currentGSession = gSession
 
 	pt, ok := message.(proto.Message)
 	if !ok {
@@ -113,25 +113,25 @@ func (s *Alliance) OnHandle(msg actor.Message) {
 		return
 	}
 
-	log.Infow("input", "alliance", s.ID(), "msg", reflect.TypeOf(pt), "data", pt.String())
-	router.Dispatch(s, pt)
+	log.Infow("input", "alliance", a.ID(), "msg", reflect.TypeOf(pt), "data", pt.String())
+	router.Dispatch(a, pt)
 }
 
-func (s *Alliance) PlayerOnline(gSession common.GSession, rid string) {
-	member, ok := s.members[rid]
+func (a *Alliance) PlayerOnline(gSession common.GSession, rid string) {
+	member, ok := a.members[rid]
 	if !ok {
 		log.Warnw("can not find member ", "rid", rid)
 		return
 	}
 	member.GSession = gSession
 	member.OnlineAt = time.Now()
-	s.sessions[gSession] = member
+	a.sessions[gSession] = member
 
 	log.Infow("player online ", "gSession", gSession, "rid", member.RID, "shortId", member.ShortId)
 }
 
-func (s *Alliance) PlayerOffline(gSession common.GSession, rid string) {
-	member, ok := s.members[rid]
+func (a *Alliance) PlayerOffline(gSession common.GSession, rid string) {
+	member, ok := a.members[rid]
 	if !ok {
 		log.Warnw("can not find member ", "rid", rid)
 		return
@@ -140,7 +140,7 @@ func (s *Alliance) PlayerOffline(gSession common.GSession, rid string) {
 	if gSession != member.GSession {
 		log.Warnw("session not equal", "rid", rid, "gSession", member.GSession, "offline gSession", gSession)
 	}
-	delete(s.sessions, member.GSession)
+	delete(a.sessions, member.GSession)
 
 	member.GSession = ""
 	member.OfflineAt = time.Now()
