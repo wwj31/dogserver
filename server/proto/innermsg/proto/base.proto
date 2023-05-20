@@ -1,0 +1,14 @@
+syntax = "proto3";
+package inner;
+option  go_package = "/inner";
+
+
+message Error {}
+message Ok {}
+
+message GateMsgWrapper{
+    string GateSession = 1;
+    string MsgName     = 2;
+    bytes  Data        = 3;
+}
+

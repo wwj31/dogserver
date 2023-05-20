@@ -2,6 +2,8 @@ package alliance
 
 import (
 	gogo "github.com/gogo/protobuf/proto"
+	"server/common/actortype"
+	"server/common/log"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
 	"server/service/game/logic/player/models"
@@ -33,12 +35,26 @@ func (s *Alliance) OnLogin(first bool, enterGameRsp *outer.EnterGameRsp) {
 	}
 
 	if s.data.AllianceId != 0 {
-		//TODO 通知所在联盟玩家在线
+		err := s.Player.Send(actortype.AllianceName(s.AllianceId()), &inner.OnlineNtf{
+			GateSession: s.Player.GateSession().String(),
+			RID:         s.Player.RID(),
+		})
+
+		if err != nil {
+			log.Warnf("alliance login send failed", "rid", s.Player.RID(), "err", err)
+		}
 	}
 }
 
 func (s *Alliance) OnLogout() {
 	if s.data.AllianceId != 0 {
-		//TODO 通知所在联盟玩家离线
+		err := s.Player.Send(actortype.AllianceName(s.AllianceId()), &inner.OfflineNtf{
+			GateSession: s.Player.GateSession().String(),
+			RID:         s.Player.RID(),
+		})
+
+		if err != nil {
+			log.Warnf("alliance logout send failed", "rid", s.Player.RID(), "err", err)
+		}
 	}
 }

@@ -78,7 +78,7 @@ func (s *Player) responseHandle(resultMsg any) {
 		return
 	}
 
-	// 如果说网关消息，直接将消息转发给session, 其他服务消息，走内部通讯接口
+	// 网关消息，直接将消息转发给session, 其他服务消息，走内部通讯接口
 	if actortype.IsActorOf(s.currentMsg.GetSourceId(), actortype.GatewayActor) {
 		s.Send2Client(msg)
 	} else {
@@ -107,7 +107,7 @@ func (s *Player) OnHandle(msg actor.Message) {
 		s.keepAlive = tools.Now()
 	}()
 
-	message, msgName, gSession, err := common.UnwrappedGateMsg(msg.Payload())
+	message, _, gSession, err := common.UnwrappedGateMsg(msg.Payload())
 	expect.Nil(err)
 
 	// 重连的情况，除了EnterGame消息，其他都不处理
@@ -128,9 +128,6 @@ func (s *Player) OnHandle(msg actor.Message) {
 		return
 	}
 
-	if msgName == "" {
-		msgName = msg.GetMsgName()
-	}
 	log.Infow("input", "rid", s.roleId, "msg", reflect.TypeOf(pt), "data", pt.String())
 	router.Dispatch(s, pt)
 }
@@ -172,6 +169,7 @@ func (s *Player) Login(first bool, enterGameRsp *outer.EnterGameRsp) {
 
 func (s *Player) Logout() {
 	log.Infow("player logout", "id", s.roleId)
+
 	for _, mod := range s.models {
 		mod.OnLogout()
 	}

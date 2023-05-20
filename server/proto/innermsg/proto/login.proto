@@ -4,15 +4,6 @@ option  go_package = "/inner";
 
 import "account.proto";
 
-message Error {}
-message Ok {}
-
-message GateMsgWrapper{
-    string GateSession = 1;
-    string MsgName     = 2;
-    bytes  Data        = 3;
-}
-
 message BindSessionWithRID{
     string GateSession = 1;
     string RID         = 2;
@@ -34,4 +25,14 @@ message GSessionClosed{
 message PullPlayer{
     Account Account        = 1;
     LoginRoleInfo RoleInfo = 2;
+}
+
+message OnlineNtf{
+    string GateSession = 1;
+    string RID         = 2;
+}
+
+message OfflineNtf{
+    string GateSession = 1;
+    string RID         = 2;
 }

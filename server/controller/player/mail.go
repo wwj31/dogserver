@@ -1,4 +1,4 @@
-package controller
+package player
 
 import (
 	"server/common/log"
