@@ -17,7 +17,7 @@ import (
 	"server/service/login/account"
 )
 
-// 绑定手机号
+// 修改密码
 var _ = router.Reg(func(player *player.Player, msg *outer.ModifyPasswordReq) any {
 	if player.Role().Phone() == "" {
 		return &outer.FailRsp{Error: outer.ERROR_MODIFY_PASSWORD_NOT_PHONE}
