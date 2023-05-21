@@ -6,7 +6,7 @@ import (
 	"math/rand"
 	"reflect"
 	"server/common/actortype"
-	"server/common/rdskey"
+	"server/rdsop"
 	"strings"
 	"time"
 
@@ -176,6 +176,7 @@ func (s *Player) Logout() {
 		mod.OnLogout()
 	}
 	s.store()
+	s.SetGateSession("")
 	s.UpdateInfoToRedis()
 	s.exitTimerId = tools.XUID()
 
@@ -185,7 +186,7 @@ func (s *Player) Logout() {
 }
 
 func (s *Player) UpdateInfoToRedis() {
-	rdskey.SetPlayerInfo(&inner.PlayerInfo{
+	rdsop.SetPlayerInfo(&inner.PlayerInfo{
 		RID:        s.roleId,
 		ShortId:    s.shortId,
 		Name:       s.Role().Name(),

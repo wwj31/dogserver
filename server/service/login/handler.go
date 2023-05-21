@@ -3,11 +3,10 @@ package login
 import (
 	"context"
 	"fmt"
+	"server/rdsop"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
-
-	"server/common/rdskey"
 
 	"github.com/wwj31/dogactor/tools"
 	"go.mongodb.org/mongo-driver/bson"
@@ -38,7 +37,7 @@ const (
 
 func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 	go tools.Try(func() {
-		rds.LockDo(rdskey.LockLoginKey(req.DeviceID), func() {
+		rds.LockDo(rdsop.LockLoginKey(req.DeviceID), func() {
 			var (
 				acc       *account.Account
 				newPlayer bool
@@ -127,7 +126,7 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 			}
 
 			// 获得最后一次登录的gSession,踢掉旧链接
-			val := rds.Ins.Get(context.Background(), rdskey.SessionKey(acc.LastLoginRID)).Val()
+			val := rds.Ins.Get(context.Background(), rdsop.SessionKey(acc.LastLoginRID)).Val()
 			oldGateSession := common.GSession(val)
 			if oldGateSession.Valid() {
 				gate, _ := oldGateSession.Split()
@@ -136,7 +135,7 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 					RID:         acc.LastLoginRID,
 				}, 3*time.Second)
 			}
-			rds.Ins.Set(context.Background(), rdskey.SessionKey(acc.LastLoginRID), gSession.String(), 3*24*time.Hour)
+			rds.Ins.Set(context.Background(), rdsop.SessionKey(acc.LastLoginRID), gSession.String(), 7*24*time.Hour)
 
 			dispatchGameID := actortype.GameName(1)
 			_, err = s.RequestWait(dispatchGameID, &inner.PullPlayer{

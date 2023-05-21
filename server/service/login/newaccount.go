@@ -3,6 +3,7 @@ package login
 import (
 	"context"
 	"fmt"
+	"server/rdsop"
 	"time"
 
 	"github.com/go-redis/redis/v9"
@@ -12,13 +13,12 @@ import (
 	"server/common/log"
 	"server/common/mongodb"
 	"server/common/rds"
-	"server/common/rdskey"
 	"server/service/login/account"
 )
 
 func (s *Login) initAccount(acc *account.Account) (err error) {
 	var shortIdVal interface{}
-	shortIdVal, err = rds.Ins.EvalSha(context.Background(), s.sha1, []string{rdskey.ShortIDKey()}).Result()
+	shortIdVal, err = rds.Ins.EvalSha(context.Background(), s.sha1, []string{rdsop.ShortIDKey()}).Result()
 	if err == redis.Nil {
 		log.Errorw("lua script exec failed", "err", err.Error())
 		return
