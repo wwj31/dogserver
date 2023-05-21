@@ -9,13 +9,14 @@ message RoleInfo
     string RID      = 1 [(gogoproto.moretags) = 'bson:"_id"'];
     string UID      = 2;
     int64  ShortId  = 3;
-    string Phone    = 4;
-    string Name     = 5;
-    string Icon     = 6;
-    int64  Gold     = 7;
-    string CreateAt = 8;
-    string LoginAt  = 9;
-    string LogoutAt = 10;
+    string LoginAt  = 4;
+    string LogoutAt = 5;
+    string CreateAt = 6;
+    string Phone    = 7;
+    string Name     = 8;
+    string Icon     = 9;
+    int64  Gold     = 10;
+    int32  Gender   = 11;
 }
 
 message AllianceInfo

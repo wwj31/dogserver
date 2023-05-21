@@ -11,10 +11,11 @@ message PlayerInfo{
     int64  ShortId    = 2;
     string Name       = 3;
     string Icon       = 4;
-    int32  AllianceId = 5;
-    string LoginAt    = 6;
-    string LogoutAt   = 7;
-    string GSession   = 8;
+    int32  Gender     = 5;
+    int32  AllianceId = 6;
+    string LoginAt    = 7;
+    string LogoutAt   = 8;
+    string GSession   = 9;
 }
 
 

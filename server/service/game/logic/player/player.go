@@ -177,6 +177,11 @@ func (s *Player) Logout() {
 	}
 	s.store()
 	s.UpdateInfoToRedis()
+	s.exitTimerId = tools.XUID()
+
+	s.AddTimer(s.exitTimerId, tools.Now().Add(3*time.Second), func(dt time.Duration) {
+		s.Exit()
+	})
 }
 
 func (s *Player) UpdateInfoToRedis() {
@@ -185,6 +190,7 @@ func (s *Player) UpdateInfoToRedis() {
 		ShortId:    s.shortId,
 		Name:       s.Role().Name(),
 		Icon:       s.Role().Icon(),
+		Gender:     s.Role().Gender(),
 		AllianceId: s.Alliance().AllianceId(),
 		LoginAt:    tools.TimeFormat(s.Role().LoginAt()),
 		LogoutAt:   tools.TimeFormat(s.Role().LogoutAt()),

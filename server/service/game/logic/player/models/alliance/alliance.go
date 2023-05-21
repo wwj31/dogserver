@@ -36,7 +36,7 @@ func (s *Alliance) OnLogin(first bool, enterGameRsp *outer.EnterGameRsp) {
 	}
 
 	if s.data.AllianceId != 0 {
-		err := s.Player.Send(actortype.AllianceName(s.AllianceId()), &inner.OnlineNtf{
+		_, err := s.Player.RequestWait(actortype.AllianceName(s.AllianceId()), &inner.OnlineNtf{
 			GateSession: s.Player.GateSession().String(),
 			RID:         s.Player.RID(),
 		})

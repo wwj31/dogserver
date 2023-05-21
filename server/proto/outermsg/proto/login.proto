@@ -48,5 +48,6 @@ message RoleInfo{
     string  Phone   = 3;
     string  Name    = 4;
     string  Icon    = 5;
-    int64  Gold     = 6;
+    int32   Gender  = 6;
+    int64   Gold    = 7;
 }

@@ -2,13 +2,17 @@ syntax = "proto3";
 package outer;
 option  go_package = "/outer";
 
-// 修改头像
-message SetIconReq {// tag:player
-    string icon = 1;
+// 设置玩家基础信息
+message SetRoleInfoReq {// tag:player
+    string icon   = 1; // 头像
+    int32  gender = 2; // 性别 0.男、1.女
+    string Name   = 3; // 服务器限制最长20个字符
 }
 
-message SetIconRsp {
-    string icon = 1;
+message SetRoleInfoRsp {
+    string icon   = 1; // 头像
+    int32  gender = 2; // 性别
+    string Name   = 3; //
 }
 
 // 手机号作为账号，建立账号密码
