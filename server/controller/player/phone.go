@@ -3,6 +3,7 @@ package player
 import (
 	"context"
 	"regexp"
+	"unicode/utf8"
 
 	"go.mongodb.org/mongo-driver/mongo"
 
@@ -15,6 +16,35 @@ import (
 	"server/service/game/logic/player"
 	"server/service/login/account"
 )
+
+// 绑定手机号
+var _ = router.Reg(func(player *player.Player, msg *outer.ModifyPasswordReq) any {
+	if player.Role().Phone() == "" {
+		return &outer.FailRsp{Error: outer.ERROR_MODIFY_PASSWORD_NOT_PHONE}
+	}
+
+	result := mongodb.Ins.Collection(account.Collection).FindOne(context.Background(), bson.M{account.Phone: player.Role().Phone()})
+	if result.Err() == mongo.ErrNoDocuments {
+		return &outer.FailRsp{Error: outer.ERROR_PHONE_NOT_FOUND}
+	}
+
+	if !validatePassword(msg.NewPassword) {
+		return &outer.FailRsp{Error: outer.ERROR_INVALID_PASSWORD_FORMAT}
+	}
+
+	_, err := mongodb.Ins.Collection(account.Collection).
+		UpdateByID(context.Background(), player.Account().UID, bson.M{"$set": bson.M{
+			"phone_password": msg.GetNewPassword(),
+		}})
+	if err != nil {
+		log.Warnw("bing phone failed", "err", err, "rid", player.RID(), "phone", player.Role().Phone())
+		return &outer.FailRsp{
+			Error: outer.ERROR_FAILED,
+			Info:  err.Error(),
+		}
+	}
+	return &outer.ModifyPasswordRsp{}
+})
 
 // 绑定手机号
 var _ = router.Reg(func(player *player.Player, msg *outer.BindPhoneReq) any {
@@ -63,7 +93,13 @@ func validatePhoneNumber(phoneNumber string) bool {
 }
 
 func validatePassword(password string) bool {
-	if len(password) < 1 {
+	regex := regexp.MustCompile("[\u4e00-\u9fa5]")
+	if regex.MatchString(password) {
+		return false
+	}
+
+	strLen := utf8.RuneCountInString(password)
+	if strLen < 1 || strLen > 20 {
 		return false
 	}
 	return true

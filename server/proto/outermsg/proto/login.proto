@@ -20,6 +20,7 @@ message LoginReq {  // tag:login
     string Token         = 6; // token
     string OS            = 7; // 系统
     string ClientVersion = 8; // 版本号
+    int64  UpShortId     = 9; // 上级shortId
 }
 
 message LoginRsp {
@@ -27,6 +28,7 @@ message LoginRsp {
     bool    NewPlayer    = 2;
     string  Token        = 3;
     string  Checksum     = 4;
+    string  Url          = 5;
 }
 
 message EnterGameReq { // tag:player

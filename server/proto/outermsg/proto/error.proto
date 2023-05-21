@@ -14,6 +14,8 @@ enum ERROR {
    PHONE_NOT_FOUND            = 8;  // 未找到账号
    NEW_ACCOUNT_FAILED         = 9;  // 创建账号失败
    GOLD_NOT_ENOUGH            = 10; // 金币不足
+   NAME_LEN_OUT_OF_RANGE      = 11; // 名字太长
+   MODIFY_PASSWORD_NOT_PHONE  = 12; // 修改失败，未绑定手机号
 }
 
 message FailRsp {

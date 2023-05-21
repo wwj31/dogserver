@@ -24,3 +24,12 @@ message BindPhoneReq {// tag:player
 message BindPhoneRsp {
     string phone    = 1;
 }
+
+// 修改密码
+message ModifyPasswordReq {// tag:player
+    string password    = 1;
+    string newPassword = 2;
+}
+
+message ModifyPasswordRsp {
+}

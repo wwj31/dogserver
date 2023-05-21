@@ -10,6 +10,8 @@ enum Msg {
     IdSetRoleInfoRsp = 1903626880;
     IdBindPhoneReq = 403639403;// dispatch to player
     IdBindPhoneRsp = 34531592;
+    IdModifyPasswordReq = 655389589;// dispatch to player
+    IdModifyPasswordRsp = 890276254;
     IdHeartReq = 31040569;
     IdHeartRsp = 400148124;
     IdLoginReq = 1510628254;// dispatch to login
