@@ -48,6 +48,12 @@ func (s *Login) OnInit() {
 			s.allGameNode[ev.ActorId] = struct{}{}
 		}
 	})
+
+	s.System().OnEvent(s.ID(), func(ev event.EvDelActor) {
+		if actortype.IsActorOf(ev.ActorId, actortype.GameActor) {
+			delete(s.allGameNode, ev.ActorId)
+		}
+	})
 }
 
 func (s *Login) OnStop() bool {

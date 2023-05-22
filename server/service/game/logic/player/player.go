@@ -2,6 +2,7 @@ package player
 
 import (
 	"context"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"math/rand"
 	"reflect"
 	"time"
@@ -14,7 +15,6 @@ import (
 	"server/common/router"
 	"server/mgo"
 
-	gogo "github.com/gogo/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
 	"github.com/wwj31/dogactor/expect"
 	"github.com/wwj31/dogactor/tools"
@@ -253,7 +253,15 @@ func (s *Player) store() {
 		doc := mod.Data()
 		if doc != nil {
 			collType := mgo.GoGoCollectionType(doc)
-			mgo.Store(collType, s.roleId, gogo.Clone(doc))
+			_, err := mongodb.Ins.Collection(collType).UpdateByID(context.Background(), s.roleId,
+				bson.M{"$set": doc},
+				options.Update().SetUpsert(true),
+			)
+
+			if err != nil {
+				log.Errorw("store failed", "rid", s.roleId, "mod", reflect.TypeOf(mod))
+			}
+			//mgo.Store(collType, s.roleId, gogo.Clone(doc))
 		}
 	}
 	log.Infow("player stored model", "RID", s.roleId)

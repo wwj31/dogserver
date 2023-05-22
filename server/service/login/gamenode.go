@@ -10,7 +10,8 @@ import (
 
 func (s *Login) getGameNode() string {
 	actorId := s.getGameActor()
-	for !s.System().HasActor(actorId) {
+	_, ok := s.allGameNode[actorId]
+	for !ok {
 		log.Warnw("game node not exist, redo get", "actorId", actorId)
 		time.Sleep(time.Second)
 		actorId = s.getGameActor()
