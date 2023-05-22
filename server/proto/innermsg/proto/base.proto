@@ -13,9 +13,10 @@ message PlayerInfo{
     string Icon       = 4;
     int32  Gender     = 5;
     int32  AllianceId = 6;
-    string LoginAt    = 7;
-    string LogoutAt   = 8;
-    string GSession   = 9;
+    int32  Position   = 7;
+    string LoginAt    = 8;
+    string LogoutAt   = 9;
+    string GSession   = 10;
 }
 
 

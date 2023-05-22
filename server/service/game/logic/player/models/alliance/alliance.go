@@ -2,6 +2,7 @@ package alliance
 
 import (
 	gogo "github.com/gogo/protobuf/proto"
+
 	"server/common/actortype"
 	"server/common/log"
 	"server/proto/innermsg/inner"
@@ -18,13 +19,6 @@ func New(base models.Model) *Alliance {
 	mod := &Alliance{Model: base}
 	mod.data.RID = base.Player.RID()
 	return mod
-}
-func (s *Alliance) AllianceId() int32 {
-	return s.data.AllianceId
-}
-func (s *Alliance) SetAllianceId(id int32) {
-	s.data.AllianceId = id
-	s.Player.UpdateInfoToRedis()
 }
 
 func (s *Alliance) Data() gogo.Message {

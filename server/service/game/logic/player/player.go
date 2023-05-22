@@ -194,6 +194,7 @@ func (s *Player) UpdateInfoToRedis() {
 		Icon:       s.Role().Icon(),
 		Gender:     s.Role().Gender(),
 		AllianceId: s.Alliance().AllianceId(),
+		Position:   s.Alliance().Position(),
 		LoginAt:    tools.TimeFormat(s.Role().LoginAt()),
 		LogoutAt:   tools.TimeFormat(s.Role().LogoutAt()),
 		GSession:   s.gSession.String(),

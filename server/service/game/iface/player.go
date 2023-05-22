@@ -3,6 +3,7 @@ package iface
 import (
 	"github.com/golang/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
+
 	"server/common"
 	"server/proto/innermsg/inner"
 )
