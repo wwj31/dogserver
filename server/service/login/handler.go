@@ -3,8 +3,9 @@ package login
 import (
 	"context"
 	"fmt"
-	"server/rdsop"
 	"time"
+
+	"server/rdsop"
 
 	"github.com/golang-jwt/jwt/v4"
 
@@ -189,14 +190,11 @@ func (s *Login) responseLoginToClient(acc *account.Account, newPlayer bool, gSes
 			"err", err)
 	}
 
-	// 获取游戏链接url
-	url, _ := rds.Ins.Get(context.Background(), "gameurl").Result()
 	md5 := common.EnterGameToken(acc.LastLoginRID, newPlayer)
 	gSession.SendToClient(s, &outer.LoginRsp{
 		RID:       acc.LastLoginRID,
 		NewPlayer: newPlayer,
 		Token:     signedToken,
 		Checksum:  md5,
-		Url:       url,
 	})
 }

@@ -28,7 +28,6 @@ message LoginRsp {
     bool    NewPlayer    = 2;
     string  Token        = 3;
     string  Checksum     = 4;
-    string  Url          = 5;
 }
 
 message EnterGameReq { // tag:player
