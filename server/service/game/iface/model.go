@@ -2,6 +2,7 @@ package iface
 
 import (
 	gogo "github.com/gogo/protobuf/proto"
+
 	"server/proto/outermsg/outer"
 )
 

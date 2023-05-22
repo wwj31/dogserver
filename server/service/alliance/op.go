@@ -2,11 +2,13 @@ package alliance
 
 import (
 	"github.com/wwj31/dogactor/tools"
+
 	"server/common"
 	"server/common/log"
 	"server/proto/innermsg/inner"
 )
 
+// SetMember 添加成员、更新成员信息
 func (a *Alliance) SetMember(playerInfo *inner.PlayerInfo) {
 	member, ok := a.members[playerInfo.RID]
 	if !ok {

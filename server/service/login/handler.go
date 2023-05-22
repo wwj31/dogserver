@@ -14,7 +14,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 
 	"server/common"
-	"server/common/actortype"
 	"server/common/log"
 	"server/common/mongodb"
 	"server/common/rds"
@@ -138,8 +137,8 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 			}
 			rds.Ins.Set(context.Background(), rdsop.SessionKey(acc.LastLoginRID), gSession.String(), 7*24*time.Hour)
 
-			dispatchGameID := actortype.GameName(1)
-			_, err = s.RequestWait(dispatchGameID, &inner.PullPlayer{
+			dispatchGameId := s.getGameNode()
+			_, err = s.RequestWait(dispatchGameId, &inner.PullPlayer{
 				Account: acc.ToPb(),
 				RoleInfo: &inner.LoginRoleInfo{
 					RID:     acc.LastLoginRID,
@@ -148,10 +147,10 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 			})
 
 			log.Infow("login success dispatch the player to game",
-				"new", newPlayer, "role", acc.Roles[acc.LastLoginRID], "req", req.String(), "to game", dispatchGameID)
+				"new", newPlayer, "role", acc.Roles[acc.LastLoginRID], "req", req.String(), "to game", dispatchGameId)
 
 			if err != nil {
-				log.Errorw("send to game failed ", "err", err, "game", dispatchGameID)
+				log.Errorw("send to game failed ", "err", err, "game", dispatchGameId)
 				return
 			}
 		})

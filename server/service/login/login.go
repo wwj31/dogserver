@@ -3,11 +3,14 @@ package login
 import (
 	"context"
 	"fmt"
+	"sync/atomic"
 
 	"github.com/wwj31/dogactor/actor"
+	"github.com/wwj31/dogactor/actor/event"
 	"github.com/wwj31/dogactor/expect"
 
 	"server/common"
+	"server/common/actortype"
 	"server/common/log"
 	"server/common/rds"
 	"server/proto/outermsg/outer"
@@ -24,7 +27,9 @@ return result
 
 type Login struct {
 	actor.Base
-	sha1 string
+	sha1         string
+	allGameNode  map[string]struct{}
+	nextGameNode atomic.Int64
 }
 
 func New() *Login {
@@ -35,6 +40,14 @@ func (s *Login) OnInit() {
 	log.Infow("login OnInit")
 	account.CreateIndex()
 	s.sha1 = rds.Ins.ScriptLoad(context.Background(), GetAndPopRandInt).Val()
+	s.allGameNode = make(map[string]struct{})
+
+	s.System().OnEvent(s.ID(), func(ev event.EvNewActor) {
+		// 维护可用的所有game节点
+		if actortype.IsActorOf(ev.ActorId, actortype.GameActor) {
+			s.allGameNode[ev.ActorId] = struct{}{}
+		}
+	})
 }
 
 func (s *Login) OnStop() bool {

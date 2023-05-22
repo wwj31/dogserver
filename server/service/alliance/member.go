@@ -1,8 +1,9 @@
 package alliance
 
 import (
-	"server/common"
 	"time"
+
+	"server/common"
 )
 
 type Member struct {

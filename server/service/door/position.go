@@ -8,6 +8,7 @@ import (
 	"github.com/spf13/cast"
 )
 
+// 设置成员职位
 func setPosition(ctx *gin.Context) {
 	req := gin.H{}
 	_ = ctx.BindJSON(&req)

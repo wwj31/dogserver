@@ -2,13 +2,14 @@ package player
 
 import (
 	"context"
-	"github.com/golang/protobuf/proto"
 	"math/rand"
 	"reflect"
+	"time"
+
+	"github.com/golang/protobuf/proto"
+
 	"server/common/actortype"
 	"server/rdsop"
-	"strings"
-	"time"
 
 	"server/common/router"
 	"server/mgo"
@@ -208,13 +209,8 @@ func (s *Player) load() {
 				continue
 			}
 
-			str := strings.Split(common.ProtoType(doc), ".")
-			if len(str) < 2 {
-				log.Errorw("msg name get failed", "type", reflect.TypeOf(doc).String())
-				continue
-			}
-
-			result := mongodb.Ins.Collection(str[1]).FindOne(context.Background(), bson.M{"_id": s.roleId})
+			coll := mgo.GoGoCollectionType(doc)
+			result := mongodb.Ins.Collection(coll).FindOne(context.Background(), bson.M{"_id": s.roleId})
 			if result.Err() == mongo.ErrNoDocuments {
 				if _, ok := doc.(*inner.RoleInfo); ok {
 					// 新玩家直接跳过
@@ -224,12 +220,12 @@ func (s *Player) load() {
 				// 老玩家找不到新添加的表，不做处理
 				continue
 			} else if result.Err() != nil {
-				log.Errorw("player store failed", "collection", str[1], "err", result.Err())
+				log.Errorw("player store failed", "collection", coll, "err", result.Err())
 				return
 			}
 
 			if err := result.Decode(doc); err != nil {
-				log.Errorw("player store failed", "collection", str[1], "err", result.Err())
+				log.Errorw("player store failed", "collection", coll, "err", result.Err())
 				return
 			}
 		}

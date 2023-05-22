@@ -16,6 +16,8 @@ const (
 	GatewayActor  = "gateway"
 	DoorActor     = "door"
 	AllianceActor = "alliance"
+	RoomMgrActor  = "RoomMgrActor"
+	RoomActor     = "RoomActor"
 )
 
 func GameName(id int32) ActorId {
@@ -36,6 +38,14 @@ func DoorName() ActorId {
 
 func AllianceName(id int32) ActorId {
 	return fmt.Sprintf("%v_%v_Actor", AllianceActor, id)
+}
+
+func RoomMgrName(id int32) ActorId {
+	return fmt.Sprintf("%v_%v_Actor", RoomMgrActor, id)
+}
+
+func RoomName(id int32) ActorId {
+	return fmt.Sprintf("%v_%v_Actor", RoomActor, id)
 }
 
 func RID(actorId ActorId) (str string) {

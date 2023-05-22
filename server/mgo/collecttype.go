@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	gogo "github.com/gogo/protobuf/proto"
+
 	"server/common"
 	"server/common/log"
 )
@@ -20,5 +21,5 @@ func GoGoCollectionType(message gogo.Message) string {
 		log.Errorw("doc is nil interface{}", "type", str[1])
 		return ""
 	}
-	return str[1]
+	return strings.ToLower(str[1])
 }

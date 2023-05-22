@@ -3,17 +3,19 @@ package alliance
 import (
 	"context"
 	"fmt"
+	"reflect"
+	"time"
+
 	"github.com/golang/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
 	"github.com/wwj31/dogactor/expect"
 	"go.mongodb.org/mongo-driver/bson"
-	"reflect"
+
 	"server/common"
 	"server/common/actortype"
 	"server/common/log"
 	"server/common/mongodb"
 	"server/common/router"
-	"time"
 )
 
 func New(id int32) *Alliance {
