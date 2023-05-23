@@ -1,8 +1,9 @@
 package role
 
 import (
-	"github.com/spf13/cast"
 	"math/rand"
+
+	"github.com/spf13/cast"
 
 	gogo "github.com/gogo/protobuf/proto"
 	"github.com/wwj31/dogactor/tools"

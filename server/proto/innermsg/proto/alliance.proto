@@ -3,6 +3,7 @@ package inner;
 option  go_package = "/inner";
 
 import "base.proto";
+
 message SetMemberReq{
   repeated PlayerInfo players  = 1;
 }

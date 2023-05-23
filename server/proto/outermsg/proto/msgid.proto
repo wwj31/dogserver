@@ -5,6 +5,8 @@ option  go_package = "/outer";
 
 enum Msg {
     IdUnknown = 0;
+    IdAgentMembersReq = 1894584925;// dispatch to player
+    IdAgentMembersRsp = 1592587688;
     IdFailRsp = 160109657;
     IdSetRoleInfoReq = 58140470;// dispatch to player
     IdSetRoleInfoRsp = 1903626880;

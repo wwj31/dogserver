@@ -1,7 +1,7 @@
 package c
 
 import (
-	"reflect"
+	"sync/atomic"
 	"time"
 
 	"server/common/log"
@@ -25,12 +25,11 @@ type Client struct {
 	Token     string
 	Phone     string
 	PWD       string
+	EnterGame atomic.Bool
+	waiter    chan proto.Message
 }
 
 func (s *Client) OnInit() {
-	s.PWD = "123123123"
-	s.Phone = "15680871780"
-
 	s.cli = Dial(s.Addr, &SessionHandler{client: s})
 	s.cli.Startup()
 
@@ -40,6 +39,18 @@ func (s *Client) OnInit() {
 	s.AddTimer(tools.XUID(), tools.Now().Add(20*time.Second), func(dt time.Duration) {
 		s.SendToServer(outer.Msg_IdHeartReq.Int32(), &outer.HeartReq{})
 	}, -1)
+}
+
+func (s *Client) Req(msgId outer.Msg, pb proto.Message) proto.Message {
+	for !s.EnterGame.Load() {
+		time.Sleep(200 * time.Millisecond)
+	}
+
+	s.waiter = make(chan proto.Message, 1)
+	s.Send(s.ID(), func() {
+		s.SendToServer(msgId.Int32(), pb)
+	})
+	return <-s.waiter
 }
 
 func (s *Client) SendToServer(msgId int32, pb proto.Message) {
@@ -68,29 +79,16 @@ func (s *Client) OnHandle(m actor.Message) {
 		s.enter()
 	case *outer.EnterGameRsp:
 		log.Infow("EnterGameRsp!", "msg", msg.String())
-		s.SendToServer(outer.Msg_IdBindPhoneReq.Int32(), &outer.BindPhoneReq{
-			Phone:    s.Phone,
-			Password: s.PWD,
-		})
-		s.AddTimer(tools.XUID(), tools.Now().Add(3*time.Second), func(dt time.Duration) {
-			s.cli.Close()
-			s.cli = Dial(s.Addr, &SessionHandler{client: s})
-			s.cli.Startup()
-			s.login(2)
-		})
-
-	case *outer.BindPhoneRsp:
-		log.Infow("BindPhoneRsp!", "msg", msg.String())
-	// 邮件
-	case *outer.MailListRsp:
-		s.mails = append(s.mails, msg.Mails...)
-		log.Infow("MailListRsp!", "msg", msg.String())
-	case *outer.ReadMailRsp:
-		log.Infow("ReadMailRsp!", "msg", msg.String())
-	case *outer.ReceiveMailItemRsp:
-		log.Infow("ReceiveMailItemRsp!", "msg", msg.String())
-
+		s.EnterGame.Store(true)
+		//s.SendToServer(outer.Msg_IdAgentMembersReq.Int32(), &outer.AgentMembersReq{})
+		//s.AddTimer(tools.XUID(), tools.Now().Add(3*time.Second), func(dt time.Duration) {
+		//	s.cli.Close()
+		//	s.cli = Dial(s.Addr, &SessionHandler{client: s})
+		//	s.cli.Startup()
+		//	s.login(2)
+		//})
 	default:
-		log.Infow("unknown type!", "type", reflect.TypeOf(msg).String(), "msg", msg)
+		s.waiter <- msg.(proto.Message)
+		//log.Infow("unknown type!", "type", reflect.TypeOf(msg).String(), "msg", msg)
 	}
 }

@@ -19,6 +19,17 @@ func AgentUp(shortId int64) (up int64) {
 	return cast.ToInt64(str)
 }
 
+// AgentUpAll 获取所有上级,结果的头部是上一级，尾部是顶级
+func AgentUpAll(shortId int64) (upAll []int64) {
+	for shortId != 0 {
+		upId := AgentUp(shortId)
+		upAll = append(upAll, upId)
+		shortId = upId
+	}
+
+	return
+}
+
 // AddAgentDown 添加下级
 func AddAgentDown(shortId int64, down ...interface{}) {
 	if len(down) == 0 {
@@ -61,15 +72,4 @@ func AgentDown(shortId int64, downNum ...int) (down []int64) {
 func ExistAgentDown(shortId, down int64) bool {
 	exist, _ := rds.Ins.SIsMember(context.Background(), AgentUpKey(shortId), down).Result()
 	return exist
-}
-
-// AgentAll 获取所有上级,结果的头部是上一级，尾部是顶级
-func AgentAll(shortId int64) (upAll []int64) {
-	for shortId != 0 {
-		upId := AgentUp(shortId)
-		upAll = append(upAll, upId)
-		shortId = upId
-	}
-
-	return
 }

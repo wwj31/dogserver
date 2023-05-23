@@ -3,7 +3,21 @@ package outer;
 option  go_package = "/outer";
 
 
+import "type.proto";
+
 message Base {
     int32 MsgId = 1;
     bytes Data  = 2;
+}
+
+message PlayerInfo {
+    string   RID         = 1;
+    int64    ShortId     = 2;
+    string   Name        = 3;
+    string   Icon        = 4;
+    int32    Gender      = 5;
+    int32    AllianceId  = 6;
+    Position Position    = 7;
+    string   LoginAt     = 8;
+    string   LogoutAt    = 9;
 }
