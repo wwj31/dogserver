@@ -10,7 +10,7 @@ import (
 	"server/service/client/client"
 )
 
-func TestAgentUpAndDown(t *testing.T) {
+func TestMembersReq(t *testing.T) {
 	cli := &client.Client{Addr: *Addr, DeviceID: "Client5"}
 	Init(cli)
 	rsp, ok := cli.Req(outer.Msg_IdAgentMembersReq, &outer.AgentMembersReq{}).(*outer.AgentMembersRsp)
