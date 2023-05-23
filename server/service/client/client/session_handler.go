@@ -1,9 +1,10 @@
-package c
+package client
 
 import (
 	"github.com/golang/protobuf/proto"
 	"github.com/wwj31/dogactor/expect"
 	"github.com/wwj31/dogactor/network"
+
 	"server/common/log"
 	"server/proto/outermsg/outer"
 )

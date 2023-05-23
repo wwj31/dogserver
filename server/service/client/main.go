@@ -3,18 +3,20 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/wwj31/dogactor/actor"
-	"github.com/wwj31/dogactor/logger"
-	"github.com/wwj31/dogactor/tools"
 	"math/rand"
 	"os"
 	"os/signal"
+	"syscall"
+	"time"
+
+	"github.com/wwj31/dogactor/actor"
+	"github.com/wwj31/dogactor/logger"
+	"github.com/wwj31/dogactor/tools"
+
 	"server/common/log"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
-	"server/service/client/c"
-	"syscall"
-	"time"
+	"server/service/client/client"
 )
 
 var addr = flag.String("addr", "ws://localhost:7001/", "addr")
@@ -35,7 +37,7 @@ func main() {
 		actor.LogLevel(logger.InfoLevel),
 	)
 
-	_ = system.NewActor("client", &c.Client{
+	_ = system.NewActor("client", &client.Client{
 		Addr:     *addr,
 		DeviceID: "Client5",
 	}, actor.SetLocalized())

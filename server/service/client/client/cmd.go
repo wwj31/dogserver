@@ -1,4 +1,4 @@
-package c
+package client
 
 import (
 	"math/rand"

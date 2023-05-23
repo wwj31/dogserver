@@ -63,7 +63,7 @@ var _ = router.Reg(func(player *player.Player, msg *outer.AgentMembersReq) any {
 	upMember = &outer.PlayerInfo{
 		RID:        tools.XUID(),
 		ShortId:    1678594,
-		Name:       "你大爷",
+		Name:       "你的大爷",
 		Icon:       "8",
 		Gender:     0,
 		AllianceId: 0,
@@ -76,7 +76,7 @@ var _ = router.Reg(func(player *player.Player, msg *outer.AgentMembersReq) any {
 		downMembers = append(downMembers, &outer.PlayerInfo{
 			RID:        tools.XUID(),
 			ShortId:    2456730 + int64(i),
-			Name:       fmt.Sprintf("你弟弟_%v", i),
+			Name:       fmt.Sprintf("你的弟弟_%v", i),
 			Icon:       cast.ToString(rand.Intn(8) + 1),
 			Gender:     0,
 			AllianceId: 0,

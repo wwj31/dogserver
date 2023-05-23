@@ -13,5 +13,5 @@ func TestAgentUpAndDown(t *testing.T) {
 	rsp, ok := Cli.Req(outer.Msg_IdAgentMembersReq, &outer.AgentMembersReq{}).(*outer.AgentMembersRsp)
 	assert.True(t, ok)
 
-	log.Infof("agent members rsp %v", rsp)
+	log.Infof("agent members rsp [%v]", rsp)
 }

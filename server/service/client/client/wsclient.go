@@ -1,8 +1,9 @@
-package c
+package client
 
 import (
-	"github.com/gorilla/websocket"
 	"log"
+
+	"github.com/gorilla/websocket"
 )
 
 type WsClient struct {

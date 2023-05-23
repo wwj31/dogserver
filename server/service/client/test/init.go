@@ -9,7 +9,7 @@ import (
 	"server/common/log"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
-	"server/service/client/c"
+	"server/service/client/client"
 )
 
 func newProtoIndex() *tools.ProtoIndex {
@@ -29,7 +29,7 @@ func newProtoIndex() *tools.ProtoIndex {
 
 var (
 	addr = flag.String("addr", "ws://localhost:7001/", "addr")
-	Cli  *c.Client
+	Cli  *client.Client
 )
 
 func init() {
@@ -40,7 +40,7 @@ func init() {
 		actor.LogFileName("", ""),
 	)
 
-	Cli = &c.Client{
+	Cli = &client.Client{
 		Addr:     *addr,
 		DeviceID: "Client5",
 	}
