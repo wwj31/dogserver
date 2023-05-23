@@ -3,8 +3,9 @@ package login
 import (
 	"context"
 	"fmt"
-	"server/rdsop"
 	"time"
+
+	"server/rdsop"
 
 	"github.com/go-redis/redis/v9"
 	"github.com/spf13/cast"
@@ -16,7 +17,7 @@ import (
 	"server/service/login/account"
 )
 
-func (s *Login) initAccount(acc *account.Account) (err error) {
+func (s *Login) initAccount(acc *account.Account, os, ver string, upShortId int64) (err error) {
 	var shortIdVal interface{}
 	shortIdVal, err = rds.Ins.EvalSha(context.Background(), s.sha1, []string{rdsop.ShortIDKey()}).Result()
 	if err == redis.Nil {
@@ -38,6 +39,8 @@ func (s *Login) initAccount(acc *account.Account) (err error) {
 	}
 
 	acc.UUID = tools.XUID()
+	acc.OS = os
+	acc.ClientVersion = ver
 	rid := acc.UUID
 	acc.Roles = make(map[string]account.Role)
 	newShortID := cast.ToInt64(arr[0])
@@ -48,5 +51,18 @@ func (s *Login) initAccount(acc *account.Account) (err error) {
 		log.Errorw("login insert new account failed ", "UUID", acc.UUID, "err", err)
 		return
 	}
+
+	// 绑定上级，建立层级关系
+	if upShortId > 0 {
+		bindAgent(newShortID, upShortId)
+
+	}
 	return nil
+}
+
+func bindAgent(shortId, upShortId int64) {
+	// 设置upShortId为上级
+	rdsop.SetAgentUp(shortId, upShortId)
+	// 添加shortId为upShortId下级
+	rdsop.AddAgentDown(upShortId, shortId)
 }

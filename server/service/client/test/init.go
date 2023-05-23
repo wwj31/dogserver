@@ -28,11 +28,10 @@ func newProtoIndex() *tools.ProtoIndex {
 }
 
 var (
-	addr = flag.String("addr", "ws://localhost:7001/", "addr")
-	Cli  *client.Client
+	Addr = flag.String("Addr", "ws://localhost:7001/", "Addr")
 )
 
-func init() {
+func Init(cli *client.Client) {
 	log.Init(-1, "", "", true)
 	system, _ := actor.NewSystem(
 		actor.Name("fake_client"),
@@ -40,9 +39,5 @@ func init() {
 		actor.LogFileName("", ""),
 	)
 
-	Cli = &client.Client{
-		Addr:     *addr,
-		DeviceID: "Client5",
-	}
-	_ = system.NewActor("client", Cli, actor.SetLocalized())
+	_ = system.NewActor("client", cli, actor.SetLocalized())
 }

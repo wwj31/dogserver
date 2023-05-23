@@ -100,7 +100,7 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 			}
 
 			if result.Err() == mongo.ErrNoDocuments {
-				err = s.initAccount(acc)
+				err = s.initAccount(acc, req.OS, req.ClientVersion, req.UpShortId)
 				if err != nil {
 					errCode = outer.ERROR_NEW_ACCOUNT_FAILED
 					return

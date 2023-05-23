@@ -34,6 +34,7 @@ func (s *Client) login(loginType int) {
 		OS:            "test",
 		Phone:         s.Phone,
 		PhonePassword: s.PWD,
+		UpShortId:     s.UpShortId,
 	}
 	s.SendToServer(outer.Msg_IdLoginReq.Int32(), logReq)
 }

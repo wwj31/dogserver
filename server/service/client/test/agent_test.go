@@ -7,10 +7,13 @@ import (
 
 	"server/common/log"
 	"server/proto/outermsg/outer"
+	"server/service/client/client"
 )
 
 func TestAgentUpAndDown(t *testing.T) {
-	rsp, ok := Cli.Req(outer.Msg_IdAgentMembersReq, &outer.AgentMembersReq{}).(*outer.AgentMembersRsp)
+	cli := &client.Client{Addr: *Addr, DeviceID: "Client5"}
+	Init(cli)
+	rsp, ok := cli.Req(outer.Msg_IdAgentMembersReq, &outer.AgentMembersReq{}).(*outer.AgentMembersRsp)
 	assert.True(t, ok)
 
 	log.Infof("agent members rsp [%v]", rsp)

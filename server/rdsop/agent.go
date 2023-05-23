@@ -5,16 +5,25 @@ import (
 
 	"github.com/spf13/cast"
 
+	"server/common/log"
 	"server/common/rds"
 )
 
 // SetAgentUp 设置上级
 func SetAgentUp(shortId, up int64) {
+	if shortId == 0 || up == 0 || shortId == up {
+		log.Errorw("set agent up failed", "shortId", shortId, "up")
+		return
+	}
 	rds.Ins.Set(context.Background(), AgentUpKey(shortId), cast.ToString(up), 0)
 }
 
 // AgentUp 获得上级
 func AgentUp(shortId int64) (up int64) {
+	if shortId == 0 {
+		log.Errorw("agentUp failed", "shortId", shortId)
+		return 0
+	}
 	str, _ := rds.Ins.Get(context.Background(), AgentUpKey(shortId)).Result()
 	return cast.ToInt64(str)
 }
@@ -32,7 +41,8 @@ func AgentUpAll(shortId int64) (upAll []int64) {
 
 // AddAgentDown 添加下级
 func AddAgentDown(shortId int64, down ...interface{}) {
-	if len(down) == 0 {
+	if len(down) == 0 || shortId == 0 {
+		log.Errorw("add agent down failed", "shortId", shortId, "down", down)
 		return
 	}
 	rds.Ins.SAdd(context.Background(), AgentDownKey(shortId), down...)
@@ -45,6 +55,10 @@ func AgentDown(shortId int64, downNum ...int) (down []int64) {
 		next   int
 		ids    []int64
 	)
+
+	if shortId == 0 {
+		return
+	}
 
 	if len(downNum) > 0 {
 		downLv = downNum[0]
@@ -70,6 +84,11 @@ func AgentDown(shortId int64, downNum ...int) (down []int64) {
 
 // ExistAgentDown 判断是否在自己下级中
 func ExistAgentDown(shortId, down int64) bool {
+	if shortId == 0 || down == 0 || shortId == down {
+		log.Warnw("is in down")
+		return false
+	}
+
 	exist, _ := rds.Ins.SIsMember(context.Background(), AgentUpKey(shortId), down).Result()
 	return exist
 }

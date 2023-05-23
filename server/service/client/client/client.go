@@ -25,6 +25,7 @@ type Client struct {
 	Token     string
 	Phone     string
 	PWD       string
+	UpShortId int64
 	EnterGame atomic.Bool
 	waiter    chan proto.Message
 }
