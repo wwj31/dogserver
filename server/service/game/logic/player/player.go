@@ -171,7 +171,6 @@ func (p *Player) Logout() {
 
 	p.SetGateSession("")
 	p.UpdateInfoToRedis()
-	p.CancelTimer(p.saveTimerId)
 	p.exitTimerId = p.AddTimer(tools.XUID(), tools.Now().Add(time.Minute), func(dt time.Duration) {
 		p.Exit()
 	})
@@ -233,7 +232,9 @@ func (p *Player) storeTicker() {
 	execAt := tools.Now().Add(randDur())
 	p.saveTimerId = p.AddTimer(tools.XUID(), execAt, func(dt time.Duration) {
 		p.store()
-		p.storeTicker()
+		if p.Online() {
+			p.storeTicker()
+		}
 	})
 }
 
