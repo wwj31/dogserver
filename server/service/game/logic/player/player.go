@@ -2,10 +2,11 @@ package player
 
 import (
 	"context"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"math/rand"
 	"reflect"
 	"time"
+
+	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"github.com/golang/protobuf/proto"
 
@@ -53,75 +54,72 @@ type (
 
 		saveTimerId string
 		exitTimerId string
-		keepAlive   time.Time
 
 		currentMsg actor.Message
 	}
 )
 
-func (s *Player) OnInit() {
-	s.observer = common.NewObserver()
+func (p *Player) OnInit() {
+	p.observer = common.NewObserver()
 
 	// 初始化玩家所有功能模块
-	s.initModule()
-	s.load()
+	p.initModule()
+	p.load()
 
 	// 定时回存
-	s.storeTicker()
+	p.storeTicker()
 
-	router.Result(s, s.responseHandle)
-	log.Infow("player actor activated", "id", s.ID())
+	router.Result(p, p.responseHandle)
+	log.Infow("player actor OnInit", "id", p.ID())
 }
 
 // 所有消息,处理完统一返回流程
-func (s *Player) responseHandle(resultMsg any) {
+func (p *Player) responseHandle(resultMsg any) {
 	msg, ok := resultMsg.(proto.Message)
 	if !ok {
 		return
 	}
 
 	// 网关消息，直接将消息转发给session, 其他服务消息，走内部通讯接口
-	if actortype.IsActorOf(s.currentMsg.GetSourceId(), actortype.GatewayActor) {
-		s.Send2Client(msg)
+	if actortype.IsActorOf(p.currentMsg.GetSourceId(), actortype.GatewayActor) {
+		p.Send2Client(msg)
 	} else {
 		var err error
-		if s.currentMsg.GetRequestId() != "" {
-			err = s.Response(s.currentMsg.GetRequestId(), msg)
+		if p.currentMsg.GetRequestId() != "" {
+			err = p.Response(p.currentMsg.GetRequestId(), msg)
 		} else {
-			err = s.Send(s.currentMsg.GetSourceId(), msg)
+			err = p.Send(p.currentMsg.GetSourceId(), msg)
 		}
 
 		if err != nil {
 			log.Warnw("response to actor failed",
-				"source", s.currentMsg.GetSourceId(), "msg name", s.currentMsg.GetMsgName())
+				"source", p.currentMsg.GetSourceId(), "msg name", p.currentMsg.GetMsgName())
 		}
 	}
 }
 
-func (s *Player) OnStop() bool {
-	s.store()
+func (p *Player) OnStop() bool {
+	p.store()
+	log.Infow("player OnStop", "rid", p.roleId)
 	return true
 }
 
-func (s *Player) OnHandle(msg actor.Message) {
-	s.currentMsg = msg
-	defer func() {
-		s.keepAlive = tools.Now()
-	}()
-
+func (p *Player) OnHandle(msg actor.Message) {
 	message, _, gSession, err := common.UnwrappedGateMsg(msg.Payload())
 	expect.Nil(err)
 
+	p.currentMsg = msg
+
 	// 重连的情况，除了EnterGame消息，其他都不处理
-	if s.gSession != gSession && gSession != "" {
+	if p.gSession != gSession && gSession != "" {
 		if _, ok := message.(*outer.EnterGameReq); !ok {
 			log.Warnw("recv message from the old session",
-				"local session", s.gSession,
+				"local session", p.gSession,
 				"new session", gSession,
 			)
 			return
 		}
-		s.SetGateSession(gSession)
+		p.SetGateSession(gSession)
 	}
 
 	pt, ok := message.(proto.Message)
@@ -130,79 +128,72 @@ func (s *Player) OnHandle(msg actor.Message) {
 		return
 	}
 
-	log.Infow("input", "rid", s.roleId, "msg", reflect.TypeOf(pt), "data", pt.String())
-	router.Dispatch(s, pt)
+	log.Infow("input",
+		"rid", p.roleId,
+		"gSession", gSession,
+		"msg", reflect.TypeOf(pt),
+		"data", pt.String())
+	router.Dispatch(p, pt)
 }
 
-func (s *Player) RID() string {
-	return s.roleId
-}
-func (s *Player) ShortId() int64 {
-	return s.shortId
-}
-
-func (s *Player) Observer() *common.Observer {
-	return s.observer
-}
-
-func (s *Player) Send2Client(pb proto.Message) {
-	log.Infow("output", "rid", s.roleId, "online", s.Online(), "msg", reflect.TypeOf(pb), "data", pb.String())
-	if pb == nil || !s.Online() {
+func (p *Player) Send2Client(pb proto.Message) {
+	log.Infow("output", "rid", p.roleId, "gSession", p.gSession, "online", p.Online(), "msg", reflect.TypeOf(pb), "data", pb.String())
+	if pb == nil || !p.Online() {
 		return
 	}
-	s.gSession.SendToClient(s, pb)
+	p.gSession.SendToClient(p, pb)
 }
 
-func (s *Player) GateSession() common.GSession            { return s.gSession }
-func (s *Player) SetGateSession(gSession common.GSession) { s.gSession = gSession }
-func (s *Player) Online() bool                            { return s.Role().LoginAt().After(s.Role().LogoutAt()) }
+func (p *Player) RID() string                             { return p.roleId }
+func (p *Player) ShortId() int64                          { return p.shortId }
+func (p *Player) Observer() *common.Observer              { return p.observer }
+func (p *Player) GateSession() common.GSession            { return p.gSession }
+func (p *Player) SetGateSession(gSession common.GSession) { p.gSession = gSession }
+func (p *Player) Online() bool                            { return p.GateSession().Valid() }
 
-func (s *Player) Login(first bool, enterGameRsp *outer.EnterGameRsp) {
-	for _, mod := range s.models {
+func (p *Player) Login(first bool, enterGameRsp *outer.EnterGameRsp) {
+	for _, mod := range p.models {
 		mod.OnLogin(first, enterGameRsp)
 	}
 
 	if first {
-		s.store()
+		p.store()
 	}
 
-	s.CancelTimer(s.exitTimerId)
-	s.UpdateInfoToRedis()
+	p.CancelTimer(p.exitTimerId)
+	p.UpdateInfoToRedis()
 }
 
-func (s *Player) Logout() {
-	log.Infow("player logout", "id", s.roleId)
-
-	for _, mod := range s.models {
+func (p *Player) Logout() {
+	for _, mod := range p.models {
 		mod.OnLogout()
 	}
-	s.store()
-	s.SetGateSession("")
-	s.UpdateInfoToRedis()
-	s.exitTimerId = tools.XUID()
 
-	s.AddTimer(s.exitTimerId, tools.Now().Add(3*time.Second), func(dt time.Duration) {
-		s.Exit()
+	p.SetGateSession("")
+	p.UpdateInfoToRedis()
+	p.CancelTimer(p.saveTimerId)
+	p.exitTimerId = p.AddTimer(tools.XUID(), tools.Now().Add(time.Minute), func(dt time.Duration) {
+		p.Exit()
 	})
 }
 
-func (s *Player) UpdateInfoToRedis() {
+func (p *Player) UpdateInfoToRedis() {
 	rdsop.SetPlayerInfo(&inner.PlayerInfo{
-		RID:        s.roleId,
-		ShortId:    s.shortId,
-		Name:       s.Role().Name(),
-		Icon:       s.Role().Icon(),
-		Gender:     s.Role().Gender(),
-		AllianceId: s.Alliance().AllianceId(),
-		Position:   s.Alliance().Position(),
-		LoginAt:    tools.TimeFormat(s.Role().LoginAt()),
-		LogoutAt:   tools.TimeFormat(s.Role().LogoutAt()),
-		GSession:   s.gSession.String(),
+		RID:        p.roleId,
+		ShortId:    p.shortId,
+		Name:       p.Role().Name(),
+		Icon:       p.Role().Icon(),
+		Gender:     p.Role().Gender(),
+		AllianceId: p.Alliance().AllianceId(),
+		Position:   p.Alliance().Position(),
+		LoginAt:    tools.TimeFormat(p.Role().LoginAt()),
+		LogoutAt:   tools.TimeFormat(p.Role().LogoutAt()),
+		GSession:   p.gSession.String(),
 	})
 }
 
-func (s *Player) load() {
-	for _, mod := range s.models {
+func (p *Player) load() {
+	for _, mod := range p.models {
 		doc := mod.Data()
 		if doc != nil {
 			if reflect.ValueOf(doc).IsNil() {
@@ -211,7 +202,7 @@ func (s *Player) load() {
 			}
 
 			coll := mgo.GoGoCollectionType(doc)
-			result := mongodb.Ins.Collection(coll).FindOne(context.Background(), bson.M{"_id": s.roleId})
+			result := mongodb.Ins.Collection(coll).FindOne(context.Background(), bson.M{"_id": p.roleId})
 			if result.Err() == mongo.ErrNoDocuments {
 				if _, ok := doc.(*inner.RoleInfo); ok {
 					// 新玩家直接跳过
@@ -232,45 +223,35 @@ func (s *Player) load() {
 		}
 		mod.OnLoaded()
 	}
-	log.Infow("player loaded model", "RID", s.roleId)
 }
 
-func (s *Player) storeTicker() {
+func (p *Player) storeTicker() {
 	randDur := func() time.Duration {
 		return time.Duration(rand.Intn(int(30*time.Second))) + (30 * time.Second)
 	}
 
 	execAt := tools.Now().Add(randDur())
-	s.saveTimerId = s.AddTimer(tools.XUID(), execAt, func(dt time.Duration) {
-		s.store()
-		s.checkAlive()
-		s.storeTicker()
+	p.saveTimerId = p.AddTimer(tools.XUID(), execAt, func(dt time.Duration) {
+		p.store()
+		p.storeTicker()
 	})
 }
 
-func (s *Player) store() {
-	for _, mod := range s.models {
+func (p *Player) store() {
+	for _, mod := range p.models {
 		doc := mod.Data()
 		if doc != nil {
 			collType := mgo.GoGoCollectionType(doc)
-			_, err := mongodb.Ins.Collection(collType).UpdateByID(context.Background(), s.roleId,
+			_, err := mongodb.Ins.Collection(collType).UpdateByID(context.Background(), p.roleId,
 				bson.M{"$set": doc},
 				options.Update().SetUpsert(true),
 			)
 
 			if err != nil {
-				log.Errorw("store failed", "rid", s.roleId, "mod", reflect.TypeOf(mod))
+				log.Errorw("store failed", "rid", p.roleId, "mod", reflect.TypeOf(mod))
 			}
-			//mgo.Store(collType, s.roleId, gogo.Clone(doc))
+			//mgo.Store(collType, p.roleId, gogo.Clone(doc))
 		}
 	}
-	log.Infow("player stored model", "RID", s.roleId)
-}
-
-const aliveDuration = 5 * time.Second // 24*time.Hour
-func (s *Player) checkAlive() {
-	duration := tools.Now().Sub(s.keepAlive)
-	if duration > aliveDuration && !s.Online() {
-		//s.Exit()
-	}
+	log.Infow("player stored model", "rid", p.roleId)
 }

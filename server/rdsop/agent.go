@@ -28,6 +28,16 @@ func AgentUp(shortId int64) (up int64) {
 	return cast.ToInt64(str)
 }
 
+// AgentCancelUp 接触上级关系
+func AgentCancelUp(shortId int64) {
+	if shortId == 0 {
+		return
+	}
+	upShortId := AgentUp(shortId)
+	rds.Ins.SRem(context.Background(), AgentDownKey(upShortId), shortId)
+
+}
+
 // AgentUpAll 获取所有上级,结果的头部是上一级，尾部是顶级
 func AgentUpAll(shortId int64) (upAll []int64) {
 	for shortId != 0 {

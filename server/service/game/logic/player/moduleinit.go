@@ -19,16 +19,16 @@ const (
 	allMod
 )
 
-func (s *Player) initModule() {
-	s.models[modRole] = role.New(models.New(s))         // 角色
-	s.models[modMail] = mail.New(models.New(s))         // 邮件
-	s.models[modAlliance] = alliance.New(models.New(s)) // 联盟
-	s.models[modAgent] = agent.New(models.New(s))       // 代理
+func (p *Player) initModule() {
+	p.models[modRole] = role.New(models.New(p))         // 角色
+	p.models[modMail] = mail.New(models.New(p))         // 邮件
+	p.models[modAlliance] = alliance.New(models.New(p)) // 联盟
+	p.models[modAgent] = agent.New(models.New(p))       // 代理
 }
 
-func (s *Player) Account() *inner.Account  { return s.accountInfo }
-func (s *Player) Gamer() iface.Gamer       { return s.gamer }
-func (s *Player) Role() iface.Role         { return s.models[modRole].(iface.Role) }
-func (s *Player) Mail() iface.Mailer       { return s.models[modMail].(iface.Mailer) }
-func (s *Player) Alliance() iface.Alliance { return s.models[modAlliance].(iface.Alliance) }
-func (s *Player) Agent() iface.Agent       { return s.models[modAgent].(iface.Agent) }
+func (p *Player) Account() *inner.Account  { return p.accountInfo }
+func (p *Player) Gamer() iface.Gamer       { return p.gamer }
+func (p *Player) Role() iface.Role         { return p.models[modRole].(iface.Role) }
+func (p *Player) Mail() iface.Mailer       { return p.models[modMail].(iface.Mailer) }
+func (p *Player) Alliance() iface.Alliance { return p.models[modAlliance].(iface.Alliance) }
+func (p *Player) Agent() iface.Agent       { return p.models[modAgent].(iface.Agent) }

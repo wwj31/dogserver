@@ -168,7 +168,7 @@ func (s *Login) responseLoginToClient(acc *account.Account, newPlayer bool, gSes
 	if err != nil {
 		log.Errorw("bind session with rid failed",
 			"gSession", gSession.String(),
-			"RID", acc.LastLoginRID,
+			"rid", acc.LastLoginRID,
 			"err", err)
 		return
 	}
@@ -185,7 +185,7 @@ func (s *Login) responseLoginToClient(acc *account.Account, newPlayer bool, gSes
 	signedToken, signErr := common.JWTSignedToken(claims)
 	if signErr != nil {
 		log.Errorw("jwt signed token failed",
-			"RID", acc.LastLoginRID,
+			"rid", acc.LastLoginRID,
 			"err", err)
 	}
 

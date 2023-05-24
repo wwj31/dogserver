@@ -25,6 +25,7 @@ var _ = router.Reg(func(player *player.Player, msg *outer.EnterGameReq) any {
 // 玩家离线
 var _ = router.Reg(func(player *player.Player, msg *inner.GSessionClosed) any {
 	if player.GateSession().String() == msg.GetGateSession() {
+		log.Infow("player offline", "rid", player.RID(), "player gSession", player.GateSession().String(), "msg gSession", msg.GetGateSession())
 		player.Logout()
 	}
 	return nil
