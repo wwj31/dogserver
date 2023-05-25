@@ -21,9 +21,10 @@ type (
 		Observer() *common.Observer
 		Send2Client(pb proto.Message)
 		Online() bool
+		PlayerInfo() *inner.PlayerInfo
+		Account() *inner.Account
 		UpdateInfoToRedis()
 
-		Account() *inner.Account
 		Gamer() Gamer
 		Role() Role
 		Mail() Mailer

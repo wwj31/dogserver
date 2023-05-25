@@ -176,8 +176,8 @@ func (p *Player) Logout() {
 	})
 }
 
-func (p *Player) UpdateInfoToRedis() {
-	rdsop.SetPlayerInfo(&inner.PlayerInfo{
+func (p *Player) PlayerInfo() *inner.PlayerInfo {
+	return &inner.PlayerInfo{
 		RID:        p.roleId,
 		ShortId:    p.shortId,
 		Name:       p.Role().Name(),
@@ -188,7 +188,10 @@ func (p *Player) UpdateInfoToRedis() {
 		LoginAt:    tools.TimeFormat(p.Role().LoginAt()),
 		LogoutAt:   tools.TimeFormat(p.Role().LogoutAt()),
 		GSession:   p.gSession.String(),
-	})
+	}
+}
+func (p *Player) UpdateInfoToRedis() {
+	rdsop.SetPlayerInfo(p.PlayerInfo())
 }
 
 func (p *Player) load() {

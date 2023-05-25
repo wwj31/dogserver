@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"reflect"
-	"time"
 
 	"github.com/golang/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
@@ -129,7 +128,6 @@ func (a *Alliance) PlayerOnline(gSession common.GSession, rid string) {
 		return
 	}
 	member.GSession = gSession
-	member.OnlineAt = time.Now()
 	a.sessions[gSession] = member
 
 	log.Infow("player online ", "gSession", gSession, "rid", member.RID, "shortId", member.ShortId)
@@ -148,7 +146,6 @@ func (a *Alliance) PlayerOffline(gSession common.GSession, rid string) {
 	delete(a.sessions, member.GSession)
 
 	member.GSession = ""
-	member.OfflineAt = time.Now()
 
 	log.Infow("player offline ", "gSession", gSession, "rid", member.RID, "shortId", member.ShortId)
 }
