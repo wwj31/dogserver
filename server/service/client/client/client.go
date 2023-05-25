@@ -41,6 +41,9 @@ func (s *Client) OnInit() {
 		s.SendToServer(outer.Msg_IdHeartReq.Int32(), &outer.HeartReq{})
 	}, -1)
 }
+func (s *Client) Close() {
+	s.cli.Close()
+}
 
 func (s *Client) Req(msgId outer.Msg, pb proto.Message) proto.Message {
 	for !s.EnterGame.Load() {

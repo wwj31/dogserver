@@ -78,7 +78,11 @@ func AgentDown(shortId int64, downNum ...int) (down []int64) {
 	for downLv == 0 || next >= downLv {
 		var tmpIds []int64 // 当前层级的所有下级
 		for _, id := range ids {
-			all, _ := rds.Ins.SMembers(context.Background(), AgentUpKey(id)).Result()
+			all, _ := rds.Ins.SMembers(context.Background(), AgentDownKey(id)).Result()
+			if len(all) == 0 {
+				return down
+			}
+
 			for _, str := range all {
 				downId := cast.ToInt64(str)
 				tmpIds = append(tmpIds, downId)
