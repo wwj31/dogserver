@@ -37,9 +37,14 @@ func (s *Alliance) OnLogin(first bool, enterGameRsp *outer.EnterGameRsp) {
 		if upShortId != 0 {
 			upPlayerInfo := rdsop.PlayerInfo(upShortId)
 			if upPlayerInfo.AllianceId != 0 {
-				s.Player.Send(actortype.AllianceName(upPlayerInfo.AllianceId), &inner.SetMemberReq{
+				_, err := s.Player.RequestWait(actortype.AllianceName(upPlayerInfo.AllianceId), &inner.SetMemberReq{
 					Players: []*inner.PlayerInfo{s.Player.PlayerInfo()},
 				})
+
+				if err != nil {
+					log.Warnf("player request join alliance failed ",
+						"rid", s.Player.RID(), "upShortId", upPlayerInfo, "alliance", upPlayerInfo.AllianceId)
+				}
 			}
 		}
 	} else {
@@ -51,7 +56,6 @@ func (s *Alliance) OnLogin(first bool, enterGameRsp *outer.EnterGameRsp) {
 		if err != nil {
 			log.Warnf("alliance login send failed", "rid", s.Player.RID(), "err", err)
 		}
-
 	}
 }
 
