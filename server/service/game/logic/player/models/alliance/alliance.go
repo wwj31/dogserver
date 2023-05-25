@@ -45,6 +45,7 @@ func (s *Alliance) OnLogin(first bool, enterGameRsp *outer.EnterGameRsp) {
 					log.Warnf("player request join alliance failed ",
 						"rid", s.Player.RID(), "upShortId", upPlayerInfo, "alliance", upPlayerInfo.AllianceId)
 				}
+				s.data.AllianceId = upPlayerInfo.AllianceId
 			}
 		}
 	} else {
