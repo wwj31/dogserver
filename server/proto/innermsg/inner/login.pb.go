@@ -259,124 +259,18 @@ func (m *PullPlayer) GetRoleInfo() *LoginRoleInfo {
 	return nil
 }
 
-type OnlineNtf struct {
-	GateSession string `protobuf:"bytes,1,opt,name=GateSession,proto3" json:"GateSession,omitempty"`
-	RID         string `protobuf:"bytes,2,opt,name=RID,proto3" json:"RID,omitempty"`
-}
-
-func (m *OnlineNtf) Reset()         { *m = OnlineNtf{} }
-func (m *OnlineNtf) String() string { return proto.CompactTextString(m) }
-func (*OnlineNtf) ProtoMessage()    {}
-func (*OnlineNtf) Descriptor() ([]byte, []int) {
-	return fileDescriptor_67c21677aa7f4e4f, []int{5}
-}
-func (m *OnlineNtf) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *OnlineNtf) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_OnlineNtf.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *OnlineNtf) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_OnlineNtf.Merge(m, src)
-}
-func (m *OnlineNtf) XXX_Size() int {
-	return m.Size()
-}
-func (m *OnlineNtf) XXX_DiscardUnknown() {
-	xxx_messageInfo_OnlineNtf.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_OnlineNtf proto.InternalMessageInfo
-
-func (m *OnlineNtf) GetGateSession() string {
-	if m != nil {
-		return m.GateSession
-	}
-	return ""
-}
-
-func (m *OnlineNtf) GetRID() string {
-	if m != nil {
-		return m.RID
-	}
-	return ""
-}
-
-type OfflineNtf struct {
-	GateSession string `protobuf:"bytes,1,opt,name=GateSession,proto3" json:"GateSession,omitempty"`
-	RID         string `protobuf:"bytes,2,opt,name=RID,proto3" json:"RID,omitempty"`
-}
-
-func (m *OfflineNtf) Reset()         { *m = OfflineNtf{} }
-func (m *OfflineNtf) String() string { return proto.CompactTextString(m) }
-func (*OfflineNtf) ProtoMessage()    {}
-func (*OfflineNtf) Descriptor() ([]byte, []int) {
-	return fileDescriptor_67c21677aa7f4e4f, []int{6}
-}
-func (m *OfflineNtf) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *OfflineNtf) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_OfflineNtf.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *OfflineNtf) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_OfflineNtf.Merge(m, src)
-}
-func (m *OfflineNtf) XXX_Size() int {
-	return m.Size()
-}
-func (m *OfflineNtf) XXX_DiscardUnknown() {
-	xxx_messageInfo_OfflineNtf.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_OfflineNtf proto.InternalMessageInfo
-
-func (m *OfflineNtf) GetGateSession() string {
-	if m != nil {
-		return m.GateSession
-	}
-	return ""
-}
-
-func (m *OfflineNtf) GetRID() string {
-	if m != nil {
-		return m.RID
-	}
-	return ""
-}
-
 func init() {
 	proto.RegisterType((*BindSessionWithRID)(nil), "inner.BindSessionWithRID")
 	proto.RegisterType((*KickOutReq)(nil), "inner.KickOutReq")
 	proto.RegisterType((*KickOutRsp)(nil), "inner.KickOutRsp")
 	proto.RegisterType((*GSessionClosed)(nil), "inner.GSessionClosed")
 	proto.RegisterType((*PullPlayer)(nil), "inner.PullPlayer")
-	proto.RegisterType((*OnlineNtf)(nil), "inner.OnlineNtf")
-	proto.RegisterType((*OfflineNtf)(nil), "inner.OfflineNtf")
 }
 
 func init() { proto.RegisterFile("login.proto", fileDescriptor_67c21677aa7f4e4f) }
 
 var fileDescriptor_67c21677aa7f4e4f = []byte{
-	// 268 bytes of a gzipped FileDescriptorProto
+	// 246 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0xce, 0xc9, 0x4f, 0xcf,
 	0xcc, 0xd3, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0xcd, 0xcc, 0xcb, 0x4b, 0x2d, 0x92, 0xe2,
 	0x4d, 0x4c, 0x4e, 0xce, 0x2f, 0xcd, 0x2b, 0x81, 0x88, 0x2a, 0x79, 0x70, 0x09, 0x39, 0x65, 0xe6,
@@ -389,11 +283,10 @@ var fileDescriptor_67c21677aa7f4e4f = []byte{
 	0x6a, 0x91, 0x90, 0x06, 0x17, 0xbb, 0x23, 0xc4, 0xb3, 0x60, 0xb5, 0xdc, 0x46, 0x7c, 0x7a, 0xe0,
 	0x30, 0xd0, 0x83, 0x8a, 0x06, 0xc1, 0xa4, 0x85, 0x0c, 0xb8, 0x38, 0x82, 0xf2, 0x73, 0x52, 0x3d,
 	0xf3, 0xd2, 0xf2, 0xc1, 0x0e, 0xe2, 0x36, 0x12, 0x81, 0x2a, 0xf5, 0x01, 0x85, 0x20, 0x4c, 0x2e,
-	0x08, 0xae, 0x4a, 0xc9, 0x9e, 0x8b, 0xd3, 0x3f, 0x2f, 0x27, 0x33, 0x2f, 0xd5, 0xaf, 0x24, 0x8d,
-	0xdc, 0xe0, 0xf2, 0x4f, 0x4b, 0xa3, 0xc0, 0x04, 0x27, 0x85, 0x13, 0x8f, 0xe4, 0x18, 0x2f, 0x3c,
-	0x92, 0x63, 0x7c, 0xf0, 0x48, 0x8e, 0x71, 0xc2, 0x63, 0x39, 0x86, 0x0b, 0x8f, 0xe5, 0x18, 0x6e,
-	0x3c, 0x96, 0x63, 0x88, 0x62, 0xd3, 0x07, 0x3b, 0x3e, 0x89, 0x0d, 0x1c, 0xc7, 0xc6, 0x80, 0x00,
-	0x00, 0x00, 0xff, 0xff, 0xd7, 0x37, 0x3f, 0x8a, 0x08, 0x02, 0x00, 0x00,
+	0x08, 0xae, 0xca, 0x49, 0xe1, 0xc4, 0x23, 0x39, 0xc6, 0x0b, 0x8f, 0xe4, 0x18, 0x1f, 0x3c, 0x92,
+	0x63, 0x9c, 0xf0, 0x58, 0x8e, 0xe1, 0xc2, 0x63, 0x39, 0x86, 0x1b, 0x8f, 0xe5, 0x18, 0xa2, 0xd8,
+	0xf4, 0xc1, 0x3a, 0x93, 0xd8, 0xc0, 0x01, 0x6c, 0x0c, 0x08, 0x00, 0x00, 0xff, 0xff, 0x1d, 0x49,
+	0x10, 0x6c, 0x85, 0x01, 0x00, 0x00,
 }
 
 func (m *BindSessionWithRID) Marshal() (dAtA []byte, err error) {
@@ -570,80 +463,6 @@ func (m *PullPlayer) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *OnlineNtf) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *OnlineNtf) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *OnlineNtf) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.RID) > 0 {
-		i -= len(m.RID)
-		copy(dAtA[i:], m.RID)
-		i = encodeVarintLogin(dAtA, i, uint64(len(m.RID)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.GateSession) > 0 {
-		i -= len(m.GateSession)
-		copy(dAtA[i:], m.GateSession)
-		i = encodeVarintLogin(dAtA, i, uint64(len(m.GateSession)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *OfflineNtf) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *OfflineNtf) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *OfflineNtf) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.RID) > 0 {
-		i -= len(m.RID)
-		copy(dAtA[i:], m.RID)
-		i = encodeVarintLogin(dAtA, i, uint64(len(m.RID)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.GateSession) > 0 {
-		i -= len(m.GateSession)
-		copy(dAtA[i:], m.GateSession)
-		i = encodeVarintLogin(dAtA, i, uint64(len(m.GateSession)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
 func encodeVarintLogin(dAtA []byte, offset int, v uint64) int {
 	offset -= sovLogin(v)
 	base := offset
@@ -723,40 +542,6 @@ func (m *PullPlayer) Size() (n int) {
 	}
 	if m.RoleInfo != nil {
 		l = m.RoleInfo.Size()
-		n += 1 + l + sovLogin(uint64(l))
-	}
-	return n
-}
-
-func (m *OnlineNtf) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.GateSession)
-	if l > 0 {
-		n += 1 + l + sovLogin(uint64(l))
-	}
-	l = len(m.RID)
-	if l > 0 {
-		n += 1 + l + sovLogin(uint64(l))
-	}
-	return n
-}
-
-func (m *OfflineNtf) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.GateSession)
-	if l > 0 {
-		n += 1 + l + sovLogin(uint64(l))
-	}
-	l = len(m.RID)
-	if l > 0 {
 		n += 1 + l + sovLogin(uint64(l))
 	}
 	return n
@@ -1228,234 +1013,6 @@ func (m *PullPlayer) Unmarshal(dAtA []byte) error {
 			if err := m.RoleInfo.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipLogin(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthLogin
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *OnlineNtf) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowLogin
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: OnlineNtf: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: OnlineNtf: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field GateSession", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowLogin
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthLogin
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthLogin
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.GateSession = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RID", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowLogin
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthLogin
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthLogin
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.RID = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipLogin(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthLogin
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *OfflineNtf) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowLogin
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: OfflineNtf: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: OfflineNtf: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field GateSession", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowLogin
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthLogin
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthLogin
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.GateSession = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RID", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowLogin
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthLogin
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthLogin
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.RID = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

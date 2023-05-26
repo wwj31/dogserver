@@ -27,12 +27,3 @@ message PullPlayer{
     LoginRoleInfo RoleInfo = 2;
 }
 
-message OnlineNtf{
-    string GateSession = 1;
-    string RID         = 2;
-}
-
-message OfflineNtf{
-    string GateSession = 1;
-    string RID         = 2;
-}

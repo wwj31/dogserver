@@ -10,3 +10,20 @@ message SetMemberReq{
 
 message SetMemberRsp{
 }
+
+// 登录时，绑定角色session，并请求自己在联盟中的成员最新信息
+message MemberInfoOnLoginReq{
+  string GateSession = 1;
+  string RID         = 2;
+}
+
+message MemberInfoOnLoginRsp{
+  int32 allianceId = 1; // 联盟id，如果为0，表示玩家下线期间被踢了
+  int32 Position   = 2; // 职位
+}
+
+// 下线后，通知联盟
+message MemberInfoOnLogoutReq{
+  string GateSession = 1;
+  string RID         = 2;
+}

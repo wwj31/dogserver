@@ -31,3 +31,8 @@ func AgentUpKey(shortId int64) string {
 func AgentDownKey(shortId int64) string {
 	return fmt.Sprintf("agent:%v:down", shortId)
 }
+
+// DeleteAlliancesKey 被删除的联盟
+func DeleteAlliancesKey() string {
+	return fmt.Sprintf("deleted:alliance")
+}

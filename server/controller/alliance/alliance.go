@@ -8,13 +8,22 @@ import (
 	"server/common/router"
 )
 
-// 保证玩家登录之前，联盟中玩家的GSession被正确关联
-var _ = router.Reg(func(alliance *alliance.Alliance, msg *inner.OnlineNtf) any {
+// 玩家登录，同步并请求数据
+var _ = router.Reg(func(alliance *alliance.Alliance, msg *inner.MemberInfoOnLoginReq) any {
 	alliance.PlayerOnline(common.GSession(msg.GateSession), msg.RID)
-	return &inner.Ok{}
+	member := alliance.MemberInfo(msg.RID)
+	if member == nil {
+		return &inner.MemberInfoOnLoginRsp{}
+	}
+
+	return &inner.MemberInfoOnLoginRsp{
+		AllianceId: alliance.AllianceId(),
+		Position:   member.Position.Int32(),
+	}
 })
 
-var _ = router.Reg(func(alliance *alliance.Alliance, msg *inner.OfflineNtf) any {
+// 玩家下线，通知联盟
+var _ = router.Reg(func(alliance *alliance.Alliance, msg *inner.MemberInfoOnLogoutReq) any {
 	alliance.PlayerOffline(common.GSession(msg.GateSession), msg.RID)
 	return nil
 })

@@ -121,6 +121,9 @@ func (a *Alliance) OnHandle(msg actor.Message) {
 	router.Dispatch(a, pt)
 }
 
+func (a *Alliance) MemberInfo(rid string) *Member { return a.members[rid] }
+func (a *Alliance) AllianceId() int32             { return a.allianceId }
+
 func (a *Alliance) PlayerOnline(gSession common.GSession, rid string) {
 	member, ok := a.members[rid]
 	if !ok {

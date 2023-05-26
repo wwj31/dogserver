@@ -1,6 +1,6 @@
 package alliance
 
-type Position int64
+type Position int32
 
 const (
 	Normal        Position = iota + 1 // 普通成员
@@ -10,3 +10,7 @@ const (
 	DeputyMaster                      // 副盟主
 	Master                            // 盟主
 )
+
+func (p Position) Int32() int32 {
+	return int32(p)
+}

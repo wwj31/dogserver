@@ -49,20 +49,35 @@ func (s *Alliance) OnLogin(first bool, enterGameRsp *outer.EnterGameRsp) {
 			}
 		}
 	} else {
-		_, err := s.Player.RequestWait(actortype.AllianceName(s.AllianceId()), &inner.OnlineNtf{
+		if rdsop.IsAllianceDeleted(s.AllianceId()) {
+			s.data.Position = 0
+			s.data.AllianceId = 0
+			return
+		}
+
+		result, err := s.Player.RequestWait(actortype.AllianceName(s.AllianceId()), &inner.MemberInfoOnLoginReq{
 			GateSession: s.Player.GateSession().String(),
 			RID:         s.Player.RID(),
 		})
 
 		if err != nil {
 			log.Warnf("alliance login send failed", "rid", s.Player.RID(), "err", err)
+			return
 		}
+
+		memberInfoRsp, ok := result.(*inner.MemberInfoOnLoginRsp)
+		if !ok {
+			return
+		}
+
+		s.data.Position = memberInfoRsp.Position
+		s.data.AllianceId = memberInfoRsp.AllianceId
 	}
 }
 
 func (s *Alliance) OnLogout() {
 	if s.data.AllianceId != 0 {
-		err := s.Player.Send(actortype.AllianceName(s.AllianceId()), &inner.OfflineNtf{
+		err := s.Player.Send(actortype.AllianceName(s.AllianceId()), &inner.MemberInfoOnLogoutReq{
 			GateSession: s.Player.GateSession().String(),
 			RID:         s.Player.RID(),
 		})

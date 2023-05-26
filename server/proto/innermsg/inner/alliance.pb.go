@@ -102,25 +102,192 @@ func (m *SetMemberRsp) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_SetMemberRsp proto.InternalMessageInfo
 
+// 登录时，绑定角色session，并请求自己在联盟中的成员最新信息
+type MemberInfoOnLoginReq struct {
+	GateSession string `protobuf:"bytes,1,opt,name=GateSession,proto3" json:"GateSession,omitempty"`
+	RID         string `protobuf:"bytes,2,opt,name=RID,proto3" json:"RID,omitempty"`
+}
+
+func (m *MemberInfoOnLoginReq) Reset()         { *m = MemberInfoOnLoginReq{} }
+func (m *MemberInfoOnLoginReq) String() string { return proto.CompactTextString(m) }
+func (*MemberInfoOnLoginReq) ProtoMessage()    {}
+func (*MemberInfoOnLoginReq) Descriptor() ([]byte, []int) {
+	return fileDescriptor_9d63a1f01d82564b, []int{2}
+}
+func (m *MemberInfoOnLoginReq) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MemberInfoOnLoginReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MemberInfoOnLoginReq.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MemberInfoOnLoginReq) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MemberInfoOnLoginReq.Merge(m, src)
+}
+func (m *MemberInfoOnLoginReq) XXX_Size() int {
+	return m.Size()
+}
+func (m *MemberInfoOnLoginReq) XXX_DiscardUnknown() {
+	xxx_messageInfo_MemberInfoOnLoginReq.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MemberInfoOnLoginReq proto.InternalMessageInfo
+
+func (m *MemberInfoOnLoginReq) GetGateSession() string {
+	if m != nil {
+		return m.GateSession
+	}
+	return ""
+}
+
+func (m *MemberInfoOnLoginReq) GetRID() string {
+	if m != nil {
+		return m.RID
+	}
+	return ""
+}
+
+type MemberInfoOnLoginRsp struct {
+	AllianceId int32 `protobuf:"varint,1,opt,name=allianceId,proto3" json:"allianceId,omitempty"`
+	Position   int32 `protobuf:"varint,2,opt,name=Position,proto3" json:"Position,omitempty"`
+}
+
+func (m *MemberInfoOnLoginRsp) Reset()         { *m = MemberInfoOnLoginRsp{} }
+func (m *MemberInfoOnLoginRsp) String() string { return proto.CompactTextString(m) }
+func (*MemberInfoOnLoginRsp) ProtoMessage()    {}
+func (*MemberInfoOnLoginRsp) Descriptor() ([]byte, []int) {
+	return fileDescriptor_9d63a1f01d82564b, []int{3}
+}
+func (m *MemberInfoOnLoginRsp) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MemberInfoOnLoginRsp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MemberInfoOnLoginRsp.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MemberInfoOnLoginRsp) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MemberInfoOnLoginRsp.Merge(m, src)
+}
+func (m *MemberInfoOnLoginRsp) XXX_Size() int {
+	return m.Size()
+}
+func (m *MemberInfoOnLoginRsp) XXX_DiscardUnknown() {
+	xxx_messageInfo_MemberInfoOnLoginRsp.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MemberInfoOnLoginRsp proto.InternalMessageInfo
+
+func (m *MemberInfoOnLoginRsp) GetAllianceId() int32 {
+	if m != nil {
+		return m.AllianceId
+	}
+	return 0
+}
+
+func (m *MemberInfoOnLoginRsp) GetPosition() int32 {
+	if m != nil {
+		return m.Position
+	}
+	return 0
+}
+
+// 下线后，通知联盟
+type MemberInfoOnLogoutReq struct {
+	GateSession string `protobuf:"bytes,1,opt,name=GateSession,proto3" json:"GateSession,omitempty"`
+	RID         string `protobuf:"bytes,2,opt,name=RID,proto3" json:"RID,omitempty"`
+}
+
+func (m *MemberInfoOnLogoutReq) Reset()         { *m = MemberInfoOnLogoutReq{} }
+func (m *MemberInfoOnLogoutReq) String() string { return proto.CompactTextString(m) }
+func (*MemberInfoOnLogoutReq) ProtoMessage()    {}
+func (*MemberInfoOnLogoutReq) Descriptor() ([]byte, []int) {
+	return fileDescriptor_9d63a1f01d82564b, []int{4}
+}
+func (m *MemberInfoOnLogoutReq) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MemberInfoOnLogoutReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MemberInfoOnLogoutReq.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MemberInfoOnLogoutReq) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MemberInfoOnLogoutReq.Merge(m, src)
+}
+func (m *MemberInfoOnLogoutReq) XXX_Size() int {
+	return m.Size()
+}
+func (m *MemberInfoOnLogoutReq) XXX_DiscardUnknown() {
+	xxx_messageInfo_MemberInfoOnLogoutReq.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MemberInfoOnLogoutReq proto.InternalMessageInfo
+
+func (m *MemberInfoOnLogoutReq) GetGateSession() string {
+	if m != nil {
+		return m.GateSession
+	}
+	return ""
+}
+
+func (m *MemberInfoOnLogoutReq) GetRID() string {
+	if m != nil {
+		return m.RID
+	}
+	return ""
+}
+
 func init() {
 	proto.RegisterType((*SetMemberReq)(nil), "inner.SetMemberReq")
 	proto.RegisterType((*SetMemberRsp)(nil), "inner.SetMemberRsp")
+	proto.RegisterType((*MemberInfoOnLoginReq)(nil), "inner.MemberInfoOnLoginReq")
+	proto.RegisterType((*MemberInfoOnLoginRsp)(nil), "inner.MemberInfoOnLoginRsp")
+	proto.RegisterType((*MemberInfoOnLogoutReq)(nil), "inner.MemberInfoOnLogoutReq")
 }
 
 func init() { proto.RegisterFile("alliance.proto", fileDescriptor_9d63a1f01d82564b) }
 
 var fileDescriptor_9d63a1f01d82564b = []byte{
-	// 147 bytes of a gzipped FileDescriptorProto
+	// 248 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0x4b, 0xcc, 0xc9, 0xc9,
 	0x4c, 0xcc, 0x4b, 0x4e, 0xd5, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0xcd, 0xcc, 0xcb, 0x4b,
 	0x2d, 0x92, 0xe2, 0x4a, 0x4a, 0x2c, 0x86, 0x0a, 0x29, 0x59, 0x73, 0xf1, 0x04, 0xa7, 0x96, 0xf8,
 	0xa6, 0xe6, 0x26, 0xa5, 0x16, 0x05, 0xa5, 0x16, 0x0a, 0x69, 0x73, 0xb1, 0x17, 0xe4, 0x24, 0x56,
 	0xa6, 0x16, 0x15, 0x4b, 0x30, 0x2a, 0x30, 0x6b, 0x70, 0x1b, 0x09, 0xea, 0x81, 0x35, 0xe9, 0x05,
-	0x80, 0x45, 0x3d, 0xf3, 0xd2, 0xf2, 0x83, 0x60, 0x2a, 0x94, 0xf8, 0x90, 0x35, 0x17, 0x17, 0x38,
-	0x29, 0x9c, 0x78, 0x24, 0xc7, 0x78, 0xe1, 0x91, 0x1c, 0xe3, 0x83, 0x47, 0x72, 0x8c, 0x13, 0x1e,
-	0xcb, 0x31, 0x5c, 0x78, 0x2c, 0xc7, 0x70, 0xe3, 0xb1, 0x1c, 0x43, 0x14, 0x9b, 0x3e, 0xd8, 0x94,
-	0x24, 0x36, 0xb0, 0xad, 0xc6, 0x80, 0x00, 0x00, 0x00, 0xff, 0xff, 0x5e, 0xe6, 0x9e, 0x66, 0x9a,
-	0x00, 0x00, 0x00,
+	0x80, 0x45, 0x3d, 0xf3, 0xd2, 0xf2, 0x83, 0x60, 0x2a, 0x94, 0xf8, 0x90, 0x35, 0x17, 0x17, 0x28,
+	0x79, 0x71, 0x89, 0x40, 0x38, 0x20, 0x65, 0xfe, 0x79, 0x3e, 0xf9, 0xe9, 0x99, 0x79, 0x20, 0x43,
+	0x15, 0xb8, 0xb8, 0xdd, 0x13, 0x4b, 0x52, 0x83, 0x53, 0x8b, 0x8b, 0x33, 0xf3, 0xf3, 0x24, 0x18,
+	0x15, 0x18, 0x35, 0x38, 0x83, 0x90, 0x85, 0x84, 0x04, 0xb8, 0x98, 0x83, 0x3c, 0x5d, 0x24, 0x98,
+	0xc0, 0x32, 0x20, 0xa6, 0x52, 0x10, 0x36, 0xb3, 0x8a, 0x0b, 0x84, 0xe4, 0xb8, 0xb8, 0x60, 0xbe,
+	0xf2, 0x4c, 0x01, 0x1b, 0xc5, 0x1a, 0x84, 0x24, 0x22, 0x24, 0xc5, 0xc5, 0x11, 0x90, 0x5f, 0x9c,
+	0x59, 0x02, 0xb2, 0x88, 0x09, 0x2c, 0x0b, 0xe7, 0x2b, 0x79, 0x73, 0x89, 0xa2, 0x99, 0x99, 0x5f,
+	0x5a, 0x42, 0xa6, 0x03, 0x9d, 0x14, 0x4e, 0x3c, 0x92, 0x63, 0xbc, 0xf0, 0x48, 0x8e, 0xf1, 0xc1,
+	0x23, 0x39, 0xc6, 0x09, 0x8f, 0xe5, 0x18, 0x2e, 0x3c, 0x96, 0x63, 0xb8, 0xf1, 0x58, 0x8e, 0x21,
+	0x8a, 0x4d, 0x1f, 0x1c, 0x64, 0x49, 0x6c, 0xe0, 0x20, 0x36, 0x06, 0x04, 0x00, 0x00, 0xff, 0xff,
+	0x13, 0x6a, 0x89, 0xd7, 0x87, 0x01, 0x00, 0x00,
 }
 
 func (m *SetMemberReq) Marshal() (dAtA []byte, err error) {
@@ -183,6 +350,113 @@ func (m *SetMemberRsp) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *MemberInfoOnLoginReq) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MemberInfoOnLoginReq) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MemberInfoOnLoginReq) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.RID) > 0 {
+		i -= len(m.RID)
+		copy(dAtA[i:], m.RID)
+		i = encodeVarintAlliance(dAtA, i, uint64(len(m.RID)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.GateSession) > 0 {
+		i -= len(m.GateSession)
+		copy(dAtA[i:], m.GateSession)
+		i = encodeVarintAlliance(dAtA, i, uint64(len(m.GateSession)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MemberInfoOnLoginRsp) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MemberInfoOnLoginRsp) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MemberInfoOnLoginRsp) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Position != 0 {
+		i = encodeVarintAlliance(dAtA, i, uint64(m.Position))
+		i--
+		dAtA[i] = 0x10
+	}
+	if m.AllianceId != 0 {
+		i = encodeVarintAlliance(dAtA, i, uint64(m.AllianceId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MemberInfoOnLogoutReq) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MemberInfoOnLogoutReq) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MemberInfoOnLogoutReq) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.RID) > 0 {
+		i -= len(m.RID)
+		copy(dAtA[i:], m.RID)
+		i = encodeVarintAlliance(dAtA, i, uint64(len(m.RID)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.GateSession) > 0 {
+		i -= len(m.GateSession)
+		copy(dAtA[i:], m.GateSession)
+		i = encodeVarintAlliance(dAtA, i, uint64(len(m.GateSession)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintAlliance(dAtA []byte, offset int, v uint64) int {
 	offset -= sovAlliance(v)
 	base := offset
@@ -215,6 +489,55 @@ func (m *SetMemberRsp) Size() (n int) {
 	}
 	var l int
 	_ = l
+	return n
+}
+
+func (m *MemberInfoOnLoginReq) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.GateSession)
+	if l > 0 {
+		n += 1 + l + sovAlliance(uint64(l))
+	}
+	l = len(m.RID)
+	if l > 0 {
+		n += 1 + l + sovAlliance(uint64(l))
+	}
+	return n
+}
+
+func (m *MemberInfoOnLoginRsp) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.AllianceId != 0 {
+		n += 1 + sovAlliance(uint64(m.AllianceId))
+	}
+	if m.Position != 0 {
+		n += 1 + sovAlliance(uint64(m.Position))
+	}
+	return n
+}
+
+func (m *MemberInfoOnLogoutReq) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.GateSession)
+	if l > 0 {
+		n += 1 + l + sovAlliance(uint64(l))
+	}
+	l = len(m.RID)
+	if l > 0 {
+		n += 1 + l + sovAlliance(uint64(l))
+	}
 	return n
 }
 
@@ -337,6 +660,322 @@ func (m *SetMemberRsp) Unmarshal(dAtA []byte) error {
 			return fmt.Errorf("proto: SetMemberRsp: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipAlliance(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthAlliance
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MemberInfoOnLoginReq) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowAlliance
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MemberInfoOnLoginReq: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MemberInfoOnLoginReq: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field GateSession", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAlliance
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthAlliance
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthAlliance
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.GateSession = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RID", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAlliance
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthAlliance
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthAlliance
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.RID = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipAlliance(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthAlliance
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MemberInfoOnLoginRsp) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowAlliance
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MemberInfoOnLoginRsp: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MemberInfoOnLoginRsp: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AllianceId", wireType)
+			}
+			m.AllianceId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAlliance
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.AllianceId |= int32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Position", wireType)
+			}
+			m.Position = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAlliance
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Position |= int32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipAlliance(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthAlliance
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MemberInfoOnLogoutReq) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowAlliance
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MemberInfoOnLogoutReq: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MemberInfoOnLogoutReq: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field GateSession", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAlliance
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthAlliance
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthAlliance
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.GateSession = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RID", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAlliance
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthAlliance
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthAlliance
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.RID = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipAlliance(dAtA[iNdEx:])
