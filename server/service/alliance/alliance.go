@@ -34,9 +34,12 @@ type (
 	}
 )
 
+func (a *Alliance) Coll() string {
+	return fmt.Sprintf("alliance_%v", a.allianceId)
+}
+
 func (a *Alliance) OnInit() {
-	mongoDBName := fmt.Sprintf("alliance_%v", a.allianceId)
-	cur, err := mongodb.Ins.Collection(mongoDBName).Find(context.Background(), bson.M{})
+	cur, err := mongodb.Ins.Collection(a.Coll()).Find(context.Background(), bson.M{})
 	if err != nil {
 		log.Errorw("load all alliance member failed", "err", err)
 		return

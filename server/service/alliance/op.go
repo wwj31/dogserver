@@ -18,6 +18,7 @@ func (a *Alliance) SetMember(playerInfo *inner.PlayerInfo) {
 	}
 
 	member.GSession = common.GSession(playerInfo.GSession)
+	member.Save()
 
 	log.Infow("setMember", "member info", playerInfo.String())
 }
