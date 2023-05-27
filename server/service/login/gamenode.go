@@ -24,6 +24,10 @@ func (s *Login) getGameNode() string {
 func (s *Login) getGameActor() string {
 	s.nextGameNode.CompareAndSwap(math.MaxInt64-1, 1)
 	val := s.nextGameNode.Add(1)
+	if len(s.allGameNode) == 0 {
+		return ""
+	}
+
 	id := val % int64(len(s.allGameNode))
 	actorId := actortype.GameName(int32(id + 1))
 	return actorId

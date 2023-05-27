@@ -16,13 +16,11 @@ type (
 
 		Session
 		RID() string
-		ShortId() int64
 
 		Observer() *common.Observer
 		Send2Client(pb proto.Message)
 		Online() bool
 		PlayerInfo() *inner.PlayerInfo
-		Account() *inner.Account
 		UpdateInfoToRedis()
 
 		Gamer() Gamer

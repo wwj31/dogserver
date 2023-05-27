@@ -10,8 +10,3 @@ message Account
     string OS            =  4;
     string ClientVersion =  5;
 }
-
-message LoginRoleInfo {
-    string RID     =  1;
-    int64  ShortId =  2;
-}

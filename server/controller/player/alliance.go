@@ -12,7 +12,7 @@ import (
 var _ = router.Reg(func(player *player.Player, msg *inner.JoinAllianceNtf) any {
 	if player.Alliance().AllianceId() != 0 &&
 		player.Alliance().AllianceId() != msg.AllianceId {
-		log.Warnf("player has joined alliance", "shortId", player.ShortId(), "msg", msg.String())
+		log.Warnf("player has joined alliance", "shortId", player.Role().ShortId(), "msg", msg.String())
 		return nil
 	}
 

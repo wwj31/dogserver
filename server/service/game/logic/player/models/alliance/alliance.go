@@ -37,7 +37,7 @@ func (s *Alliance) OnLogin(first bool, enterGameRsp *outer.EnterGameRsp) {
 	// 如果没联盟，检测是否需要加入联盟
 	if s.data.AllianceId == 0 {
 		// 检测上级是否有联盟，有就加入联盟
-		upShortId := rdsop.AgentUp(s.Player.ShortId())
+		upShortId := rdsop.AgentUp(s.Player.Role().ShortId())
 		if upShortId != 0 {
 			upPlayerInfo := rdsop.PlayerInfo(upShortId)
 			if upPlayerInfo.AllianceId != 0 {
@@ -53,7 +53,7 @@ func (s *Alliance) OnLogin(first bool, enterGameRsp *outer.EnterGameRsp) {
 			}
 		} else {
 			// 如果上级没有联盟，再检测离线期间是否被设为盟主
-			allianceId, _ := rds.Ins.Get(context.Background(), rdsop.JoinAllianceKey(s.Player.ShortId())).Result()
+			allianceId, _ := rds.Ins.Get(context.Background(), rdsop.JoinAllianceKey(s.Player.Role().ShortId())).Result()
 			if allianceId != "" {
 				s.data.AllianceId = cast.ToInt32(allianceId)
 				s.data.Position = alliance.Master.Int32()

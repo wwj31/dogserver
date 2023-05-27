@@ -5,9 +5,17 @@ import (
 	"time"
 )
 
-func (s *Role) RoleId() string      { return s.data.RID }
-func (s *Role) SetPhone(v string)   { s.data.Phone = v }
-func (s *Role) Phone() string       { return s.data.Phone }
+func (s *Role) RoleId() string { return s.data.RID }
+
+func (s *Role) SetUID(v string) { s.data.UID = v }
+func (s *Role) UID() string     { return s.data.UID }
+
+func (s *Role) SetPhone(v string) { s.data.Phone = v }
+func (s *Role) Phone() string     { return s.data.Phone }
+
+func (s *Role) SetShortId(v int64) { s.data.ShortId = v }
+func (s *Role) ShortId() int64     { return s.data.ShortId }
+
 func (s *Role) Name() string        { return s.data.Name }
 func (s *Role) Icon() string        { return s.data.Icon }
 func (s *Role) Gender() int32       { return s.data.Gender }

@@ -54,8 +54,7 @@ func (s *Game) OnHandle(msg actor.Message) {
 
 	switch pbMsg := actMsg.(type) {
 	case *inner.PullPlayer:
-		//log.Debugf("pull player %v ", pbMsg.RoleInfo.RID)
-		playerId, loading := s.checkAndPullPlayer(pbMsg.Account, pbMsg.RoleInfo)
+		playerId, loading := s.checkAndPullPlayer(pbMsg.RID, pbMsg.NewData)
 		if !loading {
 			_ = s.Response(msg.GetRequestId(), &inner.Ok{})
 		} else {
@@ -66,15 +65,14 @@ func (s *Game) OnHandle(msg actor.Message) {
 	}
 }
 
-func (s *Game) checkAndPullPlayer(acc *inner.Account, roleInfo *inner.LoginRoleInfo) (playerId actortype.ActorId, loading bool) {
-	playerId = actortype.PlayerId(roleInfo.RID)
+func (s *Game) checkAndPullPlayer(rid string, newInfo *inner.NewPlayerInfo) (playerId actortype.ActorId, loading bool) {
+	playerId = actortype.PlayerId(rid)
 	if !s.System().HasActor(playerId) {
-		err := s.System().NewActor(
-			playerId,
-			player.New(acc, roleInfo, s),
-			actor.SetMailBoxSize(300),
-			//actor.SetLocalized(),
-		)
+		newPlayer := player.New(rid, s)
+		err := s.System().NewActor(playerId, newPlayer, actor.SetMailBoxSize(300)) //actor.SetLocalized(),
+		expect.Nil(err)
+
+		err = s.Send(playerId, newInfo)
 		expect.Nil(err)
 		return playerId, true
 	}

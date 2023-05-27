@@ -1,7 +1,6 @@
 package player
 
 import (
-	"server/proto/innermsg/inner"
 	"server/service/game/iface"
 	"server/service/game/logic/player/models"
 	"server/service/game/logic/player/models/agent"
@@ -26,7 +25,6 @@ func (p *Player) initModule() {
 	p.models[modAgent] = agent.New(models.New(p))       // 代理
 }
 
-func (p *Player) Account() *inner.Account  { return p.accountInfo }
 func (p *Player) Gamer() iface.Gamer       { return p.gamer }
 func (p *Player) Role() iface.Role         { return p.models[modRole].(iface.Role) }
 func (p *Player) Mail() iface.Mailer       { return p.models[modMail].(iface.Mailer) }

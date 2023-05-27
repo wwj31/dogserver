@@ -7,8 +7,14 @@ import (
 type Role interface {
 	Modeler
 	RoleId() string
+	SetUID(v string)
+	UID() string
+
 	Phone() string
 	SetPhone(v string)
+
+	SetShortId(v int64)
+	ShortId() int64
 
 	Name() string
 	Icon() string

@@ -45,6 +45,8 @@ func (s *Login) OnInit() {
 
 	s.System().OnEvent(s.ID(), func(ev event.EvNewActor) {
 		// 维护可用的所有game节点
+		log.Infow("new node ", "actor", ev.ActorId)
+
 		if actortype.IsActorOf(ev.ActorId, actortype.GameActor) {
 			s.allGameNode[ev.ActorId] = struct{}{}
 		}

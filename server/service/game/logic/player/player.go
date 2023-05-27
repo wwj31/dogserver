@@ -30,27 +30,22 @@ import (
 	"server/service/game/iface"
 )
 
-func New(account *inner.Account, info *inner.LoginRoleInfo, gamer iface.Gamer) *Player {
+func New(rid string, gamer iface.Gamer) *Player {
 	p := &Player{
-		roleId:      info.RID,
-		shortId:     info.ShortId,
-		accountInfo: account,
-		gamer:       gamer,
+		roleId: rid,
+		gamer:  gamer,
 	}
 	return p
 }
 
 type (
 	Player struct {
+		roleId string
 		actor.Base
 		gamer    iface.Gamer
 		gSession common.GSession       // 网络session
 		models   [allMod]iface.Modeler // 玩家所有功能模块
 		observer *common.Observer
-
-		roleId      string
-		shortId     int64
-		accountInfo *inner.Account
 
 		saveTimerId string
 		exitTimerId string
@@ -145,7 +140,6 @@ func (p *Player) Send2Client(pb proto.Message) {
 }
 
 func (p *Player) RID() string                             { return p.roleId }
-func (p *Player) ShortId() int64                          { return p.shortId }
 func (p *Player) Observer() *common.Observer              { return p.observer }
 func (p *Player) GateSession() common.GSession            { return p.gSession }
 func (p *Player) SetGateSession(gSession common.GSession) { p.gSession = gSession }
@@ -179,7 +173,7 @@ func (p *Player) Logout() {
 func (p *Player) PlayerInfo() *inner.PlayerInfo {
 	return &inner.PlayerInfo{
 		RID:        p.roleId,
-		ShortId:    p.shortId,
+		ShortId:    p.Role().ShortId(),
 		Name:       p.Role().Name(),
 		Icon:       p.Role().Icon(),
 		Gender:     p.Role().Gender(),

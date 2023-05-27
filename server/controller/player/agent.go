@@ -30,13 +30,13 @@ var _ = router.Reg(func(player *player.Player, msg *outer.AgentMembersReq) any {
 		downMembers []*outer.PlayerInfo
 	)
 
-	upShortId := rdsop.AgentUp(player.ShortId())
+	upShortId := rdsop.AgentUp(player.Role().ShortId())
 	if upShortId != 0 {
 		upInfo := rdsop.PlayerInfo(upShortId)
 		upMember = InnerToOuter(&upInfo)
 	}
 
-	downShortIds := rdsop.AgentDown(player.ShortId())
+	downShortIds := rdsop.AgentDown(player.Role().ShortId())
 	for _, shortId := range downShortIds {
 		downInfo := rdsop.PlayerInfo(shortId)
 		downMembers = append(downMembers, InnerToOuter(&downInfo))

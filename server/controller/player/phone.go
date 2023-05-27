@@ -33,7 +33,7 @@ var _ = router.Reg(func(player *player.Player, msg *outer.ModifyPasswordReq) any
 	}
 
 	_, err := mongodb.Ins.Collection(account.Collection).
-		UpdateByID(context.Background(), player.Account().UID, bson.M{"$set": bson.M{
+		UpdateByID(context.Background(), player.Role().UID(), bson.M{"$set": bson.M{
 			"phone_password": msg.GetNewPassword(),
 		}})
 	if err != nil {
@@ -67,7 +67,7 @@ var _ = router.Reg(func(player *player.Player, msg *outer.BindPhoneReq) any {
 	}
 
 	_, err := mongodb.Ins.Collection(account.Collection).
-		UpdateByID(context.Background(), player.Account().UID, bson.M{"$set": bson.M{
+		UpdateByID(context.Background(), player.Role().UID(), bson.M{"$set": bson.M{
 			"phone":          msg.GetPhone(),
 			"phone_password": msg.GetPassword(),
 		}})

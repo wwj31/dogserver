@@ -147,10 +147,10 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 			}
 
 			_, err = s.RequestWait(dispatchGameId, &inner.PullPlayer{
-				Account: acc.ToPb(),
-				RoleInfo: &inner.LoginRoleInfo{
-					RID:     acc.LastLoginRID,
-					ShortId: acc.Roles[acc.LastLoginRID].ShorID,
+				RID: acc.LastLoginRID,
+				NewData: &inner.NewPlayerInfo{
+					AccountInfo: acc.ToPb(),
+					ShortId:     acc.Roles[acc.LastLoginRID].ShorID,
 				},
 			})
 

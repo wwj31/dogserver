@@ -2,9 +2,17 @@ package player
 
 import (
 	"server/common/router"
+	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
 	"server/service/game/logic/player"
 )
+
+// 新玩家信息
+var _ = router.Reg(func(player *player.Player, msg *inner.NewPlayerInfo) any {
+	player.Role().SetShortId(msg.ShortId)
+	player.Role().SetUID(msg.AccountInfo.UID)
+	return nil
+})
 
 // 设置信息
 var _ = router.Reg(func(player *player.Player, msg *outer.SetRoleInfoReq) any {

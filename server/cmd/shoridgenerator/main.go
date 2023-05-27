@@ -12,7 +12,7 @@ import (
 
 var (
 	key  = flag.String("key", "shortId", "the key of the short id")
-	pwd  = flag.String("pwd", "ewqmh388", "the password of the redis")
+	pwd  = flag.String("pwd", "", "the password of the redis")
 	addr = flag.String("addr", "localhost:6379", "the addr of the redis")
 )
 

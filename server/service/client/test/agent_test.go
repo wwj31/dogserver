@@ -11,17 +11,17 @@ import (
 )
 
 func TestMembersReq(t *testing.T) {
-	cli := &client.Client{Addr: *Addr, DeviceID: "wwj1"}
+	cli := &client.Client{Addr: *Addr, DeviceID: "wwj2"}
 	Init(cli)
 	rsp, ok := cli.Req(outer.Msg_IdAgentMembersReq, &outer.AgentMembersReq{}).(*outer.AgentMembersRsp)
 	assert.True(t, ok)
 	log.Infof("agent members rsp [%v]\n", rsp)
 
-	cli = &client.Client{Addr: *Addr, DeviceID: "wwj2"}
-	Init(cli)
-	rsp, ok = cli.Req(outer.Msg_IdAgentMembersReq, &outer.AgentMembersReq{}).(*outer.AgentMembersRsp)
-	assert.True(t, ok)
-	log.Infof("agent members rsp [%v]\n", rsp)
+	//cli = &client.Client{Addr: *Addr, DeviceID: "wwj2"}
+	//Init(cli)
+	//rsp, ok = cli.Req(outer.Msg_IdAgentMembersReq, &outer.AgentMembersReq{}).(*outer.AgentMembersRsp)
+	//assert.True(t, ok)
+	//log.Infof("agent members rsp [%v]\n", rsp)
 	//
 	//cli = &client.Client{Addr: *Addr, DeviceID: "wwj3"}
 	//Init(cli)

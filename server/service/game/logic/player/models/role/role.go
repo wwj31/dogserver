@@ -24,7 +24,6 @@ type Role struct {
 func New(base models.Model) *Role {
 	mod := &Role{Model: base}
 	mod.data.RID = base.Player.RID()
-	mod.data.ShortId = base.Player.ShortId()
 	return mod
 }
 
@@ -45,13 +44,13 @@ func (s *Role) OnLogin(first bool, enterGameRsp *outer.EnterGameRsp) {
 	if first {
 		//first
 		s.data.CreateAt = nowStr
-		s.data.Phone = s.Player.Account().Phone
+		s.data.Phone = s.Player.Role().Phone()
 		s.data.Name = randName()
 		s.data.Icon = cast.ToString(rand.Int31n(10) + 1)
 		s.data.LogoutAt = nowStr
 	}
 
-	s.upShortId = rdsop.AgentUp(s.Player.ShortId())
+	s.upShortId = rdsop.AgentUp(s.Player.Role().ShortId())
 
 	s.data.LoginAt = nowStr
 	enterGameRsp.RoleInfo = s.roleInfo()

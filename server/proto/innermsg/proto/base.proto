@@ -2,6 +2,7 @@ syntax = "proto3";
 package inner;
 option  go_package = "/inner";
 
+import "account.proto";
 
 message Error {}
 message Ok {}
@@ -25,5 +26,15 @@ message GateMsgWrapper{
     string GateSession = 1;
     string MsgName     = 2;
     bytes  Data        = 3;
+}
+
+message PullPlayer{
+    string  RID            = 1;
+    NewPlayerInfo NewData  = 2;
+}
+
+message NewPlayerInfo {
+    Account AccountInfo = 1;
+    int64   ShortId     = 2;
 }
 
