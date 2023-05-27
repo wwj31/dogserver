@@ -67,7 +67,6 @@ func (s *Game) OnHandle(msg actor.Message) {
 }
 
 func (s *Game) checkAndPullPlayer(acc *inner.Account, roleInfo *inner.LoginRoleInfo) (playerId actortype.ActorId, loading bool) {
-	// TODO::检查玩家是否在其他game节点中,并且通知目标下线,需要将玩家所在节点数据存入redis中以便查询
 	playerId = actortype.PlayerId(roleInfo.RID)
 	if !s.System().HasActor(playerId) {
 		err := s.System().NewActor(

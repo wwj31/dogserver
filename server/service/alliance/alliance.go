@@ -58,6 +58,7 @@ func (a *Alliance) OnInit() {
 	}
 
 	for _, member := range members {
+		member.Alliance = a
 		a.members[member.RID] = member
 		if member.Position == Master {
 			a.masterRID = member

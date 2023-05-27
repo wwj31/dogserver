@@ -1,0 +1,10 @@
+syntax = "proto3";
+package outer;
+option  go_package = "/outer";
+
+import "base.proto";
+
+message JoinAllianceNtf {
+    int32 AllianceId = 1;
+    int32 Position   = 2;
+}

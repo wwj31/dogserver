@@ -1,7 +1,11 @@
 package alliance
 
 import (
+	"context"
 	gogo "github.com/gogo/protobuf/proto"
+	"github.com/spf13/cast"
+	"server/common/rds"
+	"server/service/alliance"
 
 	"server/common/actortype"
 	"server/common/log"
@@ -46,6 +50,13 @@ func (s *Alliance) OnLogin(first bool, enterGameRsp *outer.EnterGameRsp) {
 						"rid", s.Player.RID(), "upShortId", upPlayerInfo, "alliance", upPlayerInfo.AllianceId)
 				}
 				s.data.AllianceId = upPlayerInfo.AllianceId
+			}
+		} else {
+			// 如果上级没有联盟，再检测离线期间是否被设为盟主
+			allianceId, _ := rds.Ins.Get(context.Background(), rdsop.JoinAllianceKey(s.Player.ShortId())).Result()
+			if allianceId != "" {
+				s.data.AllianceId = cast.ToInt32(allianceId)
+				s.data.Position = alliance.Master.Int32()
 			}
 		}
 	} else {

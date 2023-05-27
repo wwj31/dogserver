@@ -137,7 +137,15 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 			}
 			rds.Ins.Set(context.Background(), rdsop.SessionKey(acc.LastLoginRID), gSession.String(), 7*24*time.Hour)
 
-			dispatchGameId := s.getGameNode()
+			// 找玩家最近登录过的game节点，如果没找到就重新分配节点
+			var dispatchGameId string
+			gameNodeId, _ := rds.Ins.Get(context.Background(), rdsop.GameNodeKey(acc.LastShortID)).Result()
+			if gameNodeId != "" {
+				dispatchGameId = gameNodeId
+			} else {
+				dispatchGameId = s.getGameNode()
+			}
+
 			_, err = s.RequestWait(dispatchGameId, &inner.PullPlayer{
 				Account: acc.ToPb(),
 				RoleInfo: &inner.LoginRoleInfo{
@@ -146,6 +154,7 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 				},
 			})
 
+			rds.Ins.Set(context.Background(), rdsop.GameNodeKey(acc.LastShortID), dispatchGameId, 7*24*time.Hour)
 			log.Infow("login success dispatch the player to game",
 				"new", newPlayer, "role", acc.Roles[acc.LastLoginRID], "req", req.String(), "to game", dispatchGameId)
 

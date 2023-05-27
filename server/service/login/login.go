@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"sync/atomic"
+	"time"
 
 	"github.com/wwj31/dogactor/actor"
 	"github.com/wwj31/dogactor/actor/event"
@@ -58,6 +59,7 @@ func (s *Login) OnInit() {
 
 func (s *Login) OnStop() bool {
 	log.Debugw("login stop", "id", s.ID())
+	time.Sleep(2 * time.Second)
 	return true
 }
 

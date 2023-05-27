@@ -1,14 +1,20 @@
 package alliance
 
 import (
+	"server/common/log"
 	"server/proto/innermsg/inner"
 	"server/service/alliance"
 
 	"server/common/router"
 )
 
-// 玩家登录，同步并请求数据
-var _ = router.Reg(func(alliance *alliance.Mgr, msg *inner.CreateAllianceReq) any {
-	// todo
-	return &inner.CreateAllianceRsp{}
+// 创建联盟
+var _ = router.Reg(func(mgr *alliance.Mgr, msg *inner.CreateAllianceReq) any {
+	allianceId, err := mgr.CreateAlliance(msg.MasterShortId)
+	if err != nil {
+		log.Errorw("create alliance failed", "master", msg.MasterShortId, "err", err)
+		return &inner.Error{}
+	}
+
+	return &inner.CreateAllianceRsp{AllianceId: allianceId}
 })

@@ -29,5 +29,6 @@ type (
 		Role() Role
 		Mail() Mailer
 		Alliance() Alliance
+		Agent() Agent
 	}
 )

@@ -37,3 +37,8 @@ message MemberInfoOnLogoutReq{
   string GateSession = 1;
   string RID         = 2;
 }
+
+message JoinAllianceNtf{
+  int32 AllianceId = 1;
+  int32 Position   = 2;
+}
