@@ -65,6 +65,9 @@ func (a *Alliance) OnInit() {
 		log.Debugf("load member %+v", *member)
 	}
 
+	// 统一返回结果
+	router.Result(a, a.responseHandle)
+
 	log.Debugf("Alliance OnInit %v members:%v", a.ID(), len(a.members))
 }
 

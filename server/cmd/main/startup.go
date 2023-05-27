@@ -108,16 +108,16 @@ func run(appType string, appId int32) *actor.System {
 		newLogin(system)
 	case actortype.GameActor:
 		newGame(appId, system)
+	case actortype.AllianceMgrActor:
+		newAllianceMgr(system)
 	case actortype.DoorActor:
 		newDoor(system)
-	case actortype.AllianceActor:
-		newAlliance(appId, system)
 	case "allinone":
 		newGateway(appId, system)
 		newGame(appId, system)
 		newLogin(system)
 		newDoor(system)
-		newAlliance(appId, system)
+		newAllianceMgr(system)
 	}
 	return system
 }
@@ -157,7 +157,7 @@ func newDoor(system *actor.System) {
 	_ = system.NewActor(actortype.DoorName(), doorActor, actor.SetMailBoxSize(100))
 }
 
-func newAlliance(appId int32, system *actor.System) {
-	allianceActor := alliance.New(appId)
-	_ = system.NewActor(actortype.AllianceName(appId), allianceActor, actor.SetMailBoxSize(1000))
+func newAllianceMgr(system *actor.System) {
+	mgr := alliance.NewMgr()
+	_ = system.NewActor(actortype.AllianceMgrActor, mgr, actor.SetMailBoxSize(100))
 }

@@ -4,6 +4,16 @@ option  go_package = "/inner";
 
 import "base.proto";
 
+// 创建联盟
+message CreateAllianceReq{
+  int64 MasterShortId = 1; // 盟主短Id
+}
+
+message CreateAllianceRsp{
+  int32 AllianceId = 1;
+}
+
+// 设置成员信息
 message SetMemberReq{
   repeated PlayerInfo players  = 1;
 }

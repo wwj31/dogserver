@@ -10,14 +10,15 @@ import (
 type ActorId = string
 
 const (
-	LoginActor    = "login"
-	GameActor     = "game"
-	PlayerActor   = "player"
-	GatewayActor  = "gateway"
-	DoorActor     = "door"
-	AllianceActor = "alliance"
-	RoomMgrActor  = "RoomMgrActor"
-	RoomActor     = "RoomActor"
+	LoginActor       = "login"
+	GameActor        = "game"
+	PlayerActor      = "player"
+	GatewayActor     = "gateway"
+	DoorActor        = "door"
+	AllianceMgrActor = "allianceMgr"
+	AllianceActor    = "alliance"
+	RoomMgrActor     = "RoomMgrActor"
+	RoomActor        = "RoomActor"
 )
 
 func GameName(id int32) ActorId {
