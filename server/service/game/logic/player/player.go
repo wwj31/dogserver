@@ -183,6 +183,7 @@ func (p *Player) PlayerInfo() *inner.PlayerInfo {
 		Name:       p.Role().Name(),
 		Icon:       p.Role().Icon(),
 		Gender:     p.Role().Gender(),
+		UpShortId:  p.Role().UpShortId(),
 		AllianceId: p.Alliance().AllianceId(),
 		Position:   p.Alliance().Position(),
 		LoginAt:    tools.TimeFormat(p.Role().LoginAt()),

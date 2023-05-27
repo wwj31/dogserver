@@ -19,6 +19,7 @@ func InnerToOuter(player *inner.PlayerInfo) *outer.PlayerInfo {
 		Position:   outer.Position(player.Position),
 		LoginAt:    player.LoginAt,
 		LogoutAt:   player.LogoutAt,
+		UpShortId:  player.UpShortId,
 	}
 }
 

@@ -2,6 +2,7 @@ package role
 
 import (
 	"math/rand"
+	"server/rdsop"
 
 	"github.com/spf13/cast"
 
@@ -16,7 +17,8 @@ import (
 
 type Role struct {
 	models.Model
-	data inner.RoleInfo
+	data      inner.RoleInfo
+	upShortId int64
 }
 
 func New(base models.Model) *Role {
@@ -48,6 +50,8 @@ func (s *Role) OnLogin(first bool, enterGameRsp *outer.EnterGameRsp) {
 		s.data.Icon = cast.ToString(rand.Int31n(10) + 1)
 		s.data.LogoutAt = nowStr
 	}
+
+	s.upShortId = rdsop.AgentUp(s.Player.ShortId())
 
 	s.data.LoginAt = nowStr
 	enterGameRsp.RoleInfo = s.roleInfo()

@@ -20,4 +20,5 @@ message PlayerInfo {
     Position Position    = 7;
     string   LoginAt     = 8;
     string   LogoutAt    = 9;
+    int64    UpShortId   = 10;
 }
