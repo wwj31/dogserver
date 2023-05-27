@@ -7,7 +7,7 @@ func LockLoginKey(key string) string {
 	return "lock:login:" + key
 }
 
-// SessionKey 仅用于顶号处理，踢掉旧链接
+// SessionKey 用于查找在线玩家推送消息、以及顶号相关处理
 func SessionKey(rid string) string {
 	return "session:" + rid
 }
