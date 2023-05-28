@@ -56,9 +56,11 @@ func setMaster(ctx *gin.Context) {
 		return
 	}
 
-	if _, ok := result.(*inner.Ok); !ok {
+	if _, ok := result.(*inner.CreateAllianceRsp); !ok {
 		ctx.JSON(http.StatusInternalServerError,
 			gin.H{"error": "创建联盟失败"})
 		return
 	}
+
+	ctx.JSON(http.StatusOK, gin.H{"info": "联盟创建成功"})
 }

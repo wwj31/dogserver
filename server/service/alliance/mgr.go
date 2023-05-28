@@ -6,6 +6,7 @@ import (
 	"github.com/gogo/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"reflect"
 	"server/common/actortype"
 	"server/common/log"
@@ -88,6 +89,7 @@ func (m *Mgr) OnHandle(msg actor.Message) {
 		return
 	}
 
+	m.currentMsg = msg
 	router.Dispatch(m, pt)
 }
 
@@ -137,6 +139,12 @@ func (m *Mgr) CreateAlliance(masterShortId int64) (int32, error) {
 	masterInfo.AllianceId = allianceId
 	rdsop.SetPlayerInfo(&masterInfo)
 
+	m.alliances = append(m.alliances, allianceId)
+	mongodb.Ins.Collection(Coll).UpdateByID(context.Background(),
+		1,
+		bson.M{"$set": m.alliances},
+		options.Update().SetUpsert(true),
+	)
 	return allianceId, nil
 }
 
