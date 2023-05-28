@@ -41,6 +41,10 @@ func AllianceName(id int32) ActorId {
 	return fmt.Sprintf("%v_%v_Actor", AllianceActor, id)
 }
 
+func AllianceMgrName() ActorId {
+	return fmt.Sprintf("%v_Actor", AllianceMgrActor)
+}
+
 func RoomMgrName(id int32) ActorId {
 	return fmt.Sprintf("%v_%v_Actor", RoomMgrActor, id)
 }

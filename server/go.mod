@@ -22,7 +22,7 @@ require (
 	github.com/tealeg/xlsx v1.0.5
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.659
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/sms v1.0.659
-	github.com/wwj31/dogactor v1.4.12
+	github.com/wwj31/dogactor v1.4.13
 	go.mongodb.org/mongo-driver v1.11.0
 	google.golang.org/protobuf v1.28.1
 )

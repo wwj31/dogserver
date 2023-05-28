@@ -159,5 +159,5 @@ func newDoor(system *actor.System) {
 
 func newAllianceMgr(system *actor.System) {
 	mgr := alliance.NewMgr()
-	_ = system.NewActor(actortype.AllianceMgrActor, mgr, actor.SetMailBoxSize(100))
+	_ = system.NewActor(actortype.AllianceMgrName(), mgr, actor.SetMailBoxSize(100))
 }
