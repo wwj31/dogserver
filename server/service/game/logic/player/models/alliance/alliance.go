@@ -2,8 +2,10 @@ package alliance
 
 import (
 	"context"
+
 	gogo "github.com/gogo/protobuf/proto"
 	"github.com/spf13/cast"
+
 	"server/common/rds"
 	"server/service/alliance"
 
@@ -41,22 +43,29 @@ func (s *Alliance) OnLogin(first bool, enterGameRsp *outer.EnterGameRsp) {
 		if upShortId != 0 {
 			upPlayerInfo := rdsop.PlayerInfo(upShortId)
 			if upPlayerInfo.AllianceId != 0 {
-				_, err := s.Player.RequestWait(actortype.AllianceName(upPlayerInfo.AllianceId), &inner.SetMemberReq{
-					Players: []*inner.PlayerInfo{s.Player.PlayerInfo()},
+				result, err := s.Player.RequestWait(actortype.AllianceName(upPlayerInfo.AllianceId), &inner.SetMemberReq{
+					Player: s.Player.PlayerInfo(),
+					Ntf:    false, // 自己请求加入联盟，不需要额外通知
 				})
 
 				if err != nil {
 					log.Warnf("player request join alliance failed ",
 						"rid", s.Player.RID(), "upShortId", upPlayerInfo, "alliance", upPlayerInfo.AllianceId)
+					return
 				}
+
+				rsp := result.(*inner.SetMemberRsp)
 				s.data.AllianceId = upPlayerInfo.AllianceId
+				s.data.Position = rsp.Position
 			}
 		} else {
 			// 如果上级没有联盟，再检测离线期间是否被设为盟主
-			allianceId, _ := rds.Ins.Get(context.Background(), rdsop.JoinAllianceKey(s.Player.Role().ShortId())).Result()
+			joinAllianceKey := rdsop.JoinAllianceKey(s.Player.Role().ShortId())
+			allianceId, _ := rds.Ins.Get(context.Background(), joinAllianceKey).Result()
 			if allianceId != "" {
 				s.data.AllianceId = cast.ToInt32(allianceId)
 				s.data.Position = alliance.Master.Int32()
+				rds.Ins.Del(context.Background(), joinAllianceKey)
 			}
 		}
 	} else {

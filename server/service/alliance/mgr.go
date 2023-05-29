@@ -3,15 +3,16 @@ package alliance
 import (
 	"context"
 	"fmt"
+	"reflect"
+
 	"github.com/gogo/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"reflect"
+
 	"server/common/actortype"
 	"server/common/log"
 	"server/common/mongodb"
-	"server/common/rds"
 	"server/common/router"
 	"server/proto/innermsg/inner"
 	"server/rdsop"
@@ -111,9 +112,9 @@ func (m *Mgr) CreateAlliance(masterShortId int64) (int32, error) {
 		return 0, fmt.Errorf("the player has upShortId playerInfo:%+v", masterInfo)
 	}
 
-	newAlliance.SetMember(&masterInfo, Master)
+	allianceActor := actortype.AllianceName(allianceId)
 	err := m.System().NewActor(
-		actortype.AllianceName(allianceId), newAlliance,
+		allianceActor, newAlliance,
 		actor.SetMailBoxSize(1000),
 	)
 
@@ -122,23 +123,26 @@ func (m *Mgr) CreateAlliance(masterShortId int64) (int32, error) {
 		return 0, err
 	}
 
-	if masterInfo.GSession != "" {
-		// 玩家在线，通知Player actor修改联盟id，
-		m.Send(actortype.PlayerId(masterInfo.RID), &inner.JoinAllianceNtf{
-			AllianceId: allianceId,
-			Position:   Master.Int32(),
-		})
-	} else {
-		// 玩家不在线，记录到redis中，等待下次上线更新
-		key := rdsop.JoinAllianceKey(masterShortId)
-		rds.Ins.Set(context.Background(), key, allianceId, 0)
+	// 请求加入盟主
+	result, err := m.RequestWait(allianceActor, &inner.SetMemberReq{
+		Player:   &masterInfo,
+		Position: Master.Int32(),
+		Ntf:      true,
+	})
+
+	if err != nil {
+		log.Errorw("create alliance success,but master set failed", "err", err, "masterInfo", masterInfo.String())
+		return 0, err
 	}
 
-	// 更新玩家公共数据
-	masterInfo.Position = Master.Int32()
-	masterInfo.AllianceId = allianceId
-	rdsop.SetPlayerInfo(&masterInfo)
+	if _, ok := result.(*inner.SetMemberRsp); !ok {
+		err = fmt.Errorf("create alliance success,but master set failed by assert")
+		log.Errorw("create alliance success,but master set failed by assert",
+			"type", reflect.TypeOf(result).String(), "masterInfo", masterInfo.String())
+		return 0, err
+	}
 
+	// 维护联盟列表
 	m.alliances = append(m.alliances, allianceId)
 	mongodb.Ins.Collection(Coll).UpdateByID(context.Background(),
 		1,

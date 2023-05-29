@@ -9,28 +9,32 @@ import (
 )
 
 // 玩家登录，同步并请求数据
-var _ = router.Reg(func(alliance *alliance.Alliance, msg *inner.MemberInfoOnLoginReq) any {
-	alliance.PlayerOnline(common.GSession(msg.GateSession), msg.RID)
-	member := alliance.MemberInfo(msg.RID)
+var _ = router.Reg(func(alli *alliance.Alliance, msg *inner.MemberInfoOnLoginReq) any {
+	alli.PlayerOnline(common.GSession(msg.GateSession), msg.RID)
+	member := alli.MemberInfo(msg.RID)
 	if member == nil {
 		return &inner.MemberInfoOnLoginRsp{}
 	}
 
 	return &inner.MemberInfoOnLoginRsp{
-		AllianceId: alliance.AllianceId(),
+		AllianceId: alli.AllianceId(),
 		Position:   member.Position.Int32(),
 	}
 })
 
 // 玩家下线，通知联盟
-var _ = router.Reg(func(alliance *alliance.Alliance, msg *inner.MemberInfoOnLogoutReq) any {
-	alliance.PlayerOffline(common.GSession(msg.GateSession), msg.RID)
+var _ = router.Reg(func(alli *alliance.Alliance, msg *inner.MemberInfoOnLogoutReq) any {
+	alli.PlayerOffline(common.GSession(msg.GateSession), msg.RID)
 	return nil
 })
 
-var _ = router.Reg(func(alliance *alliance.Alliance, msg *inner.SetMemberReq) any {
-	for _, player := range msg.Players {
-		alliance.SetMember(player)
+// 设置联盟成员
+var _ = router.Reg(func(alli *alliance.Alliance, msg *inner.SetMemberReq) any {
+	var position []alliance.Position
+	if msg.Position != 0 {
+		position = append(position, alliance.Position(msg.Position))
 	}
-	return &inner.SetMemberRsp{}
+
+	member := alli.SetMember(msg.Player, msg.Ntf, position...)
+	return &inner.SetMemberRsp{Position: member.Position.Int32()}
 })

@@ -15,10 +15,13 @@ message CreateAllianceRsp{
 
 // 设置成员信息
 message SetMemberReq{
-  repeated PlayerInfo players  = 1;
+  PlayerInfo Player   = 1;
+  int32      Position = 2;
+  bool       Ntf      = 3; // 登录触发加入联盟不需要通知，跟随盟主被动进入联盟需要通知
 }
 
 message SetMemberRsp{
+  int32    Position            = 1;
 }
 
 // 登录时，绑定角色session，并请求自己在联盟中的成员最新信息
@@ -28,7 +31,7 @@ message MemberInfoOnLoginReq{
 }
 
 message MemberInfoOnLoginRsp{
-  int32 allianceId = 1; // 联盟id，如果为0，表示玩家下线期间被踢了
+  int32 AllianceId = 1; // 联盟id，如果为0，表示玩家下线期间被踢了
   int32 Position   = 2; // 职位
 }
 
