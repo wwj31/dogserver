@@ -113,26 +113,22 @@ func (m *Mgr) CreateAlliance(masterShortId int64) (int32, error) {
 	}
 
 	allianceActor := actortype.AllianceName(allianceId)
-	err := m.System().NewActor(
-		allianceActor, newAlliance,
-		actor.SetMailBoxSize(1000),
-	)
-
+	err := m.System().NewActor(allianceActor, newAlliance, actor.SetMailBoxSize(1000))
 	if err != nil {
 		log.Errorw("create alliance failed", "err", err, "msg")
 		return 0, err
 	}
 
 	// 请求加入盟主
-	result, err := m.RequestWait(allianceActor, &inner.SetMemberReq{
+	result, joinErr := m.RequestWait(allianceActor, &inner.SetMemberReq{
 		Player:   &masterInfo,
 		Position: Master.Int32(),
 		Ntf:      true,
 	})
 
-	if err != nil {
-		log.Errorw("create alliance success,but master set failed", "err", err, "masterInfo", masterInfo.String())
-		return 0, err
+	if joinErr != nil {
+		log.Errorw("create alliance success,but master set failed", "err", joinErr, "masterInfo", masterInfo.String())
+		return 0, joinErr
 	}
 
 	if _, ok := result.(*inner.SetMemberRsp); !ok {

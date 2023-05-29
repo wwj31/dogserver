@@ -3,6 +3,7 @@ package alliance
 import (
 	"server/common"
 	"server/proto/innermsg/inner"
+	"server/rdsop"
 	"server/service/alliance"
 
 	"server/common/router"
@@ -36,5 +37,13 @@ var _ = router.Reg(func(alli *alliance.Alliance, msg *inner.SetMemberReq) any {
 	}
 
 	member := alli.SetMember(msg.Player, msg.Ntf, position...)
+
+	// 获取成员所有的下级，全部加入本联盟
+	downPlayers := rdsop.AgentDown(member.ShortId)
+	for _, shortId := range downPlayers {
+		playerInfo := rdsop.PlayerInfo(shortId)
+		alli.SetMember(&playerInfo, true)
+	}
+
 	return &inner.SetMemberRsp{Position: member.Position.Int32()}
 })
