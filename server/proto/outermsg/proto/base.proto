@@ -2,7 +2,6 @@ syntax = "proto3";
 package outer;
 option  go_package = "/outer";
 
-
 import "type.proto";
 
 message Base {
@@ -11,14 +10,14 @@ message Base {
 }
 
 message PlayerInfo {
-    string   RID         = 1;
-    int64    ShortId     = 2;
-    string   Name        = 3;
-    string   Icon        = 4;
-    int32    Gender      = 5;
-    int32    AllianceId  = 6;
-    Position Position    = 7;
-    string   LoginAt     = 8;
-    string   LogoutAt    = 9;
-    int64    UpShortId   = 10;
+    string   RID         = 1;  // 玩家id
+    int64    ShortId     = 2;  // 短id
+    string   Name        = 3;  // 名字
+    string   Icon        = 4;  // 头像
+    int32    Gender      = 5;  // 性别
+    int32    AllianceId  = 6;  // 联盟id
+    Position Position    = 7;  // 职位
+    string   LoginAt     = 8;  // 登录时间
+    string   LogoutAt    = 9;  // 离线时间
+    int64    UpShortId   = 10; // 上级id
 }
