@@ -1,8 +1,9 @@
 package role
 
 import (
-	"github.com/wwj31/dogactor/tools"
 	"time"
+
+	"github.com/wwj31/dogactor/tools"
 )
 
 func (s *Role) RoleId() string { return s.data.RID }
