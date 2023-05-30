@@ -70,9 +70,19 @@ func (p *Player) OnInit() {
 
 // 所有消息,处理完统一返回流程
 func (p *Player) responseHandle(resultMsg any) {
-	msg, ok := resultMsg.(proto.Message)
+	var (
+		msg proto.Message
+		ok  bool
+	)
+
+	msg, ok = resultMsg.(proto.Message)
 	if !ok {
-		return
+		var msgCode outer.ERROR
+		msgCode, ok = resultMsg.(outer.ERROR)
+		if !ok {
+			return
+		}
+		msg = &outer.FailRsp{Error: msgCode}
 	}
 
 	// 网关消息，直接将消息转发给session, 其他服务消息，走内部通讯接口

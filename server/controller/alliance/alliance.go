@@ -2,7 +2,9 @@ package alliance
 
 import (
 	"server/common"
+	"server/common/log"
 	"server/proto/innermsg/inner"
+	"server/proto/outermsg/outer"
 	"server/rdsop"
 	"server/service/alliance"
 
@@ -30,20 +32,32 @@ var _ = router.Reg(func(alli *alliance.Alliance, msg *inner.MemberInfoOnLogoutRe
 })
 
 // 设置联盟成员
-var _ = router.Reg(func(alli *alliance.Alliance, msg *inner.SetMemberReq) any {
+var _ = router.Reg(func(alli *alliance.Alliance, msg *inner.AddMemberReq) any {
 	var position []alliance.Position
 	if msg.Position != 0 {
 		position = append(position, alliance.Position(msg.Position))
 	}
 
-	member := alli.SetMember(msg.Player, msg.Ntf, position...)
+	member := alli.AddMember(msg.Player, msg.Ntf, position...)
 
 	// 获取成员所有的下级，全部加入本联盟
 	downPlayers := rdsop.AgentDown(member.ShortId)
 	for _, shortId := range downPlayers {
 		playerInfo := rdsop.PlayerInfo(shortId)
-		alli.SetMember(&playerInfo, true)
+		alli.AddMember(&playerInfo, true)
 	}
 
-	return &inner.SetMemberRsp{Position: member.Position.Int32()}
+	return &inner.AddMemberRsp{}
+})
+
+// 设置联盟成员职位
+var _ = router.Reg(func(alli *alliance.Alliance, msg *inner.SetMemberPositionReq) any {
+	member := alli.MemberInfo(msg.Player.RID)
+	if member == nil {
+		log.Warnw("cannot find member in alliance by setup position", "msg", msg.String())
+		return &outer.FailRsp{Error: outer.ERROR_PLAYER_NOT_IN_ALLIANCE}
+	}
+
+	member.Position = alliance.Position(msg.Position)
+	return &inner.SetMemberPositionRsp{}
 })

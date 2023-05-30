@@ -18,7 +18,7 @@ var _ = router.Reg(func(player *player.Player, msg *inner.NewPlayerInfo) any {
 var _ = router.Reg(func(player *player.Player, msg *outer.SetRoleInfoReq) any {
 	r := []rune(msg.Name)
 	if len(r) > 20 {
-		return &outer.FailRsp{Error: outer.ERROR_FAILED}
+		return outer.ERROR_FAILED
 	}
 
 	if msg.Name == "" {

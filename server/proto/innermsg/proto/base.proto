@@ -4,7 +4,9 @@ option  go_package = "/inner";
 
 import "account.proto";
 
-message Error {}
+message Error {
+    int32 ErrorCode = 1;
+}
 message Ok {}
 
 message PlayerInfo{

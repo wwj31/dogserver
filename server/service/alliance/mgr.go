@@ -120,7 +120,7 @@ func (m *Mgr) CreateAlliance(masterShortId int64) (int32, error) {
 	}
 
 	// 请求加入盟主
-	result, joinErr := m.RequestWait(allianceActor, &inner.SetMemberReq{
+	result, joinErr := m.RequestWait(allianceActor, &inner.AddMemberReq{
 		Player:   &masterInfo,
 		Position: Master.Int32(),
 		Ntf:      true,
@@ -131,7 +131,7 @@ func (m *Mgr) CreateAlliance(masterShortId int64) (int32, error) {
 		return 0, joinErr
 	}
 
-	if _, ok := result.(*inner.SetMemberRsp); !ok {
+	if _, ok := result.(*inner.AddMemberRsp); !ok {
 		err = fmt.Errorf("create alliance success,but master set failed by assert")
 		log.Errorw("create alliance success,but master set failed by assert",
 			"type", reflect.TypeOf(result).String(), "masterInfo", masterInfo.String())

@@ -13,7 +13,7 @@ import (
 var _ = router.Reg(func(player *player.Player, msg *outer.EnterGameReq) any {
 	if common.EnterGameToken(msg.RID, msg.NewPlayer) != msg.Checksum {
 		log.Warnw("checksum md5 check failed", "msg", msg.String())
-		return &outer.FailRsp{}
+		return outer.ERROR_FAILED
 	}
 
 	enterGameRsp := &outer.EnterGameRsp{}

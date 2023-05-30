@@ -6,14 +6,13 @@ import (
 	gogo "github.com/gogo/protobuf/proto"
 	"github.com/spf13/cast"
 
-	"server/common/rds"
-	"server/service/alliance"
-
 	"server/common/actortype"
 	"server/common/log"
+	"server/common/rds"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
 	"server/rdsop"
+	"server/service/alliance"
 	"server/service/game/logic/player/models"
 )
 
@@ -43,7 +42,7 @@ func (s *Alliance) OnLogin(first bool, enterGameRsp *outer.EnterGameRsp) {
 		if upShortId != 0 {
 			upPlayerInfo := rdsop.PlayerInfo(upShortId)
 			if upPlayerInfo.AllianceId != 0 {
-				result, err := s.Player.RequestWait(actortype.AllianceName(upPlayerInfo.AllianceId), &inner.SetMemberReq{
+				result, err := s.Player.RequestWait(actortype.AllianceName(upPlayerInfo.AllianceId), &inner.AddMemberReq{
 					Player: s.Player.PlayerInfo(),
 					Ntf:    false, // 自己请求加入联盟，不需要额外通知
 				})
@@ -54,9 +53,9 @@ func (s *Alliance) OnLogin(first bool, enterGameRsp *outer.EnterGameRsp) {
 					return
 				}
 
-				rsp := result.(*inner.SetMemberRsp)
+				_ = result.(*inner.AddMemberRsp)
 				s.data.AllianceId = upPlayerInfo.AllianceId
-				s.data.Position = rsp.Position
+				s.data.Position = 1
 			}
 		} else {
 			// 如果上级没有联盟，再检测离线期间是否被设为盟主

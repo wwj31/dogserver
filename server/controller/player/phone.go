@@ -20,16 +20,16 @@ import (
 // 修改密码
 var _ = router.Reg(func(player *player.Player, msg *outer.ModifyPasswordReq) any {
 	if player.Role().Phone() == "" {
-		return &outer.FailRsp{Error: outer.ERROR_MODIFY_PASSWORD_NOT_PHONE}
+		return outer.ERROR_MODIFY_PASSWORD_NOT_PHONE
 	}
 
 	result := mongodb.Ins.Collection(account.Collection).FindOne(context.Background(), bson.M{account.Phone: player.Role().Phone()})
 	if result.Err() == mongo.ErrNoDocuments {
-		return &outer.FailRsp{Error: outer.ERROR_PHONE_NOT_FOUND}
+		return outer.ERROR_PHONE_NOT_FOUND
 	}
 
 	if !validatePassword(msg.NewPassword) {
-		return &outer.FailRsp{Error: outer.ERROR_INVALID_PASSWORD_FORMAT}
+		return outer.ERROR_INVALID_PASSWORD_FORMAT
 	}
 
 	_, err := mongodb.Ins.Collection(account.Collection).
@@ -50,20 +50,20 @@ var _ = router.Reg(func(player *player.Player, msg *outer.ModifyPasswordReq) any
 var _ = router.Reg(func(player *player.Player, msg *outer.BindPhoneReq) any {
 	result := mongodb.Ins.Collection(account.Collection).FindOne(context.Background(), bson.M{account.Phone: msg.GetPhone()})
 	if result.Err() != mongo.ErrNoDocuments {
-		return &outer.FailRsp{Error: outer.ERROR_PHONE_WAS_BOUND}
+		return outer.ERROR_PHONE_WAS_BOUND
 	}
 
 	if msg.Password == "" {
-		return &outer.FailRsp{Error: outer.ERROR_PHONE_PASSWORD_IS_EMPTY}
+		return outer.ERROR_PHONE_PASSWORD_IS_EMPTY
 	}
 
 	if !validatePhoneNumber(msg.Phone) {
 		log.Warnw("bing phone validate failed", "rid", player.RID(), "phone", msg.Phone)
-		return &outer.FailRsp{Error: outer.ERROR_INVALID_PHONE_FORMAT}
+		return outer.ERROR_INVALID_PHONE_FORMAT
 	}
 
 	if !validatePassword(msg.Password) {
-		return &outer.FailRsp{Error: outer.ERROR_INVALID_PASSWORD_FORMAT}
+		return outer.ERROR_INVALID_PASSWORD_FORMAT
 	}
 
 	_, err := mongodb.Ins.Collection(account.Collection).

@@ -8,11 +8,12 @@ import (
 	"server/common/log"
 	"server/common/rds"
 	"server/proto/innermsg/inner"
+	"server/proto/outermsg/outer"
 	"server/rdsop"
 )
 
-// SetMember 添加成员、更新成员信息
-func (a *Alliance) SetMember(playerInfo *inner.PlayerInfo, ntf bool, position ...Position) *Member {
+// AddMember 添加成员、更新成员信息
+func (a *Alliance) AddMember(playerInfo *inner.PlayerInfo, ntf bool, position ...Position) *Member {
 	member, ok := a.members[playerInfo.RID]
 	if !ok {
 		member = &Member{
@@ -37,7 +38,7 @@ func (a *Alliance) SetMember(playerInfo *inner.PlayerInfo, ntf bool, position ..
 	// 以下逻辑增对某个玩家被动进入联盟的处理
 	if playerInfo.GSession != "" {
 		// 玩家在线，通知Player actor修改联盟id，
-		a.Send(actortype.PlayerId(playerInfo.RID), &inner.JoinAllianceNtf{
+		a.Send(actortype.PlayerId(playerInfo.RID), &outer.AllianceInfoNtf{
 			AllianceId: a.allianceId,
 			Position:   member.Position.Int32(),
 		})
