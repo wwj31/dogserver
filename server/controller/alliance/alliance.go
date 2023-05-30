@@ -2,6 +2,7 @@ package alliance
 
 import (
 	"server/common"
+	"server/common/actortype"
 	"server/common/log"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
@@ -59,5 +60,19 @@ var _ = router.Reg(func(alli *alliance.Alliance, msg *inner.SetMemberPositionReq
 	}
 
 	member.Position = alliance.Position(msg.Position)
+	member.Save()
+
+	// 如果对方在线，就通知更新
+	if msg.Player.GSession != "" {
+		// 玩家在线，通知Player actor修改联盟id，
+		err := alli.Send(actortype.PlayerId(member.RID), &outer.AllianceInfoNtf{
+			AllianceId: alli.AllianceId(),
+			Position:   member.Position.Int32(),
+		})
+
+		if err != nil {
+			log.Warnw(" send to player actor error by set member position ", "err", err)
+		}
+	}
 	return &inner.SetMemberPositionRsp{}
 })

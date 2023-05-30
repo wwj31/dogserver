@@ -54,10 +54,9 @@ var _ = router.Reg(func(player *player.Player, msg *outer.SetMemberPositionReq) 
 	}
 
 	allianceActor := actortype.AllianceName(player.Alliance().AllianceId())
-	rsp, err := player.RequestWait(allianceActor, &inner.AddMemberReq{
+	rsp, err := player.RequestWait(allianceActor, &inner.SetMemberPositionReq{
 		Player:   &playerInfo,
 		Position: int32(msg.Position),
-		Ntf:      true,
 	})
 
 	if err != nil {
