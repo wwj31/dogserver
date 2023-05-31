@@ -4,6 +4,7 @@ option  go_package = "/outer";
 
 import "type.proto";
 
+// 通知联盟信息发送变化、加入联盟、职位变更、联盟解散
 message AllianceInfoNtf {
     int32 AllianceId = 1;
     int32 Position   = 2;
