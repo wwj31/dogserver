@@ -56,3 +56,7 @@ message MemberInfoOnLogoutReq{
   string GateSession = 1;
   string RID         = 2;
 }
+
+// 通知在线人员，联盟解散
+message AllianceDisbandedNtf{
+}

@@ -42,7 +42,8 @@ func (s *Alliance) OnLogin(first bool, enterGameRsp *outer.EnterGameRsp) {
 		if upShortId != 0 {
 			upPlayerInfo := rdsop.PlayerInfo(upShortId)
 			if upPlayerInfo.AllianceId != 0 {
-				result, err := s.Player.RequestWait(actortype.AllianceName(upPlayerInfo.AllianceId), &inner.AddMemberReq{
+				allianceActor := actortype.AllianceName(upPlayerInfo.AllianceId)
+				result, err := s.Player.RequestWait(allianceActor, &inner.AddMemberReq{
 					Player: s.Player.PlayerInfo(),
 					Ntf:    false, // 自己请求加入联盟，不需要额外通知
 				})

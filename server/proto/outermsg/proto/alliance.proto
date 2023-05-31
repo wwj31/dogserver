@@ -9,7 +9,7 @@ message AllianceInfoNtf {
     int32 Position   = 2;
 }
 
-// 解散联盟
+// 盟主请求解散联盟
 message DisbandAllianceReq {
 }
 

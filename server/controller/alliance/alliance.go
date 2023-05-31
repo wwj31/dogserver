@@ -83,6 +83,16 @@ var _ = router.Reg(func(alli *alliance.Alliance, msg *inner.DisbandAllianceReq) 
 		return &inner.Error{ErrorInfo: "disband failed rid is not master"}
 	}
 
-	// todo ...解散联盟相关逻辑
+	rdsop.DeleteAlliance(alli.AllianceId())
+
+	// 获取联盟所有在线成员，并广播解散消息
+	for _, member := range alli.OnlineMembers() {
+		playerActor := actortype.PlayerId(member.RID)
+		_ = alli.Send(playerActor, &inner.AllianceDisbandedNtf{})
+	}
+
+	alli.Disband()
+	alli.Exit()
+
 	return &inner.DisbandAllianceRsp{}
 })

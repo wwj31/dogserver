@@ -77,7 +77,7 @@ var _ = router.Reg(func(player *player.Player, msg *outer.SetMemberPositionReq) 
 	}
 })
 
-// 解散联盟
+// 盟主解散联盟
 var _ = router.Reg(func(player *player.Player, msg *outer.DisbandAllianceReq) any {
 	if player.Alliance().AllianceId() == 0 {
 		return outer.ERROR_PLAYER_NOT_IN_ALLIANCE
@@ -94,4 +94,16 @@ var _ = router.Reg(func(player *player.Player, msg *outer.DisbandAllianceReq) an
 	}
 
 	return &outer.DisbandAllianceRsp{}
+})
+
+// 通知 联盟解散
+var _ = router.Reg(func(player *player.Player, msg *inner.AllianceDisbandedNtf) any {
+	player.Alliance().SetAllianceId(0)
+	player.Alliance().SetPosition(0)
+
+	player.GateSession().SendToClient(player, &outer.AllianceInfoNtf{
+		AllianceId: 0,
+		Position:   0,
+	})
+	return nil
 })

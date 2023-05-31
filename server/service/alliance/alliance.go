@@ -27,6 +27,7 @@ type (
 	Alliance struct {
 		actor.Base
 		allianceId int32
+		disband    bool
 		members    map[RID]*Member
 		sessions   map[common.GSession]*Member // 关联登录成功的在线玩家
 		master     *Member
@@ -110,6 +111,12 @@ func (a *Alliance) Send2Client(gSession common.GSession, msg proto.Message) {
 
 func (a *Alliance) OnStop() bool {
 	log.Infof("stop Alliance %v", a.ID())
+	if a.disband {
+		err := mongodb.Ins.Collection(a.Coll()).Drop(context.Background())
+		if err != nil {
+			log.Warnw("disband alliance drop table failed", "coll", a.Coll())
+		}
+	}
 	return true
 }
 
@@ -133,6 +140,15 @@ func (a *Alliance) OnHandle(msg actor.Message) {
 func (a *Alliance) MemberInfo(rid RID) *Member { return a.members[rid] }
 func (a *Alliance) Master() *Member            { return a.master }
 func (a *Alliance) AllianceId() int32          { return a.allianceId }
+func (a *Alliance) Disband()                   { a.disband = true }
+
+// OnlineMembers 所有在线成员
+func (a *Alliance) OnlineMembers() (arr []*Member) {
+	for _, member := range a.sessions {
+		arr = append(arr, member)
+	}
+	return
+}
 
 func (a *Alliance) PlayerOnline(gSession common.GSession, rid RID) {
 	member, ok := a.members[rid]
