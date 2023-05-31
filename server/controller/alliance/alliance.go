@@ -96,3 +96,11 @@ var _ = router.Reg(func(alli *alliance.Alliance, msg *inner.DisbandAllianceReq) 
 
 	return &inner.DisbandAllianceRsp{}
 })
+
+// 请求联盟基础信息
+var _ = router.Reg(func(alli *alliance.Alliance, msg *inner.AllianceInfoReq) any {
+	return &inner.AllianceInfoRsp{
+		MasterShortId: alli.Master().ShortId,
+		MasterRID:     alli.Master().RID,
+	}
+})

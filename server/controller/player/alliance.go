@@ -35,14 +35,19 @@ var _ = router.Reg(func(player *player.Player, msg *outer.SetMemberPositionReq) 
 		return outer.ERROR_CAN_NOT_FIND_PLAYER_INFO
 	}
 
-	// 没有联盟，不能设置职位
+	// 对方没有联盟，不能设置职位
 	if playerInfo.AllianceId == 0 {
 		return outer.ERROR_PLAYER_NOT_IN_ALLIANCE
 	}
 
-	// 对方没有联盟，不能设置职位
+	// 对方联盟不是本联盟
 	if playerInfo.AllianceId != player.Alliance().AllianceId() {
 		return outer.ERROR_PLAYER_NOT_IN_CORRECT_ALLIANCE
+	}
+
+	// 对方职位比设置者大
+	if playerInfo.Position > player.Alliance().Position() {
+		return outer.ERROR_PLAYER_POSITION_LIMIT
 	}
 
 	// 不在一个联盟，不能设置职位
@@ -50,8 +55,9 @@ var _ = router.Reg(func(player *player.Player, msg *outer.SetMemberPositionReq) 
 		return outer.ERROR_CAN_NOT_SET_HIGHER_POSITION
 	}
 
-	// 不是直属下级，不能设置职位
-	if playerInfo.UpShortId != player.Role().ShortId() {
+	// 不是直属下级，不能设置职位(这条规则仅限于队长设队长)
+	if player.Alliance().Position() == alliance.Captain.Int32() &&
+		playerInfo.UpShortId != player.Role().ShortId() {
 		return outer.ERROR_CAN_NOT_SET_NOT_IN_DOWN_POSITION
 	}
 
@@ -69,6 +75,24 @@ var _ = router.Reg(func(player *player.Player, msg *outer.SetMemberPositionReq) 
 	if failed, ok := rsp.(*outer.FailRsp); ok {
 		log.Warnw("alliance rsp fail", "rsp", failed.String())
 		return rsp
+	}
+
+	// 如果职位被盟主，管理员，副盟主设置成功,
+	// 那么被设置的人将解除上下级关系，并且绑定盟主为最新上级
+	if player.Alliance().Position() >= alliance.Manager.Int32() {
+		// 获取盟主
+		v, err := player.RequestWait(allianceActor, &inner.AllianceInfoReq{})
+		if yes, code := common.IsErr(v, err); yes {
+			return code
+		}
+		alliInfoRsp := v.(*inner.AllianceInfoRsp)
+
+		if playerInfo.UpShortId != 0 {
+			rdsop.AgentCancelUp(playerInfo.ShortId, playerInfo.UpShortId)
+		}
+		rdsop.BindAgent(alliInfoRsp.MasterShortId, playerInfo.ShortId)
+		playerInfo.UpShortId = alliInfoRsp.MasterShortId
+		rdsop.SetPlayerInfo(&playerInfo)
 	}
 
 	return &outer.SetMemberPositionRsp{
@@ -94,6 +118,32 @@ var _ = router.Reg(func(player *player.Player, msg *outer.DisbandAllianceReq) an
 	}
 
 	return &outer.DisbandAllianceRsp{}
+})
+
+// 踢人
+var _ = router.Reg(func(player *player.Player, msg *outer.KickOutMemberReq) any {
+	playerInfo := rdsop.PlayerInfo(msg.ShortId)
+	if playerInfo.RID == "" {
+		return outer.ERROR_CAN_NOT_FIND_PLAYER_INFO
+	}
+
+	// 对方没有联盟，不能设置职位
+	if playerInfo.AllianceId == 0 {
+		return outer.ERROR_PLAYER_NOT_IN_ALLIANCE
+	}
+
+	// 对方联盟不是本联盟
+	if playerInfo.AllianceId != player.Alliance().AllianceId() {
+		return outer.ERROR_PLAYER_NOT_IN_CORRECT_ALLIANCE
+	}
+
+	// 对方职位比设置者大
+	if playerInfo.Position > player.Alliance().Position() {
+		return outer.ERROR_PLAYER_POSITION_LIMIT
+	}
+	// todo
+
+	return &outer.KickOutMemberRsp{}
 })
 
 // 通知 联盟解散

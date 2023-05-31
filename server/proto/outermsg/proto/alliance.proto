@@ -13,17 +13,22 @@ message AllianceInfoNtf {
 // 盟主请求解散联盟
 message DisbandAllianceReq {
 }
-
 message DisbandAllianceRsp {
-}
-
-message SetMemberPositionRsp {
-    int64    ShortId    = 1; // 被设置成员短Id
-    Position Position   = 2;
 }
 
 // 设置成员职位级别
 message SetMemberPositionReq {
     int64    ShortId    = 1; // 被设置成员短Id
     Position Position   = 2;
+}
+message SetMemberPositionRsp {
+    int64    ShortId    = 1; // 被设置成员短Id
+    Position Position   = 2;
+}
+
+// 踢出联盟
+message KickOutMemberReq {
+    int64    ShortId    = 1; // 被设置成员短Id
+}
+message KickOutMemberRsp {
 }

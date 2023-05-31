@@ -54,15 +54,7 @@ func (s *Login) initAccount(acc *account.Account, os, ver string, upShortId int6
 
 	// 绑定上级，建立层级关系
 	if upShortId > 0 {
-		bindAgent(newShortID, upShortId)
-
+		rdsop.BindAgent(upShortId, newShortID)
 	}
 	return nil
-}
-
-func bindAgent(shortId, upShortId int64) {
-	// 设置upShortId为上级
-	rdsop.SetAgentUp(shortId, upShortId)
-	// 添加shortId为upShortId下级
-	rdsop.AddAgentDown(upShortId, shortId)
 }

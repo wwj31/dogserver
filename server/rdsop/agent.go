@@ -9,6 +9,11 @@ import (
 	"server/common/rds"
 )
 
+func BindAgent(up, down int64) {
+	SetAgentUp(down, up)
+	AddAgentDown(up, down)
+}
+
 // SetAgentUp 设置上级
 func SetAgentUp(shortId, up int64) {
 	if shortId == 0 || up == 0 || shortId == up {
@@ -28,14 +33,19 @@ func AgentUp(shortId int64) (up int64) {
 	return cast.ToInt64(str)
 }
 
-// AgentCancelUp 接触上级关系
-func AgentCancelUp(shortId int64) {
+// AgentCancelUp 解除上级关系
+func AgentCancelUp(shortId int64, upShortId ...int64) {
 	if shortId == 0 {
 		return
 	}
-	upShortId := AgentUp(shortId)
-	rds.Ins.SRem(context.Background(), AgentDownKey(upShortId), shortId)
+	var up int64
+	if len(upShortId) > 0 {
+		up = upShortId[0]
+	} else {
+		up = AgentUp(shortId)
+	}
 
+	rds.Ins.SRem(context.Background(), AgentDownKey(up), shortId)
 }
 
 // AgentUpAll 获取所有上级,结果的头部是上一级，尾部是顶级

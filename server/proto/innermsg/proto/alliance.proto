@@ -8,7 +8,6 @@ import "base.proto";
 message CreateAllianceReq{
   int64 MasterShortId = 1; // 盟主短Id
 }
-
 message CreateAllianceRsp{
   int32 AllianceId = 1;
 }
@@ -17,7 +16,6 @@ message CreateAllianceRsp{
 message DisbandAllianceReq{
   string RID = 1;
 }
-
 message DisbandAllianceRsp{
 }
 
@@ -27,7 +25,6 @@ message AddMemberReq{
   int32      Position = 2;
   bool       Ntf      = 3; // 登录触发加入联盟不需要通知，跟随盟主被动进入联盟需要通知
 }
-
 message AddMemberRsp{
 }
 
@@ -60,3 +57,12 @@ message MemberInfoOnLogoutReq{
 // 通知在线人员，联盟解散
 message AllianceDisbandedNtf{
 }
+
+// 获取联盟基础信息
+message AllianceInfoReq{
+}
+message AllianceInfoRsp{
+  int64 MasterShortId = 1;
+  string MasterRID    = 2;
+}
+
