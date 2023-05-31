@@ -17,17 +17,19 @@ import (
 	"server/common/router"
 )
 
+type RID = string
+
 func New(id int32) *Alliance {
-	return &Alliance{allianceId: id, members: make(map[string]*Member)}
+	return &Alliance{allianceId: id, members: make(map[RID]*Member)}
 }
 
 type (
 	Alliance struct {
 		actor.Base
 		allianceId int32
-		members    map[string]*Member
+		members    map[RID]*Member
 		sessions   map[common.GSession]*Member // 关联登录成功的在线玩家
-		masterRID  *Member
+		master     *Member
 
 		currentMsg      actor.Message
 		currentGSession common.GSession
@@ -61,7 +63,7 @@ func (a *Alliance) OnInit() {
 		member.Alliance = a
 		a.members[member.RID] = member
 		if member.Position == Master {
-			a.masterRID = member
+			a.master = member
 		}
 		log.Debugf("load member %+v", *member)
 	}
@@ -128,10 +130,11 @@ func (a *Alliance) OnHandle(msg actor.Message) {
 	router.Dispatch(a, pt)
 }
 
-func (a *Alliance) MemberInfo(rid string) *Member { return a.members[rid] }
-func (a *Alliance) AllianceId() int32             { return a.allianceId }
+func (a *Alliance) MemberInfo(rid RID) *Member { return a.members[rid] }
+func (a *Alliance) Master() *Member            { return a.master }
+func (a *Alliance) AllianceId() int32          { return a.allianceId }
 
-func (a *Alliance) PlayerOnline(gSession common.GSession, rid string) {
+func (a *Alliance) PlayerOnline(gSession common.GSession, rid RID) {
 	member, ok := a.members[rid]
 	if !ok {
 		log.Warnw("can not find member ", "rid", rid)
@@ -143,7 +146,7 @@ func (a *Alliance) PlayerOnline(gSession common.GSession, rid string) {
 	log.Infow("player online ", "gSession", gSession, "rid", member.RID, "shortId", member.ShortId)
 }
 
-func (a *Alliance) PlayerOffline(gSession common.GSession, rid string) {
+func (a *Alliance) PlayerOffline(gSession common.GSession, rid RID) {
 	member, ok := a.members[rid]
 	if !ok {
 		log.Warnw("can not find member ", "rid", rid)

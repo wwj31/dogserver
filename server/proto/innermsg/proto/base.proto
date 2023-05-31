@@ -5,7 +5,8 @@ option  go_package = "/inner";
 import "account.proto";
 
 message Error {
-    int32 ErrorCode = 1;
+    int32  ErrorCode = 1;
+    string ErrorInfo = 2;
 }
 message Ok {}
 

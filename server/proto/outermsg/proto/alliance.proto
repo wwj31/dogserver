@@ -9,13 +9,20 @@ message AllianceInfoNtf {
     int32 Position   = 2;
 }
 
-// 设置成员职位级别
-message SetMemberPositionReq {
+// 解散联盟
+message DisbandAllianceReq {
+}
+
+message DisbandAllianceRsp {
+}
+
+message SetMemberPositionRsp {
     int64    ShortId    = 1; // 被设置成员短Id
     Position Position   = 2;
 }
 
-message SetMemberPositionRsp {
+// 设置成员职位级别
+message SetMemberPositionReq {
     int64    ShortId    = 1; // 被设置成员短Id
     Position Position   = 2;
 }

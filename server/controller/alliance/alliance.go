@@ -76,3 +76,13 @@ var _ = router.Reg(func(alli *alliance.Alliance, msg *inner.SetMemberPositionReq
 	}
 	return &inner.SetMemberPositionRsp{}
 })
+
+// 解散联盟
+var _ = router.Reg(func(alli *alliance.Alliance, msg *inner.DisbandAllianceReq) any {
+	if msg.RID != alli.Master().RID {
+		return &inner.Error{ErrorInfo: "disband failed rid is not master"}
+	}
+
+	// todo ...解散联盟相关逻辑
+	return &inner.DisbandAllianceRsp{}
+})

@@ -1,12 +1,14 @@
 package player
 
 import (
+	"server/common"
 	"server/common/actortype"
 	"server/common/log"
 	"server/common/router"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
 	"server/rdsop"
+	"server/service/alliance"
 	"server/service/game/logic/player"
 )
 
@@ -73,4 +75,23 @@ var _ = router.Reg(func(player *player.Player, msg *outer.SetMemberPositionReq) 
 		ShortId:  msg.ShortId,
 		Position: msg.Position,
 	}
+})
+
+// 解散联盟
+var _ = router.Reg(func(player *player.Player, msg *outer.DisbandAllianceReq) any {
+	if player.Alliance().AllianceId() == 0 {
+		return outer.ERROR_PLAYER_NOT_IN_ALLIANCE
+	}
+
+	if player.Alliance().Position() != alliance.Master.Int32() {
+		return outer.ERROR_PLAYER_POSITION_LIMIT
+	}
+
+	allianceActor := actortype.AllianceName(player.Alliance().AllianceId())
+	v, err := player.RequestWait(allianceActor, &inner.DisbandAllianceReq{RID: player.RID()})
+	if yes, code := common.IsErr(v, err); yes {
+		return code
+	}
+
+	return &outer.DisbandAllianceRsp{}
 })

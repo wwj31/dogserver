@@ -111,6 +111,87 @@ func (m *CreateAllianceRsp) GetAllianceId() int32 {
 	return 0
 }
 
+// 解散联盟
+type DisbandAllianceReq struct {
+	RID string `protobuf:"bytes,1,opt,name=RID,proto3" json:"RID,omitempty"`
+}
+
+func (m *DisbandAllianceReq) Reset()         { *m = DisbandAllianceReq{} }
+func (m *DisbandAllianceReq) String() string { return proto.CompactTextString(m) }
+func (*DisbandAllianceReq) ProtoMessage()    {}
+func (*DisbandAllianceReq) Descriptor() ([]byte, []int) {
+	return fileDescriptor_9d63a1f01d82564b, []int{2}
+}
+func (m *DisbandAllianceReq) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *DisbandAllianceReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_DisbandAllianceReq.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *DisbandAllianceReq) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DisbandAllianceReq.Merge(m, src)
+}
+func (m *DisbandAllianceReq) XXX_Size() int {
+	return m.Size()
+}
+func (m *DisbandAllianceReq) XXX_DiscardUnknown() {
+	xxx_messageInfo_DisbandAllianceReq.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DisbandAllianceReq proto.InternalMessageInfo
+
+func (m *DisbandAllianceReq) GetRID() string {
+	if m != nil {
+		return m.RID
+	}
+	return ""
+}
+
+type DisbandAllianceRsp struct {
+}
+
+func (m *DisbandAllianceRsp) Reset()         { *m = DisbandAllianceRsp{} }
+func (m *DisbandAllianceRsp) String() string { return proto.CompactTextString(m) }
+func (*DisbandAllianceRsp) ProtoMessage()    {}
+func (*DisbandAllianceRsp) Descriptor() ([]byte, []int) {
+	return fileDescriptor_9d63a1f01d82564b, []int{3}
+}
+func (m *DisbandAllianceRsp) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *DisbandAllianceRsp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_DisbandAllianceRsp.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *DisbandAllianceRsp) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DisbandAllianceRsp.Merge(m, src)
+}
+func (m *DisbandAllianceRsp) XXX_Size() int {
+	return m.Size()
+}
+func (m *DisbandAllianceRsp) XXX_DiscardUnknown() {
+	xxx_messageInfo_DisbandAllianceRsp.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DisbandAllianceRsp proto.InternalMessageInfo
+
 // 设置成员信息
 type AddMemberReq struct {
 	Player   *PlayerInfo `protobuf:"bytes,1,opt,name=Player,proto3" json:"Player,omitempty"`
@@ -122,7 +203,7 @@ func (m *AddMemberReq) Reset()         { *m = AddMemberReq{} }
 func (m *AddMemberReq) String() string { return proto.CompactTextString(m) }
 func (*AddMemberReq) ProtoMessage()    {}
 func (*AddMemberReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_9d63a1f01d82564b, []int{2}
+	return fileDescriptor_9d63a1f01d82564b, []int{4}
 }
 func (m *AddMemberReq) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -179,7 +260,7 @@ func (m *AddMemberRsp) Reset()         { *m = AddMemberRsp{} }
 func (m *AddMemberRsp) String() string { return proto.CompactTextString(m) }
 func (*AddMemberRsp) ProtoMessage()    {}
 func (*AddMemberRsp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_9d63a1f01d82564b, []int{3}
+	return fileDescriptor_9d63a1f01d82564b, []int{5}
 }
 func (m *AddMemberRsp) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -218,7 +299,7 @@ func (m *SetMemberPositionReq) Reset()         { *m = SetMemberPositionReq{} }
 func (m *SetMemberPositionReq) String() string { return proto.CompactTextString(m) }
 func (*SetMemberPositionReq) ProtoMessage()    {}
 func (*SetMemberPositionReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_9d63a1f01d82564b, []int{4}
+	return fileDescriptor_9d63a1f01d82564b, []int{6}
 }
 func (m *SetMemberPositionReq) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -268,7 +349,7 @@ func (m *SetMemberPositionRsp) Reset()         { *m = SetMemberPositionRsp{} }
 func (m *SetMemberPositionRsp) String() string { return proto.CompactTextString(m) }
 func (*SetMemberPositionRsp) ProtoMessage()    {}
 func (*SetMemberPositionRsp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_9d63a1f01d82564b, []int{5}
+	return fileDescriptor_9d63a1f01d82564b, []int{7}
 }
 func (m *SetMemberPositionRsp) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -307,7 +388,7 @@ func (m *MemberInfoOnLoginReq) Reset()         { *m = MemberInfoOnLoginReq{} }
 func (m *MemberInfoOnLoginReq) String() string { return proto.CompactTextString(m) }
 func (*MemberInfoOnLoginReq) ProtoMessage()    {}
 func (*MemberInfoOnLoginReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_9d63a1f01d82564b, []int{6}
+	return fileDescriptor_9d63a1f01d82564b, []int{8}
 }
 func (m *MemberInfoOnLoginReq) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -359,7 +440,7 @@ func (m *MemberInfoOnLoginRsp) Reset()         { *m = MemberInfoOnLoginRsp{} }
 func (m *MemberInfoOnLoginRsp) String() string { return proto.CompactTextString(m) }
 func (*MemberInfoOnLoginRsp) ProtoMessage()    {}
 func (*MemberInfoOnLoginRsp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_9d63a1f01d82564b, []int{7}
+	return fileDescriptor_9d63a1f01d82564b, []int{9}
 }
 func (m *MemberInfoOnLoginRsp) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -412,7 +493,7 @@ func (m *MemberInfoOnLogoutReq) Reset()         { *m = MemberInfoOnLogoutReq{} }
 func (m *MemberInfoOnLogoutReq) String() string { return proto.CompactTextString(m) }
 func (*MemberInfoOnLogoutReq) ProtoMessage()    {}
 func (*MemberInfoOnLogoutReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_9d63a1f01d82564b, []int{8}
+	return fileDescriptor_9d63a1f01d82564b, []int{10}
 }
 func (m *MemberInfoOnLogoutReq) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -458,6 +539,8 @@ func (m *MemberInfoOnLogoutReq) GetRID() string {
 func init() {
 	proto.RegisterType((*CreateAllianceReq)(nil), "inner.CreateAllianceReq")
 	proto.RegisterType((*CreateAllianceRsp)(nil), "inner.CreateAllianceRsp")
+	proto.RegisterType((*DisbandAllianceReq)(nil), "inner.DisbandAllianceReq")
+	proto.RegisterType((*DisbandAllianceRsp)(nil), "inner.DisbandAllianceRsp")
 	proto.RegisterType((*AddMemberReq)(nil), "inner.AddMemberReq")
 	proto.RegisterType((*AddMemberRsp)(nil), "inner.AddMemberRsp")
 	proto.RegisterType((*SetMemberPositionReq)(nil), "inner.SetMemberPositionReq")
@@ -470,28 +553,29 @@ func init() {
 func init() { proto.RegisterFile("alliance.proto", fileDescriptor_9d63a1f01d82564b) }
 
 var fileDescriptor_9d63a1f01d82564b = []byte{
-	// 321 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0x4b, 0xcc, 0xc9, 0xc9,
-	0x4c, 0xcc, 0x4b, 0x4e, 0xd5, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0xcd, 0xcc, 0xcb, 0x4b,
-	0x2d, 0x92, 0xe2, 0x4a, 0x4a, 0x2c, 0x86, 0x0a, 0x29, 0x59, 0x72, 0x09, 0x3a, 0x17, 0xa5, 0x26,
-	0x96, 0xa4, 0x3a, 0x42, 0x95, 0x06, 0xa5, 0x16, 0x0a, 0xa9, 0x70, 0xf1, 0xfa, 0x26, 0x16, 0x97,
-	0xa4, 0x16, 0x05, 0x67, 0xe4, 0x17, 0x95, 0x78, 0xa6, 0x48, 0x30, 0x2a, 0x30, 0x6a, 0x30, 0x07,
-	0xa1, 0x0a, 0x2a, 0x19, 0x63, 0x68, 0x2d, 0x2e, 0x10, 0x92, 0xe3, 0xe2, 0x82, 0x71, 0xa1, 0xfa,
-	0x58, 0x83, 0x90, 0x44, 0x94, 0xd2, 0xb9, 0x78, 0x1c, 0x53, 0x52, 0x7c, 0x53, 0x73, 0x93, 0x52,
-	0x8b, 0x40, 0x56, 0x69, 0x72, 0xb1, 0x05, 0xe4, 0x24, 0x56, 0xa6, 0x16, 0x81, 0xd5, 0x72, 0x1b,
-	0x09, 0xea, 0x81, 0xdd, 0xa8, 0x07, 0x11, 0xf4, 0xcc, 0x4b, 0xcb, 0x0f, 0x82, 0x2a, 0x10, 0x92,
-	0xe2, 0xe2, 0x08, 0xc8, 0x2f, 0xce, 0x2c, 0xc9, 0xcc, 0xcf, 0x93, 0x60, 0x02, 0x1b, 0x0c, 0xe7,
-	0x0b, 0x09, 0x70, 0x31, 0xfb, 0x95, 0xa4, 0x49, 0x30, 0x2b, 0x30, 0x6a, 0x70, 0x04, 0x81, 0x98,
-	0x4a, 0x7c, 0xc8, 0x16, 0x15, 0x17, 0x28, 0xc5, 0x72, 0x89, 0x04, 0xa7, 0x96, 0x40, 0xf8, 0x30,
-	0x6d, 0xd4, 0x73, 0x80, 0x92, 0x18, 0x36, 0xe3, 0x8b, 0x0b, 0x94, 0xbc, 0xb8, 0x44, 0x20, 0x82,
-	0x20, 0x93, 0xfc, 0xf3, 0x7c, 0xf2, 0xd3, 0x33, 0xc1, 0xd6, 0x2a, 0x70, 0x71, 0xbb, 0x27, 0x96,
-	0xa4, 0x06, 0xa7, 0x16, 0x17, 0x83, 0x8c, 0x03, 0xd9, 0xcd, 0x19, 0x84, 0x2c, 0x04, 0xf2, 0x52,
-	0x90, 0xa7, 0x0b, 0xd8, 0x22, 0xce, 0x20, 0x10, 0x53, 0x29, 0x08, 0x9b, 0x59, 0x84, 0xc3, 0x1c,
-	0xaf, 0xbb, 0xbd, 0xb9, 0x44, 0xd1, 0xcc, 0xcc, 0x2f, 0x2d, 0x21, 0xd3, 0x81, 0x4e, 0x0a, 0x27,
-	0x1e, 0xc9, 0x31, 0x5e, 0x78, 0x24, 0xc7, 0xf8, 0xe0, 0x91, 0x1c, 0xe3, 0x84, 0xc7, 0x72, 0x0c,
-	0x17, 0x1e, 0xcb, 0x31, 0xdc, 0x78, 0x2c, 0xc7, 0x10, 0xc5, 0xa6, 0x0f, 0x0e, 0xd5, 0x24, 0x36,
-	0x70, 0xaa, 0x33, 0x06, 0x04, 0x00, 0x00, 0xff, 0xff, 0xf3, 0x46, 0x5e, 0x47, 0x9a, 0x02, 0x00,
-	0x00,
+	// 339 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x52, 0x4f, 0x4b, 0x3a, 0x41,
+	0x18, 0x76, 0x15, 0xc5, 0xdf, 0xeb, 0x2f, 0xc9, 0xc5, 0x42, 0x3c, 0x0c, 0xcb, 0x10, 0x61, 0x17,
+	0x83, 0x3c, 0x75, 0xb4, 0x84, 0xb0, 0xb2, 0x64, 0xbc, 0x05, 0x1d, 0x66, 0xdb, 0x57, 0x5b, 0xb0,
+	0x99, 0x6d, 0x66, 0x3a, 0xf4, 0x2d, 0xfa, 0x58, 0x1d, 0x3d, 0x76, 0x0c, 0xfd, 0x22, 0xb1, 0xb3,
+	0x6b, 0x6d, 0x29, 0x05, 0xd1, 0xed, 0x7d, 0x1f, 0xde, 0xe7, 0xcf, 0x3e, 0x3b, 0x50, 0xe5, 0xd3,
+	0x69, 0xc8, 0xc5, 0x0d, 0xb6, 0x23, 0x25, 0x8d, 0x74, 0x8b, 0xa1, 0x10, 0xa8, 0x9a, 0xe0, 0x73,
+	0x9d, 0x42, 0xf4, 0x10, 0x6a, 0xc7, 0x0a, 0xb9, 0xc1, 0x6e, 0x7a, 0xca, 0xf0, 0xde, 0xdd, 0x81,
+	0x8d, 0x01, 0xd7, 0x06, 0xd5, 0xe8, 0x56, 0x2a, 0xd3, 0x0f, 0x1a, 0x8e, 0xe7, 0xb4, 0x0a, 0xec,
+	0x33, 0x48, 0x3b, 0x2b, 0x54, 0x1d, 0xb9, 0x04, 0x60, 0xb9, 0xa6, 0xbc, 0x22, 0xcb, 0x20, 0x74,
+	0x17, 0xdc, 0x5e, 0xa8, 0x7d, 0x2e, 0x82, 0xac, 0xe1, 0x26, 0x14, 0x58, 0xbf, 0x67, 0xcf, 0xff,
+	0xb1, 0x78, 0xa4, 0xf5, 0xd5, 0x3b, 0x1d, 0xd1, 0x09, 0xfc, 0xef, 0x06, 0xc1, 0x00, 0xef, 0x7c,
+	0x54, 0x31, 0x6f, 0x0f, 0x4a, 0xc3, 0x29, 0x7f, 0x44, 0x65, 0xa9, 0x95, 0x83, 0x5a, 0xdb, 0x7e,
+	0x61, 0x3b, 0x01, 0xfb, 0x62, 0x2c, 0x59, 0x7a, 0xe0, 0x36, 0xa1, 0x3c, 0x94, 0x3a, 0x34, 0xa1,
+	0x14, 0x8d, 0xbc, 0x8d, 0xf5, 0xbe, 0xc7, 0xf6, 0x17, 0x66, 0xdc, 0x28, 0x78, 0x4e, 0xab, 0xcc,
+	0xe2, 0x91, 0x56, 0xb3, 0x46, 0x3a, 0xa2, 0xd7, 0x50, 0x1f, 0xa1, 0x49, 0xf6, 0x25, 0xed, 0xef,
+	0x02, 0xd0, 0xed, 0x75, 0xf2, 0x3a, 0xa2, 0xa7, 0x50, 0x4f, 0xc0, 0x58, 0xe9, 0x52, 0x9c, 0xcb,
+	0x49, 0x68, 0x6d, 0x3d, 0xa8, 0x9c, 0x70, 0x83, 0x23, 0xd4, 0x3a, 0x96, 0x4b, 0x7a, 0xcb, 0x42,
+	0xcb, 0x46, 0xf3, 0x1f, 0x8d, 0xb2, 0x75, 0x5a, 0x3f, 0xff, 0xb1, 0x6f, 0x73, 0x9f, 0xc1, 0xd6,
+	0x17, 0x4d, 0xf9, 0x60, 0x7e, 0x19, 0xf0, 0xc8, 0x7b, 0x9e, 0x13, 0x67, 0x36, 0x27, 0xce, 0xeb,
+	0x9c, 0x38, 0x4f, 0x0b, 0x92, 0x9b, 0x2d, 0x48, 0xee, 0x65, 0x41, 0x72, 0x57, 0xa5, 0x7d, 0xdb,
+	0xaa, 0x5f, 0xb2, 0x6f, 0xb6, 0xf3, 0x16, 0x00, 0x00, 0xff, 0xff, 0x99, 0xf4, 0x74, 0xcd, 0xd8,
+	0x02, 0x00, 0x00,
 }
 
 func (m *CreateAllianceReq) Marshal() (dAtA []byte, err error) {
@@ -547,6 +631,59 @@ func (m *CreateAllianceRsp) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x8
 	}
+	return len(dAtA) - i, nil
+}
+
+func (m *DisbandAllianceReq) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *DisbandAllianceReq) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *DisbandAllianceReq) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.RID) > 0 {
+		i -= len(m.RID)
+		copy(dAtA[i:], m.RID)
+		i = encodeVarintAlliance(dAtA, i, uint64(len(m.RID)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *DisbandAllianceRsp) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *DisbandAllianceRsp) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *DisbandAllianceRsp) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
 	return len(dAtA) - i, nil
 }
 
@@ -828,6 +965,28 @@ func (m *CreateAllianceRsp) Size() (n int) {
 	return n
 }
 
+func (m *DisbandAllianceReq) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.RID)
+	if l > 0 {
+		n += 1 + l + sovAlliance(uint64(l))
+	}
+	return n
+}
+
+func (m *DisbandAllianceRsp) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
 func (m *AddMemberReq) Size() (n int) {
 	if m == nil {
 		return 0
@@ -1053,6 +1212,138 @@ func (m *CreateAllianceRsp) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipAlliance(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthAlliance
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *DisbandAllianceReq) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowAlliance
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: DisbandAllianceReq: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: DisbandAllianceReq: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RID", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAlliance
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthAlliance
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthAlliance
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.RID = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipAlliance(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthAlliance
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *DisbandAllianceRsp) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowAlliance
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: DisbandAllianceRsp: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: DisbandAllianceRsp: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
 		default:
 			iNdEx = preIndex
 			skippy, err := skipAlliance(dAtA[iNdEx:])

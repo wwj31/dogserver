@@ -13,6 +13,14 @@ message CreateAllianceRsp{
   int32 AllianceId = 1;
 }
 
+// 解散联盟
+message DisbandAllianceReq{
+  string RID = 1;
+}
+
+message DisbandAllianceRsp{
+}
+
 // 设置成员信息
 message AddMemberReq{
   PlayerInfo Player   = 1;

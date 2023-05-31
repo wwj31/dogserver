@@ -75,18 +75,15 @@ func (x *AllianceInfoNtf) GetPosition() int32 {
 	return 0
 }
 
-// 设置成员职位级别
-type SetMemberPositionReq struct {
+// 解散联盟
+type DisbandAllianceReq struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
-
-	ShortId  int64    `protobuf:"varint,1,opt,name=ShortId,proto3" json:"ShortId,omitempty"` // 被设置成员短Id
-	Position Position `protobuf:"varint,2,opt,name=Position,proto3,enum=outer.Position" json:"Position,omitempty"`
 }
 
-func (x *SetMemberPositionReq) Reset() {
-	*x = SetMemberPositionReq{}
+func (x *DisbandAllianceReq) Reset() {
+	*x = DisbandAllianceReq{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_alliance_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -94,13 +91,13 @@ func (x *SetMemberPositionReq) Reset() {
 	}
 }
 
-func (x *SetMemberPositionReq) String() string {
+func (x *DisbandAllianceReq) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*SetMemberPositionReq) ProtoMessage() {}
+func (*DisbandAllianceReq) ProtoMessage() {}
 
-func (x *SetMemberPositionReq) ProtoReflect() protoreflect.Message {
+func (x *DisbandAllianceReq) ProtoReflect() protoreflect.Message {
 	mi := &file_alliance_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -112,23 +109,47 @@ func (x *SetMemberPositionReq) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use SetMemberPositionReq.ProtoReflect.Descriptor instead.
-func (*SetMemberPositionReq) Descriptor() ([]byte, []int) {
+// Deprecated: Use DisbandAllianceReq.ProtoReflect.Descriptor instead.
+func (*DisbandAllianceReq) Descriptor() ([]byte, []int) {
 	return file_alliance_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *SetMemberPositionReq) GetShortId() int64 {
-	if x != nil {
-		return x.ShortId
-	}
-	return 0
+type DisbandAllianceRsp struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
 }
 
-func (x *SetMemberPositionReq) GetPosition() Position {
-	if x != nil {
-		return x.Position
+func (x *DisbandAllianceRsp) Reset() {
+	*x = DisbandAllianceRsp{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_alliance_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
 	}
-	return Position_NoAlliance
+}
+
+func (x *DisbandAllianceRsp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DisbandAllianceRsp) ProtoMessage() {}
+
+func (x *DisbandAllianceRsp) ProtoReflect() protoreflect.Message {
+	mi := &file_alliance_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DisbandAllianceRsp.ProtoReflect.Descriptor instead.
+func (*DisbandAllianceRsp) Descriptor() ([]byte, []int) {
+	return file_alliance_proto_rawDescGZIP(), []int{2}
 }
 
 type SetMemberPositionRsp struct {
@@ -143,7 +164,7 @@ type SetMemberPositionRsp struct {
 func (x *SetMemberPositionRsp) Reset() {
 	*x = SetMemberPositionRsp{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_alliance_proto_msgTypes[2]
+		mi := &file_alliance_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -156,7 +177,7 @@ func (x *SetMemberPositionRsp) String() string {
 func (*SetMemberPositionRsp) ProtoMessage() {}
 
 func (x *SetMemberPositionRsp) ProtoReflect() protoreflect.Message {
-	mi := &file_alliance_proto_msgTypes[2]
+	mi := &file_alliance_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -169,7 +190,7 @@ func (x *SetMemberPositionRsp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetMemberPositionRsp.ProtoReflect.Descriptor instead.
 func (*SetMemberPositionRsp) Descriptor() ([]byte, []int) {
-	return file_alliance_proto_rawDescGZIP(), []int{2}
+	return file_alliance_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *SetMemberPositionRsp) GetShortId() int64 {
@@ -186,6 +207,62 @@ func (x *SetMemberPositionRsp) GetPosition() Position {
 	return Position_NoAlliance
 }
 
+// 设置成员职位级别
+type SetMemberPositionReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	ShortId  int64    `protobuf:"varint,1,opt,name=ShortId,proto3" json:"ShortId,omitempty"` // 被设置成员短Id
+	Position Position `protobuf:"varint,2,opt,name=Position,proto3,enum=outer.Position" json:"Position,omitempty"`
+}
+
+func (x *SetMemberPositionReq) Reset() {
+	*x = SetMemberPositionReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_alliance_proto_msgTypes[4]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SetMemberPositionReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SetMemberPositionReq) ProtoMessage() {}
+
+func (x *SetMemberPositionReq) ProtoReflect() protoreflect.Message {
+	mi := &file_alliance_proto_msgTypes[4]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SetMemberPositionReq.ProtoReflect.Descriptor instead.
+func (*SetMemberPositionReq) Descriptor() ([]byte, []int) {
+	return file_alliance_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *SetMemberPositionReq) GetShortId() int64 {
+	if x != nil {
+		return x.ShortId
+	}
+	return 0
+}
+
+func (x *SetMemberPositionReq) GetPosition() Position {
+	if x != nil {
+		return x.Position
+	}
+	return Position_NoAlliance
+}
+
 var File_alliance_proto protoreflect.FileDescriptor
 
 var file_alliance_proto_rawDesc = []byte{
@@ -196,20 +273,22 @@ var file_alliance_proto_rawDesc = []byte{
 	0x63, 0x65, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x0a, 0x41, 0x6c, 0x6c, 0x69,
 	0x61, 0x6e, 0x63, 0x65, 0x49, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x50, 0x6f, 0x73, 0x69, 0x74, 0x69,
 	0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x08, 0x50, 0x6f, 0x73, 0x69, 0x74, 0x69,
-	0x6f, 0x6e, 0x22, 0x5d, 0x0a, 0x14, 0x53, 0x65, 0x74, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x50,
-	0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x12, 0x18, 0x0a, 0x07, 0x53, 0x68,
-	0x6f, 0x72, 0x74, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x07, 0x53, 0x68, 0x6f,
-	0x72, 0x74, 0x49, 0x64, 0x12, 0x2b, 0x0a, 0x08, 0x50, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e,
-	0x18, 0x02, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x0f, 0x2e, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x50,
-	0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x08, 0x50, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f,
-	0x6e, 0x22, 0x5d, 0x0a, 0x14, 0x53, 0x65, 0x74, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x50, 0x6f,
-	0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x73, 0x70, 0x12, 0x18, 0x0a, 0x07, 0x53, 0x68, 0x6f,
-	0x72, 0x74, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x07, 0x53, 0x68, 0x6f, 0x72,
-	0x74, 0x49, 0x64, 0x12, 0x2b, 0x0a, 0x08, 0x50, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x18,
-	0x02, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x0f, 0x2e, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x50, 0x6f,
-	0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x08, 0x50, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e,
-	0x42, 0x08, 0x5a, 0x06, 0x2f, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x33,
+	0x6f, 0x6e, 0x22, 0x14, 0x0a, 0x12, 0x44, 0x69, 0x73, 0x62, 0x61, 0x6e, 0x64, 0x41, 0x6c, 0x6c,
+	0x69, 0x61, 0x6e, 0x63, 0x65, 0x52, 0x65, 0x71, 0x22, 0x14, 0x0a, 0x12, 0x44, 0x69, 0x73, 0x62,
+	0x61, 0x6e, 0x64, 0x41, 0x6c, 0x6c, 0x69, 0x61, 0x6e, 0x63, 0x65, 0x52, 0x73, 0x70, 0x22, 0x5d,
+	0x0a, 0x14, 0x53, 0x65, 0x74, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x50, 0x6f, 0x73, 0x69, 0x74,
+	0x69, 0x6f, 0x6e, 0x52, 0x73, 0x70, 0x12, 0x18, 0x0a, 0x07, 0x53, 0x68, 0x6f, 0x72, 0x74, 0x49,
+	0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x07, 0x53, 0x68, 0x6f, 0x72, 0x74, 0x49, 0x64,
+	0x12, 0x2b, 0x0a, 0x08, 0x50, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x0e, 0x32, 0x0f, 0x2e, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x50, 0x6f, 0x73, 0x69, 0x74,
+	0x69, 0x6f, 0x6e, 0x52, 0x08, 0x50, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x5d, 0x0a,
+	0x14, 0x53, 0x65, 0x74, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x50, 0x6f, 0x73, 0x69, 0x74, 0x69,
+	0x6f, 0x6e, 0x52, 0x65, 0x71, 0x12, 0x18, 0x0a, 0x07, 0x53, 0x68, 0x6f, 0x72, 0x74, 0x49, 0x64,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x07, 0x53, 0x68, 0x6f, 0x72, 0x74, 0x49, 0x64, 0x12,
+	0x2b, 0x0a, 0x08, 0x50, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x0e, 0x32, 0x0f, 0x2e, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x50, 0x6f, 0x73, 0x69, 0x74, 0x69,
+	0x6f, 0x6e, 0x52, 0x08, 0x50, 0x6f, 0x73, 0x69, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x08, 0x5a, 0x06,
+	0x2f, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -224,16 +303,18 @@ func file_alliance_proto_rawDescGZIP() []byte {
 	return file_alliance_proto_rawDescData
 }
 
-var file_alliance_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_alliance_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_alliance_proto_goTypes = []interface{}{
 	(*AllianceInfoNtf)(nil),      // 0: outer.AllianceInfoNtf
-	(*SetMemberPositionReq)(nil), // 1: outer.SetMemberPositionReq
-	(*SetMemberPositionRsp)(nil), // 2: outer.SetMemberPositionRsp
-	(Position)(0),                // 3: outer.Position
+	(*DisbandAllianceReq)(nil),   // 1: outer.DisbandAllianceReq
+	(*DisbandAllianceRsp)(nil),   // 2: outer.DisbandAllianceRsp
+	(*SetMemberPositionRsp)(nil), // 3: outer.SetMemberPositionRsp
+	(*SetMemberPositionReq)(nil), // 4: outer.SetMemberPositionReq
+	(Position)(0),                // 5: outer.Position
 }
 var file_alliance_proto_depIdxs = []int32{
-	3, // 0: outer.SetMemberPositionReq.Position:type_name -> outer.Position
-	3, // 1: outer.SetMemberPositionRsp.Position:type_name -> outer.Position
+	5, // 0: outer.SetMemberPositionRsp.Position:type_name -> outer.Position
+	5, // 1: outer.SetMemberPositionReq.Position:type_name -> outer.Position
 	2, // [2:2] is the sub-list for method output_type
 	2, // [2:2] is the sub-list for method input_type
 	2, // [2:2] is the sub-list for extension type_name
@@ -261,7 +342,7 @@ func file_alliance_proto_init() {
 			}
 		}
 		file_alliance_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*SetMemberPositionReq); i {
+			switch v := v.(*DisbandAllianceReq); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -273,7 +354,31 @@ func file_alliance_proto_init() {
 			}
 		}
 		file_alliance_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*DisbandAllianceRsp); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_alliance_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*SetMemberPositionRsp); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_alliance_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SetMemberPositionReq); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -291,7 +396,7 @@ func file_alliance_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_alliance_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   3,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
