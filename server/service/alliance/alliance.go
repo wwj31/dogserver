@@ -20,7 +20,11 @@ import (
 type RID = string
 
 func New(id int32) *Alliance {
-	return &Alliance{allianceId: id, members: make(map[RID]*Member)}
+	return &Alliance{
+		allianceId: id,
+		members:    make(map[RID]*Member),
+		sessions:   make(map[common.GSession]*Member),
+	}
 }
 
 type (
@@ -55,18 +59,13 @@ func (a *Alliance) OnInit() {
 		return
 	}
 
-	if len(members) == 0 {
-		log.Warnw("alliance has no member")
-		return
-	}
-
 	for _, member := range members {
 		member.Alliance = a
 		a.members[member.RID] = member
 		if member.Position == Master {
 			a.master = member
 		}
-		log.Debugf("load member %+v", *member)
+		log.Debugf("alliance:%v load member %+v", a.allianceId, *member)
 	}
 
 	// 统一返回结果

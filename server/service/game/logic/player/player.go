@@ -2,7 +2,6 @@ package player
 
 import (
 	"context"
-	"math/rand"
 	"reflect"
 	"time"
 
@@ -234,7 +233,8 @@ func (p *Player) load() {
 
 func (p *Player) storeTicker() {
 	randDur := func() time.Duration {
-		return time.Duration(rand.Intn(int(30*time.Second))) + (30 * time.Second)
+		//return time.Duration(rand.Intn(int(30*time.Second))) + (30 * time.Second)
+		return time.Second
 	}
 
 	execAt := tools.Now().Add(randDur())

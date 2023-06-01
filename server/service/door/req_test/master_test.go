@@ -13,7 +13,7 @@ import (
 
 func TestSetMaster(t *testing.T) {
 	b, _ := json.Marshal(map[string]interface{}{
-		"shortId": 1742710,
+		"shortId": 1703599,
 	})
 	req, err := http.NewRequest(http.MethodPost, "http://localhost:9999/alliance/setmaster",
 		bytes.NewReader(b))
