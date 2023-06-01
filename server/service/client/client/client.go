@@ -1,6 +1,7 @@
 package client
 
 import (
+	"reflect"
 	"sync/atomic"
 	"time"
 
@@ -92,7 +93,7 @@ func (s *Client) OnHandle(m actor.Message) {
 		//	s.login(2)
 		//})
 	default:
+		log.Infow("msg", "type", reflect.TypeOf(msg).String())
 		s.waiter <- msg.(proto.Message)
-		//log.Infow("unknown type!", "type", reflect.TypeOf(msg).String(), "msg", msg)
 	}
 }

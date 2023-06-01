@@ -1,5 +1,7 @@
 package alliance
 
+import "server/proto/outermsg/outer"
+
 type Position int32
 
 const (
@@ -12,4 +14,8 @@ const (
 
 func (p Position) Int32() int32 {
 	return int32(p)
+}
+
+func (p Position) Pb() outer.Position {
+	return outer.Position(p)
 }

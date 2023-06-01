@@ -28,11 +28,11 @@ const (
 	Msg_IdUnknown              Msg = 0
 	Msg_IdAgentMembersReq      Msg = 1894584925 // dispatch to player
 	Msg_IdAgentMembersRsp      Msg = 1592587688
-	Msg_IdDisbandAllianceReq   Msg = 650636160
+	Msg_IdDisbandAllianceReq   Msg = 650636160 // dispatch to player
 	Msg_IdDisbandAllianceRsp   Msg = 952633399
-	Msg_IdSetMemberPositionReq Msg = 1891047110
+	Msg_IdSetMemberPositionReq Msg = 1891047110 // dispatch to player
 	Msg_IdSetMemberPositionRsp Msg = 1656160475
-	Msg_IdKickOutMemberReq     Msg = 1475199389
+	Msg_IdKickOutMemberReq     Msg = 1475199389 // dispatch to player
 	Msg_IdKickOutMemberRsp     Msg = 1173202408
 	Msg_IdFailRsp              Msg = 160109657
 	Msg_IdSetRoleInfoReq       Msg = 58140470 // dispatch to player

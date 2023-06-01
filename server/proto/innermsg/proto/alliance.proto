@@ -58,6 +58,12 @@ message MemberInfoOnLogoutReq{
 message AllianceDisbandedNtf{
 }
 
+// 通知在线玩家actor联盟信息变化
+message AllianceInfoNtf {
+  int32 AllianceId = 1;
+  int32 Position   = 2;
+}
+
 // 获取联盟基础信息
 message AllianceInfoReq{
 }

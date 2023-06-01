@@ -64,8 +64,8 @@ var _ = router.Reg(func(alli *alliance.Alliance, msg *inner.SetMemberPositionReq
 
 	// 如果对方在线，就通知更新
 	if msg.Player.GSession != "" {
-		// 玩家在线，通知Player actor修改联盟id，
-		err := alli.Send(actortype.PlayerId(member.RID), &outer.AllianceInfoNtf{
+		// 玩家在线，通知Player actor修改联盟id
+		err := alli.Send(actortype.PlayerId(member.RID), &inner.AllianceInfoNtf{
 			AllianceId: alli.AllianceId(),
 			Position:   member.Position.Int32(),
 		})

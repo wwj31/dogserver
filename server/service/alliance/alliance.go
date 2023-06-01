@@ -132,7 +132,8 @@ func (a *Alliance) OnHandle(msg actor.Message) {
 		return
 	}
 
-	log.Infow("input", "alliance", a.ID(), "msg", reflect.TypeOf(pt), "data", pt.String())
+	log.Infow("input",
+		"alliance", a.ID(), "source", msg.GetSourceId(), "msg", reflect.TypeOf(pt), "data", pt.String())
 	router.Dispatch(a, pt)
 }
 

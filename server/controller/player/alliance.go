@@ -13,10 +13,15 @@ import (
 )
 
 // 加入联盟通知
-var _ = router.Reg(func(player *player.Player, msg *outer.AllianceInfoNtf) any {
+var _ = router.Reg(func(player *player.Player, msg *inner.AllianceInfoNtf) any {
 	player.Alliance().SetAllianceId(msg.AllianceId)
 	player.Alliance().SetPosition(msg.Position)
-	return msg
+
+	player.GateSession().SendToClient(player, &outer.AllianceInfoNtf{
+		AllianceId: msg.AllianceId,
+		Position:   msg.Position,
+	})
+	return nil
 })
 
 // 请求设置成员职位
@@ -45,14 +50,14 @@ var _ = router.Reg(func(player *player.Player, msg *outer.SetMemberPositionReq) 
 		return outer.ERROR_PLAYER_NOT_IN_CORRECT_ALLIANCE
 	}
 
-	// 对方职位比设置者大
-	if playerInfo.Position > player.Alliance().Position() {
+	// 普通成员没有权限
+	if player.Alliance().Position() == alliance.Normal.Int32() {
 		return outer.ERROR_PLAYER_POSITION_LIMIT
 	}
 
-	// 不在一个联盟，不能设置职位
+	// 对方职位比设置者大
 	if playerInfo.Position > player.Alliance().Position() {
-		return outer.ERROR_CAN_NOT_SET_HIGHER_POSITION
+		return outer.ERROR_PLAYER_POSITION_LIMIT
 	}
 
 	// 不是直属下级，不能设置职位(这条规则仅限于队长设队长)
@@ -86,15 +91,17 @@ var _ = router.Reg(func(player *player.Player, msg *outer.SetMemberPositionReq) 
 			return code
 		}
 		alliInfoRsp := v.(*inner.AllianceInfoRsp)
-
-		if playerInfo.UpShortId != 0 {
-			rdsop.AgentCancelUp(playerInfo.ShortId, playerInfo.UpShortId)
+		if playerInfo.UpShortId != alliInfoRsp.MasterShortId {
+			if playerInfo.UpShortId != 0 {
+				rdsop.AgentCancelUp(playerInfo.ShortId, playerInfo.UpShortId)
+			}
+			rdsop.BindAgent(alliInfoRsp.MasterShortId, playerInfo.ShortId)
+			playerInfo.UpShortId = alliInfoRsp.MasterShortId
 		}
-		rdsop.BindAgent(alliInfoRsp.MasterShortId, playerInfo.ShortId)
-		playerInfo.UpShortId = alliInfoRsp.MasterShortId
-		rdsop.SetPlayerInfo(&playerInfo)
 	}
 
+	playerInfo.Position = int32(msg.Position)
+	rdsop.SetPlayerInfo(&playerInfo)
 	return &outer.SetMemberPositionRsp{
 		ShortId:  msg.ShortId,
 		Position: msg.Position,
