@@ -21,6 +21,7 @@ func (a *Alliance) AddMember(playerInfo *inner.PlayerInfo, ntf bool, position ..
 			ShortId:  playerInfo.ShortId,
 			Position: Normal,
 		}
+		a.members[playerInfo.RID] = member
 	}
 
 	if len(position) > 0 {
