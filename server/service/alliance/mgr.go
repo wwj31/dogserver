@@ -6,6 +6,7 @@ import (
 	"reflect"
 
 	"github.com/gogo/protobuf/proto"
+	"github.com/spf13/cast"
 	"github.com/wwj31/dogactor/actor"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -37,17 +38,11 @@ func (m *Mgr) OnInit() {
 		log.Errorw("load all alliance member failed", "err", err)
 		return
 	}
+	alliSet := make(map[string]interface{})
+	for cur.Next(context.Background()) {
+		cur.Decode(alliSet)
 
-	var allianceIds []int32
-	err = cur.All(context.Background(), &allianceIds)
-	if err != nil {
-		log.Errorw("decode all member failed", "err", err)
-		return
-	}
-
-	m.alliances = allianceIds
-
-	for _, allianceId := range m.alliances {
+		allianceId := cast.ToInt32(alliSet["_id"])
 		_ = m.System().NewActor(
 			actortype.AllianceName(allianceId),
 			New(allianceId),
@@ -56,10 +51,11 @@ func (m *Mgr) OnInit() {
 		if allianceId > m.incId {
 			m.incId = allianceId
 		}
+		m.alliances = append(m.alliances, allianceId)
 	}
 
 	router.Result(m, m.responseHandle)
-	log.Debugf("AllianceMgr OnInit  alliances:%v", allianceIds)
+	log.Debugf("AllianceMgr OnInit  alliances:%v", m.alliances)
 }
 
 func (m *Mgr) responseHandle(resultMsg any) {
@@ -140,11 +136,14 @@ func (m *Mgr) CreateAlliance(masterShortId int64) (int32, error) {
 
 	// 维护联盟列表
 	m.alliances = append(m.alliances, allianceId)
-	mongodb.Ins.Collection(Coll).UpdateByID(context.Background(),
-		1,
-		bson.M{"$set": m.alliances},
+	_, err = mongodb.Ins.Collection(Coll).UpdateByID(context.Background(),
+		allianceId,
+		bson.M{"$set": bson.M{"master": masterShortId}},
 		options.Update().SetUpsert(true),
 	)
+	if err != nil {
+		log.Warnw("fjiewofjewio", "err", err)
+	}
 	return allianceId, nil
 }
 
