@@ -97,6 +97,40 @@ var _ = router.Reg(func(alli *alliance.Alliance, msg *inner.DisbandAllianceReq) 
 	return &inner.DisbandAllianceRsp{}
 })
 
+// 踢出成员
+var _ = router.Reg(func(alli *alliance.Alliance, msg *inner.KickOutMembersReq) any {
+	for _, shortId := range msg.GetShortIds() {
+		member := alli.MemberInfoByShortId(shortId)
+		if member == nil {
+			log.Warnw("can not find the member by shortId",
+				"alliance", alli.AllianceId(), "shortId", shortId)
+			continue
+		}
+
+		playerInfo := rdsop.PlayerInfo(member.ShortId)
+		if playerInfo.AllianceId != alli.AllianceId() {
+			log.Warnw("kick out the member is not in alliance",
+				"alli", alli.AllianceId(), "member alli", playerInfo.AllianceId)
+			continue
+		}
+
+		alli.KickOutMember(shortId)
+
+		playerInfo.Position = 0
+		playerInfo.AllianceId = 0
+		rdsop.SetPlayerInfo(&playerInfo)
+
+		if member.GSession.Valid() {
+			_ = alli.Send(actortype.PlayerId(member.RID), &inner.AllianceInfoNtf{
+				AllianceId: 0,
+				Position:   0,
+			})
+		}
+	}
+
+	return &inner.KickOutMembersRsp{}
+})
+
 // 请求联盟基础信息
 var _ = router.Reg(func(alli *alliance.Alliance, msg *inner.AllianceInfoReq) any {
 	return &inner.AllianceInfoRsp{

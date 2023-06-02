@@ -22,6 +22,96 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// 通知在线人员，联盟解散
+type AllianceDisbandedNtf struct {
+}
+
+func (m *AllianceDisbandedNtf) Reset()         { *m = AllianceDisbandedNtf{} }
+func (m *AllianceDisbandedNtf) String() string { return proto.CompactTextString(m) }
+func (*AllianceDisbandedNtf) ProtoMessage()    {}
+func (*AllianceDisbandedNtf) Descriptor() ([]byte, []int) {
+	return fileDescriptor_9d63a1f01d82564b, []int{0}
+}
+func (m *AllianceDisbandedNtf) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *AllianceDisbandedNtf) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_AllianceDisbandedNtf.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *AllianceDisbandedNtf) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AllianceDisbandedNtf.Merge(m, src)
+}
+func (m *AllianceDisbandedNtf) XXX_Size() int {
+	return m.Size()
+}
+func (m *AllianceDisbandedNtf) XXX_DiscardUnknown() {
+	xxx_messageInfo_AllianceDisbandedNtf.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_AllianceDisbandedNtf proto.InternalMessageInfo
+
+// 通知在线玩家actor联盟信息变化
+type AllianceInfoNtf struct {
+	AllianceId int32 `protobuf:"varint,1,opt,name=AllianceId,proto3" json:"AllianceId,omitempty"`
+	Position   int32 `protobuf:"varint,2,opt,name=Position,proto3" json:"Position,omitempty"`
+}
+
+func (m *AllianceInfoNtf) Reset()         { *m = AllianceInfoNtf{} }
+func (m *AllianceInfoNtf) String() string { return proto.CompactTextString(m) }
+func (*AllianceInfoNtf) ProtoMessage()    {}
+func (*AllianceInfoNtf) Descriptor() ([]byte, []int) {
+	return fileDescriptor_9d63a1f01d82564b, []int{1}
+}
+func (m *AllianceInfoNtf) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *AllianceInfoNtf) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_AllianceInfoNtf.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *AllianceInfoNtf) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AllianceInfoNtf.Merge(m, src)
+}
+func (m *AllianceInfoNtf) XXX_Size() int {
+	return m.Size()
+}
+func (m *AllianceInfoNtf) XXX_DiscardUnknown() {
+	xxx_messageInfo_AllianceInfoNtf.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_AllianceInfoNtf proto.InternalMessageInfo
+
+func (m *AllianceInfoNtf) GetAllianceId() int32 {
+	if m != nil {
+		return m.AllianceId
+	}
+	return 0
+}
+
+func (m *AllianceInfoNtf) GetPosition() int32 {
+	if m != nil {
+		return m.Position
+	}
+	return 0
+}
+
 // 创建联盟
 type CreateAllianceReq struct {
 	MasterShortId int64 `protobuf:"varint,1,opt,name=MasterShortId,proto3" json:"MasterShortId,omitempty"`
@@ -31,7 +121,7 @@ func (m *CreateAllianceReq) Reset()         { *m = CreateAllianceReq{} }
 func (m *CreateAllianceReq) String() string { return proto.CompactTextString(m) }
 func (*CreateAllianceReq) ProtoMessage()    {}
 func (*CreateAllianceReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_9d63a1f01d82564b, []int{0}
+	return fileDescriptor_9d63a1f01d82564b, []int{2}
 }
 func (m *CreateAllianceReq) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -75,7 +165,7 @@ func (m *CreateAllianceRsp) Reset()         { *m = CreateAllianceRsp{} }
 func (m *CreateAllianceRsp) String() string { return proto.CompactTextString(m) }
 func (*CreateAllianceRsp) ProtoMessage()    {}
 func (*CreateAllianceRsp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_9d63a1f01d82564b, []int{1}
+	return fileDescriptor_9d63a1f01d82564b, []int{3}
 }
 func (m *CreateAllianceRsp) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -120,7 +210,7 @@ func (m *DisbandAllianceReq) Reset()         { *m = DisbandAllianceReq{} }
 func (m *DisbandAllianceReq) String() string { return proto.CompactTextString(m) }
 func (*DisbandAllianceReq) ProtoMessage()    {}
 func (*DisbandAllianceReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_9d63a1f01d82564b, []int{2}
+	return fileDescriptor_9d63a1f01d82564b, []int{4}
 }
 func (m *DisbandAllianceReq) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -163,7 +253,7 @@ func (m *DisbandAllianceRsp) Reset()         { *m = DisbandAllianceRsp{} }
 func (m *DisbandAllianceRsp) String() string { return proto.CompactTextString(m) }
 func (*DisbandAllianceRsp) ProtoMessage()    {}
 func (*DisbandAllianceRsp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_9d63a1f01d82564b, []int{3}
+	return fileDescriptor_9d63a1f01d82564b, []int{5}
 }
 func (m *DisbandAllianceRsp) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -203,7 +293,7 @@ func (m *AddMemberReq) Reset()         { *m = AddMemberReq{} }
 func (m *AddMemberReq) String() string { return proto.CompactTextString(m) }
 func (*AddMemberReq) ProtoMessage()    {}
 func (*AddMemberReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_9d63a1f01d82564b, []int{4}
+	return fileDescriptor_9d63a1f01d82564b, []int{6}
 }
 func (m *AddMemberReq) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -260,7 +350,7 @@ func (m *AddMemberRsp) Reset()         { *m = AddMemberRsp{} }
 func (m *AddMemberRsp) String() string { return proto.CompactTextString(m) }
 func (*AddMemberRsp) ProtoMessage()    {}
 func (*AddMemberRsp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_9d63a1f01d82564b, []int{5}
+	return fileDescriptor_9d63a1f01d82564b, []int{7}
 }
 func (m *AddMemberRsp) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -299,7 +389,7 @@ func (m *SetMemberPositionReq) Reset()         { *m = SetMemberPositionReq{} }
 func (m *SetMemberPositionReq) String() string { return proto.CompactTextString(m) }
 func (*SetMemberPositionReq) ProtoMessage()    {}
 func (*SetMemberPositionReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_9d63a1f01d82564b, []int{6}
+	return fileDescriptor_9d63a1f01d82564b, []int{8}
 }
 func (m *SetMemberPositionReq) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -349,7 +439,7 @@ func (m *SetMemberPositionRsp) Reset()         { *m = SetMemberPositionRsp{} }
 func (m *SetMemberPositionRsp) String() string { return proto.CompactTextString(m) }
 func (*SetMemberPositionRsp) ProtoMessage()    {}
 func (*SetMemberPositionRsp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_9d63a1f01d82564b, []int{7}
+	return fileDescriptor_9d63a1f01d82564b, []int{9}
 }
 func (m *SetMemberPositionRsp) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -378,6 +468,87 @@ func (m *SetMemberPositionRsp) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_SetMemberPositionRsp proto.InternalMessageInfo
 
+// 踢出成员
+type KickOutMembersReq struct {
+	ShortIds []int64 `protobuf:"varint,1,rep,packed,name=ShortIds,proto3" json:"ShortIds,omitempty"`
+}
+
+func (m *KickOutMembersReq) Reset()         { *m = KickOutMembersReq{} }
+func (m *KickOutMembersReq) String() string { return proto.CompactTextString(m) }
+func (*KickOutMembersReq) ProtoMessage()    {}
+func (*KickOutMembersReq) Descriptor() ([]byte, []int) {
+	return fileDescriptor_9d63a1f01d82564b, []int{10}
+}
+func (m *KickOutMembersReq) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *KickOutMembersReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_KickOutMembersReq.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *KickOutMembersReq) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_KickOutMembersReq.Merge(m, src)
+}
+func (m *KickOutMembersReq) XXX_Size() int {
+	return m.Size()
+}
+func (m *KickOutMembersReq) XXX_DiscardUnknown() {
+	xxx_messageInfo_KickOutMembersReq.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_KickOutMembersReq proto.InternalMessageInfo
+
+func (m *KickOutMembersReq) GetShortIds() []int64 {
+	if m != nil {
+		return m.ShortIds
+	}
+	return nil
+}
+
+type KickOutMembersRsp struct {
+}
+
+func (m *KickOutMembersRsp) Reset()         { *m = KickOutMembersRsp{} }
+func (m *KickOutMembersRsp) String() string { return proto.CompactTextString(m) }
+func (*KickOutMembersRsp) ProtoMessage()    {}
+func (*KickOutMembersRsp) Descriptor() ([]byte, []int) {
+	return fileDescriptor_9d63a1f01d82564b, []int{11}
+}
+func (m *KickOutMembersRsp) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *KickOutMembersRsp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_KickOutMembersRsp.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *KickOutMembersRsp) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_KickOutMembersRsp.Merge(m, src)
+}
+func (m *KickOutMembersRsp) XXX_Size() int {
+	return m.Size()
+}
+func (m *KickOutMembersRsp) XXX_DiscardUnknown() {
+	xxx_messageInfo_KickOutMembersRsp.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_KickOutMembersRsp proto.InternalMessageInfo
+
 // 登录时，绑定角色session，并请求自己在联盟中的成员最新信息
 type MemberInfoOnLoginReq struct {
 	GateSession string `protobuf:"bytes,1,opt,name=GateSession,proto3" json:"GateSession,omitempty"`
@@ -388,7 +559,7 @@ func (m *MemberInfoOnLoginReq) Reset()         { *m = MemberInfoOnLoginReq{} }
 func (m *MemberInfoOnLoginReq) String() string { return proto.CompactTextString(m) }
 func (*MemberInfoOnLoginReq) ProtoMessage()    {}
 func (*MemberInfoOnLoginReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_9d63a1f01d82564b, []int{8}
+	return fileDescriptor_9d63a1f01d82564b, []int{12}
 }
 func (m *MemberInfoOnLoginReq) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -440,7 +611,7 @@ func (m *MemberInfoOnLoginRsp) Reset()         { *m = MemberInfoOnLoginRsp{} }
 func (m *MemberInfoOnLoginRsp) String() string { return proto.CompactTextString(m) }
 func (*MemberInfoOnLoginRsp) ProtoMessage()    {}
 func (*MemberInfoOnLoginRsp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_9d63a1f01d82564b, []int{9}
+	return fileDescriptor_9d63a1f01d82564b, []int{13}
 }
 func (m *MemberInfoOnLoginRsp) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -493,7 +664,7 @@ func (m *MemberInfoOnLogoutReq) Reset()         { *m = MemberInfoOnLogoutReq{} }
 func (m *MemberInfoOnLogoutReq) String() string { return proto.CompactTextString(m) }
 func (*MemberInfoOnLogoutReq) ProtoMessage()    {}
 func (*MemberInfoOnLogoutReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_9d63a1f01d82564b, []int{10}
+	return fileDescriptor_9d63a1f01d82564b, []int{14}
 }
 func (m *MemberInfoOnLogoutReq) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -536,22 +707,21 @@ func (m *MemberInfoOnLogoutReq) GetRID() string {
 	return ""
 }
 
-// 通知在线人员，联盟解散
-type AllianceDisbandedNtf struct {
+type MemberInfoOnLogoutRsp struct {
 }
 
-func (m *AllianceDisbandedNtf) Reset()         { *m = AllianceDisbandedNtf{} }
-func (m *AllianceDisbandedNtf) String() string { return proto.CompactTextString(m) }
-func (*AllianceDisbandedNtf) ProtoMessage()    {}
-func (*AllianceDisbandedNtf) Descriptor() ([]byte, []int) {
-	return fileDescriptor_9d63a1f01d82564b, []int{11}
+func (m *MemberInfoOnLogoutRsp) Reset()         { *m = MemberInfoOnLogoutRsp{} }
+func (m *MemberInfoOnLogoutRsp) String() string { return proto.CompactTextString(m) }
+func (*MemberInfoOnLogoutRsp) ProtoMessage()    {}
+func (*MemberInfoOnLogoutRsp) Descriptor() ([]byte, []int) {
+	return fileDescriptor_9d63a1f01d82564b, []int{15}
 }
-func (m *AllianceDisbandedNtf) XXX_Unmarshal(b []byte) error {
+func (m *MemberInfoOnLogoutRsp) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *AllianceDisbandedNtf) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MemberInfoOnLogoutRsp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_AllianceDisbandedNtf.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MemberInfoOnLogoutRsp.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -561,70 +731,17 @@ func (m *AllianceDisbandedNtf) XXX_Marshal(b []byte, deterministic bool) ([]byte
 		return b[:n], nil
 	}
 }
-func (m *AllianceDisbandedNtf) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_AllianceDisbandedNtf.Merge(m, src)
+func (m *MemberInfoOnLogoutRsp) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MemberInfoOnLogoutRsp.Merge(m, src)
 }
-func (m *AllianceDisbandedNtf) XXX_Size() int {
+func (m *MemberInfoOnLogoutRsp) XXX_Size() int {
 	return m.Size()
 }
-func (m *AllianceDisbandedNtf) XXX_DiscardUnknown() {
-	xxx_messageInfo_AllianceDisbandedNtf.DiscardUnknown(m)
+func (m *MemberInfoOnLogoutRsp) XXX_DiscardUnknown() {
+	xxx_messageInfo_MemberInfoOnLogoutRsp.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_AllianceDisbandedNtf proto.InternalMessageInfo
-
-// 通知在线玩家actor联盟信息变化
-type AllianceInfoNtf struct {
-	AllianceId int32 `protobuf:"varint,1,opt,name=AllianceId,proto3" json:"AllianceId,omitempty"`
-	Position   int32 `protobuf:"varint,2,opt,name=Position,proto3" json:"Position,omitempty"`
-}
-
-func (m *AllianceInfoNtf) Reset()         { *m = AllianceInfoNtf{} }
-func (m *AllianceInfoNtf) String() string { return proto.CompactTextString(m) }
-func (*AllianceInfoNtf) ProtoMessage()    {}
-func (*AllianceInfoNtf) Descriptor() ([]byte, []int) {
-	return fileDescriptor_9d63a1f01d82564b, []int{12}
-}
-func (m *AllianceInfoNtf) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *AllianceInfoNtf) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_AllianceInfoNtf.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *AllianceInfoNtf) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_AllianceInfoNtf.Merge(m, src)
-}
-func (m *AllianceInfoNtf) XXX_Size() int {
-	return m.Size()
-}
-func (m *AllianceInfoNtf) XXX_DiscardUnknown() {
-	xxx_messageInfo_AllianceInfoNtf.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_AllianceInfoNtf proto.InternalMessageInfo
-
-func (m *AllianceInfoNtf) GetAllianceId() int32 {
-	if m != nil {
-		return m.AllianceId
-	}
-	return 0
-}
-
-func (m *AllianceInfoNtf) GetPosition() int32 {
-	if m != nil {
-		return m.Position
-	}
-	return 0
-}
+var xxx_messageInfo_MemberInfoOnLogoutRsp proto.InternalMessageInfo
 
 // 获取联盟基础信息
 type AllianceInfoReq struct {
@@ -634,7 +751,7 @@ func (m *AllianceInfoReq) Reset()         { *m = AllianceInfoReq{} }
 func (m *AllianceInfoReq) String() string { return proto.CompactTextString(m) }
 func (*AllianceInfoReq) ProtoMessage()    {}
 func (*AllianceInfoReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_9d63a1f01d82564b, []int{13}
+	return fileDescriptor_9d63a1f01d82564b, []int{16}
 }
 func (m *AllianceInfoReq) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -672,7 +789,7 @@ func (m *AllianceInfoRsp) Reset()         { *m = AllianceInfoRsp{} }
 func (m *AllianceInfoRsp) String() string { return proto.CompactTextString(m) }
 func (*AllianceInfoRsp) ProtoMessage()    {}
 func (*AllianceInfoRsp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_9d63a1f01d82564b, []int{14}
+	return fileDescriptor_9d63a1f01d82564b, []int{17}
 }
 func (m *AllianceInfoRsp) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -716,6 +833,8 @@ func (m *AllianceInfoRsp) GetMasterRID() string {
 }
 
 func init() {
+	proto.RegisterType((*AllianceDisbandedNtf)(nil), "inner.AllianceDisbandedNtf")
+	proto.RegisterType((*AllianceInfoNtf)(nil), "inner.AllianceInfoNtf")
 	proto.RegisterType((*CreateAllianceReq)(nil), "inner.CreateAllianceReq")
 	proto.RegisterType((*CreateAllianceRsp)(nil), "inner.CreateAllianceRsp")
 	proto.RegisterType((*DisbandAllianceReq)(nil), "inner.DisbandAllianceReq")
@@ -724,11 +843,12 @@ func init() {
 	proto.RegisterType((*AddMemberRsp)(nil), "inner.AddMemberRsp")
 	proto.RegisterType((*SetMemberPositionReq)(nil), "inner.SetMemberPositionReq")
 	proto.RegisterType((*SetMemberPositionRsp)(nil), "inner.SetMemberPositionRsp")
+	proto.RegisterType((*KickOutMembersReq)(nil), "inner.KickOutMembersReq")
+	proto.RegisterType((*KickOutMembersRsp)(nil), "inner.KickOutMembersRsp")
 	proto.RegisterType((*MemberInfoOnLoginReq)(nil), "inner.MemberInfoOnLoginReq")
 	proto.RegisterType((*MemberInfoOnLoginRsp)(nil), "inner.MemberInfoOnLoginRsp")
 	proto.RegisterType((*MemberInfoOnLogoutReq)(nil), "inner.MemberInfoOnLogoutReq")
-	proto.RegisterType((*AllianceDisbandedNtf)(nil), "inner.AllianceDisbandedNtf")
-	proto.RegisterType((*AllianceInfoNtf)(nil), "inner.AllianceInfoNtf")
+	proto.RegisterType((*MemberInfoOnLogoutRsp)(nil), "inner.MemberInfoOnLogoutRsp")
 	proto.RegisterType((*AllianceInfoReq)(nil), "inner.AllianceInfoReq")
 	proto.RegisterType((*AllianceInfoRsp)(nil), "inner.AllianceInfoRsp")
 }
@@ -736,31 +856,90 @@ func init() {
 func init() { proto.RegisterFile("alliance.proto", fileDescriptor_9d63a1f01d82564b) }
 
 var fileDescriptor_9d63a1f01d82564b = []byte{
-	// 383 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x53, 0x4f, 0x4b, 0x02, 0x41,
-	0x14, 0x77, 0x15, 0x45, 0x9f, 0x65, 0xb9, 0x6c, 0x22, 0x12, 0xcb, 0x32, 0x44, 0xd8, 0xc5, 0x20,
-	0x4f, 0x1d, 0x2d, 0x21, 0xac, 0x34, 0x19, 0xe9, 0x12, 0x74, 0x98, 0x6d, 0x67, 0x6d, 0xc1, 0x66,
-	0xd6, 0x9d, 0xe9, 0xd0, 0xb7, 0xe8, 0x63, 0x75, 0xf4, 0xd8, 0x31, 0xf4, 0x8b, 0xc4, 0xfe, 0xd3,
-	0xf5, 0x0f, 0x15, 0xd5, 0x6d, 0xde, 0x8f, 0xf7, 0xfb, 0x33, 0xef, 0xcd, 0x40, 0x89, 0x8c, 0x46,
-	0x0e, 0x61, 0x0f, 0xb4, 0xe1, 0x7a, 0x5c, 0x72, 0x35, 0xeb, 0x30, 0x46, 0xbd, 0x1a, 0x98, 0x44,
-	0x44, 0x10, 0x3a, 0x85, 0xf2, 0xb9, 0x47, 0x89, 0xa4, 0xad, 0xa8, 0x15, 0xd3, 0xb1, 0x7a, 0x00,
-	0xdb, 0x5d, 0x22, 0x24, 0xf5, 0x06, 0x8f, 0xdc, 0x93, 0x1d, 0xab, 0xaa, 0x18, 0x4a, 0x3d, 0x83,
-	0x97, 0x41, 0xd4, 0x5c, 0xa3, 0x0a, 0x57, 0xd5, 0x01, 0xe2, 0x32, 0xe2, 0x65, 0x71, 0x02, 0x41,
-	0x87, 0xa0, 0xb6, 0x1d, 0x61, 0x12, 0x66, 0x25, 0x0d, 0x77, 0x21, 0x83, 0x3b, 0xed, 0xa0, 0xbd,
-	0x80, 0xfd, 0x23, 0xd2, 0xd6, 0xfb, 0x84, 0x8b, 0x86, 0xb0, 0xd5, 0xb2, 0xac, 0x2e, 0x7d, 0x32,
-	0xa9, 0xe7, 0xf3, 0x8e, 0x20, 0xd7, 0x1f, 0x91, 0x17, 0xea, 0x05, 0xd4, 0xe2, 0x49, 0xb9, 0x11,
-	0xdc, 0xb0, 0x11, 0x82, 0x1d, 0x66, 0x73, 0x1c, 0x35, 0xa8, 0x35, 0xc8, 0xf7, 0xb9, 0x70, 0xa4,
-	0xc3, 0x59, 0x35, 0x1d, 0xc4, 0x9a, 0xd7, 0xbe, 0x7d, 0x4f, 0xda, 0xd5, 0x8c, 0xa1, 0xd4, 0xf3,
-	0xd8, 0x3f, 0xa2, 0x52, 0xd2, 0x48, 0xb8, 0xe8, 0x1e, 0xb4, 0x01, 0x95, 0x61, 0x1d, 0xd3, 0xfe,
-	0x2f, 0x00, 0xaa, 0x6c, 0x92, 0x17, 0x2e, 0xba, 0x04, 0x2d, 0x04, 0x7d, 0xa5, 0x1b, 0x76, 0xcd,
-	0x87, 0x4e, 0x60, 0x6b, 0x40, 0xf1, 0x82, 0x48, 0x3a, 0xa0, 0x42, 0xf8, 0x72, 0xe1, 0xdc, 0x92,
-	0x50, 0x3c, 0xd1, 0xf4, 0x62, 0xa2, 0x78, 0x93, 0xd6, 0xf7, 0x1b, 0xfb, 0x32, 0xf7, 0x15, 0xec,
-	0xad, 0x68, 0xf2, 0x67, 0xf9, 0xdb, 0x80, 0x15, 0xd0, 0x62, 0xdb, 0x68, 0xf5, 0xd4, 0xf2, 0x77,
-	0xd1, 0x85, 0x9d, 0x79, 0x1c, 0x66, 0xf3, 0x9e, 0xb4, 0xff, 0x94, 0xb9, 0xbc, 0x2c, 0x87, 0xe9,
-	0x18, 0xdd, 0xae, 0x40, 0xc2, 0xfd, 0xd9, 0x17, 0x50, 0xf7, 0xa1, 0x10, 0x02, 0x8b, 0xab, 0x2c,
-	0x80, 0x33, 0xe3, 0x6d, 0xaa, 0x2b, 0x93, 0xa9, 0xae, 0x7c, 0x4c, 0x75, 0xe5, 0x75, 0xa6, 0xa7,
-	0x26, 0x33, 0x3d, 0xf5, 0x3e, 0xd3, 0x53, 0x77, 0xb9, 0xe3, 0xe0, 0x99, 0x98, 0xb9, 0xe0, 0x13,
-	0x36, 0x3f, 0x03, 0x00, 0x00, 0xff, 0xff, 0x71, 0x2f, 0xe2, 0x07, 0xa9, 0x03, 0x00, 0x00,
+	// 427 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x93, 0x4d, 0xcf, 0xd2, 0x40,
+	0x10, 0xc7, 0xe9, 0xd3, 0x3c, 0x84, 0x67, 0x50, 0xb4, 0xb5, 0x6a, 0x43, 0x4c, 0xd3, 0x6c, 0x8c,
+	0xc1, 0x0b, 0x24, 0x72, 0xf2, 0x88, 0x92, 0x18, 0x44, 0x5e, 0xb2, 0xc4, 0x8b, 0x89, 0x87, 0x2d,
+	0xdd, 0x62, 0x23, 0x76, 0x97, 0xee, 0x72, 0xf0, 0x5b, 0xf8, 0xb1, 0x3c, 0x72, 0xf4, 0x68, 0xe0,
+	0x8b, 0x98, 0xed, 0x0b, 0x14, 0x4a, 0xc0, 0x18, 0x6f, 0x3b, 0xbf, 0x9d, 0x97, 0xff, 0xce, 0xec,
+	0x40, 0x83, 0x2c, 0x97, 0x21, 0x89, 0xe6, 0xb4, 0xcd, 0x63, 0x26, 0x99, 0x79, 0x1b, 0x46, 0x11,
+	0x8d, 0x9b, 0xe0, 0x11, 0x91, 0x21, 0xf4, 0x04, 0xac, 0x5e, 0xe6, 0xd4, 0x0f, 0x85, 0x47, 0x22,
+	0x9f, 0xfa, 0x63, 0x19, 0xa0, 0x11, 0x3c, 0xc8, 0xf9, 0x20, 0x0a, 0xd8, 0x58, 0x06, 0xa6, 0x03,
+	0xb0, 0x47, 0xbe, 0xad, 0xb9, 0x5a, 0xeb, 0x16, 0x17, 0x88, 0xd9, 0x84, 0xda, 0x94, 0x89, 0x50,
+	0x86, 0x2c, 0xb2, 0x6f, 0x92, 0xdb, 0xbd, 0x8d, 0x5e, 0x83, 0xf1, 0x36, 0xa6, 0x44, 0xd2, 0xdc,
+	0x1f, 0xd3, 0x95, 0xf9, 0x1c, 0xee, 0x8f, 0x88, 0x90, 0x34, 0x9e, 0x7d, 0x61, 0xb1, 0xcc, 0x72,
+	0xea, 0xf8, 0x18, 0xa2, 0x6e, 0x29, 0x54, 0xf0, 0x6b, 0x5a, 0xd0, 0x0b, 0x30, 0xb3, 0xe7, 0x14,
+	0x0b, 0x3e, 0x04, 0x1d, 0x0f, 0xfa, 0x89, 0xfb, 0x1d, 0x56, 0x47, 0x64, 0x95, 0xfd, 0x04, 0x47,
+	0x0b, 0xb8, 0xd7, 0xf3, 0xfd, 0x11, 0xfd, 0xe6, 0xd1, 0x58, 0xc5, 0xbd, 0x84, 0xea, 0x74, 0x49,
+	0xbe, 0xd3, 0x38, 0x09, 0xad, 0xbf, 0x32, 0xda, 0x49, 0x23, 0xdb, 0x29, 0x54, 0xfd, 0xc1, 0x99,
+	0xc3, 0xa5, 0x26, 0xa8, 0xf2, 0x63, 0x19, 0xd8, 0xba, 0xab, 0xb5, 0x6a, 0x58, 0x1d, 0x51, 0xa3,
+	0x58, 0x48, 0x70, 0xf4, 0x19, 0xac, 0x19, 0x95, 0xa9, 0x9d, 0x87, 0xfd, 0x3f, 0x01, 0x6a, 0xd8,
+	0xe5, 0xf4, 0x82, 0xa3, 0x0e, 0x18, 0xc3, 0x70, 0xfe, 0x75, 0xb2, 0xce, 0xee, 0x84, 0xaa, 0xd9,
+	0x84, 0x5a, 0x36, 0x02, 0x61, 0x6b, 0xae, 0xde, 0xd2, 0xf1, 0xde, 0x46, 0x8f, 0x4a, 0x01, 0x82,
+	0xa3, 0xf7, 0x60, 0xa5, 0x96, 0xd2, 0x33, 0x89, 0x3e, 0xb0, 0x45, 0x98, 0x88, 0x77, 0xa1, 0xfe,
+	0x8e, 0x48, 0x3a, 0xa3, 0x42, 0x28, 0x51, 0x69, 0xf7, 0x8b, 0x28, 0x9f, 0xcb, 0xcd, 0x61, 0x2e,
+	0xf8, 0x5c, 0xae, 0xeb, 0x73, 0xbf, 0xf8, 0xfa, 0x21, 0x3c, 0x3e, 0xc9, 0xc9, 0xd6, 0xf2, 0x5f,
+	0x05, 0x3e, 0x3d, 0x9b, 0x4c, 0x70, 0x64, 0x1c, 0x2f, 0x0e, 0xa6, 0x2b, 0xf4, 0xf1, 0x04, 0x09,
+	0xfe, 0x77, 0x5f, 0xdf, 0x7c, 0x06, 0x77, 0x29, 0x38, 0x14, 0x3f, 0x80, 0x37, 0xee, 0xcf, 0xad,
+	0xa3, 0x6d, 0xb6, 0x8e, 0xf6, 0x7b, 0xeb, 0x68, 0x3f, 0x76, 0x4e, 0x65, 0xb3, 0x73, 0x2a, 0xbf,
+	0x76, 0x4e, 0xe5, 0x53, 0xb5, 0x93, 0x7c, 0x0f, 0xaf, 0x9a, 0xec, 0x78, 0xf7, 0x4f, 0x00, 0x00,
+	0x00, 0xff, 0xff, 0xd7, 0x41, 0x45, 0x3d, 0x08, 0x04, 0x00, 0x00,
+}
+
+func (m *AllianceDisbandedNtf) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *AllianceDisbandedNtf) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *AllianceDisbandedNtf) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *AllianceInfoNtf) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *AllianceInfoNtf) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *AllianceInfoNtf) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Position != 0 {
+		i = encodeVarintAlliance(dAtA, i, uint64(m.Position))
+		i--
+		dAtA[i] = 0x10
+	}
+	if m.AllianceId != 0 {
+		i = encodeVarintAlliance(dAtA, i, uint64(m.AllianceId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
 }
 
 func (m *CreateAllianceReq) Marshal() (dAtA []byte, err error) {
@@ -1008,6 +1187,71 @@ func (m *SetMemberPositionRsp) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *KickOutMembersReq) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *KickOutMembersReq) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *KickOutMembersReq) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.ShortIds) > 0 {
+		dAtA4 := make([]byte, len(m.ShortIds)*10)
+		var j3 int
+		for _, num1 := range m.ShortIds {
+			num := uint64(num1)
+			for num >= 1<<7 {
+				dAtA4[j3] = uint8(uint64(num)&0x7f | 0x80)
+				num >>= 7
+				j3++
+			}
+			dAtA4[j3] = uint8(num)
+			j3++
+		}
+		i -= j3
+		copy(dAtA[i:], dAtA4[:j3])
+		i = encodeVarintAlliance(dAtA, i, uint64(j3))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *KickOutMembersRsp) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *KickOutMembersRsp) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *KickOutMembersRsp) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
 func (m *MemberInfoOnLoginReq) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -1115,7 +1359,7 @@ func (m *MemberInfoOnLogoutReq) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *AllianceDisbandedNtf) Marshal() (dAtA []byte, err error) {
+func (m *MemberInfoOnLogoutRsp) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1125,49 +1369,16 @@ func (m *AllianceDisbandedNtf) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *AllianceDisbandedNtf) MarshalTo(dAtA []byte) (int, error) {
+func (m *MemberInfoOnLogoutRsp) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *AllianceDisbandedNtf) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MemberInfoOnLogoutRsp) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	return len(dAtA) - i, nil
-}
-
-func (m *AllianceInfoNtf) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *AllianceInfoNtf) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *AllianceInfoNtf) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.Position != 0 {
-		i = encodeVarintAlliance(dAtA, i, uint64(m.Position))
-		i--
-		dAtA[i] = 0x10
-	}
-	if m.AllianceId != 0 {
-		i = encodeVarintAlliance(dAtA, i, uint64(m.AllianceId))
-		i--
-		dAtA[i] = 0x8
-	}
 	return len(dAtA) - i, nil
 }
 
@@ -1240,6 +1451,30 @@ func encodeVarintAlliance(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
+func (m *AllianceDisbandedNtf) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *AllianceInfoNtf) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.AllianceId != 0 {
+		n += 1 + sovAlliance(uint64(m.AllianceId))
+	}
+	if m.Position != 0 {
+		n += 1 + sovAlliance(uint64(m.Position))
+	}
+	return n
+}
+
 func (m *CreateAllianceReq) Size() (n int) {
 	if m == nil {
 		return 0
@@ -1339,6 +1574,31 @@ func (m *SetMemberPositionRsp) Size() (n int) {
 	return n
 }
 
+func (m *KickOutMembersReq) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.ShortIds) > 0 {
+		l = 0
+		for _, e := range m.ShortIds {
+			l += sovAlliance(uint64(e))
+		}
+		n += 1 + sovAlliance(uint64(l)) + l
+	}
+	return n
+}
+
+func (m *KickOutMembersRsp) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
 func (m *MemberInfoOnLoginReq) Size() (n int) {
 	if m == nil {
 		return 0
@@ -1388,27 +1648,12 @@ func (m *MemberInfoOnLogoutReq) Size() (n int) {
 	return n
 }
 
-func (m *AllianceDisbandedNtf) Size() (n int) {
+func (m *MemberInfoOnLogoutRsp) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	return n
-}
-
-func (m *AllianceInfoNtf) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.AllianceId != 0 {
-		n += 1 + sovAlliance(uint64(m.AllianceId))
-	}
-	if m.Position != 0 {
-		n += 1 + sovAlliance(uint64(m.Position))
-	}
 	return n
 }
 
@@ -1442,6 +1687,144 @@ func sovAlliance(x uint64) (n int) {
 }
 func sozAlliance(x uint64) (n int) {
 	return sovAlliance(uint64((x << 1) ^ uint64((int64(x) >> 63))))
+}
+func (m *AllianceDisbandedNtf) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowAlliance
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: AllianceDisbandedNtf: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: AllianceDisbandedNtf: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipAlliance(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthAlliance
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *AllianceInfoNtf) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowAlliance
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: AllianceInfoNtf: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: AllianceInfoNtf: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AllianceId", wireType)
+			}
+			m.AllianceId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAlliance
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.AllianceId |= int32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Position", wireType)
+			}
+			m.Position = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAlliance
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Position |= int32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipAlliance(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthAlliance
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
 }
 func (m *CreateAllianceReq) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
@@ -2043,6 +2426,182 @@ func (m *SetMemberPositionRsp) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+func (m *KickOutMembersReq) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowAlliance
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: KickOutMembersReq: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: KickOutMembersReq: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType == 0 {
+				var v int64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowAlliance
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= int64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				m.ShortIds = append(m.ShortIds, v)
+			} else if wireType == 2 {
+				var packedLen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowAlliance
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					packedLen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if packedLen < 0 {
+					return ErrInvalidLengthAlliance
+				}
+				postIndex := iNdEx + packedLen
+				if postIndex < 0 {
+					return ErrInvalidLengthAlliance
+				}
+				if postIndex > l {
+					return io.ErrUnexpectedEOF
+				}
+				var elementCount int
+				var count int
+				for _, integer := range dAtA[iNdEx:postIndex] {
+					if integer < 128 {
+						count++
+					}
+				}
+				elementCount = count
+				if elementCount != 0 && len(m.ShortIds) == 0 {
+					m.ShortIds = make([]int64, 0, elementCount)
+				}
+				for iNdEx < postIndex {
+					var v int64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowAlliance
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						v |= int64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					m.ShortIds = append(m.ShortIds, v)
+				}
+			} else {
+				return fmt.Errorf("proto: wrong wireType = %d for field ShortIds", wireType)
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipAlliance(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthAlliance
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *KickOutMembersRsp) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowAlliance
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: KickOutMembersRsp: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: KickOutMembersRsp: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipAlliance(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthAlliance
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
 func (m *MemberInfoOnLoginReq) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -2359,7 +2918,7 @@ func (m *MemberInfoOnLogoutReq) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *AllianceDisbandedNtf) Unmarshal(dAtA []byte) error {
+func (m *MemberInfoOnLogoutRsp) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2382,100 +2941,12 @@ func (m *AllianceDisbandedNtf) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: AllianceDisbandedNtf: wiretype end group for non-group")
+			return fmt.Errorf("proto: MemberInfoOnLogoutRsp: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: AllianceDisbandedNtf: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MemberInfoOnLogoutRsp: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
-		default:
-			iNdEx = preIndex
-			skippy, err := skipAlliance(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthAlliance
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *AllianceInfoNtf) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowAlliance
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: AllianceInfoNtf: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: AllianceInfoNtf: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AllianceId", wireType)
-			}
-			m.AllianceId = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowAlliance
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.AllianceId |= int32(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 2:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Position", wireType)
-			}
-			m.Position = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowAlliance
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.Position |= int32(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipAlliance(dAtA[iNdEx:])

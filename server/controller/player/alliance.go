@@ -139,6 +139,11 @@ var _ = router.Reg(func(player *player.Player, msg *outer.KickOutMemberReq) any 
 		return outer.ERROR_PLAYER_NOT_IN_ALLIANCE
 	}
 
+	// 操作者权限不够
+	if player.Alliance().Position() < alliance.Manager.Int32() {
+		return outer.ERROR_PLAYER_POSITION_LIMIT
+	}
+
 	// 对方联盟不是本联盟
 	if playerInfo.AllianceId != player.Alliance().AllianceId() {
 		return outer.ERROR_PLAYER_NOT_IN_CORRECT_ALLIANCE
@@ -148,7 +153,14 @@ var _ = router.Reg(func(player *player.Player, msg *outer.KickOutMemberReq) any 
 	if playerInfo.Position > player.Alliance().Position() {
 		return outer.ERROR_PLAYER_POSITION_LIMIT
 	}
-	// todo
+
+	// 获取被踢者以及所有下级
+	downs := rdsop.AgentDown(playerInfo.ShortId)
+	allianceActor := actortype.AllianceName(player.Alliance().AllianceId())
+	v, err := player.RequestWait(allianceActor, &inner.KickOutMembersReq{ShortIds: downs})
+	if yes, code := common.IsErr(v, err); yes {
+		return code
+	}
 
 	return &outer.KickOutMemberRsp{}
 })

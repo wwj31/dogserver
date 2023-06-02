@@ -4,6 +4,16 @@ option  go_package = "/inner";
 
 import "base.proto";
 
+// 通知在线人员，联盟解散
+message AllianceDisbandedNtf{
+}
+
+// 通知在线玩家actor联盟信息变化
+message AllianceInfoNtf {
+  int32 AllianceId = 1;
+  int32 Position   = 2;
+}
+
 // 创建联盟
 message CreateAllianceReq{
   int64 MasterShortId = 1; // 盟主短Id
@@ -33,8 +43,14 @@ message SetMemberPositionReq{
   PlayerInfo Player   = 1;
   int32      Position = 2;
 }
-
 message SetMemberPositionRsp{
+}
+
+// 踢出成员
+message KickOutMembersReq{
+  repeated int64 ShortIds = 1;
+}
+message KickOutMembersRsp{
 }
 
 // 登录时，绑定角色session，并请求自己在联盟中的成员最新信息
@@ -42,7 +58,6 @@ message MemberInfoOnLoginReq{
   string GateSession = 1;
   string RID         = 2;
 }
-
 message MemberInfoOnLoginRsp{
   int32 AllianceId = 1; // 联盟id，如果为0，表示玩家下线期间被踢了
   int32 Position   = 2; // 职位
@@ -53,15 +68,7 @@ message MemberInfoOnLogoutReq{
   string GateSession = 1;
   string RID         = 2;
 }
-
-// 通知在线人员，联盟解散
-message AllianceDisbandedNtf{
-}
-
-// 通知在线玩家actor联盟信息变化
-message AllianceInfoNtf {
-  int32 AllianceId = 1;
-  int32 Position   = 2;
+message MemberInfoOnLogoutRsp{
 }
 
 // 获取联盟基础信息

@@ -21,20 +21,22 @@ type RID = string
 
 func New(id int32) *Alliance {
 	return &Alliance{
-		allianceId: id,
-		members:    make(map[RID]*Member),
-		sessions:   make(map[common.GSession]*Member),
+		allianceId:       id,
+		members:          make(map[RID]*Member),
+		membersByShortId: make(map[int64]*Member),
+		sessions:         make(map[common.GSession]*Member),
 	}
 }
 
 type (
 	Alliance struct {
 		actor.Base
-		allianceId int32
-		disband    bool
-		members    map[RID]*Member
-		sessions   map[common.GSession]*Member // 关联登录成功的在线玩家
-		master     *Member
+		allianceId       int32
+		disband          bool
+		members          map[RID]*Member
+		membersByShortId map[int64]*Member
+		sessions         map[common.GSession]*Member // 关联登录成功的在线玩家
+		master           *Member
 
 		currentMsg      actor.Message
 		currentGSession common.GSession
@@ -62,6 +64,7 @@ func (a *Alliance) OnInit() {
 	for _, member := range members {
 		member.Alliance = a
 		a.members[member.RID] = member
+		a.membersByShortId[member.ShortId] = member
 		if member.Position == Master {
 			a.master = member
 		}
@@ -137,10 +140,19 @@ func (a *Alliance) OnHandle(msg actor.Message) {
 	router.Dispatch(a, pt)
 }
 
-func (a *Alliance) MemberInfo(rid RID) *Member { return a.members[rid] }
-func (a *Alliance) Master() *Member            { return a.master }
-func (a *Alliance) AllianceId() int32          { return a.allianceId }
-func (a *Alliance) Disband()                   { a.disband = true }
+func (a *Alliance) MemberInfo(rid RID) *Member                { return a.members[rid] }
+func (a *Alliance) MemberInfoByShortId(shortId int64) *Member { return a.membersByShortId[shortId] }
+func (a *Alliance) Master() *Member                           { return a.master }
+func (a *Alliance) AllianceId() int32                         { return a.allianceId }
+func (a *Alliance) Disband()                                  { a.disband = true }
+
+func (a *Alliance) KickOutMember(shortId int64) {
+	member := a.membersByShortId[shortId]
+	if member != nil {
+		delete(a.members, member.RID)
+		delete(a.membersByShortId, member.ShortId)
+	}
+}
 
 // OnlineMembers 所有在线成员
 func (a *Alliance) OnlineMembers() (arr []*Member) {
