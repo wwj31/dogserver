@@ -14,6 +14,11 @@ func BindAgent(up, down int64) {
 	AddAgentDown(up, down)
 }
 
+func UnbindAgent(shortId int64) {
+	AgentCancelUp(shortId)
+	rds.Ins.Del(context.Background(), AgentUpKey(shortId))
+}
+
 // SetAgentUp 设置上级
 func SetAgentUp(shortId, up int64) {
 	if shortId == 0 || up == 0 || shortId == up {

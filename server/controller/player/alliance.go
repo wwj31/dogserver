@@ -154,6 +154,11 @@ var _ = router.Reg(func(player *player.Player, msg *outer.KickOutMemberReq) any 
 		return outer.ERROR_PLAYER_POSITION_LIMIT
 	}
 
+	// 解除被踢者的上下级关系
+	rdsop.UnbindAgent(playerInfo.ShortId)
+	playerInfo.UpShortId = 0
+	rdsop.SetPlayerInfo(&playerInfo)
+
 	// 获取被踢者以及所有下级
 	downs := rdsop.AgentDown(playerInfo.ShortId)
 	allianceActor := actortype.AllianceName(player.Alliance().AllianceId())
