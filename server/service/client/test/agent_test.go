@@ -11,7 +11,7 @@ import (
 )
 
 func TestMembersReq(t *testing.T) {
-	cli := &client.Client{Addr: *Addr, DeviceID: "wwj2"}
+	cli := &client.Client{Addr: *Addr, DeviceID: "wwj1"}
 	Init(cli)
 	rsp, ok := cli.Req(outer.Msg_IdAgentMembersReq, &outer.AgentMembersReq{}).(*outer.AgentMembersRsp)
 	assert.True(t, ok)
