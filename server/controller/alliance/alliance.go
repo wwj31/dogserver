@@ -14,11 +14,12 @@ import (
 
 // 玩家登录，同步并请求数据
 var _ = router.Reg(func(alli *alliance.Alliance, msg *inner.MemberInfoOnLoginReq) any {
-	alli.PlayerOnline(common.GSession(msg.GateSession), msg.RID)
 	member := alli.MemberInfo(msg.RID)
 	if member == nil {
 		return &inner.MemberInfoOnLoginRsp{}
 	}
+
+	alli.PlayerOnline(common.GSession(msg.GateSession), msg.RID)
 
 	return &inner.MemberInfoOnLoginRsp{
 		AllianceId: alli.AllianceId(),
@@ -87,12 +88,12 @@ var _ = router.Reg(func(alli *alliance.Alliance, msg *inner.DisbandAllianceReq) 
 
 	// 获取联盟所有在线成员，并广播解散消息
 	for _, member := range alli.Members() {
-		if member.GSession.Valid() {
+		playerInfo := rdsop.PlayerInfo(member.ShortId)
+		if playerInfo.GSession != "" {
 			playerActor := actortype.PlayerId(member.RID)
 			_ = alli.Send(playerActor, &inner.AllianceInfoNtf{})
 		}
 
-		playerInfo := rdsop.PlayerInfo(member.ShortId)
 		playerInfo.AllianceId = 0
 		playerInfo.Position = 0
 		rdsop.SetPlayerInfo(&playerInfo)
@@ -128,7 +129,7 @@ var _ = router.Reg(func(alli *alliance.Alliance, msg *inner.KickOutMembersReq) a
 		playerInfo.AllianceId = 0
 		rdsop.SetPlayerInfo(&playerInfo)
 
-		if member.GSession.Valid() {
+		if playerInfo.GSession != "" {
 			_ = alli.Send(actortype.PlayerId(member.RID), &inner.AllianceInfoNtf{
 				AllianceId: 0,
 				Position:   0,

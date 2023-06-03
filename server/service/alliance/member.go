@@ -6,14 +6,12 @@ import (
 
 	"go.mongodb.org/mongo-driver/mongo/options"
 
-	"server/common"
 	"server/common/log"
 	"server/common/mongodb"
 )
 
 type Member struct {
 	*Alliance `bson:"-"`
-	GSession  common.GSession `bson:"-"`
 
 	RID      string   `bson:"_id"`
 	ShortId  int64    `bson:"short_id"`

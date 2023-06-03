@@ -25,7 +25,6 @@ func New(id int32) *Alliance {
 		allianceId:       id,
 		members:          make(map[RID]*Member),
 		membersByShortId: make(map[int64]*Member),
-		sessions:         make(map[common.GSession]*Member),
 	}
 }
 
@@ -36,7 +35,6 @@ type (
 		disband          bool
 		members          map[RID]*Member
 		membersByShortId map[int64]*Member
-		sessions         map[common.GSession]*Member // 关联登录成功的在线玩家
 		master           *Member
 
 		currentMsg      actor.Message
@@ -103,13 +101,8 @@ func (a *Alliance) responseHandle(resultMsg any) {
 	}
 }
 func (a *Alliance) Send2Client(gSession common.GSession, msg proto.Message) {
-	member, ok := a.sessions[gSession]
-	if !ok {
-		return
-	}
-
 	log.Infow("output", "alliance", a.ID(), "msg", reflect.TypeOf(msg), "data", msg.String())
-	member.GSession.SendToClient(a, msg)
+	gSession.SendToClient(a, msg)
 }
 
 func (a *Alliance) OnStop() bool {
@@ -163,39 +156,12 @@ func (a *Alliance) Members() (arr []*Member) {
 	return
 }
 
-// OnlineMembers 所有在线成员
-func (a *Alliance) OnlineMembers() (arr []*Member) {
-	for _, member := range a.sessions {
-		arr = append(arr, member)
-	}
-	return
-}
-
 func (a *Alliance) PlayerOnline(gSession common.GSession, rid RID) {
-	member, ok := a.members[rid]
-	if !ok {
-		log.Warnw("can not find member ", "rid", rid)
-		return
-	}
-	member.GSession = gSession
-	a.sessions[gSession] = member
 
-	log.Infow("player online ", "gSession", gSession, "rid", member.RID, "shortId", member.ShortId)
+	log.Infow("player online ", "gSession", gSession, "rid", rid)
 }
 
 func (a *Alliance) PlayerOffline(gSession common.GSession, rid RID) {
-	member, ok := a.members[rid]
-	if !ok {
-		log.Warnw("can not find member ", "rid", rid)
-		return
-	}
 
-	if gSession != member.GSession {
-		log.Warnw("session not equal", "rid", rid, "gSession", member.GSession, "offline gSession", gSession)
-	}
-	delete(a.sessions, member.GSession)
-
-	member.GSession = ""
-
-	log.Infow("player offline ", "gSession", gSession, "rid", member.RID, "shortId", member.ShortId)
+	log.Infow("player offline ", "gSession", gSession, "rid", rid)
 }

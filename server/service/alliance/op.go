@@ -3,7 +3,6 @@ package alliance
 import (
 	"context"
 
-	"server/common"
 	"server/common/actortype"
 	"server/common/log"
 	"server/common/rds"
@@ -29,7 +28,6 @@ func (a *Alliance) AddMember(playerInfo *inner.PlayerInfo, ntf bool, position ..
 	}
 
 	member.Alliance = a
-	member.GSession = common.GSession(playerInfo.GSession)
 	member.Save()
 
 	if !ntf {
