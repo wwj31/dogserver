@@ -93,6 +93,9 @@ func (s *Alliance) OnLogin(first bool, enterGameRsp *outer.EnterGameRsp) {
 		s.data.Position = memberInfoRsp.Position
 		s.data.AllianceId = memberInfoRsp.AllianceId
 	}
+
+	enterGameRsp.RoleInfo.AllianceId = s.data.AllianceId
+	enterGameRsp.RoleInfo.Position = outer.Position(s.data.Position)
 }
 
 func (s *Alliance) OnLogout() {

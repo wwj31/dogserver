@@ -2,6 +2,7 @@ syntax = "proto3";
 package outer;
 option  go_package = "/outer";
 
+import "type.proto";
 
 message HeartReq {
     int64 ClientTimestamp = 1;
@@ -44,11 +45,13 @@ message EnterGameRsp {
 
 // 角色信息
 message RoleInfo{
-    string  RID     = 1;
-    int64   ShortId = 2;
-    string  Phone   = 3;
-    string  Name    = 4;
-    string  Icon    = 5;
-    int32   Gender  = 6;
-    int64   Gold    = 7;
+    string  RID        = 1; // 玩家id
+    int64   ShortId    = 2; // 短id
+    string  Phone      = 3;
+    string  Name       = 4;
+    string  Icon       = 5;
+    int32   Gender     = 6;
+    int64   Gold       = 7;
+    int32   AllianceId = 8; // 联盟id
+    Position Position  = 9; // 职位
 }

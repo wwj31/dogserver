@@ -60,9 +60,6 @@ func (p *Player) OnInit() {
 	p.initModule()
 	p.load()
 
-	// 定时回存
-	p.storeTicker()
-
 	router.Result(p, p.responseHandle)
 	log.Infow("player actor OnInit", "id", p.ID())
 }
@@ -86,7 +83,7 @@ func (p *Player) responseHandle(resultMsg any) {
 
 	// 网关消息，直接将消息转发给session, 其他服务消息，走内部通讯接口
 	if actortype.IsActorOf(p.currentMsg.GetSourceId(), actortype.GatewayActor) {
-		p.Send2Client(msg)
+		p.SendToClient(msg)
 	} else {
 		var err error
 		if p.currentMsg.GetRequestId() != "" {
@@ -140,7 +137,7 @@ func (p *Player) OnHandle(msg actor.Message) {
 	router.Dispatch(p, pt)
 }
 
-func (p *Player) Send2Client(pb proto.Message) {
+func (p *Player) SendToClient(pb proto.Message) {
 	log.Infow("output", "rid", p.roleId, "gSession", p.gSession, "online", p.Online(), "msg", reflect.TypeOf(pb), "data", pb.String())
 	if pb == nil || !p.Online() {
 		return
@@ -165,6 +162,9 @@ func (p *Player) Login(first bool, enterGameRsp *outer.EnterGameRsp) {
 
 	p.CancelTimer(p.exitTimerId)
 	p.UpdateInfoToRedis()
+
+	// 定时回存
+	p.storeTicker()
 }
 
 func (p *Player) Logout() {
@@ -232,6 +232,10 @@ func (p *Player) load() {
 }
 
 func (p *Player) storeTicker() {
+	if p.saveTimerId != "" {
+		return
+	}
+
 	randDur := func() time.Duration {
 		//return time.Duration(rand.Intn(int(30*time.Second))) + (30 * time.Second)
 		return time.Second
@@ -240,6 +244,7 @@ func (p *Player) storeTicker() {
 	execAt := tools.Now().Add(randDur())
 	p.saveTimerId = p.AddTimer(tools.XUID(), execAt, func(dt time.Duration) {
 		p.store()
+		p.saveTimerId = ""
 		if p.Online() {
 			p.storeTicker()
 		}
@@ -262,5 +267,5 @@ func (p *Player) store() {
 			//mgo.Store(collType, p.roleId, gogo.Clone(doc))
 		}
 	}
-	log.Infow("player stored model", "rid", p.roleId)
+	//log.Infow("player stored model", "rid", p.roleId)
 }

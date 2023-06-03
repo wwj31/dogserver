@@ -92,8 +92,11 @@ func (s *Client) OnHandle(m actor.Message) {
 		//	s.cli.Startup()
 		//	s.login(2)
 		//})
+	case *outer.AllianceInfoNtf:
+		log.Infow("alliance info notify!", "msg", msg.String())
 	default:
-		log.Infow("msg", "type", reflect.TypeOf(msg).String())
-		s.waiter <- msg.(proto.Message)
+		pb := msg.(proto.Message)
+		log.Infow("msg", "type", reflect.TypeOf(pb), "data", pb.String())
+		s.waiter <- pb
 	}
 }

@@ -83,7 +83,12 @@ func (g *GateWay) OnHandle(m actor.Message) {
 		}
 
 		log.Infow("server msg -> user", logInfo...)
-		msgId, _ := g.System().ProtoIndex().MsgNameToId(msg.GetMsgName())
+		msgId, ok := g.System().ProtoIndex().MsgNameToId(msg.GetMsgName())
+		if !ok {
+			log.Errorw("can not find msgId by name ", "name", msg.GetMsgName())
+			return
+		}
+
 		data, err := proto.Marshal(&outer.Base{
 			MsgId: msgId,
 			Data:  msg.Data,

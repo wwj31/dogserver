@@ -20,8 +20,6 @@ require (
 	github.com/spf13/viper v1.9.0
 	github.com/stretchr/testify v1.8.1
 	github.com/tealeg/xlsx v1.0.5
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.659
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/sms v1.0.659
 	github.com/wwj31/dogactor v1.4.13
 	go.mongodb.org/mongo-driver v1.11.0
 	google.golang.org/protobuf v1.28.1
@@ -89,7 +87,7 @@ require (
 	golang.org/x/arch v0.0.0-20210923205945-b76863e36670 // indirect
 	golang.org/x/crypto v0.6.0 // indirect
 	golang.org/x/net v0.7.0 // indirect
-	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
+	golang.org/x/sync v0.0.0-20220722155255-886fb9371eb4 // indirect
 	golang.org/x/sys v0.5.0 // indirect
 	golang.org/x/text v0.7.0 // indirect
 	google.golang.org/genproto v0.0.0-20210828152312-66f60bf46e71 // indirect

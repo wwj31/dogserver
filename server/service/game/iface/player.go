@@ -18,7 +18,7 @@ type (
 		RID() string
 
 		Observer() *common.Observer
-		Send2Client(pb proto.Message)
+		SendToClient(pb proto.Message)
 		Online() bool
 		PlayerInfo() *inner.PlayerInfo
 		UpdateInfoToRedis()

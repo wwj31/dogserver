@@ -1,6 +1,8 @@
 package iface
 
-import "server/common"
+import (
+	"server/common"
+)
 
 type Session interface {
 	GateSession() common.GSession

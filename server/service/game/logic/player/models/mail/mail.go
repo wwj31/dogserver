@@ -58,7 +58,7 @@ func (s *Mail) OnLogin(first bool, enterGameRsp *outer.EnterGameRsp) {
 func (s *Mail) Add(mail *inner.Mail) {
 	s.data.Mails[mail.GetUUID()] = mail
 	s.zSet.Add(cast.ToString(mail.GetUUID()), mail.CreateAt)
-	s.Player.Send2Client(&outer.AddMailNotify{Uuid: mail.GetUUID()})
+	s.Player.SendToClient(&outer.AddMailNotify{Uuid: mail.GetUUID()})
 	log.Debugw("add actormail ", "player", s.Player.Role().RoleId(), "actormail", mail.Title, "items", mail.Items)
 }
 
@@ -105,7 +105,7 @@ func (s *Mail) ReceiveItem(uuid string) {
 		return
 	}
 	if mail.Status == 2 {
-		s.Player.Send2Client(&outer.FailRsp{Error: outer.ERROR_FAILED})
+		s.Player.SendToClient(&outer.FailRsp{Error: outer.ERROR_FAILED})
 		return
 	}
 

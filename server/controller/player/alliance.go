@@ -17,7 +17,7 @@ var _ = router.Reg(func(player *player.Player, msg *inner.AllianceInfoNtf) any {
 	player.Alliance().SetAllianceId(msg.AllianceId)
 	player.Alliance().SetPosition(msg.Position)
 
-	player.GateSession().SendToClient(player, &outer.AllianceInfoNtf{
+	player.SendToClient(&outer.AllianceInfoNtf{
 		AllianceId: msg.AllianceId,
 		Position:   msg.Position,
 	})
