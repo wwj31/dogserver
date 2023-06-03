@@ -140,7 +140,7 @@ var _ = router.Reg(func(player *player.Player, msg *outer.KickOutMemberReq) any 
 	}
 
 	// 操作者权限不够
-	if player.Alliance().Position() < alliance.Manager.Int32() {
+	if player.Alliance().Position() < alliance.Captain.Int32() {
 		return outer.ERROR_PLAYER_POSITION_LIMIT
 	}
 
@@ -152,6 +152,11 @@ var _ = router.Reg(func(player *player.Player, msg *outer.KickOutMemberReq) any 
 	// 对方职位比设置者大
 	if playerInfo.Position > player.Alliance().Position() {
 		return outer.ERROR_PLAYER_POSITION_LIMIT
+	}
+
+	// 不是自己的下线不能踢
+	if playerInfo.UpShortId != player.Role().ShortId() {
+		return outer.ERROR_TARGET_IS_NOT_DOWN
 	}
 
 	// 解除被踢者的上下级关系

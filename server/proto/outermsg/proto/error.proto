@@ -23,6 +23,7 @@ enum ERROR {
    PLAYER_NOT_IN_CORRECT_ALLIANCE   = 17; // 被设置的玩家不在本联盟中
    CAN_NOT_SET_HIGHER_POSITION      = 18; // 不能对职位更高的人设置职位
    CAN_NOT_SET_NOT_IN_DOWN_POSITION = 19; // 不能对非直属下级设置职位
+   TARGET_IS_NOT_DOWN               = 20; // 不是直属上下级关系
 }
 
 message FailRsp {

@@ -12,11 +12,13 @@ import (
 func BindAgent(up, down int64) {
 	SetAgentUp(down, up)
 	AddAgentDown(up, down)
+	log.Infow("BindAgent", "up", up, "down", down)
 }
 
 func UnbindAgent(shortId int64) {
 	AgentCancelUp(shortId)
 	rds.Ins.Del(context.Background(), AgentUpKey(shortId))
+	log.Infow("UnbindAgent", "shortId", shortId)
 }
 
 // SetAgentUp 设置上级
@@ -38,7 +40,7 @@ func AgentUp(shortId int64) (up int64) {
 	return cast.ToInt64(str)
 }
 
-// AgentCancelUp 解除上级关系
+// AgentCancelUp 解除对应上级的下级关系
 func AgentCancelUp(shortId int64, upShortId ...int64) {
 	if shortId == 0 {
 		return
@@ -51,6 +53,7 @@ func AgentCancelUp(shortId int64, upShortId ...int64) {
 	}
 
 	rds.Ins.SRem(context.Background(), AgentDownKey(up), shortId)
+	log.Infow("AgentCancelUp ", "up", up, "down", shortId)
 }
 
 // AgentUpAll 获取所有上级,结果的头部是上一级，尾部是顶级
