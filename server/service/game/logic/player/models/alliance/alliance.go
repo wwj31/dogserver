@@ -74,7 +74,9 @@ func (s *Alliance) OnLogin(first bool, enterGameRsp *outer.EnterGameRsp) {
 			s.data.AllianceId = 0
 			return
 		}
+	}
 
+	if s.data.AllianceId != 0 {
 		result, err := s.Player.RequestWait(actortype.AllianceName(s.AllianceId()), &inner.MemberInfoOnLoginReq{
 			GateSession: s.Player.GateSession().String(),
 			RID:         s.Player.RID(),

@@ -3,12 +3,13 @@ package alliance
 import (
 	"context"
 	"fmt"
-	"reflect"
-
 	"github.com/golang/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
 	"github.com/wwj31/dogactor/expect"
 	"go.mongodb.org/mongo-driver/bson"
+	"reflect"
+	"server/common/rds"
+	"server/rdsop"
 
 	"server/common"
 	"server/common/actortype"
@@ -118,6 +119,7 @@ func (a *Alliance) OnStop() bool {
 		if err != nil {
 			log.Warnw("disband alliance drop table failed", "coll", a.Coll())
 		}
+		rds.Ins.Del(context.Background(), rdsop.JoinAllianceKey(a.master.ShortId))
 	}
 	return true
 }
@@ -152,6 +154,13 @@ func (a *Alliance) KickOutMember(shortId int64) {
 		delete(a.members, member.RID)
 		delete(a.membersByShortId, member.ShortId)
 	}
+}
+
+func (a *Alliance) Members() (arr []*Member) {
+	for _, member := range a.members {
+		arr = append(arr, member)
+	}
+	return
 }
 
 // OnlineMembers 所有在线成员

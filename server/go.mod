@@ -20,7 +20,7 @@ require (
 	github.com/spf13/viper v1.9.0
 	github.com/stretchr/testify v1.8.1
 	github.com/tealeg/xlsx v1.0.5
-	github.com/wwj31/dogactor v1.4.13
+	github.com/wwj31/dogactor v1.4.14
 	go.mongodb.org/mongo-driver v1.11.0
 	google.golang.org/protobuf v1.28.1
 )

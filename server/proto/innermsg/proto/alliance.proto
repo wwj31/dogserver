@@ -4,10 +4,6 @@ option  go_package = "/inner";
 
 import "base.proto";
 
-// 通知在线人员，联盟解散
-message AllianceDisbandedNtf{
-}
-
 // 通知在线玩家actor联盟信息变化
 message AllianceInfoNtf {
   int32 AllianceId = 1;
@@ -25,6 +21,7 @@ message CreateAllianceRsp{
 // 解散联盟
 message DisbandAllianceReq{
   string RID = 1;
+  int32  AllianceId = 2;
 }
 message DisbandAllianceRsp{
 }

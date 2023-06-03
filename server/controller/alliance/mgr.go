@@ -18,3 +18,9 @@ var _ = router.Reg(func(mgr *alliance.Mgr, msg *inner.CreateAllianceReq) any {
 
 	return &inner.CreateAllianceRsp{AllianceId: allianceId}
 })
+
+// 联盟被解散
+var _ = router.Reg(func(mgr *alliance.Mgr, msg *inner.DisbandAllianceReq) any {
+	mgr.Disband(msg.GetAllianceId())
+	return &inner.DisbandAllianceReq{}
+})

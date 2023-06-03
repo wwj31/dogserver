@@ -6,7 +6,6 @@ import (
 	"reflect"
 
 	"github.com/gogo/protobuf/proto"
-	"github.com/spf13/cast"
 	"github.com/wwj31/dogactor/actor"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -25,9 +24,14 @@ func NewMgr() *Mgr {
 	return &Mgr{}
 }
 
+type AlliBaseInfo struct {
+	AllianceId    int32 `bson:"_id"`
+	MasterShortId int64 `bson:"master_short_id"`
+	Disband       bool  `bson:"disband"`
+}
 type Mgr struct {
 	actor.Base
-	alliances  []int32
+	alliances  []*AlliBaseInfo
 	currentMsg actor.Message
 	incId      int32
 }
@@ -38,20 +42,25 @@ func (m *Mgr) OnInit() {
 		log.Errorw("load all alliance member failed", "err", err)
 		return
 	}
-	alliSet := make(map[string]interface{})
 	for cur.Next(context.Background()) {
-		cur.Decode(alliSet)
+		alli := &AlliBaseInfo{}
+		err = cur.Decode(alli)
+		if err != nil {
+			log.Warnw("alliance mgr decode failed", "err", err)
+			continue
+		}
 
-		allianceId := cast.ToInt32(alliSet["_id"])
 		_ = m.System().NewActor(
-			actortype.AllianceName(allianceId),
-			New(allianceId),
+			actortype.AllianceName(alli.AllianceId),
+			New(alli.AllianceId),
 			actor.SetMailBoxSize(1000),
 		)
-		if allianceId > m.incId {
-			m.incId = allianceId
+
+		if alli.AllianceId > m.incId {
+			m.incId = alli.AllianceId
 		}
-		m.alliances = append(m.alliances, allianceId)
+
+		m.alliances = append(m.alliances, alli)
 	}
 
 	router.Result(m, m.responseHandle)
@@ -135,16 +144,38 @@ func (m *Mgr) CreateAlliance(masterShortId int64) (int32, error) {
 	}
 
 	// 维护联盟列表
-	m.alliances = append(m.alliances, allianceId)
+	newAlli := &AlliBaseInfo{
+		AllianceId:    allianceId,
+		MasterShortId: masterShortId,
+		Disband:       false,
+	}
+	m.alliances = append(m.alliances, newAlli)
+
 	_, err = mongodb.Ins.Collection(Coll).UpdateByID(context.Background(),
 		allianceId,
-		bson.M{"$set": bson.M{"master": masterShortId}},
+		bson.M{"$set": newAlli},
 		options.Update().SetUpsert(true),
 	)
 	if err != nil {
-		log.Warnw("fjiewofjewio", "err", err)
+		log.Warnw("update new alliance to mongo failed", "err", err)
 	}
 	return allianceId, nil
+}
+
+func (m *Mgr) Disband(allianceId int32) {
+	for k, alli := range m.alliances {
+		if alli.AllianceId == allianceId {
+			alli.Disband = true
+			_, err := mongodb.Ins.Collection(Coll).UpdateByID(context.Background(), allianceId, bson.M{"$set": alli})
+
+			if err != nil {
+				log.Warnw("disband alliance failed", "err", err, "id", allianceId)
+			}
+
+			m.alliances = append(m.alliances[:k], m.alliances[k+1:]...)
+			break
+		}
+	}
 }
 
 func (m *Mgr) getIncId() int32 {

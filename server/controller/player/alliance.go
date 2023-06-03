@@ -12,10 +12,11 @@ import (
 	"server/service/game/logic/player"
 )
 
-// 加入联盟通知
+// 联盟信息变化
 var _ = router.Reg(func(player *player.Player, msg *inner.AllianceInfoNtf) any {
 	player.Alliance().SetAllianceId(msg.AllianceId)
 	player.Alliance().SetPosition(msg.Position)
+	player.UpdateInfoToRedis()
 
 	player.SendToClient(&outer.AllianceInfoNtf{
 		AllianceId: msg.AllianceId,
@@ -119,7 +120,10 @@ var _ = router.Reg(func(player *player.Player, msg *outer.DisbandAllianceReq) an
 	}
 
 	allianceActor := actortype.AllianceName(player.Alliance().AllianceId())
-	v, err := player.RequestWait(allianceActor, &inner.DisbandAllianceReq{RID: player.RID()})
+	v, err := player.RequestWait(allianceActor, &inner.DisbandAllianceReq{
+		RID:        player.RID(),
+		AllianceId: player.Alliance().AllianceId(),
+	})
 	if yes, code := common.IsErr(v, err); yes {
 		return code
 	}
@@ -173,16 +177,4 @@ var _ = router.Reg(func(player *player.Player, msg *outer.KickOutMemberReq) any 
 	}
 
 	return &outer.KickOutMemberRsp{}
-})
-
-// 通知 联盟解散
-var _ = router.Reg(func(player *player.Player, msg *inner.AllianceDisbandedNtf) any {
-	player.Alliance().SetAllianceId(0)
-	player.Alliance().SetPosition(0)
-
-	player.GateSession().SendToClient(player, &outer.AllianceInfoNtf{
-		AllianceId: 0,
-		Position:   0,
-	})
-	return nil
 })

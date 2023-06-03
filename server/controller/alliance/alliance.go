@@ -86,10 +86,18 @@ var _ = router.Reg(func(alli *alliance.Alliance, msg *inner.DisbandAllianceReq) 
 	rdsop.DeleteAlliance(alli.AllianceId())
 
 	// 获取联盟所有在线成员，并广播解散消息
-	for _, member := range alli.OnlineMembers() {
-		playerActor := actortype.PlayerId(member.RID)
-		_ = alli.Send(playerActor, &inner.AllianceDisbandedNtf{})
+	for _, member := range alli.Members() {
+		if member.GSession.Valid() {
+			playerActor := actortype.PlayerId(member.RID)
+			_ = alli.Send(playerActor, &inner.AllianceInfoNtf{})
+		}
+
+		playerInfo := rdsop.PlayerInfo(member.ShortId)
+		playerInfo.AllianceId = 0
+		playerInfo.Position = 0
+		rdsop.SetPlayerInfo(&playerInfo)
 	}
+	_, _ = alli.RequestWait(actortype.AllianceMgrName(), msg)
 
 	alli.Disband()
 	alli.Exit()
