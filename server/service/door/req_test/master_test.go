@@ -11,11 +11,14 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// const addr = "localhost"
+const addr = "1.14.17.15"
+
 func TestSetMaster(t *testing.T) {
 	b, _ := json.Marshal(map[string]interface{}{
-		"shortId": 1377649,
+		"shortId": 1517070,
 	})
-	req, err := http.NewRequest(http.MethodPost, "http://localhost:9999/alliance/setmaster",
+	req, err := http.NewRequest(http.MethodPost, fmt.Sprintf("http://%v:9999/alliance/setmaster", addr),
 		bytes.NewReader(b))
 	addSign(req)
 	assert.Nil(t, err)
