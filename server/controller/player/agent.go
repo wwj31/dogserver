@@ -1,6 +1,7 @@
 package player
 
 import (
+	"github.com/wwj31/dogactor/tools"
 	"server/common/router"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
@@ -17,8 +18,8 @@ func InnerToOuter(player *inner.PlayerInfo) *outer.PlayerInfo {
 		Gender:     player.Gender,
 		AllianceId: player.AllianceId,
 		Position:   outer.Position(player.Position),
-		LoginAt:    player.LoginAt,
-		LogoutAt:   player.LogoutAt,
+		LoginAt:    tools.TimeParse(player.LoginAt).Unix(),
+		LogoutAt:   tools.TimeParse(player.LogoutAt).Unix(),
 		UpShortId:  player.UpShortId,
 	}
 }

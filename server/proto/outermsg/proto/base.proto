@@ -17,7 +17,7 @@ message PlayerInfo {
     int32    Gender      = 5;  // 性别
     int32    AllianceId  = 6;  // 联盟id
     Position Position    = 7;  // 职位
-    string   LoginAt     = 8;  // 登录时间
-    string   LogoutAt    = 9;  // 离线时间
+    int64    LoginAt     = 8;  // 登录时间(秒)
+    int64    LogoutAt    = 9;  // 离线时间(秒)
     int64    UpShortId   = 10; // 上级id
 }
