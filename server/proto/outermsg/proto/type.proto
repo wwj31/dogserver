@@ -5,8 +5,9 @@ option  go_package = "/outer";
 enum Position {
     NoAlliance     = 0;
     Normal         = 1; // 普通成员
-    Captain        = 2; // 队长
-    Manager        = 3; // 管理员
-    DeputyMaster   = 4; // 副盟主
-    Master         = 5; // 盟主
+    ViceCaptain    = 2; // 小队长
+    Captain        = 3; // 队长
+    Manager        = 4; // 管理员
+    DeputyMaster   = 5; // 副盟主
+    Master         = 6; // 盟主
 }

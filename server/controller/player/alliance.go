@@ -25,6 +25,51 @@ var _ = router.Reg(func(player *player.Player, msg *inner.AllianceInfoNtf) any {
 	return nil
 })
 
+// 邀请加入联盟
+var _ = router.Reg(func(player *player.Player, msg *outer.InviteAllianceReq) any {
+	if player.Alliance().AllianceId() == 0 {
+		return outer.ERROR_PLAYER_NOT_IN_ALLIANCE
+	}
+
+	if player.Alliance().Position() == alliance.Normal.Int32() {
+		return outer.ERROR_PLAYER_POSITION_LIMIT
+	}
+
+	if msg.ShortId == 0 {
+		return outer.ERROR_MSG_REQ_PARAM_INVALID
+	}
+
+	// 找不到设置的玩家，不能设置职位
+	playerInfo := rdsop.PlayerInfo(msg.GetShortId())
+	if playerInfo.RID == "" {
+		return outer.ERROR_CAN_NOT_FIND_PLAYER_INFO
+	}
+
+	// 对方有联盟
+	if playerInfo.AllianceId != 0 {
+		return outer.ERROR_PLAYER_ALREADY_IN_ALLIANCE
+	}
+
+	// 玩家已经有上级
+	if playerInfo.UpShortId != 0 {
+		return outer.ERROR_PLAYER_ALREADY_HAS_UP
+	}
+
+	allianceActor := actortype.AllianceName(player.Alliance().AllianceId())
+	result, err := player.RequestWait(allianceActor, &inner.AddMemberReq{
+		Player: &playerInfo,
+		Ntf:    true,
+	})
+	if yes, err := common.IsErr(result, err); yes {
+		return err
+	}
+
+	rdsop.BindAgent(player.Role().ShortId(), playerInfo.ShortId) // 邀请加入联盟绑定上下级关系
+
+	log.Infow("player invite success ", "player", player.Role().ShortId(), "msg", msg.String())
+	return &outer.InviteAllianceRsp{}
+})
+
 // 请求设置成员职位
 var _ = router.Reg(func(player *player.Player, msg *outer.SetMemberPositionReq) any {
 	if player.Alliance().AllianceId() == 0 {
@@ -61,8 +106,8 @@ var _ = router.Reg(func(player *player.Player, msg *outer.SetMemberPositionReq) 
 		return outer.ERROR_PLAYER_POSITION_LIMIT
 	}
 
-	// 不是直属下级，不能设置职位(这条规则仅限于队长设队长)
-	if player.Alliance().Position() == alliance.Captain.Int32() &&
+	// 不是直属下级，不能设置职位(这条规则仅限于队长设小队长)
+	if player.Alliance().Position() <= alliance.Captain.Int32() &&
 		playerInfo.UpShortId != player.Role().ShortId() {
 		return outer.ERROR_CAN_NOT_SET_NOT_IN_DOWN_POSITION
 	}
@@ -96,7 +141,7 @@ var _ = router.Reg(func(player *player.Player, msg *outer.SetMemberPositionReq) 
 			if playerInfo.UpShortId != 0 {
 				rdsop.AgentCancelUp(playerInfo.ShortId, playerInfo.UpShortId)
 			}
-			rdsop.BindAgent(alliInfoRsp.MasterShortId, playerInfo.ShortId)
+			rdsop.BindAgent(alliInfoRsp.MasterShortId, playerInfo.ShortId) // 被管理员以上职位设置职位
 			playerInfo.UpShortId = alliInfoRsp.MasterShortId
 		}
 	}

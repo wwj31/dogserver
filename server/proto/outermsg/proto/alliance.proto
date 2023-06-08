@@ -16,6 +16,13 @@ message DisbandAllianceReq {// tag:player
 message DisbandAllianceRsp {
 }
 
+// 邀请加入联盟&绑定上下级关系
+message InviteAllianceReq {// tag:player
+    int64 ShortId = 1; // 邀请的玩家短id
+}
+message InviteAllianceRsp {
+}
+
 // 设置成员职位级别
 message SetMemberPositionReq {// tag:player
     int64    ShortId    = 1; // 被设置成员短Id

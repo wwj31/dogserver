@@ -100,7 +100,8 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 			}
 
 			if result.Err() == mongo.ErrNoDocuments {
-				err = s.initAccount(acc, req.OS, req.ClientVersion, req.UpShortId)
+				//err = s.initAccount(acc, req.OS, req.ClientVersion, req.UpShortId)
+				err = s.initAccount(acc, req.OS, req.ClientVersion, 0)
 				if err != nil {
 					errCode = outer.ERROR_NEW_ACCOUNT_FAILED
 					return
@@ -119,7 +120,7 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 
 				// 手机账号登录，需要单独校验密码是否正确
 				if req.LoginType == PhoneLogin && req.PhonePassword != acc.PhonePassword {
-					log.Warnw("password error", "req passoword", req.PhonePassword, "pwd", acc.PhonePassword)
+					log.Warnw("password error", "pwd", acc.PhonePassword)
 					errCode = outer.ERROR_PHONE_PASSWORD_ERROR
 					return
 				}
