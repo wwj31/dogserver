@@ -1,0 +1,11 @@
+syntax = "proto3";
+package outer;
+option  go_package = "/outer";
+
+// 创建房间
+message CreateRoomReq {// tag:player
+    int32 GameType = 1;
+}
+message CreateRoomRsp {
+    int32 GameType = 1;
+}

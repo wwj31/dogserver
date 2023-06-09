@@ -46,6 +46,8 @@ var spawner = map[string]factory{
 	"outer.DisbandAllianceRsp":   func() interface{} { return &DisbandAllianceRsp{} },
 	"outer.DisbandAllianceReq":   func() interface{} { return &DisbandAllianceReq{} },
 	"outer.DeleteMailReq":        func() interface{} { return &DeleteMailReq{} },
+	"outer.CreateRoomRsp":        func() interface{} { return &CreateRoomRsp{} },
+	"outer.CreateRoomReq":        func() interface{} { return &CreateRoomReq{} },
 	"outer.BindPhoneRsp":         func() interface{} { return &BindPhoneRsp{} },
 	"outer.BindPhoneReq":         func() interface{} { return &BindPhoneReq{} },
 	"outer.Base":                 func() interface{} { return &Base{} },

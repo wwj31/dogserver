@@ -6,9 +6,7 @@ import "base.proto";
 
 // 获取上、下级信息
 message AgentMembersReq {// tag:player
-
 }
-
 message AgentMembersRsp {
     PlayerInfo UpMember             = 1;
     repeated PlayerInfo DownMembers = 2;

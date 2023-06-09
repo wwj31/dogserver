@@ -8,7 +8,6 @@ message SetRoleInfoReq {// tag:player
     int32  gender = 2; // 性别 0.男、1.女
     string Name   = 3; // 服务器限制最长20个字符
 }
-
 message SetRoleInfoRsp {
     string icon   = 1; // 头像
     int32  gender = 2; // 性别
@@ -20,7 +19,6 @@ message BindPhoneReq {// tag:player
     string phone    = 1;
     string password = 2;
 }
-
 message BindPhoneRsp {
     string phone    = 1;
 }
@@ -30,6 +28,5 @@ message ModifyPasswordReq {// tag:player
     string password    = 1;
     string newPassword = 2;
 }
-
 message ModifyPasswordRsp {
 }
