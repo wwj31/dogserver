@@ -65,9 +65,10 @@ var _ = router.Reg(func(player *player.Player, msg *outer.InviteAllianceReq) any
 	}
 
 	rdsop.BindAgent(player.Role().ShortId(), playerInfo.ShortId) // 邀请加入联盟绑定上下级关系
-
+	playerInfo.UpShortId = player.Role().ShortId()
+	playerInfo.AllianceId = player.Alliance().AllianceId()
 	log.Infow("player invite success ", "player", player.Role().ShortId(), "msg", msg.String())
-	return &outer.InviteAllianceRsp{}
+	return &outer.InviteAllianceRsp{Player: InnerToOuter(&playerInfo)}
 })
 
 // 请求设置成员职位

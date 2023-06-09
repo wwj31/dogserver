@@ -3,6 +3,7 @@ package outer;
 option  go_package = "/outer";
 
 import "type.proto";
+import "base.proto";
 
 // 通知联盟信息发送变化、加入联盟、职位变更、联盟解散
 message AllianceInfoNtf {
@@ -21,6 +22,7 @@ message InviteAllianceReq {// tag:player
     int64 ShortId = 1; // 邀请的玩家短id
 }
 message InviteAllianceRsp {
+    PlayerInfo Player = 1; // 邀请成功的成员信息
 }
 
 // 设置成员职位级别
