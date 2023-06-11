@@ -41,6 +41,11 @@ var _ = router.Reg(func(alli *alliance.Alliance, msg *inner.AddMemberReq) any {
 	}
 
 	member := alli.AddMember(msg.Player, msg.Ntf, position...)
+	if member == nil {
+		logInfo := "add member req failed member == nil"
+		log.Warnw(logInfo, "msg", msg)
+		return &inner.Error{ErrorInfo: logInfo}
+	}
 
 	// 获取成员所有的下级，全部加入本联盟
 	downPlayers := rdsop.AgentDown(member.ShortId)

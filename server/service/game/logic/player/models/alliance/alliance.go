@@ -2,6 +2,7 @@ package alliance
 
 import (
 	"context"
+	"server/common"
 
 	gogo "github.com/gogo/protobuf/proto"
 	"github.com/spf13/cast"
@@ -47,10 +48,9 @@ func (s *Alliance) OnLogin(first bool, enterGameRsp *outer.EnterGameRsp) {
 					Player: s.Player.PlayerInfo(),
 					Ntf:    false, // 自己请求加入联盟，不需要额外通知
 				})
-
-				if err != nil {
+				if yes, code := common.IsErr(result, err); yes {
 					log.Warnf("player request join alliance failed ",
-						"rid", s.Player.RID(), "upShortId", upPlayerInfo, "alliance", upPlayerInfo.AllianceId)
+						"rid", s.Player.RID(), "upShortId", upPlayerInfo, "alliance", upPlayerInfo.AllianceId, "code", code.String())
 					return
 				}
 
