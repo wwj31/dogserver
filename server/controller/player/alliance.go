@@ -25,6 +25,17 @@ var _ = router.Reg(func(player *player.Player, msg *inner.AllianceInfoNtf) any {
 	return nil
 })
 
+// 搜索玩家信息
+var _ = router.Reg(func(player *player.Player, msg *outer.SearchPlayerInfoReq) any {
+	playerInfo := rdsop.PlayerInfo(msg.ShortId)
+	if playerInfo.RID == "" {
+		return outer.ERROR_CAN_NOT_FIND_PLAYER_INFO
+	}
+
+	outerPlayerInfo := InnerToOuter(&playerInfo)
+	return &outer.SearchPlayerInfoRsp{Player: outerPlayerInfo}
+})
+
 // 邀请加入联盟
 var _ = router.Reg(func(player *player.Player, msg *outer.InviteAllianceReq) any {
 	if player.Alliance().AllianceId() == 0 {
