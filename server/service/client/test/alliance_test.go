@@ -46,3 +46,13 @@ func TestDisband(t *testing.T) {
 	assert.True(t, ok)
 	log.Infof("kick out menber [%v]\n", rsp)
 }
+
+func TestSearchPlayer(t *testing.T) {
+	cli := &client.Client{Addr: *Addr, DeviceID: "wwj1"}
+	Init(cli)
+	rsp, ok := cli.Req(outer.Msg_IdSearchPlayerInfoReq, &outer.SearchPlayerInfoReq{
+		ShortId: 1784645,
+	}).(*outer.SearchPlayerInfoRsp)
+	assert.True(t, ok)
+	log.Infof("search player rsp [%v]\n", rsp)
+}
