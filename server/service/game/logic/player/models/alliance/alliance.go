@@ -50,7 +50,10 @@ func (s *Alliance) OnLogin(first bool, enterGameRsp *outer.EnterGameRsp) {
 				})
 				if yes, code := common.IsErr(result, err); yes {
 					log.Warnf("player request join alliance failed ",
-						"rid", s.Player.RID(), "upShortId", upPlayerInfo, "alliance", upPlayerInfo.AllianceId, "code", code.String())
+						"rid", s.Player.RID(),
+						"upShortId", upPlayerInfo,
+						"alliance", upPlayerInfo.AllianceId,
+						"code", code.String())
 					return
 				}
 
