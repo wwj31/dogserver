@@ -10,6 +10,8 @@ enum Msg {
     IdAllianceInfoNtf = 672428706;
     IdDisbandAllianceReq = 650636160;// dispatch to player
     IdDisbandAllianceRsp = 952633399;
+    IdSearchPlayerInfoReq = 688893070;// dispatch to player
+    IdSearchPlayerInfoRsp = 990890275;
     IdInviteAllianceReq = 710800074;// dispatch to player
     IdInviteAllianceRsp = 543023757;
     IdSetMemberPositionReq = 1891047110;// dispatch to player

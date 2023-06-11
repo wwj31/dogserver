@@ -17,6 +17,14 @@ message DisbandAllianceReq {// tag:player
 message DisbandAllianceRsp {
 }
 
+// 搜索玩家
+message SearchPlayerInfoReq {// tag:player
+    int64 ShortId = 1;
+}
+message SearchPlayerInfoRsp {
+    PlayerInfo Player = 1; // 搜索的玩家信息
+}
+
 // 邀请加入联盟&绑定上下级关系
 message InviteAllianceReq {// tag:player
     int64 ShortId = 1; // 邀请的玩家短id

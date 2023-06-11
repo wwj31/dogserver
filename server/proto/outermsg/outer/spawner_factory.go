@@ -20,6 +20,8 @@ var spawner = map[string]factory{
 	"outer.SetRoleInfoReq":       func() interface{} { return &SetRoleInfoReq{} },
 	"outer.SetMemberPositionRsp": func() interface{} { return &SetMemberPositionRsp{} },
 	"outer.SetMemberPositionReq": func() interface{} { return &SetMemberPositionReq{} },
+	"outer.SearchPlayerInfoRsp":  func() interface{} { return &SearchPlayerInfoRsp{} },
+	"outer.SearchPlayerInfoReq":  func() interface{} { return &SearchPlayerInfoReq{} },
 	"outer.RoomInfo":             func() interface{} { return &RoomInfo{} },
 	"outer.RoleInfo":             func() interface{} { return &RoleInfo{} },
 	"outer.ReceiveMailItemRsp":   func() interface{} { return &ReceiveMailItemRsp{} },
