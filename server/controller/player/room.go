@@ -29,3 +29,21 @@ var _ = router.Reg(func(player *player.Player, msg *outer.CreateRoomReq) any {
 	roomInfo := roomInfoInnerToOuter(createRoomRsp.RoomInfo)
 	return &outer.CreateRoomRsp{Room: roomInfo}
 })
+
+// 加入房间
+var _ = router.Reg(func(player *player.Player, msg *outer.JoinRoomReq) any {
+	v, err := player.RequestWait(actortype.RoomMgr(), &inner.CreateRoomReq{CreatorShortId: player.Role().ShortId()})
+	if yes, code := common.IsErr(v, err); yes {
+		return code
+	}
+	createRoomRsp := v.(*inner.CreateRoomRsp)
+
+	roomInfo := roomInfoInnerToOuter(createRoomRsp.RoomInfo)
+	return &outer.JoinRoomRsp{Room: roomInfo}
+})
+
+// 离开房间
+var _ = router.Reg(func(player *player.Player, msg *outer.LeaveRoomReq) any {
+	// TODO ...
+	return &outer.LeaveRoomRsp{}
+})

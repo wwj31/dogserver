@@ -2,9 +2,12 @@ syntax = "proto3";
 package outer;
 option  go_package = "/outer";
 
+import "base.proto";
+
 message RoomInfo {
-    int32 Id       = 1;
-    int32 GameType = 2;
+    int32 Id                    = 1;
+    int32 GameType              = 2;
+    repeated PlayerInfo Players = 3; // 房间内的成员信息
 }
 
 // 创建房间
@@ -13,4 +16,18 @@ message CreateRoomReq {// tag:player
 }
 message CreateRoomRsp {
     RoomInfo Room = 1;
+}
+
+// 加入房间
+message JoinRoomReq {// tag:player
+    int32 RoomId = 1;
+}
+message JoinRoomRsp {
+    RoomInfo Room = 1;
+}
+
+// 离开房间
+message LeaveRoomReq {// tag:player
+}
+message LeaveRoomRsp {
 }

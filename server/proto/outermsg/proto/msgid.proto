@@ -40,4 +40,8 @@ enum Msg {
     IdDeleteMailReq = 1054436458;// dispatch to player
     IdCreateRoomReq = 2001014089;// dispatch to player
     IdCreateRoomRsp = 222637993;
+    IdJoinRoomReq = 1530633489;// dispatch to player
+    IdJoinRoomRsp = 1899741298;
+    IdLeaveRoomReq = 1875949722;// dispatch to player
+    IdLeaveRoomRsp = 97573884;
 }

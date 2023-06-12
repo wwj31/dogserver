@@ -1,10 +1,12 @@
 syntax = "proto3";
 package inner;
 option  go_package = "/inner";
+import "base.proto";
 
 message RoomInfo{
-  int32 RoomId   = 1;
-  int32 GameType = 2;
+  int32 RoomId                = 1;
+  int32 GameType              = 2;
+  repeated PlayerInfo Players = 3;
 }
 
 // 创建房间
@@ -23,3 +25,16 @@ message RoomInfoRsp{
   RoomInfo RoomInfo = 1;
 }
 
+// 加入房间
+message JoinRoomReq{
+  PlayerInfo Player = 1; // 加入者
+}
+message JoinRoomRsp{
+}
+
+// 离开房间
+message LeaveRoomReq{
+  int64 ShortId = 1;
+}
+message LeaveRoomRsp{
+}

@@ -13,10 +13,12 @@ import (
 // 创建房间
 var _ = router.Reg(func(mgr *room.Mgr, msg *inner.CreateRoomReq) any {
 	roomId := mgr.RoomId()
-	roomHandler := room.New(roomId, msg.CreatorShortId)
+	newRoom := room.New(roomId, msg.CreatorShortId)
+	_ = mgr.AddRoom(newRoom)
+
 	roomActor := actortype.RoomName(roomId)
 
-	if err := mgr.System().NewActor(roomActor, roomHandler); err != nil {
+	if err := mgr.System().NewActor(roomActor, newRoom); err != nil {
 		log.Errorw("create room failed", "msg", msg, "err", err)
 		return &inner.Error{ErrorInfo: err.Error()}
 	}
@@ -25,6 +27,7 @@ var _ = router.Reg(func(mgr *room.Mgr, msg *inner.CreateRoomReq) any {
 	if yes, code := common.IsErr(v, err); yes {
 		return code
 	}
+
 	roomInfoRsp := v.(*inner.RoomInfoRsp)
 	return &inner.CreateRoomRsp{RoomInfo: roomInfoRsp.RoomInfo}
 })

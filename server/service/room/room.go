@@ -13,6 +13,9 @@ func New(RoomId int32, creatorShortId int64) *Room {
 	return &Room{RoomId: RoomId, CreatorShortId: creatorShortId}
 }
 
+type Player struct {
+	*inner.PlayerInfo
+}
 type Room struct {
 	actor.Base
 	currentMsg actor.Message
@@ -20,6 +23,8 @@ type Room struct {
 	RoomId         int32
 	GameType       int32
 	CreatorShortId int64
+
+	Players []*Player
 }
 
 func (r *Room) OnInit() {
@@ -47,9 +52,24 @@ func (r *Room) responseHandle(resultMsg any) {
 	}
 }
 
+func (r *Room) FindPlayer(shortId int64) *Player {
+	for _, v := range r.Players {
+		if v.ShortId == shortId {
+			return v
+		}
+	}
+	return nil
+}
+
 func (r *Room) Info() *inner.RoomInfo {
+	var players []*inner.PlayerInfo
+	for _, v := range r.Players {
+		players = append(players, v.PlayerInfo)
+	}
+
 	return &inner.RoomInfo{
 		RoomId:   r.RoomId,
 		GameType: r.GameType,
+		Players:  players,
 	}
 }
