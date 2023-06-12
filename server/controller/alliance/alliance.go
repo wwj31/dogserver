@@ -50,6 +50,10 @@ var _ = router.Reg(func(alli *alliance.Alliance, msg *inner.AddMemberReq) any {
 	// 获取成员所有的下级，全部加入本联盟
 	downPlayers := rdsop.AgentDown(member.ShortId)
 	for _, shortId := range downPlayers {
+		if shortId == msg.Player.ShortId {
+			continue
+		}
+
 		playerInfo := rdsop.PlayerInfo(shortId)
 		alli.AddMember(&playerInfo, true)
 	}
