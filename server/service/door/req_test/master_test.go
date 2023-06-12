@@ -17,7 +17,7 @@ const addr = "1.14.17.15"
 
 func TestSetMaster(t *testing.T) {
 	b, _ := json.Marshal(map[string]interface{}{
-		"shortId": 1471432,
+		"shortId": 1121692,
 	})
 	req, err := http.NewRequest(http.MethodPost, fmt.Sprintf("http://%v:9999/alliance/setmaster", addr),
 		bytes.NewReader(b))

@@ -40,6 +40,10 @@ var _ = router.Reg(func(player *player.Player, msg *outer.AgentMembersReq) any {
 
 	downShortIds := rdsop.AgentDown(player.Role().ShortId())
 	for _, shortId := range downShortIds {
+		if shortId == player.Role().ShortId() {
+			continue
+		}
+
 		downInfo := rdsop.PlayerInfo(shortId)
 		downMembers = append(downMembers, InnerToOuter(&downInfo))
 	}

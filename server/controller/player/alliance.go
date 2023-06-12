@@ -92,6 +92,10 @@ var _ = router.Reg(func(player *player.Player, msg *outer.SetMemberPositionReq) 
 		return outer.ERROR_MSG_REQ_PARAM_INVALID
 	}
 
+	if msg.ShortId == player.Role().ShortId() {
+		return outer.ERROR_MSG_REQ_PARAM_INVALID
+	}
+
 	// 找不到设置的玩家，不能设置职位
 	playerInfo := rdsop.PlayerInfo(msg.GetShortId())
 	if playerInfo.RID == "" {
@@ -195,6 +199,9 @@ var _ = router.Reg(func(player *player.Player, msg *outer.KickOutMemberReq) any 
 		return outer.ERROR_CAN_NOT_FIND_PLAYER_INFO
 	}
 
+	if playerInfo.ShortId == player.Role().ShortId() {
+		return outer.ERROR_MSG_REQ_PARAM_INVALID
+	}
 	// 对方没有联盟，不能设置职位
 	if playerInfo.AllianceId == 0 {
 		return outer.ERROR_PLAYER_NOT_IN_ALLIANCE
