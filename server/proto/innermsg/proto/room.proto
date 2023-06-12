@@ -1,0 +1,18 @@
+syntax = "proto3";
+package inner;
+option  go_package = "/inner";
+
+message RoomInfo{
+  int64 RoomId   = 1;
+  int32 GameType = 2;
+}
+
+// 创建房间
+message CreateRoomReq{
+  int64 CreatorShortId = 1; // 创建者
+
+}
+message CreateRoomRsp{
+  RoomInfo RoomInfo = 1;
+}
+
