@@ -7,25 +7,29 @@ import (
 	"server/common/log"
 	"server/common/router"
 	"server/proto/innermsg/inner"
+	"server/proto/outermsg/outer"
 )
 
 func New(RoomId int32, creatorShortId int64) *Room {
 	return &Room{RoomId: RoomId, CreatorShortId: creatorShortId}
 }
 
-type Player struct {
-	*inner.PlayerInfo
-}
-type Room struct {
-	actor.Base
-	currentMsg actor.Message
+type (
+	Player struct {
+		*inner.PlayerInfo
+	}
 
-	RoomId         int32
-	GameType       int32
-	CreatorShortId int64
+	Room struct {
+		actor.Base
+		currentMsg actor.Message
 
-	Players []*Player
-}
+		RoomId         int32
+		GameType       int32
+		CreatorShortId int64
+
+		Players []*Player
+	}
+)
 
 func (r *Room) OnInit() {
 	router.Result(r, r.responseHandle)
@@ -59,6 +63,23 @@ func (r *Room) FindPlayer(shortId int64) *Player {
 		}
 	}
 	return nil
+}
+
+func (r *Room) AddPlayer(playerInfo *inner.PlayerInfo) *inner.Error {
+	if r.FindPlayer(playerInfo.ShortId) != nil {
+		return &inner.Error{ErrorCode: int32(outer.ERROR_PLAYER_ALREADY_IN_ROOM)}
+	}
+
+	return nil
+}
+
+func (r *Room) DelPlayer(shortId int64) {
+	for i, player := range r.Players {
+		if player.ShortId == shortId {
+			r.Players = append(r.Players[:i], r.Players[i+1:]...)
+			return
+		}
+	}
 }
 
 func (r *Room) Info() *inner.RoomInfo {
