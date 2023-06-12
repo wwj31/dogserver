@@ -5,6 +5,7 @@ import (
 
 	"github.com/gogo/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
+
 	"server/common/log"
 	"server/common/router"
 )
@@ -54,4 +55,9 @@ func (m *Mgr) OnHandle(msg actor.Message) {
 
 	m.currentMsg = msg
 	router.Dispatch(m, pt)
+}
+
+func (m *Mgr) RoomId() int32 {
+	m.incId++
+	return m.incId
 }
