@@ -7,6 +7,7 @@ import (
 	"server/service/game/logic/player/models/alliance"
 	"server/service/game/logic/player/models/mail"
 	"server/service/game/logic/player/models/role"
+	"server/service/game/logic/player/models/room"
 )
 
 const (
@@ -14,6 +15,7 @@ const (
 	modMail
 	modAlliance
 	modAgent
+	modRoom
 
 	allMod
 )
@@ -23,6 +25,7 @@ func (p *Player) initModule() {
 	p.models[modMail] = mail.New(models.New(p))         // 邮件
 	p.models[modAlliance] = alliance.New(models.New(p)) // 联盟
 	p.models[modAgent] = agent.New(models.New(p))       // 代理
+	p.models[modRoom] = room.New(models.New(p))         // 房间
 }
 
 func (p *Player) Gamer() iface.Gamer       { return p.gamer }
@@ -30,3 +33,4 @@ func (p *Player) Role() iface.Role         { return p.models[modRole].(iface.Rol
 func (p *Player) Mail() iface.Mailer       { return p.models[modMail].(iface.Mailer) }
 func (p *Player) Alliance() iface.Alliance { return p.models[modAlliance].(iface.Alliance) }
 func (p *Player) Agent() iface.Agent       { return p.models[modAgent].(iface.Agent) }
+func (p *Player) Room() iface.Room         { return p.models[modRoom].(iface.Room) }

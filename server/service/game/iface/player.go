@@ -28,5 +28,6 @@ type (
 		Mail() Mailer
 		Alliance() Alliance
 		Agent() Agent
+		Room() Room
 	}
 )

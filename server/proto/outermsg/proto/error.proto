@@ -26,6 +26,7 @@ enum ERROR {
    TARGET_IS_NOT_DOWN               = 20; // 不是直属上下级关系
    PLAYER_ALREADY_IN_ALLIANCE       = 21; // 玩家已有联盟
    PLAYER_ALREADY_HAS_UP            = 22; // 玩家已有上级
+   PLAYER_ALREADY_IN_ROOM           = 23; // 玩家已经在房间内，不能重复进入房间
 }
 
 message FailRsp {

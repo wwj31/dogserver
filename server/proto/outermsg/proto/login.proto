@@ -3,6 +3,7 @@ package outer;
 option  go_package = "/outer";
 
 import "type.proto";
+import "room.proto";
 
 message HeartReq {
     int64 ClientTimestamp = 1;
@@ -39,8 +40,9 @@ message EnterGameReq { // tag:player
 
 message EnterGameRsp {
     // 是否是新玩家
-    bool NewPlayer    = 1;
-    RoleInfo roleInfo = 2; // 角色信息
+    bool     NewPlayer = 1;
+    RoleInfo RoleInfo  = 2; // 角色信息
+    RoomInfo RoomInfo  = 3; // 房间信息
 }
 
 // 角色信息

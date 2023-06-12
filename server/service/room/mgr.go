@@ -1,10 +1,12 @@
 package room
 
 import (
+	"fmt"
 	"reflect"
 
 	"github.com/gogo/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
+
 	"server/common/log"
 	"server/common/router"
 )
@@ -17,9 +19,12 @@ type Mgr struct {
 	actor.Base
 	currentMsg actor.Message
 	incId      int32
+
+	Rooms map[int32]*Room
 }
 
 func (m *Mgr) OnInit() {
+	m.Rooms = make(map[int32]*Room, 8)
 	router.Result(m, m.responseHandle)
 	log.Debugf("RoomMgr OnInit")
 }
@@ -54,4 +59,17 @@ func (m *Mgr) OnHandle(msg actor.Message) {
 
 	m.currentMsg = msg
 	router.Dispatch(m, pt)
+}
+
+func (m *Mgr) RoomId() int32 {
+	m.incId++
+	return m.incId
+}
+
+func (m *Mgr) AddRoom(r *Room) error {
+	if m.Rooms[r.RoomId] != nil {
+		return fmt.Errorf("repeated room id:%v", r.RoomId)
+	}
+	m.Rooms[r.RoomId] = r
+	return nil
 }

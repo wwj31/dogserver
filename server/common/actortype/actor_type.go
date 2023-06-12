@@ -48,6 +48,10 @@ func AllianceMgrName() ActorId {
 func RoomMgrName(id int32) ActorId {
 	return fmt.Sprintf("%v_%v_Actor", RoomMgrActor, id)
 }
+func RoomMgr() ActorId {
+	// TODO round-robin方式获得房间管理器节点
+	return fmt.Sprintf("%v_%v_Actor", RoomMgrActor, 1)
+}
 
 func RoomName(id int32) ActorId {
 	return fmt.Sprintf("%v_%v_Actor", RoomActor, id)
