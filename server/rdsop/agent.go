@@ -93,6 +93,7 @@ func AgentDown(shortId int64, downNum ...int) (down []int64) {
 	}
 
 	ids = append(ids, shortId)
+	down = append(down, shortId)
 	for downLv == 0 || next <= downLv {
 		var tmpIds []int64 // 当前层级的所有下级
 		if len(ids) == 0 {
