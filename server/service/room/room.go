@@ -89,6 +89,9 @@ func (r *Room) responseHandle(resultMsg any) {
 	}
 }
 
+func (r *Room) IsFull() bool { return len(r.Players) >= gameMaxPlayers[r.GameType] }
+func (r *Room) Stop()        { r.stopping = true }
+
 func (r *Room) FindPlayer(shortId int64) *Player {
 	for _, v := range r.Players {
 		if v.ShortId == shortId {
@@ -97,8 +100,6 @@ func (r *Room) FindPlayer(shortId int64) *Player {
 	}
 	return nil
 }
-
-func (r *Room) IsFull() bool { return len(r.Players) >= gameMaxPlayers[r.GameType] }
 
 func (r *Room) AddPlayer(playerInfo *inner.PlayerInfo) *inner.Error {
 	if r.FindPlayer(playerInfo.ShortId) != nil {
@@ -111,8 +112,20 @@ func (r *Room) AddPlayer(playerInfo *inner.PlayerInfo) *inner.Error {
 	return nil
 }
 
-func (r *Room) Stop() {
-	r.stopping = true
+func (r *Room) DelPlayer(shortId int64) {
+	var ntf bool
+	for i, player := range r.Players {
+		if player.ShortId == shortId {
+			r.Players = append(r.Players[:i], r.Players[i+1:]...)
+			ntf = true
+			log.Infow("room del player", "roomId", r.RoomId, "shortId", shortId)
+			return
+		}
+	}
+
+	if ntf {
+		r.Broadcast(&outer.RoomPlayerLeaveNtf{ShortId: shortId})
+	}
 }
 
 func (r *Room) Broadcast(msg proto.Message, ignore ...int64) {
@@ -127,21 +140,6 @@ func (r *Room) Broadcast(msg proto.Message, ignore ...int64) {
 			continue
 		}
 		gSession.SendToClient(r, msg)
-	}
-}
-
-func (r *Room) DelPlayer(shortId int64) {
-	var ntf bool
-	for i, player := range r.Players {
-		if player.ShortId == shortId {
-			r.Players = append(r.Players[:i], r.Players[i+1:]...)
-			ntf = true
-			return
-		}
-	}
-
-	if ntf {
-		r.Broadcast(&outer.RoomPlayerLeaveNtf{ShortId: shortId})
 	}
 }
 
