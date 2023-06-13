@@ -105,13 +105,7 @@ func (r *Room) AddPlayer(playerInfo *inner.PlayerInfo) *inner.Error {
 		return &inner.Error{ErrorCode: int32(outer.ERROR_PLAYER_ALREADY_IN_ROOM)}
 	}
 
-	for _, p := range r.Players {
-		gSession := common.GSession(p.GSession)
-		if gSession.Invalid() {
-			continue
-		}
-		gSession.SendToClient(r, &outer.RoomPlayerEnterNtf{Player: convert.PlayerInnerToOuter(playerInfo)})
-	}
+	r.Broadcast(&outer.RoomPlayerEnterNtf{Player: convert.PlayerInnerToOuter(playerInfo)})
 	r.Players = append(r.Players, &Player{PlayerInfo: playerInfo})
 	log.Infow("room add player", "roomId", r.RoomId, "player", playerInfo.ShortId)
 	return nil
@@ -121,12 +115,33 @@ func (r *Room) Stop() {
 	r.stopping = true
 }
 
+func (r *Room) Broadcast(msg proto.Message, ignore ...int64) {
+	ignoreMap := make(map[int64]struct{})
+	for _, ig := range ignore {
+		ignoreMap[ig] = struct{}{}
+	}
+
+	for _, p := range r.Players {
+		gSession := common.GSession(p.GSession)
+		if gSession.Invalid() {
+			continue
+		}
+		gSession.SendToClient(r, msg)
+	}
+}
+
 func (r *Room) DelPlayer(shortId int64) {
+	var ntf bool
 	for i, player := range r.Players {
 		if player.ShortId == shortId {
 			r.Players = append(r.Players[:i], r.Players[i+1:]...)
+			ntf = true
 			return
 		}
+	}
+
+	if ntf {
+		r.Broadcast(&outer.RoomPlayerLeaveNtf{ShortId: shortId})
 	}
 }
 
