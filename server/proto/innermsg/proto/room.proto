@@ -4,17 +4,26 @@ option  go_package = "/inner";
 import "base.proto";
 
 message RoomInfo{
-  int32 RoomId                = 1;
-  int32 GameType              = 2;
-  repeated PlayerInfo Players = 3;
+  int32      RoomId           = 1;
+  int32      GameType         = 2;
+  int64      CreatorShortId   = 3; // 创建者
+  repeated PlayerInfo Players = 4;
 }
 
 // 创建房间
 message CreateRoomReq{
-  PlayerInfo Creator = 1; // 创建者
+  int32      GameType = 1; // 游戏类型
+  PlayerInfo Creator  = 2; // 创建者
 }
 message CreateRoomRsp{
   RoomInfo RoomInfo = 1;
+}
+
+// 解散房间
+message DisbandRoomReq{
+  int32 RoomId = 1;
+}
+message DisbandRoomRsp{
 }
 
 // 获得房间基础信息
@@ -39,17 +48,17 @@ message LeaveRoomReq{
 message LeaveRoomRsp{
 }
 
-// 登录检测玩家是否还在房间
-message RoomLoginCheckReq{
-  int64 ShortId = 1;
+// 玩家上线，通知房间
+message RoomLoginReq{
+  PlayerInfo Player = 1;
 }
-message RoomLoginCheckRsp{
+message RoomLoginRsp{
   int32 Err         = 1;
   RoomInfo RoomInfo = 2;
 }
 
-message RoomLogoutCheckReq{
+message RoomLogoutReq{
   int64 ShortId = 1;
 }
-message RoomLogoutCheckRsp{
+message RoomLogoutRsp{
 }

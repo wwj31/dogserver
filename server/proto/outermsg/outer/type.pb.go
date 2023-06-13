@@ -81,6 +81,52 @@ func (Position) EnumDescriptor() ([]byte, []int) {
 	return file_type_proto_rawDescGZIP(), []int{0}
 }
 
+type GameType int32
+
+const (
+	GameType_Mahjong GameType = 0 // 麻将
+	GameType_DDZ     GameType = 1 // 斗地主
+)
+
+// Enum value maps for GameType.
+var (
+	GameType_name = map[int32]string{
+		0: "Mahjong",
+		1: "DDZ",
+	}
+	GameType_value = map[string]int32{
+		"Mahjong": 0,
+		"DDZ":     1,
+	}
+)
+
+func (x GameType) Enum() *GameType {
+	p := new(GameType)
+	*p = x
+	return p
+}
+
+func (x GameType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (GameType) Descriptor() protoreflect.EnumDescriptor {
+	return file_type_proto_enumTypes[1].Descriptor()
+}
+
+func (GameType) Type() protoreflect.EnumType {
+	return &file_type_proto_enumTypes[1]
+}
+
+func (x GameType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use GameType.Descriptor instead.
+func (GameType) EnumDescriptor() ([]byte, []int) {
+	return file_type_proto_rawDescGZIP(), []int{1}
+}
+
 var File_type_proto protoreflect.FileDescriptor
 
 var file_type_proto_rawDesc = []byte{
@@ -92,8 +138,10 @@ var file_type_proto_rawDesc = []byte{
 	0x43, 0x61, 0x70, 0x74, 0x61, 0x69, 0x6e, 0x10, 0x03, 0x12, 0x0b, 0x0a, 0x07, 0x4d, 0x61, 0x6e,
 	0x61, 0x67, 0x65, 0x72, 0x10, 0x04, 0x12, 0x10, 0x0a, 0x0c, 0x44, 0x65, 0x70, 0x75, 0x74, 0x79,
 	0x4d, 0x61, 0x73, 0x74, 0x65, 0x72, 0x10, 0x05, 0x12, 0x0a, 0x0a, 0x06, 0x4d, 0x61, 0x73, 0x74,
-	0x65, 0x72, 0x10, 0x06, 0x42, 0x08, 0x5a, 0x06, 0x2f, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x62, 0x06,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x65, 0x72, 0x10, 0x06, 0x2a, 0x20, 0x0a, 0x08, 0x47, 0x61, 0x6d, 0x65, 0x54, 0x79, 0x70, 0x65,
+	0x12, 0x0b, 0x0a, 0x07, 0x4d, 0x61, 0x68, 0x6a, 0x6f, 0x6e, 0x67, 0x10, 0x00, 0x12, 0x07, 0x0a,
+	0x03, 0x44, 0x44, 0x5a, 0x10, 0x01, 0x42, 0x08, 0x5a, 0x06, 0x2f, 0x6f, 0x75, 0x74, 0x65, 0x72,
+	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -108,9 +156,10 @@ func file_type_proto_rawDescGZIP() []byte {
 	return file_type_proto_rawDescData
 }
 
-var file_type_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_type_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
 var file_type_proto_goTypes = []interface{}{
 	(Position)(0), // 0: outer.Position
+	(GameType)(0), // 1: outer.GameType
 }
 var file_type_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type
@@ -130,7 +179,7 @@ func file_type_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_type_proto_rawDesc,
-			NumEnums:      1,
+			NumEnums:      2,
 			NumMessages:   0,
 			NumExtensions: 0,
 			NumServices:   0,

@@ -26,8 +26,9 @@ type RoomInfo struct {
 	unknownFields protoimpl.UnknownFields
 
 	Id       int32         `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
-	GameType int32         `protobuf:"varint,2,opt,name=GameType,proto3" json:"GameType,omitempty"`
-	Players  []*PlayerInfo `protobuf:"bytes,3,rep,name=Players,proto3" json:"Players,omitempty"` // 房间内的成员信息
+	GameType GameType      `protobuf:"varint,2,opt,name=GameType,proto3,enum=outer.GameType" json:"GameType,omitempty"`
+	Creator  *PlayerInfo   `protobuf:"bytes,3,opt,name=Creator,proto3" json:"Creator,omitempty"` // 创建者
+	Players  []*PlayerInfo `protobuf:"bytes,4,rep,name=Players,proto3" json:"Players,omitempty"` // 房间内的成员信息
 }
 
 func (x *RoomInfo) Reset() {
@@ -69,11 +70,18 @@ func (x *RoomInfo) GetId() int32 {
 	return 0
 }
 
-func (x *RoomInfo) GetGameType() int32 {
+func (x *RoomInfo) GetGameType() GameType {
 	if x != nil {
 		return x.GameType
 	}
-	return 0
+	return GameType_Mahjong
+}
+
+func (x *RoomInfo) GetCreator() *PlayerInfo {
+	if x != nil {
+		return x.Creator
+	}
+	return nil
 }
 
 func (x *RoomInfo) GetPlayers() []*PlayerInfo {
@@ -89,7 +97,7 @@ type CreateRoomReq struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	GameType int32 `protobuf:"varint,1,opt,name=GameType,proto3" json:"GameType,omitempty"`
+	GameType GameType `protobuf:"varint,1,opt,name=GameType,proto3,enum=outer.GameType" json:"GameType,omitempty"`
 }
 
 func (x *CreateRoomReq) Reset() {
@@ -124,11 +132,11 @@ func (*CreateRoomReq) Descriptor() ([]byte, []int) {
 	return file_room_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *CreateRoomReq) GetGameType() int32 {
+func (x *CreateRoomReq) GetGameType() GameType {
 	if x != nil {
 		return x.GameType
 	}
-	return 0
+	return GameType_Mahjong
 }
 
 type CreateRoomRsp struct {
@@ -178,6 +186,101 @@ func (x *CreateRoomRsp) GetRoom() *RoomInfo {
 	return nil
 }
 
+// 解散房间
+type DisbandRoomReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Id int32 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
+}
+
+func (x *DisbandRoomReq) Reset() {
+	*x = DisbandRoomReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_room_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *DisbandRoomReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DisbandRoomReq) ProtoMessage() {}
+
+func (x *DisbandRoomReq) ProtoReflect() protoreflect.Message {
+	mi := &file_room_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DisbandRoomReq.ProtoReflect.Descriptor instead.
+func (*DisbandRoomReq) Descriptor() ([]byte, []int) {
+	return file_room_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *DisbandRoomReq) GetId() int32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+type DisbandRoomRsp struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Id int32 `protobuf:"varint,1,opt,name=Id,proto3" json:"Id,omitempty"`
+}
+
+func (x *DisbandRoomRsp) Reset() {
+	*x = DisbandRoomRsp{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_room_proto_msgTypes[4]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *DisbandRoomRsp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DisbandRoomRsp) ProtoMessage() {}
+
+func (x *DisbandRoomRsp) ProtoReflect() protoreflect.Message {
+	mi := &file_room_proto_msgTypes[4]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DisbandRoomRsp.ProtoReflect.Descriptor instead.
+func (*DisbandRoomRsp) Descriptor() ([]byte, []int) {
+	return file_room_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *DisbandRoomRsp) GetId() int32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
 // 加入房间
 type JoinRoomReq struct {
 	state         protoimpl.MessageState
@@ -190,7 +293,7 @@ type JoinRoomReq struct {
 func (x *JoinRoomReq) Reset() {
 	*x = JoinRoomReq{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_room_proto_msgTypes[3]
+		mi := &file_room_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -203,7 +306,7 @@ func (x *JoinRoomReq) String() string {
 func (*JoinRoomReq) ProtoMessage() {}
 
 func (x *JoinRoomReq) ProtoReflect() protoreflect.Message {
-	mi := &file_room_proto_msgTypes[3]
+	mi := &file_room_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -216,7 +319,7 @@ func (x *JoinRoomReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use JoinRoomReq.ProtoReflect.Descriptor instead.
 func (*JoinRoomReq) Descriptor() ([]byte, []int) {
-	return file_room_proto_rawDescGZIP(), []int{3}
+	return file_room_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *JoinRoomReq) GetRoomId() int32 {
@@ -237,7 +340,7 @@ type JoinRoomRsp struct {
 func (x *JoinRoomRsp) Reset() {
 	*x = JoinRoomRsp{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_room_proto_msgTypes[4]
+		mi := &file_room_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -250,7 +353,7 @@ func (x *JoinRoomRsp) String() string {
 func (*JoinRoomRsp) ProtoMessage() {}
 
 func (x *JoinRoomRsp) ProtoReflect() protoreflect.Message {
-	mi := &file_room_proto_msgTypes[4]
+	mi := &file_room_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -263,7 +366,7 @@ func (x *JoinRoomRsp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use JoinRoomRsp.ProtoReflect.Descriptor instead.
 func (*JoinRoomRsp) Descriptor() ([]byte, []int) {
-	return file_room_proto_rawDescGZIP(), []int{4}
+	return file_room_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *JoinRoomRsp) GetRoom() *RoomInfo {
@@ -283,7 +386,7 @@ type LeaveRoomReq struct {
 func (x *LeaveRoomReq) Reset() {
 	*x = LeaveRoomReq{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_room_proto_msgTypes[5]
+		mi := &file_room_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -296,7 +399,7 @@ func (x *LeaveRoomReq) String() string {
 func (*LeaveRoomReq) ProtoMessage() {}
 
 func (x *LeaveRoomReq) ProtoReflect() protoreflect.Message {
-	mi := &file_room_proto_msgTypes[5]
+	mi := &file_room_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -309,7 +412,7 @@ func (x *LeaveRoomReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LeaveRoomReq.ProtoReflect.Descriptor instead.
 func (*LeaveRoomReq) Descriptor() ([]byte, []int) {
-	return file_room_proto_rawDescGZIP(), []int{5}
+	return file_room_proto_rawDescGZIP(), []int{7}
 }
 
 type LeaveRoomRsp struct {
@@ -321,7 +424,7 @@ type LeaveRoomRsp struct {
 func (x *LeaveRoomRsp) Reset() {
 	*x = LeaveRoomRsp{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_room_proto_msgTypes[6]
+		mi := &file_room_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -334,7 +437,7 @@ func (x *LeaveRoomRsp) String() string {
 func (*LeaveRoomRsp) ProtoMessage() {}
 
 func (x *LeaveRoomRsp) ProtoReflect() protoreflect.Message {
-	mi := &file_room_proto_msgTypes[6]
+	mi := &file_room_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -347,27 +450,178 @@ func (x *LeaveRoomRsp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LeaveRoomRsp.ProtoReflect.Descriptor instead.
 func (*LeaveRoomRsp) Descriptor() ([]byte, []int) {
-	return file_room_proto_rawDescGZIP(), []int{6}
+	return file_room_proto_rawDescGZIP(), []int{8}
+}
+
+type RoomPlayerEnterNtf struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Player *PlayerInfo `protobuf:"bytes,1,opt,name=Player,proto3" json:"Player,omitempty"`
+}
+
+func (x *RoomPlayerEnterNtf) Reset() {
+	*x = RoomPlayerEnterNtf{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_room_proto_msgTypes[9]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *RoomPlayerEnterNtf) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RoomPlayerEnterNtf) ProtoMessage() {}
+
+func (x *RoomPlayerEnterNtf) ProtoReflect() protoreflect.Message {
+	mi := &file_room_proto_msgTypes[9]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RoomPlayerEnterNtf.ProtoReflect.Descriptor instead.
+func (*RoomPlayerEnterNtf) Descriptor() ([]byte, []int) {
+	return file_room_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *RoomPlayerEnterNtf) GetPlayer() *PlayerInfo {
+	if x != nil {
+		return x.Player
+	}
+	return nil
+}
+
+type RoomPlayerLeaveNtf struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	ShortId int64 `protobuf:"varint,1,opt,name=ShortId,proto3" json:"ShortId,omitempty"`
+}
+
+func (x *RoomPlayerLeaveNtf) Reset() {
+	*x = RoomPlayerLeaveNtf{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_room_proto_msgTypes[10]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *RoomPlayerLeaveNtf) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RoomPlayerLeaveNtf) ProtoMessage() {}
+
+func (x *RoomPlayerLeaveNtf) ProtoReflect() protoreflect.Message {
+	mi := &file_room_proto_msgTypes[10]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RoomPlayerLeaveNtf.ProtoReflect.Descriptor instead.
+func (*RoomPlayerLeaveNtf) Descriptor() ([]byte, []int) {
+	return file_room_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *RoomPlayerLeaveNtf) GetShortId() int64 {
+	if x != nil {
+		return x.ShortId
+	}
+	return 0
+}
+
+type RoomPlayerOnlineNtf struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Online bool `protobuf:"varint,1,opt,name=Online,proto3" json:"Online,omitempty"` // true在线、false离线
+}
+
+func (x *RoomPlayerOnlineNtf) Reset() {
+	*x = RoomPlayerOnlineNtf{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_room_proto_msgTypes[11]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *RoomPlayerOnlineNtf) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RoomPlayerOnlineNtf) ProtoMessage() {}
+
+func (x *RoomPlayerOnlineNtf) ProtoReflect() protoreflect.Message {
+	mi := &file_room_proto_msgTypes[11]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RoomPlayerOnlineNtf.ProtoReflect.Descriptor instead.
+func (*RoomPlayerOnlineNtf) Descriptor() ([]byte, []int) {
+	return file_room_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *RoomPlayerOnlineNtf) GetOnline() bool {
+	if x != nil {
+		return x.Online
+	}
+	return false
 }
 
 var File_room_proto protoreflect.FileDescriptor
 
 var file_room_proto_rawDesc = []byte{
 	0x0a, 0x0a, 0x72, 0x6f, 0x6f, 0x6d, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x05, 0x6f, 0x75,
-	0x74, 0x65, 0x72, 0x1a, 0x0a, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22,
-	0x63, 0x0a, 0x08, 0x52, 0x6f, 0x6f, 0x6d, 0x49, 0x6e, 0x66, 0x6f, 0x12, 0x0e, 0x0a, 0x02, 0x49,
-	0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x02, 0x49, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x47,
-	0x61, 0x6d, 0x65, 0x54, 0x79, 0x70, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x08, 0x47,
-	0x61, 0x6d, 0x65, 0x54, 0x79, 0x70, 0x65, 0x12, 0x2b, 0x0a, 0x07, 0x50, 0x6c, 0x61, 0x79, 0x65,
-	0x72, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x11, 0x2e, 0x6f, 0x75, 0x74, 0x65, 0x72,
-	0x2e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x07, 0x50, 0x6c, 0x61,
-	0x79, 0x65, 0x72, 0x73, 0x22, 0x2b, 0x0a, 0x0d, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x52, 0x6f,
-	0x6f, 0x6d, 0x52, 0x65, 0x71, 0x12, 0x1a, 0x0a, 0x08, 0x47, 0x61, 0x6d, 0x65, 0x54, 0x79, 0x70,
-	0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x08, 0x47, 0x61, 0x6d, 0x65, 0x54, 0x79, 0x70,
-	0x65, 0x22, 0x34, 0x0a, 0x0d, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x52, 0x6f, 0x6f, 0x6d, 0x52,
-	0x73, 0x70, 0x12, 0x23, 0x0a, 0x04, 0x52, 0x6f, 0x6f, 0x6d, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b,
-	0x32, 0x0f, 0x2e, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x52, 0x6f, 0x6f, 0x6d, 0x49, 0x6e, 0x66,
-	0x6f, 0x52, 0x04, 0x52, 0x6f, 0x6f, 0x6d, 0x22, 0x25, 0x0a, 0x0b, 0x4a, 0x6f, 0x69, 0x6e, 0x52,
+	0x74, 0x65, 0x72, 0x1a, 0x0a, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a,
+	0x0a, 0x74, 0x79, 0x70, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xa1, 0x01, 0x0a, 0x08,
+	0x52, 0x6f, 0x6f, 0x6d, 0x49, 0x6e, 0x66, 0x6f, 0x12, 0x0e, 0x0a, 0x02, 0x49, 0x64, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x05, 0x52, 0x02, 0x49, 0x64, 0x12, 0x2b, 0x0a, 0x08, 0x47, 0x61, 0x6d, 0x65,
+	0x54, 0x79, 0x70, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x0f, 0x2e, 0x6f, 0x75, 0x74,
+	0x65, 0x72, 0x2e, 0x47, 0x61, 0x6d, 0x65, 0x54, 0x79, 0x70, 0x65, 0x52, 0x08, 0x47, 0x61, 0x6d,
+	0x65, 0x54, 0x79, 0x70, 0x65, 0x12, 0x2b, 0x0a, 0x07, 0x43, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72,
+	0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x11, 0x2e, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x50,
+	0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x07, 0x43, 0x72, 0x65, 0x61, 0x74,
+	0x6f, 0x72, 0x12, 0x2b, 0x0a, 0x07, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x73, 0x18, 0x04, 0x20,
+	0x03, 0x28, 0x0b, 0x32, 0x11, 0x2e, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x50, 0x6c, 0x61, 0x79,
+	0x65, 0x72, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x07, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x73, 0x22,
+	0x3c, 0x0a, 0x0d, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x52, 0x6f, 0x6f, 0x6d, 0x52, 0x65, 0x71,
+	0x12, 0x2b, 0x0a, 0x08, 0x47, 0x61, 0x6d, 0x65, 0x54, 0x79, 0x70, 0x65, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x0e, 0x32, 0x0f, 0x2e, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x47, 0x61, 0x6d, 0x65, 0x54,
+	0x79, 0x70, 0x65, 0x52, 0x08, 0x47, 0x61, 0x6d, 0x65, 0x54, 0x79, 0x70, 0x65, 0x22, 0x34, 0x0a,
+	0x0d, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x52, 0x6f, 0x6f, 0x6d, 0x52, 0x73, 0x70, 0x12, 0x23,
+	0x0a, 0x04, 0x52, 0x6f, 0x6f, 0x6d, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0f, 0x2e, 0x6f,
+	0x75, 0x74, 0x65, 0x72, 0x2e, 0x52, 0x6f, 0x6f, 0x6d, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x04, 0x52,
+	0x6f, 0x6f, 0x6d, 0x22, 0x20, 0x0a, 0x0e, 0x44, 0x69, 0x73, 0x62, 0x61, 0x6e, 0x64, 0x52, 0x6f,
+	0x6f, 0x6d, 0x52, 0x65, 0x71, 0x12, 0x0e, 0x0a, 0x02, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x05, 0x52, 0x02, 0x49, 0x64, 0x22, 0x20, 0x0a, 0x0e, 0x44, 0x69, 0x73, 0x62, 0x61, 0x6e, 0x64,
+	0x52, 0x6f, 0x6f, 0x6d, 0x52, 0x73, 0x70, 0x12, 0x0e, 0x0a, 0x02, 0x49, 0x64, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x05, 0x52, 0x02, 0x49, 0x64, 0x22, 0x25, 0x0a, 0x0b, 0x4a, 0x6f, 0x69, 0x6e, 0x52,
 	0x6f, 0x6f, 0x6d, 0x52, 0x65, 0x71, 0x12, 0x16, 0x0a, 0x06, 0x52, 0x6f, 0x6f, 0x6d, 0x49, 0x64,
 	0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x06, 0x52, 0x6f, 0x6f, 0x6d, 0x49, 0x64, 0x22, 0x32,
 	0x0a, 0x0b, 0x4a, 0x6f, 0x69, 0x6e, 0x52, 0x6f, 0x6f, 0x6d, 0x52, 0x73, 0x70, 0x12, 0x23, 0x0a,
@@ -375,7 +629,17 @@ var file_room_proto_rawDesc = []byte{
 	0x74, 0x65, 0x72, 0x2e, 0x52, 0x6f, 0x6f, 0x6d, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x04, 0x52, 0x6f,
 	0x6f, 0x6d, 0x22, 0x0e, 0x0a, 0x0c, 0x4c, 0x65, 0x61, 0x76, 0x65, 0x52, 0x6f, 0x6f, 0x6d, 0x52,
 	0x65, 0x71, 0x22, 0x0e, 0x0a, 0x0c, 0x4c, 0x65, 0x61, 0x76, 0x65, 0x52, 0x6f, 0x6f, 0x6d, 0x52,
-	0x73, 0x70, 0x42, 0x08, 0x5a, 0x06, 0x2f, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x62, 0x06, 0x70, 0x72,
+	0x73, 0x70, 0x22, 0x3f, 0x0a, 0x12, 0x52, 0x6f, 0x6f, 0x6d, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72,
+	0x45, 0x6e, 0x74, 0x65, 0x72, 0x4e, 0x74, 0x66, 0x12, 0x29, 0x0a, 0x06, 0x50, 0x6c, 0x61, 0x79,
+	0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x11, 0x2e, 0x6f, 0x75, 0x74, 0x65, 0x72,
+	0x2e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x06, 0x50, 0x6c, 0x61,
+	0x79, 0x65, 0x72, 0x22, 0x2e, 0x0a, 0x12, 0x52, 0x6f, 0x6f, 0x6d, 0x50, 0x6c, 0x61, 0x79, 0x65,
+	0x72, 0x4c, 0x65, 0x61, 0x76, 0x65, 0x4e, 0x74, 0x66, 0x12, 0x18, 0x0a, 0x07, 0x53, 0x68, 0x6f,
+	0x72, 0x74, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x07, 0x53, 0x68, 0x6f, 0x72,
+	0x74, 0x49, 0x64, 0x22, 0x2d, 0x0a, 0x13, 0x52, 0x6f, 0x6f, 0x6d, 0x50, 0x6c, 0x61, 0x79, 0x65,
+	0x72, 0x4f, 0x6e, 0x6c, 0x69, 0x6e, 0x65, 0x4e, 0x74, 0x66, 0x12, 0x16, 0x0a, 0x06, 0x4f, 0x6e,
+	0x6c, 0x69, 0x6e, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x06, 0x4f, 0x6e, 0x6c, 0x69,
+	0x6e, 0x65, 0x42, 0x08, 0x5a, 0x06, 0x2f, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x62, 0x06, 0x70, 0x72,
 	0x6f, 0x74, 0x6f, 0x33,
 }
 
@@ -391,26 +655,36 @@ func file_room_proto_rawDescGZIP() []byte {
 	return file_room_proto_rawDescData
 }
 
-var file_room_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_room_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
 var file_room_proto_goTypes = []interface{}{
-	(*RoomInfo)(nil),      // 0: outer.RoomInfo
-	(*CreateRoomReq)(nil), // 1: outer.CreateRoomReq
-	(*CreateRoomRsp)(nil), // 2: outer.CreateRoomRsp
-	(*JoinRoomReq)(nil),   // 3: outer.JoinRoomReq
-	(*JoinRoomRsp)(nil),   // 4: outer.JoinRoomRsp
-	(*LeaveRoomReq)(nil),  // 5: outer.LeaveRoomReq
-	(*LeaveRoomRsp)(nil),  // 6: outer.LeaveRoomRsp
-	(*PlayerInfo)(nil),    // 7: outer.PlayerInfo
+	(*RoomInfo)(nil),            // 0: outer.RoomInfo
+	(*CreateRoomReq)(nil),       // 1: outer.CreateRoomReq
+	(*CreateRoomRsp)(nil),       // 2: outer.CreateRoomRsp
+	(*DisbandRoomReq)(nil),      // 3: outer.DisbandRoomReq
+	(*DisbandRoomRsp)(nil),      // 4: outer.DisbandRoomRsp
+	(*JoinRoomReq)(nil),         // 5: outer.JoinRoomReq
+	(*JoinRoomRsp)(nil),         // 6: outer.JoinRoomRsp
+	(*LeaveRoomReq)(nil),        // 7: outer.LeaveRoomReq
+	(*LeaveRoomRsp)(nil),        // 8: outer.LeaveRoomRsp
+	(*RoomPlayerEnterNtf)(nil),  // 9: outer.RoomPlayerEnterNtf
+	(*RoomPlayerLeaveNtf)(nil),  // 10: outer.RoomPlayerLeaveNtf
+	(*RoomPlayerOnlineNtf)(nil), // 11: outer.RoomPlayerOnlineNtf
+	(GameType)(0),               // 12: outer.GameType
+	(*PlayerInfo)(nil),          // 13: outer.PlayerInfo
 }
 var file_room_proto_depIdxs = []int32{
-	7, // 0: outer.RoomInfo.Players:type_name -> outer.PlayerInfo
-	0, // 1: outer.CreateRoomRsp.Room:type_name -> outer.RoomInfo
-	0, // 2: outer.JoinRoomRsp.Room:type_name -> outer.RoomInfo
-	3, // [3:3] is the sub-list for method output_type
-	3, // [3:3] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	12, // 0: outer.RoomInfo.GameType:type_name -> outer.GameType
+	13, // 1: outer.RoomInfo.Creator:type_name -> outer.PlayerInfo
+	13, // 2: outer.RoomInfo.Players:type_name -> outer.PlayerInfo
+	12, // 3: outer.CreateRoomReq.GameType:type_name -> outer.GameType
+	0,  // 4: outer.CreateRoomRsp.Room:type_name -> outer.RoomInfo
+	0,  // 5: outer.JoinRoomRsp.Room:type_name -> outer.RoomInfo
+	13, // 6: outer.RoomPlayerEnterNtf.Player:type_name -> outer.PlayerInfo
+	7,  // [7:7] is the sub-list for method output_type
+	7,  // [7:7] is the sub-list for method input_type
+	7,  // [7:7] is the sub-list for extension type_name
+	7,  // [7:7] is the sub-list for extension extendee
+	0,  // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_room_proto_init() }
@@ -419,6 +693,7 @@ func file_room_proto_init() {
 		return
 	}
 	file_base_proto_init()
+	file_type_proto_init()
 	if !protoimpl.UnsafeEnabled {
 		file_room_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*RoomInfo); i {
@@ -457,7 +732,7 @@ func file_room_proto_init() {
 			}
 		}
 		file_room_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*JoinRoomReq); i {
+			switch v := v.(*DisbandRoomReq); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -469,7 +744,7 @@ func file_room_proto_init() {
 			}
 		}
 		file_room_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*JoinRoomRsp); i {
+			switch v := v.(*DisbandRoomRsp); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -481,7 +756,7 @@ func file_room_proto_init() {
 			}
 		}
 		file_room_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*LeaveRoomReq); i {
+			switch v := v.(*JoinRoomReq); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -493,7 +768,67 @@ func file_room_proto_init() {
 			}
 		}
 		file_room_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*JoinRoomRsp); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_room_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*LeaveRoomReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_room_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*LeaveRoomRsp); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_room_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*RoomPlayerEnterNtf); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_room_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*RoomPlayerLeaveNtf); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_room_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*RoomPlayerOnlineNtf); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -511,7 +846,7 @@ func file_room_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_room_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   7,
+			NumMessages:   12,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

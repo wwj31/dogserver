@@ -11,3 +11,8 @@ enum Position {
     DeputyMaster   = 5; // 副盟主
     Master         = 6; // 盟主
 }
+
+enum GameType {
+    Mahjong     = 0; // 麻将
+    DDZ         = 1; // 斗地主
+}

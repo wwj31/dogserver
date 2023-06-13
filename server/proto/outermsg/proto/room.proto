@@ -3,19 +3,29 @@ package outer;
 option  go_package = "/outer";
 
 import "base.proto";
+import "type.proto";
 
 message RoomInfo {
     int32 Id                    = 1;
-    int32 GameType              = 2;
-    repeated PlayerInfo Players = 3; // 房间内的成员信息
+    GameType GameType           = 2;
+    PlayerInfo Creator          = 3; // 创建者
+    repeated PlayerInfo Players = 4; // 房间内的成员信息
 }
 
 // 创建房间
 message CreateRoomReq {// tag:player
-    int32 GameType = 1;
+    GameType GameType = 1;
 }
 message CreateRoomRsp {
     RoomInfo Room = 1;
+}
+
+// 解散房间
+message DisbandRoomReq {// tag:player
+    int32 Id = 1;
+}
+message DisbandRoomRsp {
+    int32 Id = 1;
 }
 
 // 加入房间
@@ -30,4 +40,15 @@ message JoinRoomRsp {
 message LeaveRoomReq {// tag:player
 }
 message LeaveRoomRsp {
+}
+
+
+message RoomPlayerEnterNtf {// 房间进入新玩家通知
+    PlayerInfo Player = 1;
+}
+message RoomPlayerLeaveNtf {// 房间内玩家离开通知
+    int64 ShortId = 1;
+}
+message RoomPlayerOnlineNtf {// 房间内玩家上、下线通知
+    bool Online = 1; // true在线、false离线
 }

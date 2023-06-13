@@ -23,9 +23,10 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type RoomInfo struct {
-	RoomId   int32         `protobuf:"varint,1,opt,name=RoomId,proto3" json:"RoomId,omitempty"`
-	GameType int32         `protobuf:"varint,2,opt,name=GameType,proto3" json:"GameType,omitempty"`
-	Players  []*PlayerInfo `protobuf:"bytes,3,rep,name=Players,proto3" json:"Players,omitempty"`
+	RoomId         int32         `protobuf:"varint,1,opt,name=RoomId,proto3" json:"RoomId,omitempty"`
+	GameType       int32         `protobuf:"varint,2,opt,name=GameType,proto3" json:"GameType,omitempty"`
+	CreatorShortId int64         `protobuf:"varint,3,opt,name=CreatorShortId,proto3" json:"CreatorShortId,omitempty"`
+	Players        []*PlayerInfo `protobuf:"bytes,4,rep,name=Players,proto3" json:"Players,omitempty"`
 }
 
 func (m *RoomInfo) Reset()         { *m = RoomInfo{} }
@@ -75,6 +76,13 @@ func (m *RoomInfo) GetGameType() int32 {
 	return 0
 }
 
+func (m *RoomInfo) GetCreatorShortId() int64 {
+	if m != nil {
+		return m.CreatorShortId
+	}
+	return 0
+}
+
 func (m *RoomInfo) GetPlayers() []*PlayerInfo {
 	if m != nil {
 		return m.Players
@@ -84,7 +92,8 @@ func (m *RoomInfo) GetPlayers() []*PlayerInfo {
 
 // 创建房间
 type CreateRoomReq struct {
-	Creator *PlayerInfo `protobuf:"bytes,1,opt,name=Creator,proto3" json:"Creator,omitempty"`
+	GameType int32       `protobuf:"varint,1,opt,name=GameType,proto3" json:"GameType,omitempty"`
+	Creator  *PlayerInfo `protobuf:"bytes,2,opt,name=Creator,proto3" json:"Creator,omitempty"`
 }
 
 func (m *CreateRoomReq) Reset()         { *m = CreateRoomReq{} }
@@ -119,6 +128,13 @@ func (m *CreateRoomReq) XXX_DiscardUnknown() {
 }
 
 var xxx_messageInfo_CreateRoomReq proto.InternalMessageInfo
+
+func (m *CreateRoomReq) GetGameType() int32 {
+	if m != nil {
+		return m.GameType
+	}
+	return 0
+}
 
 func (m *CreateRoomReq) GetCreator() *PlayerInfo {
 	if m != nil {
@@ -171,6 +187,87 @@ func (m *CreateRoomRsp) GetRoomInfo() *RoomInfo {
 	return nil
 }
 
+// 解散房间
+type DisbandRoomReq struct {
+	RoomId int32 `protobuf:"varint,1,opt,name=RoomId,proto3" json:"RoomId,omitempty"`
+}
+
+func (m *DisbandRoomReq) Reset()         { *m = DisbandRoomReq{} }
+func (m *DisbandRoomReq) String() string { return proto.CompactTextString(m) }
+func (*DisbandRoomReq) ProtoMessage()    {}
+func (*DisbandRoomReq) Descriptor() ([]byte, []int) {
+	return fileDescriptor_c5fd27dd97284ef4, []int{3}
+}
+func (m *DisbandRoomReq) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *DisbandRoomReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_DisbandRoomReq.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *DisbandRoomReq) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DisbandRoomReq.Merge(m, src)
+}
+func (m *DisbandRoomReq) XXX_Size() int {
+	return m.Size()
+}
+func (m *DisbandRoomReq) XXX_DiscardUnknown() {
+	xxx_messageInfo_DisbandRoomReq.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DisbandRoomReq proto.InternalMessageInfo
+
+func (m *DisbandRoomReq) GetRoomId() int32 {
+	if m != nil {
+		return m.RoomId
+	}
+	return 0
+}
+
+type DisbandRoomRsp struct {
+}
+
+func (m *DisbandRoomRsp) Reset()         { *m = DisbandRoomRsp{} }
+func (m *DisbandRoomRsp) String() string { return proto.CompactTextString(m) }
+func (*DisbandRoomRsp) ProtoMessage()    {}
+func (*DisbandRoomRsp) Descriptor() ([]byte, []int) {
+	return fileDescriptor_c5fd27dd97284ef4, []int{4}
+}
+func (m *DisbandRoomRsp) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *DisbandRoomRsp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_DisbandRoomRsp.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *DisbandRoomRsp) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DisbandRoomRsp.Merge(m, src)
+}
+func (m *DisbandRoomRsp) XXX_Size() int {
+	return m.Size()
+}
+func (m *DisbandRoomRsp) XXX_DiscardUnknown() {
+	xxx_messageInfo_DisbandRoomRsp.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_DisbandRoomRsp proto.InternalMessageInfo
+
 // 获得房间基础信息
 type RoomInfoReq struct {
 }
@@ -179,7 +276,7 @@ func (m *RoomInfoReq) Reset()         { *m = RoomInfoReq{} }
 func (m *RoomInfoReq) String() string { return proto.CompactTextString(m) }
 func (*RoomInfoReq) ProtoMessage()    {}
 func (*RoomInfoReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_c5fd27dd97284ef4, []int{3}
+	return fileDescriptor_c5fd27dd97284ef4, []int{5}
 }
 func (m *RoomInfoReq) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -216,7 +313,7 @@ func (m *RoomInfoRsp) Reset()         { *m = RoomInfoRsp{} }
 func (m *RoomInfoRsp) String() string { return proto.CompactTextString(m) }
 func (*RoomInfoRsp) ProtoMessage()    {}
 func (*RoomInfoRsp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_c5fd27dd97284ef4, []int{4}
+	return fileDescriptor_c5fd27dd97284ef4, []int{6}
 }
 func (m *RoomInfoRsp) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -261,7 +358,7 @@ func (m *JoinRoomReq) Reset()         { *m = JoinRoomReq{} }
 func (m *JoinRoomReq) String() string { return proto.CompactTextString(m) }
 func (*JoinRoomReq) ProtoMessage()    {}
 func (*JoinRoomReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_c5fd27dd97284ef4, []int{5}
+	return fileDescriptor_c5fd27dd97284ef4, []int{7}
 }
 func (m *JoinRoomReq) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -305,7 +402,7 @@ func (m *JoinRoomRsp) Reset()         { *m = JoinRoomRsp{} }
 func (m *JoinRoomRsp) String() string { return proto.CompactTextString(m) }
 func (*JoinRoomRsp) ProtoMessage()    {}
 func (*JoinRoomRsp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_c5fd27dd97284ef4, []int{6}
+	return fileDescriptor_c5fd27dd97284ef4, []int{8}
 }
 func (m *JoinRoomRsp) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -350,7 +447,7 @@ func (m *LeaveRoomReq) Reset()         { *m = LeaveRoomReq{} }
 func (m *LeaveRoomReq) String() string { return proto.CompactTextString(m) }
 func (*LeaveRoomReq) ProtoMessage()    {}
 func (*LeaveRoomReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_c5fd27dd97284ef4, []int{7}
+	return fileDescriptor_c5fd27dd97284ef4, []int{9}
 }
 func (m *LeaveRoomReq) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -393,7 +490,7 @@ func (m *LeaveRoomRsp) Reset()         { *m = LeaveRoomRsp{} }
 func (m *LeaveRoomRsp) String() string { return proto.CompactTextString(m) }
 func (*LeaveRoomRsp) ProtoMessage()    {}
 func (*LeaveRoomRsp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_c5fd27dd97284ef4, []int{8}
+	return fileDescriptor_c5fd27dd97284ef4, []int{10}
 }
 func (m *LeaveRoomRsp) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -422,23 +519,23 @@ func (m *LeaveRoomRsp) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_LeaveRoomRsp proto.InternalMessageInfo
 
-// 登录检测玩家是否还在房间
-type RoomLoginCheckReq struct {
-	ShortId int64 `protobuf:"varint,1,opt,name=ShortId,proto3" json:"ShortId,omitempty"`
+// 玩家上线，通知房间
+type RoomLoginReq struct {
+	Player *PlayerInfo `protobuf:"bytes,1,opt,name=Player,proto3" json:"Player,omitempty"`
 }
 
-func (m *RoomLoginCheckReq) Reset()         { *m = RoomLoginCheckReq{} }
-func (m *RoomLoginCheckReq) String() string { return proto.CompactTextString(m) }
-func (*RoomLoginCheckReq) ProtoMessage()    {}
-func (*RoomLoginCheckReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_c5fd27dd97284ef4, []int{9}
+func (m *RoomLoginReq) Reset()         { *m = RoomLoginReq{} }
+func (m *RoomLoginReq) String() string { return proto.CompactTextString(m) }
+func (*RoomLoginReq) ProtoMessage()    {}
+func (*RoomLoginReq) Descriptor() ([]byte, []int) {
+	return fileDescriptor_c5fd27dd97284ef4, []int{11}
 }
-func (m *RoomLoginCheckReq) XXX_Unmarshal(b []byte) error {
+func (m *RoomLoginReq) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *RoomLoginCheckReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *RoomLoginReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_RoomLoginCheckReq.Marshal(b, m, deterministic)
+		return xxx_messageInfo_RoomLoginReq.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -448,42 +545,42 @@ func (m *RoomLoginCheckReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, e
 		return b[:n], nil
 	}
 }
-func (m *RoomLoginCheckReq) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_RoomLoginCheckReq.Merge(m, src)
+func (m *RoomLoginReq) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RoomLoginReq.Merge(m, src)
 }
-func (m *RoomLoginCheckReq) XXX_Size() int {
+func (m *RoomLoginReq) XXX_Size() int {
 	return m.Size()
 }
-func (m *RoomLoginCheckReq) XXX_DiscardUnknown() {
-	xxx_messageInfo_RoomLoginCheckReq.DiscardUnknown(m)
+func (m *RoomLoginReq) XXX_DiscardUnknown() {
+	xxx_messageInfo_RoomLoginReq.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_RoomLoginCheckReq proto.InternalMessageInfo
+var xxx_messageInfo_RoomLoginReq proto.InternalMessageInfo
 
-func (m *RoomLoginCheckReq) GetShortId() int64 {
+func (m *RoomLoginReq) GetPlayer() *PlayerInfo {
 	if m != nil {
-		return m.ShortId
+		return m.Player
 	}
-	return 0
+	return nil
 }
 
-type RoomLoginCheckRsp struct {
+type RoomLoginRsp struct {
 	Err      int32     `protobuf:"varint,1,opt,name=Err,proto3" json:"Err,omitempty"`
 	RoomInfo *RoomInfo `protobuf:"bytes,2,opt,name=RoomInfo,proto3" json:"RoomInfo,omitempty"`
 }
 
-func (m *RoomLoginCheckRsp) Reset()         { *m = RoomLoginCheckRsp{} }
-func (m *RoomLoginCheckRsp) String() string { return proto.CompactTextString(m) }
-func (*RoomLoginCheckRsp) ProtoMessage()    {}
-func (*RoomLoginCheckRsp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_c5fd27dd97284ef4, []int{10}
+func (m *RoomLoginRsp) Reset()         { *m = RoomLoginRsp{} }
+func (m *RoomLoginRsp) String() string { return proto.CompactTextString(m) }
+func (*RoomLoginRsp) ProtoMessage()    {}
+func (*RoomLoginRsp) Descriptor() ([]byte, []int) {
+	return fileDescriptor_c5fd27dd97284ef4, []int{12}
 }
-func (m *RoomLoginCheckRsp) XXX_Unmarshal(b []byte) error {
+func (m *RoomLoginRsp) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *RoomLoginCheckRsp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *RoomLoginRsp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_RoomLoginCheckRsp.Marshal(b, m, deterministic)
+		return xxx_messageInfo_RoomLoginRsp.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -493,48 +590,48 @@ func (m *RoomLoginCheckRsp) XXX_Marshal(b []byte, deterministic bool) ([]byte, e
 		return b[:n], nil
 	}
 }
-func (m *RoomLoginCheckRsp) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_RoomLoginCheckRsp.Merge(m, src)
+func (m *RoomLoginRsp) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RoomLoginRsp.Merge(m, src)
 }
-func (m *RoomLoginCheckRsp) XXX_Size() int {
+func (m *RoomLoginRsp) XXX_Size() int {
 	return m.Size()
 }
-func (m *RoomLoginCheckRsp) XXX_DiscardUnknown() {
-	xxx_messageInfo_RoomLoginCheckRsp.DiscardUnknown(m)
+func (m *RoomLoginRsp) XXX_DiscardUnknown() {
+	xxx_messageInfo_RoomLoginRsp.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_RoomLoginCheckRsp proto.InternalMessageInfo
+var xxx_messageInfo_RoomLoginRsp proto.InternalMessageInfo
 
-func (m *RoomLoginCheckRsp) GetErr() int32 {
+func (m *RoomLoginRsp) GetErr() int32 {
 	if m != nil {
 		return m.Err
 	}
 	return 0
 }
 
-func (m *RoomLoginCheckRsp) GetRoomInfo() *RoomInfo {
+func (m *RoomLoginRsp) GetRoomInfo() *RoomInfo {
 	if m != nil {
 		return m.RoomInfo
 	}
 	return nil
 }
 
-type RoomLogoutCheckReq struct {
+type RoomLogoutReq struct {
 	ShortId int64 `protobuf:"varint,1,opt,name=ShortId,proto3" json:"ShortId,omitempty"`
 }
 
-func (m *RoomLogoutCheckReq) Reset()         { *m = RoomLogoutCheckReq{} }
-func (m *RoomLogoutCheckReq) String() string { return proto.CompactTextString(m) }
-func (*RoomLogoutCheckReq) ProtoMessage()    {}
-func (*RoomLogoutCheckReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_c5fd27dd97284ef4, []int{11}
+func (m *RoomLogoutReq) Reset()         { *m = RoomLogoutReq{} }
+func (m *RoomLogoutReq) String() string { return proto.CompactTextString(m) }
+func (*RoomLogoutReq) ProtoMessage()    {}
+func (*RoomLogoutReq) Descriptor() ([]byte, []int) {
+	return fileDescriptor_c5fd27dd97284ef4, []int{13}
 }
-func (m *RoomLogoutCheckReq) XXX_Unmarshal(b []byte) error {
+func (m *RoomLogoutReq) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *RoomLogoutCheckReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *RoomLogoutReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_RoomLogoutCheckReq.Marshal(b, m, deterministic)
+		return xxx_messageInfo_RoomLogoutReq.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -544,40 +641,40 @@ func (m *RoomLogoutCheckReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, 
 		return b[:n], nil
 	}
 }
-func (m *RoomLogoutCheckReq) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_RoomLogoutCheckReq.Merge(m, src)
+func (m *RoomLogoutReq) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RoomLogoutReq.Merge(m, src)
 }
-func (m *RoomLogoutCheckReq) XXX_Size() int {
+func (m *RoomLogoutReq) XXX_Size() int {
 	return m.Size()
 }
-func (m *RoomLogoutCheckReq) XXX_DiscardUnknown() {
-	xxx_messageInfo_RoomLogoutCheckReq.DiscardUnknown(m)
+func (m *RoomLogoutReq) XXX_DiscardUnknown() {
+	xxx_messageInfo_RoomLogoutReq.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_RoomLogoutCheckReq proto.InternalMessageInfo
+var xxx_messageInfo_RoomLogoutReq proto.InternalMessageInfo
 
-func (m *RoomLogoutCheckReq) GetShortId() int64 {
+func (m *RoomLogoutReq) GetShortId() int64 {
 	if m != nil {
 		return m.ShortId
 	}
 	return 0
 }
 
-type RoomLogoutCheckRsp struct {
+type RoomLogoutRsp struct {
 }
 
-func (m *RoomLogoutCheckRsp) Reset()         { *m = RoomLogoutCheckRsp{} }
-func (m *RoomLogoutCheckRsp) String() string { return proto.CompactTextString(m) }
-func (*RoomLogoutCheckRsp) ProtoMessage()    {}
-func (*RoomLogoutCheckRsp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_c5fd27dd97284ef4, []int{12}
+func (m *RoomLogoutRsp) Reset()         { *m = RoomLogoutRsp{} }
+func (m *RoomLogoutRsp) String() string { return proto.CompactTextString(m) }
+func (*RoomLogoutRsp) ProtoMessage()    {}
+func (*RoomLogoutRsp) Descriptor() ([]byte, []int) {
+	return fileDescriptor_c5fd27dd97284ef4, []int{14}
 }
-func (m *RoomLogoutCheckRsp) XXX_Unmarshal(b []byte) error {
+func (m *RoomLogoutRsp) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *RoomLogoutCheckRsp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *RoomLogoutRsp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_RoomLogoutCheckRsp.Marshal(b, m, deterministic)
+		return xxx_messageInfo_RoomLogoutRsp.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -587,59 +684,64 @@ func (m *RoomLogoutCheckRsp) XXX_Marshal(b []byte, deterministic bool) ([]byte, 
 		return b[:n], nil
 	}
 }
-func (m *RoomLogoutCheckRsp) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_RoomLogoutCheckRsp.Merge(m, src)
+func (m *RoomLogoutRsp) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RoomLogoutRsp.Merge(m, src)
 }
-func (m *RoomLogoutCheckRsp) XXX_Size() int {
+func (m *RoomLogoutRsp) XXX_Size() int {
 	return m.Size()
 }
-func (m *RoomLogoutCheckRsp) XXX_DiscardUnknown() {
-	xxx_messageInfo_RoomLogoutCheckRsp.DiscardUnknown(m)
+func (m *RoomLogoutRsp) XXX_DiscardUnknown() {
+	xxx_messageInfo_RoomLogoutRsp.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_RoomLogoutCheckRsp proto.InternalMessageInfo
+var xxx_messageInfo_RoomLogoutRsp proto.InternalMessageInfo
 
 func init() {
 	proto.RegisterType((*RoomInfo)(nil), "inner.RoomInfo")
 	proto.RegisterType((*CreateRoomReq)(nil), "inner.CreateRoomReq")
 	proto.RegisterType((*CreateRoomRsp)(nil), "inner.CreateRoomRsp")
+	proto.RegisterType((*DisbandRoomReq)(nil), "inner.DisbandRoomReq")
+	proto.RegisterType((*DisbandRoomRsp)(nil), "inner.DisbandRoomRsp")
 	proto.RegisterType((*RoomInfoReq)(nil), "inner.RoomInfoReq")
 	proto.RegisterType((*RoomInfoRsp)(nil), "inner.RoomInfoRsp")
 	proto.RegisterType((*JoinRoomReq)(nil), "inner.JoinRoomReq")
 	proto.RegisterType((*JoinRoomRsp)(nil), "inner.JoinRoomRsp")
 	proto.RegisterType((*LeaveRoomReq)(nil), "inner.LeaveRoomReq")
 	proto.RegisterType((*LeaveRoomRsp)(nil), "inner.LeaveRoomRsp")
-	proto.RegisterType((*RoomLoginCheckReq)(nil), "inner.RoomLoginCheckReq")
-	proto.RegisterType((*RoomLoginCheckRsp)(nil), "inner.RoomLoginCheckRsp")
-	proto.RegisterType((*RoomLogoutCheckReq)(nil), "inner.RoomLogoutCheckReq")
-	proto.RegisterType((*RoomLogoutCheckRsp)(nil), "inner.RoomLogoutCheckRsp")
+	proto.RegisterType((*RoomLoginReq)(nil), "inner.RoomLoginReq")
+	proto.RegisterType((*RoomLoginRsp)(nil), "inner.RoomLoginRsp")
+	proto.RegisterType((*RoomLogoutReq)(nil), "inner.RoomLogoutReq")
+	proto.RegisterType((*RoomLogoutRsp)(nil), "inner.RoomLogoutRsp")
 }
 
 func init() { proto.RegisterFile("room.proto", fileDescriptor_c5fd27dd97284ef4) }
 
 var fileDescriptor_c5fd27dd97284ef4 = []byte{
-	// 334 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x52, 0x4d, 0x4f, 0xfa, 0x30,
-	0x18, 0x67, 0x2c, 0x0c, 0xf2, 0xf0, 0xe7, 0xaf, 0x34, 0xc6, 0x2c, 0x1c, 0x16, 0xd2, 0x13, 0x86,
-	0x38, 0x13, 0xbd, 0x18, 0xe3, 0x49, 0x62, 0x8c, 0x86, 0x83, 0xa9, 0x9e, 0xbc, 0x0d, 0xad, 0x42,
-	0x90, 0x3d, 0xa5, 0x9d, 0x26, 0x7c, 0x0b, 0x3f, 0x96, 0x47, 0x8e, 0x1e, 0x0d, 0x7c, 0x11, 0xd3,
-	0xae, 0x9b, 0x28, 0xbe, 0x71, 0x7b, 0x9e, 0xdf, 0x7e, 0x6f, 0x5d, 0x0b, 0x20, 0x11, 0x47, 0xa1,
-	0x90, 0x98, 0x20, 0x29, 0x0d, 0xe2, 0x98, 0xcb, 0x06, 0xf4, 0x22, 0xc5, 0x53, 0x88, 0x0e, 0xa1,
-	0xc2, 0x10, 0x47, 0xa7, 0xf1, 0x2d, 0x92, 0x4d, 0xf0, 0xcc, 0x7c, 0xe3, 0x3b, 0x4d, 0xa7, 0x55,
-	0x62, 0x76, 0x23, 0x0d, 0xa8, 0x9c, 0x44, 0x23, 0x7e, 0x39, 0x11, 0xdc, 0x2f, 0x9a, 0x2f, 0xf9,
-	0x4e, 0xda, 0x50, 0x3e, 0xbf, 0x8f, 0x26, 0x5c, 0x2a, 0xdf, 0x6d, 0xba, 0xad, 0xea, 0x6e, 0x3d,
-	0x34, 0x21, 0x61, 0x8a, 0x6a, 0x5f, 0x96, 0x31, 0xe8, 0x21, 0xd4, 0x3a, 0x92, 0x47, 0x09, 0xd7,
-	0xc6, 0x8c, 0x8f, 0xb5, 0xda, 0x00, 0x28, 0x4d, 0xe4, 0xd7, 0x6a, 0xcb, 0xf8, 0xa4, 0x56, 0x82,
-	0xb4, 0xdf, 0xbb, 0x5b, 0xf9, 0x9a, 0x95, 0x67, 0x30, 0xcb, 0x09, 0xb4, 0x06, 0xd5, 0x1c, 0xe5,
-	0x63, 0x7a, 0xb0, 0xb0, 0xae, 0x6a, 0xb5, 0x0f, 0xd5, 0x33, 0x1c, 0xc4, 0xd9, 0x21, 0xb6, 0xc0,
-	0x4b, 0xeb, 0x7e, 0x7f, 0x06, 0x4b, 0xd0, 0xa9, 0xb9, 0x72, 0xd5, 0xd4, 0x16, 0xfc, 0xeb, 0xf2,
-	0xe8, 0x31, 0xff, 0x77, 0x3e, 0x94, 0x2f, 0xfa, 0x28, 0x13, 0x7b, 0x5d, 0x2e, 0xcb, 0x56, 0xfa,
-	0x7f, 0x91, 0xa9, 0x04, 0xdd, 0x86, 0xba, 0x1e, 0xbb, 0x78, 0x37, 0x88, 0x3b, 0x7d, 0x7e, 0x3d,
-	0xfc, 0x59, 0xce, 0x96, 0xe8, 0x4a, 0x90, 0x75, 0x70, 0x8f, 0xa5, 0xb4, 0x0f, 0x43, 0x8f, 0x1f,
-	0xca, 0x17, 0x7f, 0x2b, 0x1f, 0x02, 0xb1, 0x9e, 0xf8, 0x90, 0xfc, 0xa1, 0xc3, 0xc6, 0x32, 0x5f,
-	0x89, 0xa3, 0xe6, 0xf3, 0x2c, 0x70, 0xa6, 0xb3, 0xc0, 0x79, 0x9d, 0x05, 0xce, 0xd3, 0x3c, 0x28,
-	0x4c, 0xe7, 0x41, 0xe1, 0x65, 0x1e, 0x14, 0xae, 0xbc, 0x1d, 0x13, 0xdd, 0xf3, 0xcc, 0xab, 0xde,
-	0x7b, 0x0b, 0x00, 0x00, 0xff, 0xff, 0xb2, 0x70, 0xc4, 0xe2, 0xf6, 0x02, 0x00, 0x00,
+	// 380 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x53, 0x4d, 0x4b, 0xeb, 0x40,
+	0x14, 0xed, 0x34, 0xaf, 0x69, 0xb9, 0xe9, 0xd7, 0x9b, 0xc5, 0x23, 0x74, 0x11, 0xc2, 0x2c, 0x1e,
+	0x29, 0x85, 0x0a, 0x75, 0xa3, 0xe2, 0xca, 0x0f, 0xa4, 0x52, 0x41, 0xa2, 0x0b, 0x71, 0x97, 0xd2,
+	0x51, 0x03, 0x36, 0x33, 0x9d, 0x89, 0x42, 0xff, 0x85, 0xe0, 0x9f, 0x72, 0xd9, 0xa5, 0x4b, 0x69,
+	0xff, 0x88, 0x64, 0x3a, 0x89, 0x4d, 0xa9, 0x4a, 0x77, 0xf7, 0xde, 0x9c, 0x73, 0xee, 0x39, 0x73,
+	0x09, 0x80, 0x60, 0x6c, 0xdc, 0xe5, 0x82, 0xc5, 0x0c, 0x97, 0xc2, 0x28, 0xa2, 0xa2, 0x05, 0xc3,
+	0x40, 0xd2, 0xe5, 0x88, 0xbc, 0x22, 0xa8, 0xf8, 0x8c, 0x8d, 0xfb, 0xd1, 0x1d, 0xc3, 0xff, 0xc0,
+	0x54, 0xf5, 0xc8, 0x46, 0x2e, 0xf2, 0x4a, 0xbe, 0xee, 0x70, 0x0b, 0x2a, 0x67, 0xc1, 0x98, 0x5e,
+	0x4f, 0x39, 0xb5, 0x8b, 0xea, 0x4b, 0xd6, 0xe3, 0xff, 0x50, 0x3f, 0x16, 0x34, 0x88, 0x99, 0xb8,
+	0x7a, 0x60, 0x22, 0xee, 0x8f, 0x6c, 0xc3, 0x45, 0x9e, 0xe1, 0xaf, 0x4d, 0x71, 0x07, 0xca, 0x97,
+	0x8f, 0xc1, 0x94, 0x0a, 0x69, 0xff, 0x71, 0x0d, 0xcf, 0xea, 0xfd, 0xed, 0x2a, 0x37, 0xdd, 0xe5,
+	0x34, 0xd9, 0xef, 0xa7, 0x08, 0x72, 0x03, 0x35, 0x45, 0xa7, 0x89, 0x01, 0x9f, 0x4e, 0x72, 0x0e,
+	0xd0, 0x9a, 0x83, 0x0e, 0x94, 0xf5, 0x2e, 0x65, 0x6e, 0xb3, 0xb2, 0x46, 0x90, 0xc3, 0x9c, 0xb2,
+	0xe4, 0xb8, 0xf3, 0x95, 0x5f, 0x29, 0x5b, 0xbd, 0x86, 0xa6, 0xa7, 0x63, 0x3f, 0x03, 0x10, 0x0f,
+	0xea, 0x27, 0xa1, 0x1c, 0x06, 0xd1, 0x28, 0x35, 0xf6, 0xcd, 0x93, 0x91, 0x66, 0x1e, 0x29, 0x39,
+	0xa9, 0x81, 0x95, 0x29, 0xd2, 0x09, 0x39, 0x58, 0x69, 0xb7, 0xb5, 0xb1, 0x07, 0xd6, 0x39, 0x0b,
+	0xa3, 0xd4, 0x43, 0x1b, 0xcc, 0x65, 0x54, 0xcd, 0xdc, 0x90, 0x5f, 0x03, 0x92, 0xad, 0x19, 0x73,
+	0xfb, 0xf0, 0xd5, 0x01, 0x0d, 0x9e, 0xb3, 0x9b, 0xd8, 0x50, 0x4e, 0x4f, 0x8e, 0xd4, 0xc9, 0xd3,
+	0x96, 0xd4, 0x57, 0x91, 0x92, 0x93, 0x7d, 0xa8, 0x26, 0xe5, 0x80, 0xdd, 0x87, 0xd1, 0x96, 0x86,
+	0x2f, 0x56, 0xa9, 0x92, 0xe3, 0x26, 0x18, 0xa7, 0x42, 0xe8, 0xc7, 0x4e, 0xca, 0x5c, 0x86, 0xe2,
+	0x6f, 0x19, 0xda, 0x50, 0xd3, 0x72, 0xec, 0x29, 0xfe, 0x39, 0x44, 0x23, 0x07, 0x95, 0xfc, 0xc8,
+	0x7d, 0x9b, 0x3b, 0x68, 0x36, 0x77, 0xd0, 0xc7, 0xdc, 0x41, 0x2f, 0x0b, 0xa7, 0x30, 0x5b, 0x38,
+	0x85, 0xf7, 0x85, 0x53, 0xb8, 0x35, 0x77, 0xd4, 0xc2, 0xa1, 0xa9, 0xfe, 0xa9, 0xdd, 0xcf, 0x00,
+	0x00, 0x00, 0xff, 0xff, 0x99, 0x70, 0x92, 0x85, 0x74, 0x03, 0x00, 0x00,
 }
 
 func (m *RoomInfo) Marshal() (dAtA []byte, err error) {
@@ -673,8 +775,13 @@ func (m *RoomInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 				i = encodeVarintRoom(dAtA, i, uint64(size))
 			}
 			i--
-			dAtA[i] = 0x1a
+			dAtA[i] = 0x22
 		}
+	}
+	if m.CreatorShortId != 0 {
+		i = encodeVarintRoom(dAtA, i, uint64(m.CreatorShortId))
+		i--
+		dAtA[i] = 0x18
 	}
 	if m.GameType != 0 {
 		i = encodeVarintRoom(dAtA, i, uint64(m.GameType))
@@ -719,7 +826,12 @@ func (m *CreateRoomReq) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 			i = encodeVarintRoom(dAtA, i, uint64(size))
 		}
 		i--
-		dAtA[i] = 0xa
+		dAtA[i] = 0x12
+	}
+	if m.GameType != 0 {
+		i = encodeVarintRoom(dAtA, i, uint64(m.GameType))
+		i--
+		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
@@ -756,6 +868,57 @@ func (m *CreateRoomRsp) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0xa
 	}
+	return len(dAtA) - i, nil
+}
+
+func (m *DisbandRoomReq) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *DisbandRoomReq) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *DisbandRoomReq) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.RoomId != 0 {
+		i = encodeVarintRoom(dAtA, i, uint64(m.RoomId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *DisbandRoomRsp) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *DisbandRoomRsp) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *DisbandRoomRsp) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
 	return len(dAtA) - i, nil
 }
 
@@ -938,7 +1101,7 @@ func (m *LeaveRoomRsp) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *RoomLoginCheckReq) Marshal() (dAtA []byte, err error) {
+func (m *RoomLoginReq) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -948,25 +1111,32 @@ func (m *RoomLoginCheckReq) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *RoomLoginCheckReq) MarshalTo(dAtA []byte) (int, error) {
+func (m *RoomLoginReq) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *RoomLoginCheckReq) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *RoomLoginReq) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if m.ShortId != 0 {
-		i = encodeVarintRoom(dAtA, i, uint64(m.ShortId))
+	if m.Player != nil {
+		{
+			size, err := m.Player.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintRoom(dAtA, i, uint64(size))
+		}
 		i--
-		dAtA[i] = 0x8
+		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *RoomLoginCheckRsp) Marshal() (dAtA []byte, err error) {
+func (m *RoomLoginRsp) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -976,12 +1146,12 @@ func (m *RoomLoginCheckRsp) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *RoomLoginCheckRsp) MarshalTo(dAtA []byte) (int, error) {
+func (m *RoomLoginRsp) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *RoomLoginCheckRsp) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *RoomLoginRsp) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1006,7 +1176,7 @@ func (m *RoomLoginCheckRsp) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *RoomLogoutCheckReq) Marshal() (dAtA []byte, err error) {
+func (m *RoomLogoutReq) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1016,12 +1186,12 @@ func (m *RoomLogoutCheckReq) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *RoomLogoutCheckReq) MarshalTo(dAtA []byte) (int, error) {
+func (m *RoomLogoutReq) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *RoomLogoutCheckReq) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *RoomLogoutReq) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1034,7 +1204,7 @@ func (m *RoomLogoutCheckReq) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *RoomLogoutCheckRsp) Marshal() (dAtA []byte, err error) {
+func (m *RoomLogoutRsp) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1044,12 +1214,12 @@ func (m *RoomLogoutCheckRsp) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *RoomLogoutCheckRsp) MarshalTo(dAtA []byte) (int, error) {
+func (m *RoomLogoutRsp) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *RoomLogoutCheckRsp) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *RoomLogoutRsp) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1080,6 +1250,9 @@ func (m *RoomInfo) Size() (n int) {
 	if m.GameType != 0 {
 		n += 1 + sovRoom(uint64(m.GameType))
 	}
+	if m.CreatorShortId != 0 {
+		n += 1 + sovRoom(uint64(m.CreatorShortId))
+	}
 	if len(m.Players) > 0 {
 		for _, e := range m.Players {
 			l = e.Size()
@@ -1095,6 +1268,9 @@ func (m *CreateRoomReq) Size() (n int) {
 	}
 	var l int
 	_ = l
+	if m.GameType != 0 {
+		n += 1 + sovRoom(uint64(m.GameType))
+	}
 	if m.Creator != nil {
 		l = m.Creator.Size()
 		n += 1 + l + sovRoom(uint64(l))
@@ -1112,6 +1288,27 @@ func (m *CreateRoomRsp) Size() (n int) {
 		l = m.RoomInfo.Size()
 		n += 1 + l + sovRoom(uint64(l))
 	}
+	return n
+}
+
+func (m *DisbandRoomReq) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.RoomId != 0 {
+		n += 1 + sovRoom(uint64(m.RoomId))
+	}
+	return n
+}
+
+func (m *DisbandRoomRsp) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
 	return n
 }
 
@@ -1184,19 +1381,20 @@ func (m *LeaveRoomRsp) Size() (n int) {
 	return n
 }
 
-func (m *RoomLoginCheckReq) Size() (n int) {
+func (m *RoomLoginReq) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if m.ShortId != 0 {
-		n += 1 + sovRoom(uint64(m.ShortId))
+	if m.Player != nil {
+		l = m.Player.Size()
+		n += 1 + l + sovRoom(uint64(l))
 	}
 	return n
 }
 
-func (m *RoomLoginCheckRsp) Size() (n int) {
+func (m *RoomLoginRsp) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1212,7 +1410,7 @@ func (m *RoomLoginCheckRsp) Size() (n int) {
 	return n
 }
 
-func (m *RoomLogoutCheckReq) Size() (n int) {
+func (m *RoomLogoutReq) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1224,7 +1422,7 @@ func (m *RoomLogoutCheckReq) Size() (n int) {
 	return n
 }
 
-func (m *RoomLogoutCheckRsp) Size() (n int) {
+func (m *RoomLogoutRsp) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1307,6 +1505,25 @@ func (m *RoomInfo) Unmarshal(dAtA []byte) error {
 				}
 			}
 		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CreatorShortId", wireType)
+			}
+			m.CreatorShortId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRoom
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.CreatorShortId |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 4:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Players", wireType)
 			}
@@ -1391,6 +1608,25 @@ func (m *CreateRoomReq) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field GameType", wireType)
+			}
+			m.GameType = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRoom
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.GameType |= int32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
 			}
@@ -1512,6 +1748,125 @@ func (m *CreateRoomRsp) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipRoom(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthRoom
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *DisbandRoomReq) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowRoom
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: DisbandRoomReq: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: DisbandRoomReq: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RoomId", wireType)
+			}
+			m.RoomId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowRoom
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.RoomId |= int32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipRoom(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthRoom
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *DisbandRoomRsp) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowRoom
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: DisbandRoomRsp: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: DisbandRoomRsp: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRoom(dAtA[iNdEx:])
@@ -1960,7 +2315,7 @@ func (m *LeaveRoomRsp) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *RoomLoginCheckReq) Unmarshal(dAtA []byte) error {
+func (m *RoomLoginReq) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1983,17 +2338,17 @@ func (m *RoomLoginCheckReq) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: RoomLoginCheckReq: wiretype end group for non-group")
+			return fmt.Errorf("proto: RoomLoginReq: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: RoomLoginCheckReq: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: RoomLoginReq: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ShortId", wireType)
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Player", wireType)
 			}
-			m.ShortId = 0
+			var msglen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowRoom
@@ -2003,11 +2358,28 @@ func (m *RoomLoginCheckReq) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.ShortId |= int64(b&0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			if msglen < 0 {
+				return ErrInvalidLengthRoom
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthRoom
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Player == nil {
+				m.Player = &PlayerInfo{}
+			}
+			if err := m.Player.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipRoom(dAtA[iNdEx:])
@@ -2029,7 +2401,7 @@ func (m *RoomLoginCheckReq) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *RoomLoginCheckRsp) Unmarshal(dAtA []byte) error {
+func (m *RoomLoginRsp) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2052,10 +2424,10 @@ func (m *RoomLoginCheckRsp) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: RoomLoginCheckRsp: wiretype end group for non-group")
+			return fmt.Errorf("proto: RoomLoginRsp: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: RoomLoginCheckRsp: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: RoomLoginRsp: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2134,7 +2506,7 @@ func (m *RoomLoginCheckRsp) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *RoomLogoutCheckReq) Unmarshal(dAtA []byte) error {
+func (m *RoomLogoutReq) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2157,10 +2529,10 @@ func (m *RoomLogoutCheckReq) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: RoomLogoutCheckReq: wiretype end group for non-group")
+			return fmt.Errorf("proto: RoomLogoutReq: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: RoomLogoutCheckReq: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: RoomLogoutReq: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2203,7 +2575,7 @@ func (m *RoomLogoutCheckReq) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *RoomLogoutCheckRsp) Unmarshal(dAtA []byte) error {
+func (m *RoomLogoutRsp) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2226,10 +2598,10 @@ func (m *RoomLogoutCheckRsp) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: RoomLogoutCheckRsp: wiretype end group for non-group")
+			return fmt.Errorf("proto: RoomLogoutRsp: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: RoomLogoutCheckRsp: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: RoomLogoutRsp: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:

@@ -14,7 +14,7 @@ func IsErr(v any, err error) (bool, outer.ERROR) {
 
 	if errInfo, ok := v.(*inner.Error); ok {
 		log.Errorw("assert failed with inner.Error", "inner.Error", errInfo.ErrorInfo)
-		return true, outer.ERROR_FAILED
+		return true, outer.ERROR(errInfo.ErrorCode)
 	}
 	return false, 0
 }

@@ -11,14 +11,15 @@ import (
 	"server/common/router"
 )
 
-func NewMgr() *Mgr {
-	return &Mgr{}
+func NewMgr(appId int32) *Mgr {
+	return &Mgr{appId: appId}
 }
 
 type Mgr struct {
 	actor.Base
 	currentMsg actor.Message
 	incId      int32
+	appId      int32
 
 	Rooms map[int32]*Room
 }
@@ -52,7 +53,7 @@ func (m *Mgr) responseHandle(resultMsg any) {
 func (m *Mgr) OnHandle(msg actor.Message) {
 	pt, ok := msg.Payload().(proto.Message)
 	if !ok {
-		log.Warnw("roomMgr mgr handler msg is not proto",
+		log.Warnw("roomMgr handler msg is not proto",
 			"msg", reflect.TypeOf(msg.Payload()).String())
 		return
 	}
@@ -63,7 +64,7 @@ func (m *Mgr) OnHandle(msg actor.Message) {
 
 func (m *Mgr) RoomId() int32 {
 	m.incId++
-	return m.incId
+	return m.appId*100000 + m.incId
 }
 
 func (m *Mgr) AddRoom(r *Room) error {

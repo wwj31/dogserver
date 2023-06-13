@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"syscall"
+
 	"server/service/alliance"
 	"server/service/room"
-	"syscall"
 
 	"github.com/wwj31/dogactor/actor/cluster/fullmesh"
 
@@ -167,6 +168,6 @@ func newAllianceMgr(system *actor.System) {
 }
 
 func newRoomMgr(appId int32, system *actor.System) {
-	mgr := room.NewMgr()
+	mgr := room.NewMgr(appId)
 	_ = system.NewActor(actortype.RoomMgrName(appId), mgr, actor.SetMailBoxSize(500))
 }

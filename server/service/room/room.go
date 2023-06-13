@@ -1,18 +1,31 @@
 package room
 
 import (
+	"reflect"
+
 	"github.com/golang/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
 
+	"server/common"
 	"server/common/log"
 	"server/common/router"
+	"server/proto/convert"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
 )
 
-func New(RoomId int32, creator *inner.PlayerInfo) *Room {
-	r := &Room{RoomId: RoomId, CreatorShortId: creator.ShortId}
-	r.AddPlayer(creator)
+var gameMaxPlayers = map[int32]int{
+	0: 4,
+	1: 3,
+}
+
+func New(roomId, gameType int32, creator *inner.PlayerInfo) *Room {
+	r := &Room{
+		RoomId:         roomId,
+		GameType:       gameType,
+		CreatorShortId: creator.ShortId,
+	}
+	//r.AddPlayer(creator)
 	return r
 }
 
@@ -24,6 +37,7 @@ type (
 	Room struct {
 		actor.Base
 		currentMsg actor.Message
+		stopping   bool
 
 		RoomId         int32
 		GameType       int32
@@ -36,6 +50,23 @@ type (
 func (r *Room) OnInit() {
 	router.Result(r, r.responseHandle)
 	log.Debugf("Room:[%v] OnInit", r.RoomId)
+}
+
+func (r *Room) OnHandle(msg actor.Message) {
+	pt, ok := msg.Payload().(proto.Message)
+	if !ok {
+		log.Warnw("room handler msg is not proto",
+			"msg", reflect.TypeOf(msg.Payload()).String())
+		return
+	}
+
+	if r.stopping {
+		log.Warnw("room is stopping not handle msg", "roomId", r.RoomId)
+		return
+	}
+
+	r.currentMsg = msg
+	router.Dispatch(r, pt)
 }
 
 func (r *Room) responseHandle(resultMsg any) {
@@ -67,12 +98,27 @@ func (r *Room) FindPlayer(shortId int64) *Player {
 	return nil
 }
 
+func (r *Room) IsFull() bool { return len(r.Players) >= gameMaxPlayers[r.GameType] }
+
 func (r *Room) AddPlayer(playerInfo *inner.PlayerInfo) *inner.Error {
 	if r.FindPlayer(playerInfo.ShortId) != nil {
 		return &inner.Error{ErrorCode: int32(outer.ERROR_PLAYER_ALREADY_IN_ROOM)}
 	}
 
+	for _, p := range r.Players {
+		gSession := common.GSession(p.GSession)
+		if gSession.Invalid() {
+			continue
+		}
+		gSession.SendToClient(r, &outer.RoomPlayerEnterNtf{Player: convert.PlayerInnerToOuter(playerInfo)})
+	}
+	r.Players = append(r.Players, &Player{PlayerInfo: playerInfo})
+	log.Infow("room add player", "roomId", r.RoomId, "player", playerInfo.ShortId)
 	return nil
+}
+
+func (r *Room) Stop() {
+	r.stopping = true
 }
 
 func (r *Room) DelPlayer(shortId int64) {
@@ -91,8 +137,9 @@ func (r *Room) Info() *inner.RoomInfo {
 	}
 
 	return &inner.RoomInfo{
-		RoomId:   r.RoomId,
-		GameType: r.GameType,
-		Players:  players,
+		RoomId:         r.RoomId,
+		GameType:       r.GameType,
+		CreatorShortId: r.CreatorShortId,
+		Players:        players,
 	}
 }

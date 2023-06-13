@@ -33,15 +33,15 @@ func (s *Room) OnLogin(first bool, enterGameRsp *outer.EnterGameRsp) {
 	// 玩家重登，检查房间是否有效
 	if s.RoomInfo != nil && s.RoomInfo.RoomId != 0 {
 		roomActor := actortype.RoomMgrName(s.RoomInfo.RoomId)
-		v, err := s.Player.RequestWait(roomActor, &inner.RoomLoginCheckReq{
-			ShortId: s.Player.Role().ShortId(),
+		v, err := s.Player.RequestWait(roomActor, &inner.RoomLoginReq{
+			Player: s.Player.PlayerInfo(),
 		})
-		if yes, code := common.IsErr(v, err); yes {
+		if yes, _ := common.IsErr(v, err); yes {
 			log.Warnw("room invalid",
-				"shortId", s.Player.Role().ShortId(), "roomId", roomActor, "code", code)
+				"shortId", s.Player.Role().ShortId(), "roomId", roomActor)
 			clear = true
 		} else {
-			loginCheckRsp := v.(*inner.RoomLoginCheckRsp)
+			loginCheckRsp := v.(*inner.RoomLoginRsp)
 			if loginCheckRsp.Err != 0 {
 				log.Warnw("room check rsp failed",
 					"shortId", s.Player.Role().ShortId(), "roomId", roomActor, "err", loginCheckRsp.Err)
@@ -62,7 +62,7 @@ func (s *Room) OnLogin(first bool, enterGameRsp *outer.EnterGameRsp) {
 func (s *Room) OnLogout() {
 	if s.RoomInfo != nil && s.RoomInfo.RoomId != 0 {
 		roomActor := actortype.RoomMgrName(s.RoomInfo.RoomId)
-		err := s.Player.Send(roomActor, &inner.RoomLogoutCheckReq{ShortId: s.Player.Role().ShortId()})
+		err := s.Player.Send(roomActor, &inner.RoomLogoutReq{ShortId: s.Player.Role().ShortId()})
 		if err != nil {
 			log.Warnw("logout room rsp failed",
 				"shortId", s.Player.Role().ShortId(),

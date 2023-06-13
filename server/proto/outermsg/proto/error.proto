@@ -27,6 +27,8 @@ enum ERROR {
    PLAYER_ALREADY_IN_ALLIANCE       = 21; // 玩家已有联盟
    PLAYER_ALREADY_HAS_UP            = 22; // 玩家已有上级
    PLAYER_ALREADY_IN_ROOM           = 23; // 玩家已经在房间内，不能重复进入房间
+   ROOM_HAS_PLAYER_CAN_NOT_DISBAND  = 24; // 房间还有人，不能解散
+   ROOM_WAS_FULL_CAN_NOT_ENTER      = 25; // 房间已满
 }
 
 message FailRsp {
