@@ -13,7 +13,7 @@ import (
 // 创建房间
 var _ = router.Reg(func(mgr *room.Mgr, msg *inner.CreateRoomReq) any {
 	roomId := mgr.RoomId()
-	newRoom := room.New(roomId, msg.CreatorShortId)
+	newRoom := room.New(roomId, msg.Creator)
 	_ = mgr.AddRoom(newRoom)
 
 	roomActor := actortype.RoomName(roomId)

@@ -10,8 +10,10 @@ import (
 	"server/proto/outermsg/outer"
 )
 
-func New(RoomId int32, creatorShortId int64) *Room {
-	return &Room{RoomId: RoomId, CreatorShortId: creatorShortId}
+func New(RoomId int32, creator *inner.PlayerInfo) *Room {
+	r := &Room{RoomId: RoomId, CreatorShortId: creator.ShortId}
+	r.AddPlayer(creator)
+	return r
 }
 
 type (

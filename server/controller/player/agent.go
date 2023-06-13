@@ -1,29 +1,12 @@
 package player
 
 import (
-	"github.com/wwj31/dogactor/tools"
-
 	"server/common/router"
-	"server/proto/innermsg/inner"
+	"server/proto/convert"
 	"server/proto/outermsg/outer"
 	"server/rdsop"
 	"server/service/game/logic/player"
 )
-
-func InnerToOuter(player *inner.PlayerInfo) *outer.PlayerInfo {
-	return &outer.PlayerInfo{
-		RID:        player.RID,
-		ShortId:    player.ShortId,
-		Name:       player.Name,
-		Icon:       player.Icon,
-		Gender:     player.Gender,
-		AllianceId: player.AllianceId,
-		Position:   outer.Position(player.Position),
-		LoginAt:    tools.TimeParse(player.LoginAt).Unix(),
-		LogoutAt:   tools.TimeParse(player.LogoutAt).Unix(),
-		UpShortId:  player.UpShortId,
-	}
-}
 
 // // 获取上、下级信息
 var _ = router.Reg(func(player *player.Player, msg *outer.AgentMembersReq) any {
@@ -35,7 +18,7 @@ var _ = router.Reg(func(player *player.Player, msg *outer.AgentMembersReq) any {
 	upShortId := rdsop.AgentUp(player.Role().ShortId())
 	if upShortId != 0 {
 		upInfo := rdsop.PlayerInfo(upShortId)
-		upMember = InnerToOuter(&upInfo)
+		upMember = convert.PlayerInnerToOuter(&upInfo)
 	}
 
 	downShortIds := rdsop.AgentDown(player.Role().ShortId())
@@ -45,7 +28,7 @@ var _ = router.Reg(func(player *player.Player, msg *outer.AgentMembersReq) any {
 		}
 
 		downInfo := rdsop.PlayerInfo(shortId)
-		downMembers = append(downMembers, InnerToOuter(&downInfo))
+		downMembers = append(downMembers, convert.PlayerInnerToOuter(&downInfo))
 	}
 
 	return &outer.AgentMembersRsp{

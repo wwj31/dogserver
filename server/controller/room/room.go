@@ -21,7 +21,7 @@ var _ = router.Reg(func(r *room.Room, msg *inner.JoinRoomReq) any {
 	}
 
 	// TODO ...
-	return &inner.JoinRoomRsp{}
+	return &inner.JoinRoomRsp{RoomInfo: r.Info()}
 })
 
 // 离开房间

@@ -5,6 +5,7 @@ import (
 	"server/common/actortype"
 	"server/common/log"
 	"server/common/router"
+	"server/proto/convert"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
 	"server/rdsop"
@@ -32,7 +33,7 @@ var _ = router.Reg(func(player *player.Player, msg *outer.SearchPlayerInfoReq) a
 		return outer.ERROR_CAN_NOT_FIND_PLAYER_INFO
 	}
 
-	outerPlayerInfo := InnerToOuter(&playerInfo)
+	outerPlayerInfo := convert.PlayerInnerToOuter(&playerInfo)
 	return &outer.SearchPlayerInfoRsp{Player: outerPlayerInfo}
 })
 
@@ -79,7 +80,7 @@ var _ = router.Reg(func(player *player.Player, msg *outer.InviteAllianceReq) any
 	playerInfo.UpShortId = player.Role().ShortId()
 	playerInfo.AllianceId = player.Alliance().AllianceId()
 	log.Infow("player invite success ", "player", player.Role().ShortId(), "msg", msg.String())
-	return &outer.InviteAllianceRsp{Player: InnerToOuter(&playerInfo)}
+	return &outer.InviteAllianceRsp{Player: convert.PlayerInnerToOuter(&playerInfo)}
 })
 
 // 请求设置成员职位

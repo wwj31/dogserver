@@ -1,12 +1,18 @@
 package room
 
 import (
+	"server/common"
+	"server/common/actortype"
+	"server/common/log"
+	"server/proto/convert"
+	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
 	"server/service/game/logic/player/models"
 )
 
 type Room struct {
 	models.Model
+	RoomInfo *inner.RoomInfo
 }
 
 func New(base models.Model) *Room {
@@ -16,9 +22,55 @@ func New(base models.Model) *Room {
 
 func (s *Room) OnLogin(first bool, enterGameRsp *outer.EnterGameRsp) {
 	if first {
+
 	}
+
+	var (
+		clear    bool
+		roomInfo *inner.RoomInfo
+	)
+
+	// 玩家重登，检查房间是否有效
+	if s.RoomInfo != nil && s.RoomInfo.RoomId != 0 {
+		roomActor := actortype.RoomMgrName(s.RoomInfo.RoomId)
+		v, err := s.Player.RequestWait(roomActor, &inner.RoomLoginCheckReq{
+			ShortId: s.Player.Role().ShortId(),
+		})
+		if yes, code := common.IsErr(v, err); yes {
+			log.Warnw("room invalid",
+				"shortId", s.Player.Role().ShortId(), "roomId", roomActor, "code", code)
+			clear = true
+		} else {
+			loginCheckRsp := v.(*inner.RoomLoginCheckRsp)
+			if loginCheckRsp.Err != 0 {
+				log.Warnw("room check rsp failed",
+					"shortId", s.Player.Role().ShortId(), "roomId", roomActor, "err", loginCheckRsp.Err)
+				clear = true
+			} else {
+				s.RoomInfo = loginCheckRsp.RoomInfo
+			}
+		}
+
+		if clear {
+			s.RoomInfo = nil
+		}
+	}
+
+	enterGameRsp.RoomInfo = convert.RoomInfoInnerToOuter(roomInfo)
 }
 
 func (s *Room) OnLogout() {
-
+	if s.RoomInfo != nil && s.RoomInfo.RoomId != 0 {
+		roomActor := actortype.RoomMgrName(s.RoomInfo.RoomId)
+		err := s.Player.Send(roomActor, &inner.RoomLogoutCheckReq{ShortId: s.Player.Role().ShortId()})
+		if err != nil {
+			log.Warnw("logout room rsp failed",
+				"shortId", s.Player.Role().ShortId(),
+				"roomId", roomActor,
+			)
+		}
+	}
 }
+
+func (s *Room) RoomId() int32                    { return s.RoomInfo.RoomId }
+func (s *Room) SetRoomInfo(info *inner.RoomInfo) { s.RoomInfo = info }
