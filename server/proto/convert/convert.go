@@ -5,7 +5,6 @@ import (
 
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
-	"server/rdsop"
 )
 
 func RoomInfoInnerToOuter(roomInfo *inner.RoomInfo) *outer.RoomInfo {
@@ -17,12 +16,10 @@ func RoomInfoInnerToOuter(roomInfo *inner.RoomInfo) *outer.RoomInfo {
 		players = append(players, PlayerInnerToOuter(v))
 	}
 
-	creator := rdsop.PlayerInfo(roomInfo.GetCreatorShortId())
-
 	return &outer.RoomInfo{
-		Id:      roomInfo.RoomId,
-		Creator: PlayerInnerToOuter(&creator),
-		Players: players,
+		Id:       roomInfo.RoomId,
+		GameType: outer.GameType(roomInfo.GameType),
+		Players:  players,
 	}
 }
 

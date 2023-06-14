@@ -1,10 +1,10 @@
 package room
 
 import (
-	"reflect"
-
 	"github.com/golang/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
+	"reflect"
+	"server/rdsop"
 
 	"server/common"
 	"server/common/log"
@@ -24,6 +24,7 @@ func New(roomId, gameType int32, creator *inner.PlayerInfo) *Room {
 		RoomId:         roomId,
 		GameType:       gameType,
 		CreatorShortId: creator.ShortId,
+		AllianceId:     creator.AllianceId,
 	}
 	//r.AddPlayer(creator)
 	return r
@@ -40,8 +41,9 @@ type (
 		stopping   bool
 
 		RoomId         int32
-		GameType       int32
-		CreatorShortId int64
+		GameType       int32 // 游戏类型
+		CreatorShortId int64 // 房间创建者
+		AllianceId     int32 // 归属联盟
 
 		Players []*Player
 	}
@@ -49,7 +51,14 @@ type (
 
 func (r *Room) OnInit() {
 	router.Result(r, r.responseHandle)
+	rdsop.AddRoom(r.RoomId, r.AllianceId)
 	log.Debugf("Room:[%v] OnInit", r.RoomId)
+}
+
+func (r *Room) OnStop() bool {
+	rdsop.DelRoom(r.RoomId, r.AllianceId)
+	log.Debugw("room stop", "roomId", r.RoomId)
+	return true
 }
 
 func (r *Room) OnHandle(msg actor.Message) {
@@ -90,7 +99,7 @@ func (r *Room) responseHandle(resultMsg any) {
 }
 
 func (r *Room) IsFull() bool { return len(r.Players) >= gameMaxPlayers[r.GameType] }
-func (r *Room) Stop()        { r.stopping = true }
+func (r *Room) Disband()     { r.stopping = true }
 
 func (r *Room) FindPlayer(shortId int64) *Player {
 	for _, v := range r.Players {

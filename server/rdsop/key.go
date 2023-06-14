@@ -16,12 +16,12 @@ func SessionKey(rid string) string {
 
 // GameNodeKey 记录玩家最近一次进入的game节点
 func GameNodeKey(shortId int64) string {
-	return fmt.Sprintf("gameNode:%v", shortId)
+	return fmt.Sprintf("gamenode:%v", shortId)
 }
 
 // ShortIDKey 获得并从库里删除一个随机短ID
 func ShortIDKey() string {
-	return "shortId"
+	return "shortid"
 }
 
 // PlayerInfoKey 玩家基础公共信息
@@ -51,5 +51,10 @@ func JoinAllianceKey(shortId int64) string {
 
 // RoomMgrKey 所有房间管理器节点
 func RoomMgrKey() string {
-	return "roomMgr"
+	return "roommgr"
+}
+
+// RoomsKey 所有房间
+func RoomsKey(allianceId int32) string {
+	return fmt.Sprintf("room:%v", allianceId)
 }

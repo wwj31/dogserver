@@ -25,6 +25,8 @@ var spawner = map[string]factory{
 	"outer.RoomPlayerOnlineNtf":  func() interface{} { return &RoomPlayerOnlineNtf{} },
 	"outer.RoomPlayerLeaveNtf":   func() interface{} { return &RoomPlayerLeaveNtf{} },
 	"outer.RoomPlayerEnterNtf":   func() interface{} { return &RoomPlayerEnterNtf{} },
+	"outer.RoomListRsp":          func() interface{} { return &RoomListRsp{} },
+	"outer.RoomListReq":          func() interface{} { return &RoomListReq{} },
 	"outer.RoomInfo":             func() interface{} { return &RoomInfo{} },
 	"outer.RoleInfo":             func() interface{} { return &RoleInfo{} },
 	"outer.ReceiveMailItemRsp":   func() interface{} { return &ReceiveMailItemRsp{} },

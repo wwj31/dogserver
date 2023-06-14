@@ -2,52 +2,29 @@ package rdsop
 
 import (
 	"context"
-	"math/rand"
-	"sync"
-
 	"github.com/spf13/cast"
-
 	"server/common/log"
 	"server/common/rds"
 )
 
-func AddRoomMgr(mgrId int32) {
-	rds.Ins.SAdd(context.Background(), RoomMgrKey(), mgrId, 0)
+func AddRoom(roomId, allianceId int32) {
+	rds.Ins.SAdd(context.Background(), RoomsKey(allianceId), roomId)
 }
 
-func DelRoomMgr(mgrId int32) {
-	rds.Ins.SRem(context.Background(), RoomMgrKey(), mgrId, 0)
+func DelRoom(roomId, allianceId int32) {
+	rds.Ins.SRem(context.Background(), RoomsKey(allianceId), roomId)
 }
 
-var (
-	cursor     uint64 = -1
-	cursorLock sync.Locker
-)
-
-func GetRoomMgrId() int32 {
-	cursorLock.Lock()
-	defer cursorLock.Unlock()
-
-	if cursor == -1 {
-		num, err := rds.Ins.SCard(context.Background(), RoomMgrKey()).Result()
-		if num == 0 {
-			log.Warnw("room mgr num == 0", "err", err)
-			return -1
-		}
-		cursor = uint64(rand.Intn(int(num)))
-	}
-
-	result, cur, err := rds.Ins.SScan(context.Background(), RoomMgrKey(), cursor, "", 1).Result()
+func RoomList(allianceId int32) (roomIds []int32) {
+	arr, err := rds.Ins.SMembers(context.Background(), RoomsKey(allianceId)).Result()
 	if err != nil {
-		log.Errorw("redis sscan room mgr failed", "cursor", cursor, "err", err)
-		return -1
+		log.Errorw("rds op room list failed", "err", err)
+		return nil
 	}
 
-	cursor = cur
-	if len(result) > 0 {
-		return cast.ToInt32(result[0])
+	for _, v := range arr {
+		roomIds = append(roomIds, cast.ToInt32(v))
 	}
 
-	log.Errorw("can not find room mgr", "cursor", cursor)
-	return -1
+	return roomIds
 }

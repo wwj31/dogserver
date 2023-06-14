@@ -8,8 +8,7 @@ import "type.proto";
 message RoomInfo {
     int32 Id                    = 1;
     GameType GameType           = 2;
-    PlayerInfo Creator          = 3; // 创建者
-    repeated PlayerInfo Players = 4; // 房间内的成员信息
+    repeated PlayerInfo Players = 3; // 房间内的成员信息
 }
 
 // 创建房间
@@ -26,6 +25,13 @@ message DisbandRoomReq {// tag:player
 }
 message DisbandRoomRsp {
     int32 Id = 1;
+}
+
+// 房间列表
+message RoomListReq {// tag:player
+}
+message RoomListRsp {
+    repeated RoomInfo RoomList = 1;
 }
 
 // 加入房间

@@ -37,7 +37,7 @@ var _ = router.Reg(func(r *room.Room, msg *inner.DisbandRoomReq) any {
 		return &inner.Error{ErrorCode: int32(outer.ERROR_ROOM_HAS_PLAYER_CAN_NOT_DISBAND)}
 	}
 
-	r.Stop()
+	r.Disband()
 	r.Exit()
 	return &inner.DisbandRoomRsp{}
 })

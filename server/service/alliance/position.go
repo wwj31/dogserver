@@ -6,6 +6,7 @@ type Position int32
 
 const (
 	Normal       Position = iota + 1 // 普通成员
+	ViceCaptain                      // 小队长
 	Captain                          // 队长
 	Manager                          // 管理员
 	DeputyMaster                     // 副盟主
