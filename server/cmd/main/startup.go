@@ -29,6 +29,7 @@ import (
 	"server/common/toml"
 	_ "server/controller/alliance"
 	_ "server/controller/player"
+	_ "server/controller/room"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
 	"server/service/game"

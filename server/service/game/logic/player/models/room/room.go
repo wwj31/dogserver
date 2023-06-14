@@ -25,14 +25,10 @@ func (s *Room) OnLogin(first bool, enterGameRsp *outer.EnterGameRsp) {
 
 	}
 
-	var (
-		clear    bool
-		roomInfo *inner.RoomInfo
-	)
-
+	var clear bool
 	// 玩家重登，检查房间是否有效
 	if s.RoomInfo != nil && s.RoomInfo.RoomId != 0 {
-		roomActor := actortype.RoomMgrName(s.RoomInfo.RoomId)
+		roomActor := actortype.RoomName(s.RoomInfo.RoomId)
 		v, err := s.Player.RequestWait(roomActor, &inner.RoomLoginReq{
 			Player: s.Player.PlayerInfo(),
 		})
@@ -56,12 +52,12 @@ func (s *Room) OnLogin(first bool, enterGameRsp *outer.EnterGameRsp) {
 		}
 	}
 
-	enterGameRsp.RoomInfo = convert.RoomInfoInnerToOuter(roomInfo)
+	enterGameRsp.RoomInfo = convert.RoomInfoInnerToOuter(s.RoomInfo)
 }
 
 func (s *Room) OnLogout() {
 	if s.RoomInfo != nil && s.RoomInfo.RoomId != 0 {
-		roomActor := actortype.RoomMgrName(s.RoomInfo.RoomId)
+		roomActor := actortype.RoomName(s.RoomInfo.RoomId)
 		err := s.Player.Send(roomActor, &inner.RoomLogoutReq{ShortId: s.Player.Role().ShortId()})
 		if err != nil {
 			log.Warnw("logout room rsp failed",

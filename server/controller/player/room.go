@@ -26,7 +26,7 @@ var _ = router.Reg(func(player *player.Player, msg *outer.CreateRoomReq) any {
 	}
 	createRoomRsp := v.(*inner.CreateRoomRsp)
 
-	player.Room().SetRoomInfo(createRoomRsp.RoomInfo)
+	//player.Room().SetRoomInfo(createRoomRsp.RoomInfo)
 	roomInfo := convert.RoomInfoInnerToOuter(createRoomRsp.RoomInfo)
 	return &outer.CreateRoomRsp{Room: roomInfo}
 })

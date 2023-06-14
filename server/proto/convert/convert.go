@@ -9,6 +9,9 @@ import (
 )
 
 func RoomInfoInnerToOuter(roomInfo *inner.RoomInfo) *outer.RoomInfo {
+	if roomInfo == nil {
+		return nil
+	}
 	var players []*outer.PlayerInfo
 	for _, v := range roomInfo.Players {
 		players = append(players, PlayerInnerToOuter(v))
@@ -24,6 +27,9 @@ func RoomInfoInnerToOuter(roomInfo *inner.RoomInfo) *outer.RoomInfo {
 }
 
 func PlayerInnerToOuter(player *inner.PlayerInfo) *outer.PlayerInfo {
+	if player == nil {
+		return nil
+	}
 	return &outer.PlayerInfo{
 		RID:        player.RID,
 		ShortId:    player.ShortId,
