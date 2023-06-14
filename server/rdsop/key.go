@@ -2,22 +2,21 @@ package rdsop
 
 import (
 	"fmt"
-	"github.com/spf13/cast"
 )
 
 // LockLoginKey 登录流程用的分布式，防止并发登录，保证单个玩家登录都是同步的
 func LockLoginKey(key string) string {
-	return "lock:login:" + key
+	return fmt.Sprintf("lock:login:%v", key)
 }
 
 // SessionKey 用于查找在线玩家推送消息、以及顶号相关处理
 func SessionKey(rid string) string {
-	return "session:" + rid
+	return fmt.Sprintf("session:%v", rid)
 }
 
 // GameNodeKey 记录玩家最近一次进入的game节点
 func GameNodeKey(shortId int64) string {
-	return "gameNode:" + cast.ToString(shortId)
+	return fmt.Sprintf("gameNode:%v", shortId)
 }
 
 // ShortIDKey 获得并从库里删除一个随机短ID
@@ -47,5 +46,10 @@ func DeleteAlliancesKey() string {
 
 // JoinAllianceKey 不在线的玩家，记录进入联盟id
 func JoinAllianceKey(shortId int64) string {
-	return "joinalliance:" + cast.ToString(shortId)
+	return fmt.Sprintf("joinalliance:%v", shortId)
+}
+
+// RoomMgrKey 所有房间管理器节点
+func RoomMgrKey() string {
+	return "roomMgr"
 }

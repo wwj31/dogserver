@@ -3,6 +3,7 @@ package rdsop
 import (
 	"context"
 
+	"github.com/go-redis/redis/v9"
 	"github.com/spf13/cast"
 
 	"server/common/log"
@@ -10,8 +11,15 @@ import (
 )
 
 func BindAgent(up, down int64) {
-	SetAgentUp(down, up)
-	AddAgentDown(up, down)
+	pip := rds.Ins.TxPipeline()
+	SetAgentUp(down, up, pip)
+	AddAgentDown(up, down, pip)
+
+	if _, err := pip.Exec(context.Background()); err != nil {
+		log.Errorw("bind agent pip exec failed", "err", err, "up", up, "down", down)
+		return
+	}
+
 	log.Infow("BindAgent", "up", up, "down", down)
 }
 
@@ -22,12 +30,20 @@ func UnbindAgent(shortId int64) {
 }
 
 // SetAgentUp 设置上级
-func SetAgentUp(shortId, up int64) {
+func SetAgentUp(shortId, up int64, pipeline ...redis.Pipeliner) {
 	if shortId == 0 || up == 0 || shortId == up {
 		log.Errorw("set agent up failed", "shortId", shortId, "up")
 		return
 	}
-	rds.Ins.Set(context.Background(), AgentUpKey(shortId), cast.ToString(up), 0)
+
+	var cmdAble redis.Cmdable
+	if len(pipeline) > 0 {
+		cmdAble = pipeline[0]
+	} else {
+		cmdAble = rds.Ins
+	}
+
+	cmdAble.Set(context.Background(), AgentUpKey(shortId), cast.ToString(up), 0)
 }
 
 // AgentUp 获得上级
@@ -68,12 +84,20 @@ func AgentUpAll(shortId int64) (upAll []int64) {
 }
 
 // AddAgentDown 添加下级
-func AddAgentDown(shortId int64, down ...interface{}) {
-	if len(down) == 0 || shortId == 0 {
+func AddAgentDown(shortId int64, down interface{}, pipeline ...redis.Pipeliner) {
+	if down == 0 || shortId == 0 {
 		log.Errorw("add agent down failed", "shortId", shortId, "down", down)
 		return
 	}
-	rds.Ins.SAdd(context.Background(), AgentDownKey(shortId), down...)
+
+	var cmdAble redis.Cmdable
+	if len(pipeline) > 0 {
+		cmdAble = pipeline[0]
+	} else {
+		cmdAble = rds.Ins
+	}
+
+	cmdAble.SAdd(context.Background(), AgentDownKey(shortId), down)
 }
 
 // AgentDown 获得下级 downNum 获取至第几层级，不填表示全部获取

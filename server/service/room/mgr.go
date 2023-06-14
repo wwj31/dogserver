@@ -9,6 +9,7 @@ import (
 
 	"server/common/log"
 	"server/common/router"
+	"server/rdsop"
 )
 
 func NewMgr(appId int32) *Mgr {
@@ -27,7 +28,14 @@ type Mgr struct {
 func (m *Mgr) OnInit() {
 	m.Rooms = make(map[int32]*Room, 8)
 	router.Result(m, m.responseHandle)
+	rdsop.AddRoomMgr(m.appId)
 	log.Debugf("RoomMgr OnInit")
+}
+
+func (m *Mgr) OnStop() bool {
+	rdsop.DelRoomMgr(m.appId)
+	log.Debugf("RoomMgr stop %v", m.appId)
+	return true
 }
 
 func (m *Mgr) responseHandle(resultMsg any) {
