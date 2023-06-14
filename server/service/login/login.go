@@ -44,10 +44,9 @@ func (s *Login) OnInit() {
 	s.allGameNode = make(map[string]struct{})
 
 	s.System().OnEvent(s.ID(), func(ev event.EvNewActor) {
-		// 维护可用的所有game节点
-		log.Infow("new node ", "actor", ev.ActorId)
-
 		if actortype.IsActorOf(ev.ActorId, actortype.GameActor) {
+			// 维护可用的所有game节点
+			log.Infow("new game node ", "actor", ev.ActorId)
 			s.allGameNode[ev.ActorId] = struct{}{}
 		}
 	})
