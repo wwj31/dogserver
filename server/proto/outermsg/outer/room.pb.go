@@ -20,6 +20,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// 房间信息
 type RoomInfo struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -531,6 +532,7 @@ func (*LeaveRoomRsp) Descriptor() ([]byte, []int) {
 	return file_room_proto_rawDescGZIP(), []int{10}
 }
 
+// 通知类消息
 type RoomPlayerEnterNtf struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

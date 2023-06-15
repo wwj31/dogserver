@@ -5,6 +5,7 @@ option  go_package = "/outer";
 import "base.proto";
 import "type.proto";
 
+// 房间信息
 message RoomInfo {
     int32 Id                    = 1;
     GameType GameType           = 2;
@@ -49,6 +50,7 @@ message LeaveRoomRsp {
 }
 
 
+// 通知类消息
 message RoomPlayerEnterNtf {// 房间进入新玩家通知
     PlayerInfo Player = 1;
 }
