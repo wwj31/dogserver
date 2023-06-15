@@ -189,6 +189,7 @@ func (p *Player) PlayerInfo() *inner.PlayerInfo {
 		UpShortId:  p.Role().UpShortId(),
 		AllianceId: p.Alliance().AllianceId(),
 		Position:   p.Alliance().Position(),
+		RoomId:     p.Room().RoomId(),
 		LoginAt:    tools.TimeFormat(p.Role().LoginAt()),
 		LogoutAt:   tools.TimeFormat(p.Role().LogoutAt()),
 		GSession:   p.gSession.String(),

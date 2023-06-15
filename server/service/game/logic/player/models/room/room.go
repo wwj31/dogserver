@@ -68,5 +68,10 @@ func (s *Room) OnLogout() {
 	}
 }
 
-func (s *Room) RoomId() int32                    { return s.RoomInfo.RoomId }
+func (s *Room) RoomId() int32 {
+	if s.RoomInfo == nil {
+		return 0
+	}
+	return s.RoomInfo.RoomId
+}
 func (s *Room) SetRoomInfo(info *inner.RoomInfo) { s.RoomInfo = info }

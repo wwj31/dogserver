@@ -8,6 +8,18 @@ import (
 	"server/service/room"
 )
 
+// 解散房间
+var _ = router.Reg(func(r *room.Room, msg *inner.DisbandRoomReq) any {
+	// 房间还有人，不能解散
+	if len(r.Players) > 0 {
+		return outer.ERROR_ROOM_HAS_PLAYER_CAN_NOT_DISBAND
+	}
+
+	r.Disband()
+	r.Exit()
+	return &inner.DisbandRoomRsp{}
+})
+
 // 获得房间信息
 var _ = router.Reg(func(r *room.Room, msg *inner.RoomInfoReq) any {
 	return &inner.RoomInfoRsp{RoomInfo: r.Info()}
@@ -15,31 +27,32 @@ var _ = router.Reg(func(r *room.Room, msg *inner.RoomInfoReq) any {
 
 // 加入房间
 var _ = router.Reg(func(r *room.Room, msg *inner.JoinRoomReq) any {
+	if !r.CanEnter() {
+		return outer.ERROR_ROOM_CAN_NOT_ENTER
+	}
+
+	// 玩家不在房间所属联盟中
+	if r.AllianceId != msg.Player.AllianceId {
+		return outer.ERROR_PLAYER_ALREADY_IN_ROOM
+	}
+
 	// 玩家已在房间内
 	if r.FindPlayer(msg.Player.ShortId) != nil {
-		return &inner.Error{ErrorCode: int32(outer.ERROR_PLAYER_ALREADY_IN_ROOM)}
+		return outer.ERROR_PLAYER_ALREADY_IN_ROOM
 	}
 
+	// 房间满员
 	if r.IsFull() {
-		return &inner.Error{ErrorCode: int32(outer.ERROR_ROOM_WAS_FULL_CAN_NOT_ENTER)}
+		return outer.ERROR_ROOM_WAS_FULL_CAN_NOT_ENTER
 	}
 
-	// TODO 其他进入房间的条件
+	// TODO 进入房间的其他条件
 
-	r.AddPlayer(msg.Player)
+	if err := r.AddPlayer(msg.Player); err != nil {
+		return err
+	}
+
 	return &inner.JoinRoomRsp{RoomInfo: r.Info()}
-})
-
-// 解散房间
-var _ = router.Reg(func(r *room.Room, msg *inner.DisbandRoomReq) any {
-	// 房间还有人，不能解散
-	if len(r.Players) > 0 {
-		return &inner.Error{ErrorCode: int32(outer.ERROR_ROOM_HAS_PLAYER_CAN_NOT_DISBAND)}
-	}
-
-	r.Disband()
-	r.Exit()
-	return &inner.DisbandRoomRsp{}
 })
 
 // 离开房间
@@ -50,7 +63,13 @@ var _ = router.Reg(func(r *room.Room, msg *inner.LeaveRoomReq) any {
 		return &inner.LeaveRoomRsp{}
 	}
 
+	// 房间当前状态不能离开
+	if !r.CanLeave() {
+		return outer.ERROR_ROOM_CAN_NOT_LEAVE
+	}
+
 	// TODO ...
+	r.DelPlayer(msg.ShortId)
 	return &inner.LeaveRoomRsp{}
 })
 

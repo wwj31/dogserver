@@ -1,6 +1,10 @@
 package player
 
 import (
+	"sync"
+	"sync/atomic"
+	"time"
+
 	"server/common"
 	"server/common/actortype"
 	"server/common/log"
@@ -11,9 +15,6 @@ import (
 	"server/rdsop"
 	"server/service/alliance"
 	"server/service/game/logic/player"
-	"sync"
-	"sync/atomic"
-	"time"
 )
 
 // 创建房间
@@ -129,11 +130,25 @@ var _ = router.Reg(func(p *player.Player, msg *outer.JoinRoomReq) any {
 
 	p.Room().SetRoomInfo(joinRoomRsp.RoomInfo)
 	roomInfo := convert.RoomInfoInnerToOuter(joinRoomRsp.RoomInfo)
+	p.UpdateInfoToRedis()
 	return &outer.JoinRoomRsp{Room: roomInfo}
 })
 
 // 离开房间
-var _ = router.Reg(func(player *player.Player, msg *outer.LeaveRoomReq) any {
+var _ = router.Reg(func(p *player.Player, msg *outer.LeaveRoomReq) any {
+	if p.Room().RoomId() == 0 {
+		return outer.ERROR_PLAYER_NOT_IN_ROOM
+	}
+
 	// TODO ...
+
+	roomActor := actortype.RoomName(p.Room().RoomId())
+	v, err := p.RequestWait(roomActor, &inner.LeaveRoomReq{ShortId: p.Role().ShortId()})
+	if yes, code := common.IsErr(v, err); yes {
+		return code
+	}
+
+	p.Room().SetRoomInfo(nil)
+	p.UpdateInfoToRedis()
 	return &outer.LeaveRoomRsp{}
 })

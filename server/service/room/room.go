@@ -1,9 +1,11 @@
 package room
 
 import (
+	"reflect"
+
 	"github.com/golang/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
-	"reflect"
+
 	"server/rdsop"
 
 	"server/common"
@@ -81,7 +83,12 @@ func (r *Room) OnHandle(msg actor.Message) {
 func (r *Room) responseHandle(resultMsg any) {
 	msg, ok := resultMsg.(proto.Message)
 	if !ok {
-		return
+		var errCode outer.ERROR
+		errCode, ok = resultMsg.(outer.ERROR)
+		if !ok {
+			return
+		}
+		msg = &inner.Error{ErrorCode: int32(errCode)}
 	}
 
 	var err error
@@ -100,6 +107,20 @@ func (r *Room) responseHandle(resultMsg any) {
 
 func (r *Room) IsFull() bool { return len(r.Players) >= gameMaxPlayers[r.GameType] }
 func (r *Room) Disband()     { r.stopping = true }
+
+func (r *Room) CanEnter() bool {
+	if r.stopping {
+		return false
+	}
+
+	// TODO 游戏状态中,不能进入
+	return true
+}
+
+func (r *Room) CanLeave() bool {
+	// TODO 游戏状态中,不能离开
+	return true
+}
 
 func (r *Room) FindPlayer(shortId int64) *Player {
 	for _, v := range r.Players {
@@ -128,7 +149,7 @@ func (r *Room) DelPlayer(shortId int64) {
 			r.Players = append(r.Players[:i], r.Players[i+1:]...)
 			ntf = true
 			log.Infow("room del player", "roomId", r.RoomId, "shortId", shortId)
-			return
+			break
 		}
 	}
 

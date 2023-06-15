@@ -19,9 +19,10 @@ message PlayerInfo{
     int32  AllianceId = 6;
     int32  Position   = 7;
     int64  UpShortId  = 8;
-    string LoginAt    = 9;
-    string LogoutAt   = 10;
-    string GSession   = 11;
+    int32  RoomId     = 9;
+    string LoginAt    = 10;
+    string LogoutAt   = 11;
+    string GSession   = 12;
 }
 
 
