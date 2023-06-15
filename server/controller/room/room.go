@@ -83,6 +83,7 @@ var _ = router.Reg(func(r *room.Room, msg *inner.RoomLoginReq) any {
 	}
 
 	p.PlayerInfo = msg.Player
+	r.Broadcast(&outer.RoomPlayerOnlineNtf{ShortId: p.ShortId, Online: true})
 	return &inner.RoomLoginRsp{RoomInfo: r.Info()}
 })
 
@@ -95,5 +96,6 @@ var _ = router.Reg(func(r *room.Room, msg *inner.RoomLogoutReq) any {
 	}
 	p.GSession = ""
 
+	r.Broadcast(&outer.RoomPlayerOnlineNtf{ShortId: msg.GetShortId(), Online: false})
 	return &inner.RoomLogoutRsp{}
 })

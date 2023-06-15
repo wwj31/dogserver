@@ -58,5 +58,6 @@ message RoomPlayerLeaveNtf {// 房间内玩家离开通知
     int64 ShortId = 1;
 }
 message RoomPlayerOnlineNtf {// 房间内玩家上、下线通知
-    bool Online = 1; // true在线、false离线
+    int64 ShortId = 1;
+    bool Online   = 2; // true在线、false离线
 }
