@@ -123,8 +123,19 @@ func AgentDown(shortId int64, downNum ...int) (down []int64) {
 		if len(ids) == 0 {
 			break
 		}
+
+		pip := rds.Ins.Pipeline()
 		for _, id := range ids {
-			all, _ := rds.Ins.SMembers(context.Background(), AgentDownKey(id)).Result()
+			pip.SMembers(context.Background(), AgentUpKey(id))
+		}
+		results, err := pip.Exec(context.Background())
+		if err != nil {
+			log.Warnw("get down members failed", "err", err)
+			break
+		}
+
+		for _, cmd := range results {
+			all, _ := cmd.(*redis.StringSliceCmd).Result()
 			if len(all) == 0 {
 				continue
 			}
