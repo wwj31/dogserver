@@ -21,3 +21,24 @@ message PlayerInfo {
     int64    LogoutAt    = 9;  // 离线时间(秒)
     int64    UpShortId   = 10; // 上级id
 }
+
+// 游戏参数
+message GameParams {
+    MahjongParams Mahjong = 1;
+    DDZParams     DDZ     = 2;
+}
+
+// 麻将
+message MahjongParams{
+    int32 ZiMoJia            = 1; // 自摸 0.自摸加番、1.自摸加底
+    int32 DianGangHua        = 2; // 点杠花 0.点炮、1.自摸
+    int32 HuanSanZhang       = 3; // 换三张 0.同花色换三张、1.任意换三张、2.无换三张
+    bool  YaoJiuDui          = 4; // 幺九将对
+    bool  MenQingZhongZhang  = 5; // 门清中张
+    bool  TianDiHu           = 6; // 天地胡
+    bool  DianPaoPingHu      = 7; // 点炮可平胡
+}
+
+// 斗地主
+message DDZParams{
+}

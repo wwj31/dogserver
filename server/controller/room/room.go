@@ -73,6 +73,28 @@ var _ = router.Reg(func(r *room.Room, msg *inner.LeaveRoomReq) any {
 	return &inner.LeaveRoomRsp{}
 })
 
+// 准备\取消准备状态
+var _ = router.Reg(func(r *room.Room, msg *inner.ReadyReq) any {
+	// 玩家不在房间内
+	p := r.FindPlayer(msg.ShortId)
+	if p == nil {
+		log.Warnw("leave the room cannot find player", "roomId", r.RoomId, "msg", msg.ShortId)
+		return outer.ERROR_PLAYER_NOT_IN_ROOM
+	}
+
+	// 房间当前状态不能切换准备
+	if !r.CanReady() {
+		return outer.ERROR_ROOM_CAN_NOT_READY
+	}
+
+	p.Ready = msg.Ready
+	r.Broadcast(&outer.RoomPlayerReadyNtf{
+		ShortId: p.ShortId,
+		Ready:   msg.Ready,
+	})
+	return &inner.LeaveRoomRsp{}
+})
+
 // 上线通知
 var _ = router.Reg(func(r *room.Room, msg *inner.RoomLoginReq) any {
 	p := r.FindPlayer(msg.Player.GetShortId())

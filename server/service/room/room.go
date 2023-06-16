@@ -21,10 +21,11 @@ var gameMaxPlayers = map[int32]int{
 	1: 3,
 }
 
-func New(roomId, gameType int32, creator *inner.PlayerInfo) *Room {
+func New(roomId int32, creator *inner.PlayerInfo, gameType int32, params *outer.GameParams) *Room {
 	r := &Room{
 		RoomId:         roomId,
 		GameType:       gameType,
+		GameParams:     params,
 		CreatorShortId: creator.ShortId,
 		AllianceId:     creator.AllianceId,
 	}
@@ -35,6 +36,7 @@ func New(roomId, gameType int32, creator *inner.PlayerInfo) *Room {
 type (
 	Player struct {
 		*inner.PlayerInfo
+		Ready bool
 	}
 
 	Room struct {
@@ -43,9 +45,10 @@ type (
 		stopping   bool
 
 		RoomId         int32
-		GameType       int32 // 游戏类型
-		CreatorShortId int64 // 房间创建者
-		AllianceId     int32 // 归属联盟
+		GameType       int32             // 游戏类型
+		GameParams     *outer.GameParams // 游戏参数
+		CreatorShortId int64             // 房间创建者
+		AllianceId     int32             // 归属联盟
 
 		Players []*Player
 	}
@@ -122,6 +125,11 @@ func (r *Room) CanLeave() bool {
 	return true
 }
 
+func (r *Room) CanReady() bool {
+	// TODO 游戏状态中,不能离开
+	return true
+}
+
 func (r *Room) FindPlayer(shortId int64) *Player {
 	for _, v := range r.Players {
 		if v.ShortId == shortId {
@@ -136,8 +144,15 @@ func (r *Room) AddPlayer(playerInfo *inner.PlayerInfo) *inner.Error {
 		return &inner.Error{ErrorCode: int32(outer.ERROR_PLAYER_ALREADY_IN_ROOM)}
 	}
 
-	r.Broadcast(&outer.RoomPlayerEnterNtf{Player: convert.PlayerInnerToOuter(playerInfo)})
-	r.Players = append(r.Players, &Player{PlayerInfo: playerInfo})
+	r.Players = append(r.Players, &Player{
+		PlayerInfo: playerInfo,
+		Ready:      false,
+	})
+
+	r.Broadcast(&outer.RoomPlayerEnterNtf{Player: &outer.RoomPlayerInfo{
+		BaseInfo: convert.PlayerInnerToOuter(playerInfo),
+		Ready:    false,
+	}})
 	log.Infow("room add player", "roomId", r.RoomId, "player", playerInfo.ShortId)
 	return nil
 }
@@ -174,15 +189,24 @@ func (r *Room) Broadcast(msg proto.Message, ignore ...int64) {
 }
 
 func (r *Room) Info() *inner.RoomInfo {
-	var players []*inner.PlayerInfo
-	for _, v := range r.Players {
-		players = append(players, v.PlayerInfo)
+	var players []*inner.RoomPlayerInfo
+	for _, player := range r.Players {
+		players = append(players, player.InnerPB())
 	}
 
+	gameParamsBytes, _ := proto.Marshal(r.GameParams)
 	return &inner.RoomInfo{
 		RoomId:         r.RoomId,
 		GameType:       r.GameType,
+		GameParams:     gameParamsBytes,
 		CreatorShortId: r.CreatorShortId,
 		Players:        players,
+	}
+}
+
+func (p *Player) InnerPB() *inner.RoomPlayerInfo {
+	return &inner.RoomPlayerInfo{
+		BaseInfo: p.PlayerInfo,
+		Ready:    p.Ready,
 	}
 }

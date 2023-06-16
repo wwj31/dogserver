@@ -32,6 +32,7 @@ enum ERROR {
    PLAYER_NOT_IN_ROOM               = 26; // 玩家没有房间
    ROOM_CAN_NOT_ENTER               = 27; // 房间当前不能进入
    ROOM_CAN_NOT_LEAVE               = 28; // 房间当前不能退出
+   ROOM_CAN_NOT_READY               = 29; // 房间当前不能切换准备状态
 }
 
 message FailRsp {

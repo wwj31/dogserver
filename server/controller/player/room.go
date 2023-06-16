@@ -5,6 +5,8 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/gogo/protobuf/proto"
+
 	"server/common"
 	"server/common/actortype"
 	"server/common/log"
@@ -19,6 +21,10 @@ import (
 
 // 创建房间
 var _ = router.Reg(func(player *player.Player, msg *outer.CreateRoomReq) any {
+	if msg.GameParams == nil {
+		return outer.ERROR_MSG_REQ_PARAM_INVALID
+	}
+
 	if player.Alliance().Position() != alliance.Master.Int32() {
 		return outer.ERROR_PLAYER_POSITION_LIMIT
 	}
@@ -28,10 +34,11 @@ var _ = router.Reg(func(player *player.Player, msg *outer.CreateRoomReq) any {
 		return outer.ERROR_FAILED
 	}
 
-	roomMgrActor := actortype.RoomMgrName(roomMgrId)
-	v, err := player.RequestWait(roomMgrActor, &inner.CreateRoomReq{
-		GameType: msg.GameType.Int32(),
-		Creator:  player.PlayerInfo(),
+	gameParamsBytes, _ := proto.Marshal(msg.GetGameParams())
+	v, err := player.RequestWait(actortype.RoomMgrName(roomMgrId), &inner.CreateRoomReq{
+		GameType:   msg.GameType.Int32(),
+		Creator:    player.PlayerInfo(),
+		GameParams: gameParamsBytes,
 	})
 	if yes, code := common.IsErr(v, err); yes {
 		return code
@@ -151,4 +158,22 @@ var _ = router.Reg(func(p *player.Player, msg *outer.LeaveRoomReq) any {
 	p.Room().SetRoomInfo(nil)
 	p.UpdateInfoToRedis()
 	return &outer.LeaveRoomRsp{}
+})
+
+// 准备、取消准备
+var _ = router.Reg(func(p *player.Player, msg *outer.ReadyReq) any {
+	if p.Room().RoomId() == 0 {
+		return outer.ERROR_PLAYER_NOT_IN_ROOM
+	}
+
+	roomActor := actortype.RoomName(p.Room().RoomId())
+	v, err := p.RequestWait(roomActor, &inner.ReadyReq{
+		ShortId: p.Role().ShortId(),
+		Ready:   msg.Ready,
+	})
+	if yes, code := common.IsErr(v, err); yes {
+		return code
+	}
+
+	return &outer.ReadyRsp{Ready: msg.Ready}
 })

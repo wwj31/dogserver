@@ -5,16 +5,24 @@ option  go_package = "/outer";
 import "base.proto";
 import "type.proto";
 
+// 房间内玩家数据
+message RoomPlayerInfo {
+    PlayerInfo BaseInfo = 1; // 玩家基础信息
+    bool       Ready    = 2; // true.准备、false.取消准备
+}
+
 // 房间信息
 message RoomInfo {
-    int32 Id                    = 1;
-    GameType GameType           = 2;
-    repeated PlayerInfo Players = 3; // 房间内的成员信息
+    int32 Id                        = 1;
+    GameType   GameType             = 2;
+    GameParams GameParams           = 3;
+    repeated RoomPlayerInfo Players = 4; // 房间内的成员信息
 }
 
 // 创建房间
 message CreateRoomReq {// tag:player
-    GameType GameType = 1;
+    GameType GameType     = 1;
+    GameParams GameParams = 2; // 游戏参数
 }
 message CreateRoomRsp {
     RoomInfo Room = 1;
@@ -49,15 +57,28 @@ message LeaveRoomReq {// tag:player
 message LeaveRoomRsp {
 }
 
+// 准备\取消
+message ReadyReq {// tag:player
+    bool Ready = 1; // true.准备、false.取消准备
+}
+message ReadyRsp {
+    bool Ready = 1;
+}
+
+
 
 // 通知类消息
 message RoomPlayerEnterNtf {// 房间进入新玩家通知
-    PlayerInfo Player = 1;
+    RoomPlayerInfo Player = 1;
 }
 message RoomPlayerLeaveNtf {// 房间内玩家离开通知
     int64 ShortId = 1;
 }
 message RoomPlayerOnlineNtf {// 房间内玩家上、下线通知
     int64 ShortId = 1;
-    bool Online   = 2; // true在线、false离线
+    bool  Online  = 2; // true在线、false离线
+}
+message RoomPlayerReadyNtf {// 房间内玩家准备、取消准备通知
+    int64 ShortId = 1;
+    bool  Ready   = 2; // true.准备、false.取消准备
 }

@@ -1,10 +1,15 @@
 package room
 
 import (
+	"fmt"
+
+	"github.com/gogo/protobuf/proto"
+
 	"server/common"
 	"server/common/actortype"
 	"server/common/log"
 	"server/proto/innermsg/inner"
+	"server/proto/outermsg/outer"
 	"server/service/room"
 
 	"server/common/router"
@@ -12,12 +17,19 @@ import (
 
 // 创建房间
 var _ = router.Reg(func(mgr *room.Mgr, msg *inner.CreateRoomReq) any {
-	roomId := mgr.RoomId()
-	newRoom := room.New(roomId, msg.GameType, msg.Creator)
+	if msg.GameParams == nil {
+		return &inner.Error{ErrorInfo: fmt.Errorf("game params is nil").Error()}
+	}
+
+	gameParams := &outer.GameParams{}
+	if err := proto.Unmarshal(msg.GetGameParams(), gameParams); err != nil {
+		return &inner.Error{ErrorInfo: err.Error()}
+	}
+
+	newRoom := room.New(mgr.RoomId(), msg.Creator, msg.GameType, gameParams)
 	_ = mgr.AddRoom(newRoom)
 
-	roomActor := actortype.RoomName(roomId)
-
+	roomActor := actortype.RoomName(mgr.RoomId())
 	if err := mgr.System().NewActor(roomActor, newRoom); err != nil {
 		log.Errorw("create room failed", "msg", msg, "err", err)
 		return &inner.Error{ErrorInfo: err.Error()}

@@ -17,6 +17,7 @@ func Put(name string, x interface{}) {}
 var spawner = map[string]factory{
 	"inner.SetMemberPositionRsp":  func() interface{} { return &SetMemberPositionRsp{} },
 	"inner.SetMemberPositionReq":  func() interface{} { return &SetMemberPositionReq{} },
+	"inner.RoomPlayerInfo":        func() interface{} { return &RoomPlayerInfo{} },
 	"inner.RoomLogoutRsp":         func() interface{} { return &RoomLogoutRsp{} },
 	"inner.RoomLogoutReq":         func() interface{} { return &RoomLogoutReq{} },
 	"inner.RoomLoginRsp":          func() interface{} { return &RoomLoginRsp{} },
@@ -25,6 +26,8 @@ var spawner = map[string]factory{
 	"inner.RoomInfoReq":           func() interface{} { return &RoomInfoReq{} },
 	"inner.RoomInfo":              func() interface{} { return &RoomInfo{} },
 	"inner.RoleInfo":              func() interface{} { return &RoleInfo{} },
+	"inner.ReadyRsp":              func() interface{} { return &ReadyRsp{} },
+	"inner.ReadyReq":              func() interface{} { return &ReadyReq{} },
 	"inner.PullPlayer":            func() interface{} { return &PullPlayer{} },
 	"inner.PlayerInfo":            func() interface{} { return &PlayerInfo{} },
 	"inner.Ok":                    func() interface{} { return &Ok{} },

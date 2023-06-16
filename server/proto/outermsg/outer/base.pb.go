@@ -194,6 +194,197 @@ func (x *PlayerInfo) GetUpShortId() int64 {
 	return 0
 }
 
+// 游戏参数
+type GameParams struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Mahjong *MahjongParams `protobuf:"bytes,1,opt,name=Mahjong,proto3" json:"Mahjong,omitempty"`
+	DDZ     *DDZParams     `protobuf:"bytes,2,opt,name=DDZ,proto3" json:"DDZ,omitempty"`
+}
+
+func (x *GameParams) Reset() {
+	*x = GameParams{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_base_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GameParams) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GameParams) ProtoMessage() {}
+
+func (x *GameParams) ProtoReflect() protoreflect.Message {
+	mi := &file_base_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GameParams.ProtoReflect.Descriptor instead.
+func (*GameParams) Descriptor() ([]byte, []int) {
+	return file_base_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *GameParams) GetMahjong() *MahjongParams {
+	if x != nil {
+		return x.Mahjong
+	}
+	return nil
+}
+
+func (x *GameParams) GetDDZ() *DDZParams {
+	if x != nil {
+		return x.DDZ
+	}
+	return nil
+}
+
+// 麻将
+type MahjongParams struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	ZiMoJia           int32 `protobuf:"varint,1,opt,name=ZiMoJia,proto3" json:"ZiMoJia,omitempty"`                     // 自摸 0.自摸加番、1.自摸加底
+	DianGangHua       int32 `protobuf:"varint,2,opt,name=DianGangHua,proto3" json:"DianGangHua,omitempty"`             // 点杠花 0.点炮、1.自摸
+	HuanSanZhang      int32 `protobuf:"varint,3,opt,name=HuanSanZhang,proto3" json:"HuanSanZhang,omitempty"`           // 换三张 0.同花色换三张、1.任意换三张、2.无换三张
+	YaoJiuDui         bool  `protobuf:"varint,4,opt,name=YaoJiuDui,proto3" json:"YaoJiuDui,omitempty"`                 // 幺九将对
+	MenQingZhongZhang bool  `protobuf:"varint,5,opt,name=MenQingZhongZhang,proto3" json:"MenQingZhongZhang,omitempty"` // 门清中张
+	TianDiHu          bool  `protobuf:"varint,6,opt,name=TianDiHu,proto3" json:"TianDiHu,omitempty"`                   // 天地胡
+	DianPaoPingHu     bool  `protobuf:"varint,7,opt,name=DianPaoPingHu,proto3" json:"DianPaoPingHu,omitempty"`         // 点炮可平胡
+}
+
+func (x *MahjongParams) Reset() {
+	*x = MahjongParams{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_base_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *MahjongParams) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MahjongParams) ProtoMessage() {}
+
+func (x *MahjongParams) ProtoReflect() protoreflect.Message {
+	mi := &file_base_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MahjongParams.ProtoReflect.Descriptor instead.
+func (*MahjongParams) Descriptor() ([]byte, []int) {
+	return file_base_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *MahjongParams) GetZiMoJia() int32 {
+	if x != nil {
+		return x.ZiMoJia
+	}
+	return 0
+}
+
+func (x *MahjongParams) GetDianGangHua() int32 {
+	if x != nil {
+		return x.DianGangHua
+	}
+	return 0
+}
+
+func (x *MahjongParams) GetHuanSanZhang() int32 {
+	if x != nil {
+		return x.HuanSanZhang
+	}
+	return 0
+}
+
+func (x *MahjongParams) GetYaoJiuDui() bool {
+	if x != nil {
+		return x.YaoJiuDui
+	}
+	return false
+}
+
+func (x *MahjongParams) GetMenQingZhongZhang() bool {
+	if x != nil {
+		return x.MenQingZhongZhang
+	}
+	return false
+}
+
+func (x *MahjongParams) GetTianDiHu() bool {
+	if x != nil {
+		return x.TianDiHu
+	}
+	return false
+}
+
+func (x *MahjongParams) GetDianPaoPingHu() bool {
+	if x != nil {
+		return x.DianPaoPingHu
+	}
+	return false
+}
+
+// 斗地主
+type DDZParams struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *DDZParams) Reset() {
+	*x = DDZParams{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_base_proto_msgTypes[4]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *DDZParams) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DDZParams) ProtoMessage() {}
+
+func (x *DDZParams) ProtoReflect() protoreflect.Message {
+	mi := &file_base_proto_msgTypes[4]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DDZParams.ProtoReflect.Descriptor instead.
+func (*DDZParams) Descriptor() ([]byte, []int) {
+	return file_base_proto_rawDescGZIP(), []int{4}
+}
+
 var File_base_proto protoreflect.FileDescriptor
 
 var file_base_proto_rawDesc = []byte{
@@ -219,8 +410,31 @@ var file_base_proto_rawDesc = []byte{
 	0x6e, 0x41, 0x74, 0x12, 0x1a, 0x0a, 0x08, 0x4c, 0x6f, 0x67, 0x6f, 0x75, 0x74, 0x41, 0x74, 0x18,
 	0x09, 0x20, 0x01, 0x28, 0x03, 0x52, 0x08, 0x4c, 0x6f, 0x67, 0x6f, 0x75, 0x74, 0x41, 0x74, 0x12,
 	0x1c, 0x0a, 0x09, 0x55, 0x70, 0x53, 0x68, 0x6f, 0x72, 0x74, 0x49, 0x64, 0x18, 0x0a, 0x20, 0x01,
-	0x28, 0x03, 0x52, 0x09, 0x55, 0x70, 0x53, 0x68, 0x6f, 0x72, 0x74, 0x49, 0x64, 0x42, 0x08, 0x5a,
-	0x06, 0x2f, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x28, 0x03, 0x52, 0x09, 0x55, 0x70, 0x53, 0x68, 0x6f, 0x72, 0x74, 0x49, 0x64, 0x22, 0x60, 0x0a,
+	0x0a, 0x47, 0x61, 0x6d, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x12, 0x2e, 0x0a, 0x07, 0x4d,
+	0x61, 0x68, 0x6a, 0x6f, 0x6e, 0x67, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x14, 0x2e, 0x6f,
+	0x75, 0x74, 0x65, 0x72, 0x2e, 0x4d, 0x61, 0x68, 0x6a, 0x6f, 0x6e, 0x67, 0x50, 0x61, 0x72, 0x61,
+	0x6d, 0x73, 0x52, 0x07, 0x4d, 0x61, 0x68, 0x6a, 0x6f, 0x6e, 0x67, 0x12, 0x22, 0x0a, 0x03, 0x44,
+	0x44, 0x5a, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x10, 0x2e, 0x6f, 0x75, 0x74, 0x65, 0x72,
+	0x2e, 0x44, 0x44, 0x5a, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52, 0x03, 0x44, 0x44, 0x5a, 0x22,
+	0xfd, 0x01, 0x0a, 0x0d, 0x4d, 0x61, 0x68, 0x6a, 0x6f, 0x6e, 0x67, 0x50, 0x61, 0x72, 0x61, 0x6d,
+	0x73, 0x12, 0x18, 0x0a, 0x07, 0x5a, 0x69, 0x4d, 0x6f, 0x4a, 0x69, 0x61, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x05, 0x52, 0x07, 0x5a, 0x69, 0x4d, 0x6f, 0x4a, 0x69, 0x61, 0x12, 0x20, 0x0a, 0x0b, 0x44,
+	0x69, 0x61, 0x6e, 0x47, 0x61, 0x6e, 0x67, 0x48, 0x75, 0x61, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05,
+	0x52, 0x0b, 0x44, 0x69, 0x61, 0x6e, 0x47, 0x61, 0x6e, 0x67, 0x48, 0x75, 0x61, 0x12, 0x22, 0x0a,
+	0x0c, 0x48, 0x75, 0x61, 0x6e, 0x53, 0x61, 0x6e, 0x5a, 0x68, 0x61, 0x6e, 0x67, 0x18, 0x03, 0x20,
+	0x01, 0x28, 0x05, 0x52, 0x0c, 0x48, 0x75, 0x61, 0x6e, 0x53, 0x61, 0x6e, 0x5a, 0x68, 0x61, 0x6e,
+	0x67, 0x12, 0x1c, 0x0a, 0x09, 0x59, 0x61, 0x6f, 0x4a, 0x69, 0x75, 0x44, 0x75, 0x69, 0x18, 0x04,
+	0x20, 0x01, 0x28, 0x08, 0x52, 0x09, 0x59, 0x61, 0x6f, 0x4a, 0x69, 0x75, 0x44, 0x75, 0x69, 0x12,
+	0x2c, 0x0a, 0x11, 0x4d, 0x65, 0x6e, 0x51, 0x69, 0x6e, 0x67, 0x5a, 0x68, 0x6f, 0x6e, 0x67, 0x5a,
+	0x68, 0x61, 0x6e, 0x67, 0x18, 0x05, 0x20, 0x01, 0x28, 0x08, 0x52, 0x11, 0x4d, 0x65, 0x6e, 0x51,
+	0x69, 0x6e, 0x67, 0x5a, 0x68, 0x6f, 0x6e, 0x67, 0x5a, 0x68, 0x61, 0x6e, 0x67, 0x12, 0x1a, 0x0a,
+	0x08, 0x54, 0x69, 0x61, 0x6e, 0x44, 0x69, 0x48, 0x75, 0x18, 0x06, 0x20, 0x01, 0x28, 0x08, 0x52,
+	0x08, 0x54, 0x69, 0x61, 0x6e, 0x44, 0x69, 0x48, 0x75, 0x12, 0x24, 0x0a, 0x0d, 0x44, 0x69, 0x61,
+	0x6e, 0x50, 0x61, 0x6f, 0x50, 0x69, 0x6e, 0x67, 0x48, 0x75, 0x18, 0x07, 0x20, 0x01, 0x28, 0x08,
+	0x52, 0x0d, 0x44, 0x69, 0x61, 0x6e, 0x50, 0x61, 0x6f, 0x50, 0x69, 0x6e, 0x67, 0x48, 0x75, 0x22,
+	0x0b, 0x0a, 0x09, 0x44, 0x44, 0x5a, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x42, 0x08, 0x5a, 0x06,
+	0x2f, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -235,19 +449,24 @@ func file_base_proto_rawDescGZIP() []byte {
 	return file_base_proto_rawDescData
 }
 
-var file_base_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_base_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_base_proto_goTypes = []interface{}{
-	(*Base)(nil),       // 0: outer.Base
-	(*PlayerInfo)(nil), // 1: outer.PlayerInfo
-	(Position)(0),      // 2: outer.Position
+	(*Base)(nil),          // 0: outer.Base
+	(*PlayerInfo)(nil),    // 1: outer.PlayerInfo
+	(*GameParams)(nil),    // 2: outer.GameParams
+	(*MahjongParams)(nil), // 3: outer.MahjongParams
+	(*DDZParams)(nil),     // 4: outer.DDZParams
+	(Position)(0),         // 5: outer.Position
 }
 var file_base_proto_depIdxs = []int32{
-	2, // 0: outer.PlayerInfo.Position:type_name -> outer.Position
-	1, // [1:1] is the sub-list for method output_type
-	1, // [1:1] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+	5, // 0: outer.PlayerInfo.Position:type_name -> outer.Position
+	3, // 1: outer.GameParams.Mahjong:type_name -> outer.MahjongParams
+	4, // 2: outer.GameParams.DDZ:type_name -> outer.DDZParams
+	3, // [3:3] is the sub-list for method output_type
+	3, // [3:3] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_base_proto_init() }
@@ -281,6 +500,42 @@ func file_base_proto_init() {
 				return nil
 			}
 		}
+		file_base_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GameParams); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_base_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*MahjongParams); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_base_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*DDZParams); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -288,7 +543,7 @@ func file_base_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_base_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

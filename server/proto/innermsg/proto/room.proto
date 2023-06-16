@@ -3,17 +3,24 @@ package inner;
 option  go_package = "/inner";
 import "base.proto";
 
+message RoomPlayerInfo{
+  PlayerInfo BaseInfo = 1;
+  bool       Ready    = 2;
+}
+
 message RoomInfo{
-  int32      RoomId           = 1;
-  int32      GameType         = 2;
-  int64      CreatorShortId   = 3; // 创建者
-  repeated PlayerInfo Players = 4;
+  int32      RoomId               = 1;
+  int32      GameType             = 2;
+  bytes      GameParams           = 3; // 游戏参数
+  int64      CreatorShortId       = 4; // 创建者
+  repeated RoomPlayerInfo Players = 5;
 }
 
 // 创建房间
 message CreateRoomReq{
-  int32      GameType = 1; // 游戏类型
-  PlayerInfo Creator  = 2; // 创建者
+  int32      GameType    = 1; // 游戏类型
+  PlayerInfo Creator     = 2; // 创建者
+  bytes      GameParams  = 3; // 游戏参数  outer.GameParams
 }
 message CreateRoomRsp{
   RoomInfo RoomInfo = 1;
@@ -46,6 +53,14 @@ message LeaveRoomReq{
   int64 ShortId = 1;
 }
 message LeaveRoomRsp{
+}
+
+// 准备状态
+message ReadyReq{
+  int64 ShortId = 1;
+  bool  Ready   = 2;
+}
+message ReadyRsp{
 }
 
 // 玩家上线，通知房间

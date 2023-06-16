@@ -48,7 +48,10 @@ enum Msg {
     IdJoinRoomRsp = 1899741298;
     IdLeaveRoomReq = 1875949722;// dispatch to player
     IdLeaveRoomRsp = 97573884;
+    IdReadyReq = 1672240365;// dispatch to player
+    IdReadyRsp = 1370243126;
     IdRoomPlayerEnterNtf = 867132366;
     IdRoomPlayerLeaveNtf = 721409295;
     IdRoomPlayerOnlineNtf = 1386944282;
+    IdRoomPlayerReadyNtf = 2052257350;
 }
