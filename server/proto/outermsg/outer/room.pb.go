@@ -437,7 +437,7 @@ type JoinRoomReq struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	RoomId int32 `protobuf:"varint,1,opt,name=RoomId,proto3" json:"RoomId,omitempty"`
+	RoomId int32 `protobuf:"varint,1,opt,name=GetRoomId,proto3" json:"GetRoomId,omitempty"`
 }
 
 func (x *JoinRoomReq) Reset() {

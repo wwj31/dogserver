@@ -8,7 +8,7 @@ import "type.proto";
 // 房间内玩家数据
 message RoomPlayerInfo {
     PlayerInfo BaseInfo = 1; // 玩家基础信息
-    bool       Ready    = 2; // true.准备、false.取消准备
+    bool       Ready    = 2; // true.准备、false.未准备
 }
 
 // 房间信息
@@ -80,5 +80,5 @@ message RoomPlayerOnlineNtf {// 房间内玩家上、下线通知
 }
 message RoomPlayerReadyNtf {// 房间内玩家准备、取消准备通知
     int64 ShortId = 1;
-    bool  Ready   = 2; // true.准备、false.取消准备
+    bool  Ready   = 2; // true.准备、false.未准备
 }

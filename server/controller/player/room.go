@@ -1,11 +1,10 @@
 package player
 
 import (
+	"github.com/golang/protobuf/proto"
 	"sync"
 	"sync/atomic"
 	"time"
-
-	"github.com/gogo/protobuf/proto"
 
 	"server/common"
 	"server/common/actortype"

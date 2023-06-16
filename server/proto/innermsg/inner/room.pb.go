@@ -75,7 +75,7 @@ func (m *RoomPlayerInfo) GetReady() bool {
 }
 
 type RoomInfo struct {
-	RoomId         int32             `protobuf:"varint,1,opt,name=RoomId,proto3" json:"RoomId,omitempty"`
+	RoomId         int32             `protobuf:"varint,1,opt,name=GetRoomId,proto3" json:"GetRoomId,omitempty"`
 	GameType       int32             `protobuf:"varint,2,opt,name=GameType,proto3" json:"GameType,omitempty"`
 	GameParams     []byte            `protobuf:"bytes,3,opt,name=GameParams,proto3" json:"GameParams,omitempty"`
 	CreatorShortId int64             `protobuf:"varint,4,opt,name=CreatorShortId,proto3" json:"CreatorShortId,omitempty"`
@@ -257,7 +257,7 @@ func (m *CreateRoomRsp) GetRoomInfo() *RoomInfo {
 
 // 解散房间
 type DisbandRoomReq struct {
-	RoomId int32 `protobuf:"varint,1,opt,name=RoomId,proto3" json:"RoomId,omitempty"`
+	RoomId int32 `protobuf:"varint,1,opt,name=GetRoomId,proto3" json:"GetRoomId,omitempty"`
 }
 
 func (m *DisbandRoomReq) Reset()         { *m = DisbandRoomReq{} }
@@ -1907,7 +1907,7 @@ func (m *RoomInfo) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RoomId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field GetRoomId", wireType)
 			}
 			m.RoomId = 0
 			for shift := uint(0); ; shift += 7 {
@@ -2307,7 +2307,7 @@ func (m *DisbandRoomReq) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RoomId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field GetRoomId", wireType)
 			}
 			m.RoomId = 0
 			for shift := uint(0); ; shift += 7 {

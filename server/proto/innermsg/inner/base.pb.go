@@ -119,7 +119,7 @@ type PlayerInfo struct {
 	AllianceId int32  `protobuf:"varint,6,opt,name=AllianceId,proto3" json:"AllianceId,omitempty"`
 	Position   int32  `protobuf:"varint,7,opt,name=Position,proto3" json:"Position,omitempty"`
 	UpShortId  int64  `protobuf:"varint,8,opt,name=UpShortId,proto3" json:"UpShortId,omitempty"`
-	RoomId     int32  `protobuf:"varint,9,opt,name=RoomId,proto3" json:"RoomId,omitempty"`
+	RoomId     int32  `protobuf:"varint,9,opt,name=GetRoomId,proto3" json:"GetRoomId,omitempty"`
 	LoginAt    string `protobuf:"bytes,10,opt,name=LoginAt,proto3" json:"LoginAt,omitempty"`
 	LogoutAt   string `protobuf:"bytes,11,opt,name=LogoutAt,proto3" json:"LogoutAt,omitempty"`
 	GSession   string `protobuf:"bytes,12,opt,name=GSession,proto3" json:"GSession,omitempty"`
@@ -1247,7 +1247,7 @@ func (m *PlayerInfo) Unmarshal(dAtA []byte) error {
 			}
 		case 9:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RoomId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field GetRoomId", wireType)
 			}
 			m.RoomId = 0
 			for shift := uint(0); ; shift += 7 {

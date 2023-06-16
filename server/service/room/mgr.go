@@ -70,7 +70,7 @@ func (m *Mgr) OnHandle(msg actor.Message) {
 	router.Dispatch(m, pt)
 }
 
-func (m *Mgr) RoomId() int32 {
+func (m *Mgr) GetRoomId() int32 {
 	m.incId++
 	return m.appId*100000 + m.incId
 }

@@ -2,8 +2,7 @@ package room
 
 import (
 	"fmt"
-
-	"github.com/gogo/protobuf/proto"
+	"github.com/golang/protobuf/proto"
 
 	"server/common"
 	"server/common/actortype"
@@ -26,10 +25,11 @@ var _ = router.Reg(func(mgr *room.Mgr, msg *inner.CreateRoomReq) any {
 		return &inner.Error{ErrorInfo: err.Error()}
 	}
 
-	newRoom := room.New(mgr.RoomId(), msg.Creator, msg.GameType, gameParams)
+	roomId := mgr.GetRoomId()
+	newRoom := room.New(roomId, msg.Creator, msg.GameType, gameParams)
 	_ = mgr.AddRoom(newRoom)
 
-	roomActor := actortype.RoomName(mgr.RoomId())
+	roomActor := actortype.RoomName(roomId)
 	if err := mgr.System().NewActor(roomActor, newRoom); err != nil {
 		log.Errorw("create room failed", "msg", msg, "err", err)
 		return &inner.Error{ErrorInfo: err.Error()}
