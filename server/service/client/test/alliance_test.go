@@ -14,7 +14,7 @@ func TestInviteAlli(t *testing.T) {
 	cli := &client.Client{Addr: *Addr, DeviceID: "wwj1"}
 	Init(cli)
 	rsp, ok := cli.Req(outer.Msg_IdInviteAllianceReq, &outer.InviteAllianceReq{
-		ShortId: 1184395,
+		ShortId: 1148716,
 	}).(*outer.InviteAllianceRsp)
 	assert.True(t, ok)
 	log.Infof("invite members rsp [%v]\n", rsp)

@@ -175,8 +175,11 @@ func (p *Player) Logout() {
 	p.SetGateSession("")
 	p.UpdateInfoToRedis()
 	p.exitTimerId = p.AddTimer(tools.XUID(), tools.Now().Add(time.Minute), func(dt time.Duration) {
+		if p.Room().RoomId() != 0 {
+			return
+		}
 		p.Exit()
-	})
+	}, -1)
 }
 
 func (p *Player) PlayerInfo() *inner.PlayerInfo {

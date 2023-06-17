@@ -3,6 +3,7 @@ package test
 import (
 	"server/common/log"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 
@@ -30,23 +31,23 @@ func TestDisbandRoom(t *testing.T) {
 }
 
 func TestRoomList(t *testing.T) {
-	cli := &client.Client{Addr: *Addr, DeviceID: "wwj1"}
+	cli := &client.Client{Addr: *Addr, DeviceID: "wwj2"}
 	Init(cli)
-	rsp, ok := cli.Req(outer.Msg_IdRoomListReq, &outer.RoomListReq{}).(*outer.RoomListRsp)
+	_, ok := cli.Req(outer.Msg_IdRoomListReq, &outer.RoomListReq{}).(*outer.RoomListRsp)
 	assert.True(t, ok)
-	log.Infof("room list rsp [%v]\n", rsp)
 }
 
 func TestJoinRoom(t *testing.T) {
-	cli := &client.Client{Addr: *Addr, DeviceID: "wwj1"}
+	cli := &client.Client{Addr: *Addr, DeviceID: "wwj2"}
 	Init(cli)
 	rsp, ok := cli.Req(outer.Msg_IdJoinRoomReq, &outer.JoinRoomReq{RoomId: 100001}).(*outer.JoinRoomRsp)
 	assert.True(t, ok)
 	log.Infof("join room rsp [%v]\n", rsp)
+	time.Sleep(30 * time.Second)
 }
 
 func TestLeaveRoom(t *testing.T) {
-	cli := &client.Client{Addr: *Addr, DeviceID: "wwj1"}
+	cli := &client.Client{Addr: *Addr, DeviceID: "wwj2"}
 	Init(cli)
 	rsp, ok := cli.Req(outer.Msg_IdLeaveRoomReq, &outer.LeaveRoomReq{}).(*outer.LeaveRoomRsp)
 	assert.True(t, ok)

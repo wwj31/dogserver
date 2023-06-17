@@ -105,7 +105,7 @@ var _ = router.Reg(func(r *room.Room, msg *inner.RoomLoginReq) any {
 	}
 
 	p.PlayerInfo = msg.Player
-	r.Broadcast(&outer.RoomPlayerOnlineNtf{ShortId: p.ShortId, Online: true})
+	r.Broadcast(&outer.RoomPlayerOnlineNtf{ShortId: p.ShortId, Online: true}, p.ShortId)
 	return &inner.RoomLoginRsp{RoomInfo: r.Info()}
 })
 
@@ -114,10 +114,10 @@ var _ = router.Reg(func(r *room.Room, msg *inner.RoomLogoutReq) any {
 	p := r.FindPlayer(msg.GetShortId())
 	if p == nil {
 		log.Warnw("room login cannot find player", "msg", msg.String())
-		return &inner.RoomLogoutRsp{}
+		return nil
 	}
 	p.GSession = ""
 
-	r.Broadcast(&outer.RoomPlayerOnlineNtf{ShortId: msg.GetShortId(), Online: false})
-	return &inner.RoomLogoutRsp{}
+	r.Broadcast(&outer.RoomPlayerOnlineNtf{ShortId: msg.GetShortId(), Online: false}, msg.GetShortId())
+	return nil
 })

@@ -173,13 +173,17 @@ func (r *Room) DelPlayer(shortId int64) {
 	}
 }
 
-func (r *Room) Broadcast(msg proto.Message, ignore ...int64) {
+func (r *Room) Broadcast(msg proto.Message, ignores ...int64) {
 	ignoreMap := make(map[int64]struct{})
-	for _, ig := range ignore {
+	for _, ig := range ignores {
 		ignoreMap[ig] = struct{}{}
 	}
 
 	for _, p := range r.Players {
+		if _, ignore := ignoreMap[p.ShortId]; ignore {
+			continue
+		}
+
 		gSession := common.GSession(p.GSession)
 		if gSession.Invalid() {
 			continue

@@ -78,7 +78,7 @@ func (u *UserSession) OnRecv(data []byte) {
 
 		err = u.SendMsg(pong)
 		u.KeepLive = time.Now()
-		log.Infow("heart ", "req", heartReq.String(), "rsp", rsp.String())
+		log.Infow("heart ", "session", u.Session.Id(), "addr", u.Session.RemoteAddr(), "player", u.PlayerId)
 		return
 	}
 

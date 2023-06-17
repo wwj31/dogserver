@@ -94,6 +94,14 @@ func (s *Client) OnHandle(m actor.Message) {
 		//})
 	case *outer.AllianceInfoNtf:
 		log.Infow("alliance info notify!", "msg", msg.String())
+	case *outer.RoomPlayerOnlineNtf:
+		log.Infow("room player online!", "msg", msg.String())
+	case *outer.RoomPlayerEnterNtf:
+		log.Infow("room player enter!", "msg", msg.String())
+	case *outer.RoomPlayerLeaveNtf:
+		log.Infow("room player leave!", "msg", msg.String())
+	case *outer.RoomPlayerReadyNtf:
+		log.Infow("room player ready!", "msg", msg.String())
 	default:
 		pb := msg.(proto.Message)
 		log.Infow("msg", "type", reflect.TypeOf(pb), "data", pb.String())
