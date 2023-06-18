@@ -41,20 +41,30 @@ func AgentDownKey(shortId int64) string {
 
 // DeleteAlliancesKey 被删除的联盟
 func DeleteAlliancesKey() string {
-	return fmt.Sprintf("deleted:alliance")
+	return fmt.Sprintf("alliance:deleted")
 }
 
 // JoinAllianceKey 不在线的玩家，记录进入联盟id
 func JoinAllianceKey(shortId int64) string {
-	return fmt.Sprintf("joinalliance:%v", shortId)
+	return fmt.Sprintf("alliance:join:%v", shortId)
 }
 
-// RoomMgrKey 所有房间管理器节点
-func RoomMgrKey() string {
-	return "roommgr"
+// RoomMgrSetKey 所有房间管理器节点
+func RoomMgrSetKey() string {
+	return "room:manager:list"
 }
 
-// RoomsKey 所有房间
-func RoomsKey(allianceId int32) string {
-	return fmt.Sprintf("room:%v", allianceId)
+// RoomsSetKey 所有房间
+func RoomsSetKey(allianceId int32) string {
+	return fmt.Sprintf("room:list:%v", allianceId)
+}
+
+// RoomsInfoKey 房间信息
+func RoomsInfoKey(roomId int64) string {
+	return fmt.Sprintf("room:info:%v", roomId)
+}
+
+// RoomsIncIdKey 房间递增ID
+func RoomsIncIdKey() string {
+	return fmt.Sprintf("room:inc_id")
 }

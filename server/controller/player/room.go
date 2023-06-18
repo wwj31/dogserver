@@ -19,12 +19,12 @@ import (
 )
 
 // 创建房间
-var _ = router.Reg(func(player *player.Player, msg *outer.CreateRoomReq) any {
+var _ = router.Reg(func(p *player.Player, msg *outer.CreateRoomReq) any {
 	if msg.GameParams == nil {
 		return outer.ERROR_MSG_REQ_PARAM_INVALID
 	}
 
-	if player.Alliance().Position() != alliance.Master.Int32() {
+	if p.Alliance().Position() != alliance.Master.Int32() {
 		return outer.ERROR_PLAYER_POSITION_LIMIT
 	}
 
@@ -34,10 +34,11 @@ var _ = router.Reg(func(player *player.Player, msg *outer.CreateRoomReq) any {
 	}
 
 	gameParamsBytes, _ := proto.Marshal(msg.GetGameParams())
-	v, err := player.RequestWait(actortype.RoomMgrName(roomMgrId), &inner.CreateRoomReq{
-		GameType:   msg.GameType.Int32(),
-		Creator:    player.PlayerInfo(),
-		GameParams: gameParamsBytes,
+	v, err := p.RequestWait(actortype.RoomMgrName(roomMgrId), &inner.CreateRoomReq{
+		GameType:       msg.GameType.Int32(),
+		CreatorShortId: p.Role().ShortId(),
+		AllianceId:     p.Alliance().AllianceId(),
+		GameParams:     gameParamsBytes,
 	})
 	if yes, code := common.IsErr(v, err); yes {
 		return code
@@ -55,12 +56,12 @@ var _ = router.Reg(func(player *player.Player, msg *outer.DisbandRoomReq) any {
 		return outer.ERROR_PLAYER_POSITION_LIMIT
 	}
 
-	roomActor := actortype.RoomName(msg.Id)
-	v, err := player.RequestWait(roomActor, &inner.DisbandRoomReq{RoomId: msg.GetId()})
+	roomActor := actortype.RoomName(msg.RoomId)
+	v, err := player.RequestWait(roomActor, &inner.DisbandRoomReq{RoomId: msg.RoomId})
 	if yes, code := common.IsErr(v, err); yes {
 		return code
 	}
-	return &outer.DisbandRoomRsp{Id: msg.Id}
+	return &outer.DisbandRoomRsp{RoomId: msg.RoomId}
 })
 
 // 房间列表

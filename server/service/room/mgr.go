@@ -1,11 +1,12 @@
 package room
 
 import (
+	"context"
 	"fmt"
-	"reflect"
-
 	"github.com/gogo/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
+	"reflect"
+	"server/common/rds"
 
 	"server/common/log"
 	"server/common/router"
@@ -19,14 +20,13 @@ func NewMgr(appId int32) *Mgr {
 type Mgr struct {
 	actor.Base
 	currentMsg actor.Message
-	incId      int32
 	appId      int32
 
-	Rooms map[int32]*Room
+	Rooms map[int64]*Room
 }
 
 func (m *Mgr) OnInit() {
-	m.Rooms = make(map[int32]*Room, 8)
+	m.Rooms = make(map[int64]*Room, 8)
 	router.Result(m, m.responseHandle)
 	rdsop.AddRoomMgr(m.appId)
 	log.Debugf("RoomMgr OnInit")
@@ -70,9 +70,13 @@ func (m *Mgr) OnHandle(msg actor.Message) {
 	router.Dispatch(m, pt)
 }
 
-func (m *Mgr) GetRoomId() int32 {
-	m.incId++
-	return m.appId*100000 + m.incId
+func (m *Mgr) GetRoomId() (int64, error) {
+	i64, err := rds.Ins.Incr(context.Background(), rdsop.RoomsIncIdKey()).Result()
+	if err != nil {
+		log.Errorw("room incr id failed", "err", err)
+		return 0, err
+	}
+	return i64, nil
 }
 
 func (m *Mgr) AddRoom(r *Room) error {

@@ -9,7 +9,7 @@ message RoomPlayerInfo{
 }
 
 message RoomInfo{
-  int32      RoomId               = 1;
+  int64      RoomId               = 1;
   int32      GameType             = 2;
   bytes      GameParams           = 3; // 游戏参数
   int64      CreatorShortId       = 4; // 创建者
@@ -18,9 +18,11 @@ message RoomInfo{
 
 // 创建房间
 message CreateRoomReq{
-  int32      GameType    = 1; // 游戏类型
-  PlayerInfo Creator     = 2; // 创建者
-  bytes      GameParams  = 3; // 游戏参数  outer.GameParams
+  int64      RoomId         = 1; // 0.新房间、非0.加载已有的房间
+  int32      GameType       = 2; // 游戏类型
+  int64      CreatorShortId = 3; // 创建者短ID
+  int32      AllianceId     = 4; // 联盟id
+  bytes      GameParams     = 5; // 游戏参数  outer.GameParams
 }
 message CreateRoomRsp{
   RoomInfo RoomInfo = 1;
@@ -28,7 +30,7 @@ message CreateRoomRsp{
 
 // 解散房间
 message DisbandRoomReq{
-  int32 RoomId = 1;
+  int64 RoomId = 1;
 }
 message DisbandRoomRsp{
 }

@@ -12,11 +12,11 @@ import (
 )
 
 func AddRoomMgr(mgrId int32) {
-	rds.Ins.SAdd(context.Background(), RoomMgrKey(), mgrId)
+	rds.Ins.SAdd(context.Background(), RoomMgrSetKey(), mgrId)
 }
 
 func DelRoomMgr(mgrId int32) {
-	rds.Ins.SRem(context.Background(), RoomMgrKey(), mgrId)
+	rds.Ins.SRem(context.Background(), RoomMgrSetKey(), mgrId)
 }
 
 var (
@@ -29,7 +29,7 @@ func GetRoomMgrId() int32 {
 	defer cursorLock.Unlock()
 
 	if cursor == -1 {
-		num, err := rds.Ins.SCard(context.Background(), RoomMgrKey()).Result()
+		num, err := rds.Ins.SCard(context.Background(), RoomMgrSetKey()).Result()
 		if num == 0 {
 			log.Warnw("room mgr num == 0", "err", err)
 			return -1
@@ -37,7 +37,7 @@ func GetRoomMgrId() int32 {
 		cursor = int64(rand.Intn(int(num)))
 	}
 
-	result, cur, err := rds.Ins.SScan(context.Background(), RoomMgrKey(), uint64(cursor), "", 1).Result()
+	result, cur, err := rds.Ins.SScan(context.Background(), RoomMgrSetKey(), uint64(cursor), "", 1).Result()
 	if err != nil {
 		log.Errorw("redis sscan room mgr failed", "cursor", cursor, "err", err)
 		return -1

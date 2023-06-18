@@ -32,7 +32,7 @@ func RoomInfoInnerToOuter(roomInfo *inner.RoomInfo) *outer.RoomInfo {
 	}
 
 	return &outer.RoomInfo{
-		Id:         roomInfo.RoomId,
+		RoomId:     roomInfo.RoomId,
 		GameType:   outer.GameType(roomInfo.GameType),
 		GameParams: gameParams,
 		Players:    players,

@@ -25,7 +25,7 @@ func TestCreateRoom(t *testing.T) {
 func TestDisbandRoom(t *testing.T) {
 	cli := &client.Client{Addr: *Addr, DeviceID: "test1"}
 	Init(cli)
-	rsp, ok := cli.Req(outer.Msg_IdDisbandRoomReq, &outer.DisbandRoomReq{Id: 100004}).(*outer.DisbandRoomRsp)
+	rsp, ok := cli.Req(outer.Msg_IdDisbandRoomReq, &outer.DisbandRoomReq{RoomId: 1}).(*outer.DisbandRoomRsp)
 	assert.True(t, ok)
 	log.Infof("disband room rsp [%v]\n", rsp)
 }

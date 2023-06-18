@@ -5,17 +5,18 @@ import (
 	"fmt"
 	"github.com/golang/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
+	"github.com/wwj31/dogactor/actor/event"
 	"github.com/wwj31/dogactor/expect"
 	"go.mongodb.org/mongo-driver/bson"
 	"reflect"
-	"server/common/rds"
-	"server/rdsop"
-
 	"server/common"
 	"server/common/actortype"
 	"server/common/log"
 	"server/common/mongodb"
+	"server/common/rds"
 	"server/common/router"
+	"server/proto/innermsg/inner"
+	"server/rdsop"
 )
 
 type RID = string
@@ -73,6 +74,12 @@ func (a *Alliance) OnInit() {
 	// 统一返回结果
 	router.Result(a, a.responseHandle)
 
+	a.System().OnEvent(a.ID(), func(ev event.EvNewActor) {
+		if actortype.IsActorOf(ev.ActorId, actortype.RoomMgrActor) {
+			a.loadRooms()
+		}
+	})
+
 	log.Debugf("Alliance OnInit %v members:%v", a.ID(), len(a.members))
 }
 
@@ -100,6 +107,32 @@ func (a *Alliance) responseHandle(resultMsg any) {
 		}
 	}
 }
+func (a *Alliance) loadRooms() {
+	roomList := rdsop.RoomList(a.allianceId)
+	for _, roomId := range roomList {
+		roomInfo := rdsop.NewRoomInfo{RoomId: roomId}.GetInfoFromRedis()
+		gameParamsBytes, _ := proto.Marshal(roomInfo.Params)
+		roomMgrId := rdsop.GetRoomMgrId()
+		if roomMgrId == -1 {
+			log.Errorw("load rooms failed", "roomMgrId", roomMgrId)
+			return
+		}
+
+		v, err := a.RequestWait(actortype.RoomMgrName(roomMgrId), &inner.CreateRoomReq{
+			RoomId:         roomId,
+			GameType:       roomInfo.GameType,
+			CreatorShortId: roomInfo.CreatorShortId,
+			AllianceId:     roomInfo.AllianceId,
+			GameParams:     gameParamsBytes,
+		})
+		if yes, _ := common.IsErr(v, err); yes {
+			log.Errorw("load request create room failed", "err", err, "v", v)
+			continue
+		}
+		log.Infow("create alliance room success", "alliance", a.allianceId, "room", roomInfo)
+	}
+}
+
 func (a *Alliance) Send2Client(gSession common.GSession, msg proto.Message) {
 	log.Infow("output", "alliance", a.ID(), "msg", reflect.TypeOf(msg), "data", msg.String())
 	gSession.SendToClient(a, msg)

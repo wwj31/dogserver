@@ -13,7 +13,7 @@ message RoomPlayerInfo {
 
 // 房间信息
 message RoomInfo {
-    int32 Id                        = 1;
+    int64      RoomId               = 1;
     GameType   GameType             = 2;
     GameParams GameParams           = 3;
     repeated RoomPlayerInfo Players = 4; // 房间内的成员信息
@@ -30,10 +30,10 @@ message CreateRoomRsp {
 
 // 解散房间
 message DisbandRoomReq {// tag:player
-    int32 Id = 1;
+    int64 RoomId = 1;
 }
 message DisbandRoomRsp {
-    int32 Id = 1;
+    int64 RoomId = 1;
 }
 
 // 房间列表
@@ -45,7 +45,7 @@ message RoomListRsp {
 
 // 加入房间
 message JoinRoomReq {// tag:player
-    int32 RoomId = 1;
+    int64 RoomId = 1;
 }
 message JoinRoomRsp {
     RoomInfo Room = 1;

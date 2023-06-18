@@ -32,10 +32,18 @@ func (s *Role) Data() gogo.Message {
 }
 
 func randName() string {
+	name1 := "name1"
+	name2 := "name2"
 	r1 := rand.Int31n(int32(conf.LenRandName()))
 	r2 := rand.Int31n(int32(conf.LenRandName()))
-	name1 := conf.GetRandName(int64(r1)).Name1()
-	name2 := conf.GetRandName(int64(r2)).Name2()
+	name1Conf := conf.GetRandName(int64(r1))
+	name2Conf := conf.GetRandName(int64(r2))
+	if name1Conf != nil {
+		name1 = name1Conf.Name1()
+	}
+	if name2Conf != nil {
+		name2 = name2Conf.Name1()
+	}
 	return name1 + name2
 }
 

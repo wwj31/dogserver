@@ -6,6 +6,6 @@ import (
 
 type Room interface {
 	Modeler
-	RoomId() int32
+	RoomId() int64
 	SetRoomInfo(info *inner.RoomInfo)
 }

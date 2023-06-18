@@ -3,6 +3,7 @@ package room
 import (
 	"fmt"
 	"github.com/golang/protobuf/proto"
+	"server/rdsop"
 
 	"server/common"
 	"server/common/actortype"
@@ -25,10 +26,24 @@ var _ = router.Reg(func(mgr *room.Mgr, msg *inner.CreateRoomReq) any {
 		return &inner.Error{ErrorInfo: err.Error()}
 	}
 
-	roomId := mgr.GetRoomId()
-	newRoom := room.New(roomId, msg.Creator, msg.GameType, gameParams)
-	_ = mgr.AddRoom(newRoom)
+	roomId := msg.RoomId
+	if roomId == 0 {
+		var err error
+		roomId, err = mgr.GetRoomId()
+		if err != nil {
+			return &inner.Error{ErrorInfo: err.Error()}
+		}
+	}
 
+	newRoomInfo := rdsop.NewRoomInfo{
+		RoomId:         roomId,
+		CreatorShortId: msg.CreatorShortId,
+		AllianceId:     msg.AllianceId,
+		GameType:       msg.GameType,
+		Params:         gameParams,
+	}
+
+	newRoom := room.New(&newRoomInfo)
 	roomActor := actortype.RoomName(roomId)
 	if err := mgr.System().NewActor(roomActor, newRoom); err != nil {
 		log.Errorw("create room failed", "msg", msg, "err", err)
@@ -41,5 +56,12 @@ var _ = router.Reg(func(mgr *room.Mgr, msg *inner.CreateRoomReq) any {
 	}
 
 	roomInfoRsp := v.(*inner.RoomInfoRsp)
+
+	_ = mgr.AddRoom(newRoom)
+
+	if msg.RoomId == 0 {
+		rdsop.AddAllianceRoom(roomId, msg.AllianceId)
+		newRoomInfo.SetInfoToRedis()
+	}
 	return &inner.CreateRoomRsp{RoomInfo: roomInfoRsp.RoomInfo}
 })

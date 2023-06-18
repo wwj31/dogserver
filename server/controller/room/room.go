@@ -5,6 +5,7 @@ import (
 	"server/common/router"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
+	"server/rdsop"
 	"server/service/room"
 )
 
@@ -17,6 +18,7 @@ var _ = router.Reg(func(r *room.Room, msg *inner.DisbandRoomReq) any {
 
 	r.Disband()
 	r.Exit()
+	rdsop.SubAllianceRoom(r.RoomId, r.AllianceId)
 	return &inner.DisbandRoomRsp{}
 })
 

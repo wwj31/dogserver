@@ -2,11 +2,10 @@ package room
 
 import (
 	"reflect"
+	"server/rdsop"
 
 	"github.com/golang/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
-
-	"server/rdsop"
 
 	"server/common"
 	"server/common/log"
@@ -21,15 +20,14 @@ var gameMaxPlayers = map[int32]int{
 	1: 3,
 }
 
-func New(roomId int32, creator *inner.PlayerInfo, gameType int32, params *outer.GameParams) *Room {
+func New(info *rdsop.NewRoomInfo) *Room {
 	r := &Room{
-		RoomId:         roomId,
-		GameType:       gameType,
-		GameParams:     params,
-		CreatorShortId: creator.ShortId,
-		AllianceId:     creator.AllianceId,
+		RoomId:         info.RoomId,
+		GameType:       info.GameType,
+		GameParams:     info.Params,
+		CreatorShortId: info.CreatorShortId,
+		AllianceId:     info.AllianceId,
 	}
-	//r.AddPlayer(creator)
 	return r
 }
 
@@ -44,7 +42,7 @@ type (
 		currentMsg actor.Message
 		stopping   bool
 
-		RoomId         int32
+		RoomId         int64
 		GameType       int32             // 游戏类型
 		GameParams     *outer.GameParams // 游戏参数
 		CreatorShortId int64             // 房间创建者
@@ -56,12 +54,11 @@ type (
 
 func (r *Room) OnInit() {
 	router.Result(r, r.responseHandle)
-	rdsop.AddRoom(r.RoomId, r.AllianceId)
 	log.Debugf("Room:[%v] OnInit", r.RoomId)
 }
 
 func (r *Room) OnStop() bool {
-	rdsop.DelRoom(r.RoomId, r.AllianceId)
+	rdsop.DelRoomInfoFromRedis(r.RoomId)
 	log.Debugw("room stop", "roomId", r.RoomId)
 	return true
 }
