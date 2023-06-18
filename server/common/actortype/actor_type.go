@@ -17,8 +17,8 @@ const (
 	DoorActor        = "door"
 	AllianceMgrActor = "allianceMgr"
 	AllianceActor    = "alliance"
-	RoomMgrActor     = "RoomMgrActor"
-	RoomActor        = "RoomActor"
+	RoomMgrActor     = "roomMgr"
+	RoomActor        = "room"
 )
 
 func GameName(id int32) ActorId {

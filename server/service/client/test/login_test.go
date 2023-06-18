@@ -8,7 +8,7 @@ import (
 )
 
 func TestLogin(t *testing.T) {
-	cli := &client.Client{Addr: *Addr, DeviceID: "wwj1"}
+	cli := &client.Client{Addr: *Addr, DeviceID: "test1"}
 	Init(cli)
 	time.Sleep(1 * time.Second)
 }
