@@ -14,13 +14,13 @@ func TestLogin(t *testing.T) {
 }
 
 func TestLogin2(t *testing.T) {
-	cli := &client.Client{Addr: *Addr, DeviceID: "wwj2"}
+	cli := &client.Client{Addr: *Addr, DeviceID: "test2"}
 	Init(cli)
 	time.Sleep(1 * time.Second)
 }
 
 func TestLogin3(t *testing.T) {
-	cli := &client.Client{Addr: *Addr, DeviceID: "wwj3"}
+	cli := &client.Client{Addr: *Addr, DeviceID: "test2"}
 	Init(cli)
 	time.Sleep(1 * time.Second)
 }

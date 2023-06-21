@@ -89,6 +89,7 @@ var _ = router.Reg(func(alli *alliance.Alliance, msg *inner.SetMemberPositionReq
 
 // 解散联盟
 var _ = router.Reg(func(alli *alliance.Alliance, msg *inner.DisbandAllianceReq) any {
+	return nil
 	if msg.RID != alli.Master().RID {
 		return &inner.Error{ErrorInfo: "disband failed rid is not master"}
 	}

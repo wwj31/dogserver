@@ -91,13 +91,6 @@ func (u *UserSession) OnRecv(data []byte) {
 	gSession := common.GateSession(u.gateway.ID(), u.Id())
 	wrapperMsg := common.NewGateWrapperByBytes(base.Data, msgName, gSession)
 
-	log.Infow("user msg -> server",
-		"msgId", base.MsgId,
-		"msgName", msgName,
-		"gSession", gSession,
-		"player", u.PlayerId,
-	)
-
 	var targetId actor.Id
 	switch tag := outer.MsgIDTags[base.MsgId]; tag {
 	case actortype.LoginActor:
@@ -110,6 +103,16 @@ func (u *UserSession) OnRecv(data []byte) {
 		return
 	}
 
-	err = u.gateway.Send(targetId, wrapperMsg)
+	log.Infow("user msg -> server",
+		"msgId", base.MsgId,
+		"msgName", msgName,
+		"gSession", gSession,
+		"player", u.PlayerId,
+		"targetId", targetId,
+	)
 
+	err = u.gateway.Send(targetId, wrapperMsg)
+	if err != nil {
+		log.Warnw("send msg to target failed", "err", err, "targetId", targetId)
+	}
 }
