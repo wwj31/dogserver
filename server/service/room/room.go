@@ -2,6 +2,7 @@ package room
 
 import (
 	"reflect"
+	"server/common/actortype"
 	"server/rdsop"
 
 	"github.com/golang/protobuf/proto"
@@ -49,8 +50,14 @@ type (
 		AllianceId     int32             // 归属联盟
 
 		Players []*Player
+
+		gambling Gambling
 	}
 )
+
+func (r *Room) InjectGambling(gambling Gambling) {
+	r.gambling = gambling
+}
 
 func (r *Room) OnInit() {
 	router.Result(r, r.responseHandle)
@@ -135,28 +142,31 @@ func (r *Room) FindPlayer(shortId int64) *Player {
 	return nil
 }
 
-func (r *Room) AddPlayer(playerInfo *inner.PlayerInfo) *inner.Error {
+func (r *Room) PlayerEnter(playerInfo *inner.PlayerInfo) *inner.Error {
 	if r.FindPlayer(playerInfo.ShortId) != nil {
 		return &inner.Error{ErrorCode: int32(outer.ERROR_PLAYER_ALREADY_IN_ROOM)}
 	}
 
-	r.Players = append(r.Players, &Player{
+	newPlayer := &Player{
 		PlayerInfo: playerInfo,
 		Ready:      false,
-	})
+	}
+	r.Players = append(r.Players, newPlayer)
 
 	r.Broadcast(&outer.RoomPlayerEnterNtf{Player: &outer.RoomPlayerInfo{
 		BaseInfo: convert.PlayerInnerToOuter(playerInfo),
 		Ready:    false,
 	}})
+	r.gambling.PlayerEnter(newPlayer)
 	log.Infow("room add player", "roomId", r.RoomId, "player", playerInfo.ShortId)
 	return nil
 }
 
-func (r *Room) DelPlayer(shortId int64) {
+func (r *Room) PlayerLeave(shortId int64) {
 	var ntf bool
 	for i, player := range r.Players {
 		if player.ShortId == shortId {
+			r.gambling.PlayerLeave(player)
 			r.Players = append(r.Players[:i], r.Players[i+1:]...)
 			ntf = true
 			log.Infow("room del player", "roomId", r.RoomId, "shortId", shortId)
@@ -166,6 +176,45 @@ func (r *Room) DelPlayer(shortId int64) {
 
 	if ntf {
 		r.Broadcast(&outer.RoomPlayerLeaveNtf{ShortId: shortId})
+	}
+}
+
+func (r *Room) PlayerReady(shortId int64, ready bool) (ok bool, err outer.ERROR) {
+	p := r.FindPlayer(shortId)
+	if p == nil {
+		// 玩家不在房间内
+		log.Warnw("leave the room cannot find player", "roomId", r.RoomId, "msg", shortId)
+		return false, outer.ERROR_PLAYER_NOT_IN_ROOM
+	}
+	if p.Ready == ready {
+		return true, 0
+	}
+
+	p.Ready = ready
+	r.gambling.PlayerReady(p)
+	r.Broadcast(&outer.RoomPlayerReadyNtf{
+		ShortId: p.ShortId,
+		Ready:   ready,
+	})
+	return true, 0
+}
+
+func (r *Room) SendToPlayer(shortId int64, msg proto.Message) {
+	wrapper := &inner.GamblingMsgToClientWrapper{
+		MsgType: common.ProtoType(msg),
+		Data:    common.ProtoMarshal(msg),
+	}
+
+	player := r.FindPlayer(shortId)
+	if player == nil {
+		log.Errorw("cannot find player", "roomId", r.RoomId, "shortId", shortId, "msg", common.ProtoType(msg))
+		return
+	}
+
+	playerActor := actortype.PlayerId(player.RID)
+	if err := r.Send(playerActor, wrapper); err != nil {
+		log.Errorw("send msg to player failed", "roomId", r.RoomId, "shortId", shortId, "player actor", playerActor)
+		return
 	}
 }
 
@@ -180,11 +229,7 @@ func (r *Room) Broadcast(msg proto.Message, ignores ...int64) {
 			continue
 		}
 
-		gSession := common.GSession(p.GSession)
-		if gSession.Invalid() {
-			continue
-		}
-		gSession.SendToClient(r, msg)
+		r.SendToPlayer(p.ShortId, msg)
 	}
 }
 

@@ -129,11 +129,7 @@ func (p *Player) OnHandle(msg actor.Message) {
 		return
 	}
 
-	log.Infow("input",
-		"rid", p.roleId,
-		"gSession", gSession,
-		"msg", reflect.TypeOf(pt),
-		"data", pt.String())
+	log.Infow("input", "rid", p.roleId, "gSession", gSession, "msg", reflect.TypeOf(pt), "data", pt.String())
 	router.Dispatch(p, pt)
 }
 

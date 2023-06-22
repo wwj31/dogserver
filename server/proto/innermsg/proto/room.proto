@@ -79,3 +79,13 @@ message RoomLogoutReq{
 }
 message RoomLogoutRsp{
 }
+
+message GamblingMsgToRoomWrapper{
+  string MsgType = 1;
+  bytes  Data    = 2;
+}
+
+message GamblingMsgToClientWrapper{
+  string MsgType = 1;
+  bytes  Data    = 2;
+}

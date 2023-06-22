@@ -181,3 +181,39 @@ var _ = router.Reg(func(p *player.Player, msg *outer.ReadyReq) any {
 
 	return &outer.ReadyRsp{Ready: msg.Ready}
 })
+
+// 转发所有Client游戏消息至房间
+var _ = router.Reg(func(p *player.Player, msg *inner.GamblingMsgToRoomWrapper) any {
+	if p.Room().RoomId() == 0 {
+		return outer.ERROR_PLAYER_NOT_IN_ROOM
+	}
+
+	msgId, ok := p.System().ProtoIndex().MsgNameToId(msg.MsgType)
+	if !ok {
+		log.Warnw("MsgGamblingMsgToClientWrapper msg name to id failed", "player", p.RID(), "roomId", p.Room().RoomId(), "msg", msg.String())
+		return nil
+	}
+	outerMsg := p.System().ProtoIndex().UnmarshalPbMsg(msgId, msg.Data)
+
+	roomActor := actortype.RoomName(p.Room().RoomId())
+	if err := p.Send(roomActor, outerMsg); err != nil {
+		log.Warnw("GamblingMsgToRoomWrapper msg send to room failed", "player", p.RID(), "roomId", p.Room().RoomId(), "msg", msg.String())
+	}
+	return nil
+})
+
+// 转发所有房间游戏消息至client
+var _ = router.Reg(func(p *player.Player, msg *inner.GamblingMsgToClientWrapper) any {
+	if p.GateSession().Invalid() {
+		return nil
+	}
+
+	msgId, ok := p.System().ProtoIndex().MsgNameToId(msg.MsgType)
+	if !ok {
+		log.Warnw("MsgGamblingMsgToClientWrapper msg name to id failed", "msg", msg.String())
+		return nil
+	}
+	outerMsg := p.System().ProtoIndex().UnmarshalPbMsg(msgId, msg.Data)
+	p.GateSession().SendToClient(p, outerMsg)
+	return nil
+})

@@ -51,7 +51,7 @@ var _ = router.Reg(func(r *room.Room, msg *inner.JoinRoomReq) any {
 
 	// TODO 进入房间的其他条件
 
-	if err := r.AddPlayer(msg.Player); err != nil {
+	if err := r.PlayerEnter(msg.Player); err != nil {
 		return err
 	}
 
@@ -72,29 +72,20 @@ var _ = router.Reg(func(r *room.Room, msg *inner.LeaveRoomReq) any {
 	}
 
 	// TODO ...
-	r.DelPlayer(msg.ShortId)
+	r.PlayerLeave(msg.ShortId)
 	return &inner.LeaveRoomRsp{}
 })
 
 // 准备\取消准备状态
 var _ = router.Reg(func(r *room.Room, msg *inner.ReadyReq) any {
-	// 玩家不在房间内
-	p := r.FindPlayer(msg.ShortId)
-	if p == nil {
-		log.Warnw("leave the room cannot find player", "roomId", r.RoomId, "msg", msg.ShortId)
-		return outer.ERROR_PLAYER_NOT_IN_ROOM
-	}
-
 	// 房间当前状态不能切换准备
 	if !r.CanReady() {
 		return outer.ERROR_ROOM_CAN_NOT_READY
 	}
 
-	p.Ready = msg.Ready
-	r.Broadcast(&outer.RoomPlayerReadyNtf{
-		ShortId: p.ShortId,
-		Ready:   msg.Ready,
-	})
+	if ok, err := r.PlayerReady(msg.ShortId, msg.Ready); !ok {
+		return err
+	}
 	return &inner.LeaveRoomRsp{}
 })
 

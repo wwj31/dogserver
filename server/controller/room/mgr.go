@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/golang/protobuf/proto"
 	"server/rdsop"
+	"server/service/room/mahjong"
 
 	"server/common"
 	"server/common/actortype"
@@ -42,8 +43,15 @@ var _ = router.Reg(func(mgr *room.Mgr, msg *inner.CreateRoomReq) any {
 		GameType:       msg.GameType,
 		Params:         gameParams,
 	}
-
 	newRoom := room.New(&newRoomInfo)
+
+	var gambling room.Gambling
+	switch msg.GameType {
+	case room.Mahjong.Int32():
+		gambling = mahjong.New(newRoom)
+	}
+	newRoom.InjectGambling(gambling)
+
 	roomActor := actortype.RoomName(roomId)
 	if err := mgr.System().NewActor(roomActor, newRoom); err != nil {
 		log.Errorw("create room failed", "msg", msg, "err", err)
