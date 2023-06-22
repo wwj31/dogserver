@@ -1,6 +1,8 @@
 package client
 
 import (
+	"context"
+	"github.com/wwj31/dogactor/tools"
 	"log"
 
 	"github.com/gorilla/websocket"
@@ -28,24 +30,26 @@ func (w *WsClient) SendMsg(msg []byte) {
 	w.send <- msg
 }
 
-func (w *WsClient) Startup() {
-	done := make(chan struct{})
+func (w *WsClient) Startup() *WsClient {
+	ctx, cancel := context.WithCancel(context.Background())
 	go func() {
-		defer close(done)
-		for {
-			_, message, err := w.ReadMessage()
-			if err != nil {
-				log.Println("read:", err)
-				return
+		tools.Try(func() {
+			defer cancel()
+			for {
+				_, message, err := w.ReadMessage()
+				if err != nil {
+					log.Println("read:", err)
+					return
+				}
+				w.session.OnRecv(message)
 			}
-			w.session.OnRecv(message)
-		}
+		})
 	}()
 
 	go func() {
 		for {
 			select {
-			case <-done:
+			case <-ctx.Done():
 				return
 			case data := <-w.send:
 				// 向WebSocket服务器发送消息
@@ -57,4 +61,5 @@ func (w *WsClient) Startup() {
 			}
 		}
 	}()
+	return w
 }

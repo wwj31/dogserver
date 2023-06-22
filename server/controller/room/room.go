@@ -18,6 +18,7 @@ var _ = router.Reg(func(r *room.Room, msg *inner.DisbandRoomReq) any {
 
 	r.Disband()
 	r.Exit()
+	rdsop.DelRoomInfoFromRedis(r.RoomId)
 	rdsop.SubAllianceRoom(r.RoomId, r.AllianceId)
 	return &inner.DisbandRoomRsp{}
 })

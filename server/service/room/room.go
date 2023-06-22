@@ -58,7 +58,6 @@ func (r *Room) OnInit() {
 }
 
 func (r *Room) OnStop() bool {
-	rdsop.DelRoomInfoFromRedis(r.RoomId)
 	log.Debugw("room stop", "roomId", r.RoomId)
 	return true
 }

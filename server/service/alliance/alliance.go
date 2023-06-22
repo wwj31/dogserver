@@ -32,6 +32,7 @@ func New(id int32) *Alliance {
 type (
 	Alliance struct {
 		actor.Base
+		roomLoad         bool
 		allianceId       int32
 		disband          bool
 		members          map[RID]*Member
@@ -108,7 +109,12 @@ func (a *Alliance) responseHandle(resultMsg any) {
 	}
 }
 func (a *Alliance) loadRooms() {
+	if a.roomLoad {
+		return
+	}
+	a.roomLoad = true
 	roomList := rdsop.RoomList(a.allianceId)
+	log.Debugw("load rooms", "room list", roomList)
 	for _, roomId := range roomList {
 		roomInfo := rdsop.NewRoomInfo{RoomId: roomId}.GetInfoFromRedis()
 		gameParamsBytes, _ := proto.Marshal(roomInfo.Params)

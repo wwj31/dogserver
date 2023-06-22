@@ -52,5 +52,8 @@ func (n NewRoomInfo) GetInfoFromRedis() NewRoomInfo {
 	var info NewRoomInfo
 	str, _ := rds.Ins.Get(context.Background(), RoomsInfoKey(n.RoomId)).Result()
 	common.JsonUnmarshal(str, &info)
+	if info.Params == nil {
+		info.Params = &outer.GameParams{}
+	}
 	return info
 }

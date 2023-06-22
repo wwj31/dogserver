@@ -18,6 +18,7 @@ type Client struct {
 	actor.Base
 	Addr      string
 	cli       *WsClient
+	Reconnect int64
 	UID       string
 	RID       string
 	NewPlayer bool
@@ -32,8 +33,7 @@ type Client struct {
 }
 
 func (s *Client) OnInit() {
-	s.cli = Dial(s.Addr, &SessionHandler{client: s})
-	s.cli.Startup()
+	s.cli = Dial(s.Addr, &SessionHandler{client: s}).Startup()
 
 	s.login(1)
 
@@ -41,6 +41,15 @@ func (s *Client) OnInit() {
 	s.AddTimer(tools.XUID(), tools.Now().Add(20*time.Second), func(dt time.Duration) {
 		s.SendToServer(outer.Msg_IdHeartReq.Int32(), &outer.HeartReq{})
 	}, -1)
+
+	if s.Reconnect != -1 {
+		s.AddTimer(tools.XUID(), tools.Now().Add(time.Duration(s.Reconnect)*time.Millisecond), func(dt time.Duration) {
+			s.cli.Close()
+			time.Sleep(5 * time.Millisecond)
+			s.cli = Dial(s.Addr, &SessionHandler{client: s}).Startup()
+			s.login(1)
+		}, -1)
+	}
 }
 func (s *Client) Close() {
 	s.cli.Close()

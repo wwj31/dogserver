@@ -29,7 +29,7 @@ func TestDisbandRoom(t *testing.T) {
 }
 
 func TestRoomList(t *testing.T) {
-	cli := &client.Client{Addr: *Addr, DeviceID: "test2"}
+	cli := &client.Client{Addr: *Addr, DeviceID: "test1"}
 	Init(cli)
 	_, ok := cli.Req(outer.Msg_IdRoomListReq, &outer.RoomListReq{}).(*outer.RoomListRsp)
 	assert.True(t, ok)
@@ -43,7 +43,7 @@ func TestJoinRoom(t *testing.T) {
 }
 
 func TestLeaveRoom(t *testing.T) {
-	cli := &client.Client{Addr: *Addr, DeviceID: "test2"}
+	cli := &client.Client{Addr: *Addr, DeviceID: "test1"}
 	Init(cli)
 	_, ok := cli.Req(outer.Msg_IdLeaveRoomReq, &outer.LeaveRoomReq{}).(*outer.LeaveRoomRsp)
 	assert.True(t, ok)

@@ -154,15 +154,14 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 					ShortId:     acc.Roles[acc.LastLoginRID].ShorID,
 				},
 			})
-
-			rds.Ins.Set(context.Background(), rdsop.GameNodeKey(acc.LastShortID), dispatchGameId, 7*24*time.Hour)
-			log.Infow("login success dispatch the player to game",
-				"new", newPlayer, "role", acc.Roles[acc.LastLoginRID], "req", req.String(), "to game", dispatchGameId)
-
 			if err != nil {
 				log.Errorw("send to game failed ", "err", err, "game", dispatchGameId)
 				return
 			}
+
+			rds.Ins.Set(context.Background(), rdsop.GameNodeKey(acc.LastShortID), dispatchGameId, 7*24*time.Hour)
+			log.Infow("login success dispatch the player to game",
+				"new", newPlayer, "role", acc.Roles[acc.LastLoginRID], "req", req.String(), "to game", dispatchGameId)
 		})
 	})
 }

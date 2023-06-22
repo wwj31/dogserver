@@ -19,11 +19,23 @@ import (
 	"server/service/client/client"
 )
 
-var addr = flag.String("addr", "ws://localhost:7001/", "addr")
+var (
+	addr      = flag.String("addr", "ws://localhost:7001/", "链接地址")
+	reconnect = flag.Int64("recon", -1, "重连时间(毫秒)")
+	device    = flag.String("device", "test1", "设备号")
+	help      = flag.String("help", " ", "帮助")
+)
 
 func main() {
-	flag.Usage = func() { fmt.Println("flag param error") }
+	flag.Usage = func() {
+		flag.PrintDefaults()
+		fmt.Println("例子: ./cli -addr=ws://1.14.17.15:7001/ -recon=3000 -device=test1")
+	}
 	flag.Parse()
+	if *help == "" {
+		flag.Usage()
+		return
+	}
 
 	rand.Seed(time.Now().UnixNano())
 
@@ -38,8 +50,9 @@ func main() {
 	)
 
 	_ = system.NewActor("client", &client.Client{
-		Addr:     *addr,
-		DeviceID: "test1",
+		Addr:      *addr,
+		Reconnect: *reconnect,
+		DeviceID:  *device,
 	}, actor.SetLocalized())
 
 	// safe quit
