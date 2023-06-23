@@ -89,23 +89,35 @@ func (u *UserSession) OnRecv(data []byte) {
 	}
 
 	gSession := common.GateSession(u.gateway.ID(), u.Id())
-	wrapperMsg := common.NewGateWrapperByBytes(base.Data, msgName, gSession)
 
-	var targetId actor.Id
+	var (
+		targetId actor.Id
+		msgData  []byte
+	)
 	switch tag := outer.MsgIDTags[base.MsgId]; tag {
 	case actortype.LoginActor:
 		targetId = actortype.LoginActor
+		msgData = base.Data
 	case actortype.PlayerActor:
 		targetId = u.PlayerId
+		msgData = base.Data
+	case actortype.GameActor:
+		gamblingWrapper := &inner.GamblingMsgToRoomWrapper{
+			MsgType: msgName,
+			Data:    base.Data,
+		}
+		msgData = common.ProtoMarshal(gamblingWrapper)
+		msgName = common.ProtoType(gamblingWrapper)
+		targetId = u.PlayerId
+
 	default:
 		log.Errorw(" the message has no target for dispatch",
 			"msgId", base.MsgId, "tag", tag)
 		return
 	}
+	wrapperMsg := common.NewGateWrapperByBytes(msgData, msgName, gSession)
 
-	log.Infow("user msg -> server",
-		"msgId", base.MsgId,
-		"msgName", msgName,
+	log.Infow("user msg -> server", "msgId", base.MsgId, "msgName", msgName,
 		"gSession", gSession,
 		"player", u.PlayerId,
 		"targetId", targetId,
