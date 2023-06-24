@@ -1,5 +1,7 @@
 package room
 
+import "server/proto/innermsg/inner"
+
 type GamblingType int32
 
 const (
@@ -12,7 +14,12 @@ func (g GamblingType) Int32() int32 {
 }
 
 type Gambling interface {
+	Init()
+	CanEnter(p *inner.PlayerInfo) bool
+	CanLeave(p *inner.PlayerInfo) bool
+	CanReady(p *inner.PlayerInfo) bool
 	PlayerEnter(player *Player)
 	PlayerLeave(player *Player)
 	PlayerReady(player *Player)
+	Handle(v interface{}) any
 }

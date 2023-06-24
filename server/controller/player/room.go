@@ -188,21 +188,15 @@ var _ = router.Reg(func(p *player.Player, msg *inner.GamblingMsgToRoomWrapper) a
 		return outer.ERROR_PLAYER_NOT_IN_ROOM
 	}
 
-	msgId, ok := p.System().ProtoIndex().MsgNameToId(msg.MsgType)
-	if !ok {
-		log.Warnw("MsgGamblingMsgToClientWrapper msg name to id failed", "player", p.RID(), "roomId", p.Room().RoomId(), "msg", msg.String())
-		return nil
-	}
-	outerMsg := p.System().ProtoIndex().UnmarshalPbMsg(msgId, msg.Data)
-
 	roomActor := actortype.RoomName(p.Room().RoomId())
-	if err := p.Send(roomActor, outerMsg); err != nil {
-		log.Warnw("GamblingMsgToRoomWrapper msg send to room failed", "player", p.RID(), "roomId", p.Room().RoomId(), "msg", msg.String())
+	rsp, err := p.RequestWait(roomActor, msg)
+	if yes, code := common.IsErr(rsp, err); yes {
+		return code
 	}
-	return nil
+	return rsp
 })
 
-// 转发所有房间游戏消息至client
+// 转发所有房间游戏消息至client(主要用于处理Ntf类消息)
 var _ = router.Reg(func(p *player.Player, msg *inner.GamblingMsgToClientWrapper) any {
 	if p.GateSession().Invalid() {
 		return nil

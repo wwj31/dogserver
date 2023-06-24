@@ -9,6 +9,7 @@ import "type.proto";
 message RoomPlayerInfo {
     PlayerInfo BaseInfo = 1; // 玩家基础信息
     bool       Ready    = 2; // true.准备、false.未准备
+    int64      EnterAt  = 3; // 进入房间的时间(毫秒)
 }
 
 // 房间信息
@@ -69,7 +70,7 @@ message ReadyRsp {
 
 // 通知类消息
 message RoomPlayerEnterNtf {// 房间进入新玩家通知
-    RoomPlayerInfo Player = 1;
+    RoomPlayerInfo Player   = 1;
 }
 message RoomPlayerLeaveNtf {// 房间内玩家离开通知
     int64 ShortId = 1;

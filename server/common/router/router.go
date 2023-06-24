@@ -1,6 +1,7 @@
 package router
 
 import (
+	"fmt"
 	"reflect"
 	"sync"
 
@@ -46,23 +47,22 @@ func Result(a actor.Actor, fn func(result any)) {
 	result.Store(a.ID(), fn)
 }
 
-func Dispatch(a actor.Actor, msg gogo.Message) {
+func Dispatch(a actor.Actor, msg gogo.Message) error {
 	msgName := reflect.TypeOf(msg).String()
 	actorName := reflect.TypeOf(a).String()
 
 	v, ok := router.Load(msgName)
 	if !ok {
-		log.Errorw("not find msg handler", "msg", msgName)
-		return
+		return fmt.Errorf("not find msg:[%v] handler", msgName)
 	}
 
 	handlers, _ := v.(*sync.Map)
 	v, ok = handlers.Load(actorName)
 	if !ok {
-		log.Errorw("not find msg handler without actor", "msg", msgName, "actor", actorName)
-		return
+		return fmt.Errorf("not find msg:[%v] handler without actor:[%v]", msgName, actorName)
 	}
 
 	handle, _ := v.(func(actor actor.Actor, message gogo.Message))
 	handle(a, msg)
+	return nil
 }

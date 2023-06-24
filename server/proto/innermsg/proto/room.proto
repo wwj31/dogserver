@@ -6,6 +6,7 @@ import "base.proto";
 message RoomPlayerInfo{
   PlayerInfo BaseInfo = 1;
   bool       Ready    = 2;
+  int64      EnterAt  = 3;
 }
 
 message RoomInfo{

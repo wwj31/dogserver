@@ -96,7 +96,9 @@ func (m *Mgr) OnHandle(msg actor.Message) {
 	}
 
 	m.currentMsg = msg
-	router.Dispatch(m, pt)
+	if routerErr := router.Dispatch(m, pt); routerErr != nil {
+		log.Warnw("allianceMgr dispatch the message failed", "err", routerErr)
+	}
 }
 
 func (m *Mgr) CreateAlliance(masterShortId int64) (int32, error) {

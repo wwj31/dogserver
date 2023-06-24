@@ -67,7 +67,9 @@ func (m *Mgr) OnHandle(msg actor.Message) {
 	}
 
 	m.currentMsg = msg
-	router.Dispatch(m, pt)
+	if routerErr := router.Dispatch(m, pt); routerErr != nil {
+		log.Warnw("roomMgr dispatch the message failed", "err", routerErr)
+	}
 }
 
 func (m *Mgr) GetRoomId() (int64, error) {

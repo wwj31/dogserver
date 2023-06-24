@@ -4,6 +4,7 @@ import (
 	"reflect"
 	"server/common/actortype"
 	"server/rdsop"
+	"time"
 
 	"github.com/golang/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
@@ -35,14 +36,14 @@ func New(info *rdsop.NewRoomInfo) *Room {
 type (
 	Player struct {
 		*inner.PlayerInfo
-		Ready bool
+		Ready   bool
+		EnterAt time.Time
 	}
 
 	Room struct {
 		actor.Base
-		currentMsg actor.Message
-		stopping   bool
-
+		stopping       bool
+		CurrentMsg     actor.Message
 		RoomId         int64
 		GameType       int32             // 游戏类型
 		GameParams     *outer.GameParams // 游戏参数
@@ -57,6 +58,10 @@ type (
 
 func (r *Room) InjectGambling(gambling Gambling) {
 	r.gambling = gambling
+}
+
+func (r *Room) GamblingHandle(v any) (result any) {
+	return r.gambling.Handle(v)
 }
 
 func (r *Room) OnInit() {
@@ -82,8 +87,10 @@ func (r *Room) OnHandle(msg actor.Message) {
 		return
 	}
 
-	r.currentMsg = msg
-	router.Dispatch(r, pt)
+	r.CurrentMsg = msg
+	if routerErr := router.Dispatch(r, pt); routerErr != nil {
+		log.Warnw("room dispatch the message failed", "err", routerErr)
+	}
 }
 
 func (r *Room) responseHandle(resultMsg any) {
@@ -98,44 +105,48 @@ func (r *Room) responseHandle(resultMsg any) {
 	}
 
 	var err error
-	if r.currentMsg.GetRequestId() != "" {
-		err = r.Response(r.currentMsg.GetRequestId(), msg)
+	if r.CurrentMsg.GetRequestId() != "" {
+		err = r.Response(r.CurrentMsg.GetRequestId(), msg)
 	} else {
-		err = r.Send(r.currentMsg.GetSourceId(), msg)
+		err = r.Send(r.CurrentMsg.GetSourceId(), msg)
 	}
 
 	if err != nil {
 		log.Warnw("response to actor failed",
-			"source", r.currentMsg.GetSourceId(),
-			"msg name", r.currentMsg.GetMsgName())
+			"source", r.CurrentMsg.GetSourceId(),
+			"msg name", r.CurrentMsg.GetMsgName())
 	}
 }
 
 func (r *Room) IsFull() bool { return len(r.Players) >= gameMaxPlayers[r.GameType] }
 func (r *Room) Disband()     { r.stopping = true }
 
-func (r *Room) CanEnter() bool {
+func (r *Room) CanEnterRoom(p *inner.PlayerInfo) bool {
 	if r.stopping {
 		return false
 	}
-
-	// TODO 游戏状态中,不能进入
-	return true
+	return r.gambling.CanEnter(p)
 }
 
-func (r *Room) CanLeave() bool {
-	// TODO 游戏状态中,不能离开
-	return true
+func (r *Room) CanLeaveRoom(p *inner.PlayerInfo) bool {
+	return r.gambling.CanLeave(p)
 }
 
-func (r *Room) CanReady() bool {
-	// TODO 游戏状态中,不能离开
-	return true
+func (r *Room) CanReadyInRoom(p *inner.PlayerInfo) bool {
+	return r.gambling.CanReady(p)
 }
 
 func (r *Room) FindPlayer(shortId int64) *Player {
 	for _, v := range r.Players {
 		if v.ShortId == shortId {
+			return v
+		}
+	}
+	return nil
+}
+func (r *Room) FindPlayerByRID(rid string) *Player {
+	for _, v := range r.Players {
+		if v.RID == rid {
 			return v
 		}
 	}
@@ -150,13 +161,12 @@ func (r *Room) PlayerEnter(playerInfo *inner.PlayerInfo) *inner.Error {
 	newPlayer := &Player{
 		PlayerInfo: playerInfo,
 		Ready:      false,
+		EnterAt:    time.Now(),
 	}
 	r.Players = append(r.Players, newPlayer)
 
-	r.Broadcast(&outer.RoomPlayerEnterNtf{Player: &outer.RoomPlayerInfo{
-		BaseInfo: convert.PlayerInnerToOuter(playerInfo),
-		Ready:    false,
-	}})
+	r.Broadcast(&outer.RoomPlayerEnterNtf{Player: newPlayer.OuterPB()})
+
 	r.gambling.PlayerEnter(newPlayer)
 	log.Infow("room add player", "roomId", r.RoomId, "player", playerInfo.ShortId)
 	return nil
@@ -192,6 +202,7 @@ func (r *Room) PlayerReady(shortId int64, ready bool) (ok bool, err outer.ERROR)
 
 	p.Ready = ready
 	r.gambling.PlayerReady(p)
+
 	r.Broadcast(&outer.RoomPlayerReadyNtf{
 		ShortId: p.ShortId,
 		Ready:   ready,
@@ -253,5 +264,21 @@ func (p *Player) InnerPB() *inner.RoomPlayerInfo {
 	return &inner.RoomPlayerInfo{
 		BaseInfo: p.PlayerInfo,
 		Ready:    p.Ready,
+		EnterAt:  p.EnterAt.UnixMilli(),
+	}
+}
+func (p *Player) OuterPB() *outer.RoomPlayerInfo {
+	return &outer.RoomPlayerInfo{
+		BaseInfo: convert.PlayerInnerToOuter(p.PlayerInfo),
+		Ready:    p.Ready,
+		EnterAt:  p.EnterAt.UnixMilli(),
+	}
+}
+
+func (r *Room) LogInfo() []any {
+	return []any{
+		"roomId", r.RoomId,
+		"gameType", r.GameType,
+		"currentMsg", r.CurrentMsg,
 	}
 }

@@ -130,7 +130,9 @@ func (p *Player) OnHandle(msg actor.Message) {
 	}
 
 	log.Infow("input", "rid", p.roleId, "gSession", gSession, "msg", reflect.TypeOf(pt), "data", pt.String())
-	router.Dispatch(p, pt)
+	if routerErr := router.Dispatch(p, pt); routerErr != nil {
+		log.Warnw("player dispatch the message failed", "err", routerErr)
+	}
 }
 
 func (p *Player) SendToClient(pb proto.Message) {
