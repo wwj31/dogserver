@@ -7,13 +7,8 @@ import "type.proto";
 
 // 麻将-血战到底 协议 (Mahjong-Battle to the End)
 
-// 血战到底 参与游戏的玩家数据
-message MahjongPlayerInfo {
-    int64    ShortId           = 1; // 参与者短ID
-    int32    DecideColor       = 2; // 定缺花色 1.万、2.条、3.筒
-    repeated int32 Cards       = 3; // 手牌 (万11-19 条21-29 筒31-39)
-    repeated int32 CardPong    = 4; // 碰的牌组 数组长度表示几组碰，值代表牌
-    repeated int32 CardGang    = 5; // 杠的牌组 数组长度表示几组杠，值代表牌
+enum MahjongBTEState {
+    BETStateUnknown = 0;
 }
 
 // 血战到底 游戏数据
@@ -22,9 +17,21 @@ message MahjongBTEGameInfo {
     int64                      StateEnterAt     = 2; // 当前状态的进入时间(毫秒)
     repeated MahjongPlayerInfo Players          = 3; // 玩家信息
     int32                      TotalCardsCount  = 4; // 剩余总牌数
-    int64                      CurrentOpShortId = 5; // 当前操作者
+
+    int64                      OpShortId        = 5; // 当前操作者
     int64                      OpType           = 6; // 操作类型
-    int64                      OpTimeoutAt      = 7; // 操作结束结束时间(毫秒)
+    int32                      HuType           = 7; // 胡牌类型
+    int32                      NewCard          = 8; // 摸得的牌
+    int64                      OpEndAt          = 9; // 操作结束结束时间(毫秒)
+}
+
+// 血战到底 参与游戏的玩家数据
+message MahjongPlayerInfo {
+    int64    ShortId               = 1; // 参与者短ID
+    MahjongCardType DecideColor    = 2; // 定缺花色 1.万、2.条、3.筒
+    repeated int32 Cards           = 3; // 手牌 (万11-19 条21-29 筒31-39)
+    repeated int32 CardPong        = 4; // 碰的牌组 数组长度表示几组碰，值代表牌
+    repeated int32 CardGang        = 5; // 杠的牌组 数组长度表示几组杠，值代表牌
 }
 
 ////////////////////////////////////////////// 游戏操作请求 //////////////////////////////////////////////
@@ -37,7 +44,7 @@ message MahjongBTEExchange3Rsp {
 
 // 定缺确定
 message MahjongBTEDecideIgnoreReq {
-    int32 color = 1; // 1.万、2.条、3.筒
+    MahjongCardType color = 1; // 1.万、2.条、3.筒
 }
 message MahjongBTEDecideIgnoreRsp {
 }
@@ -87,13 +94,13 @@ message MahjongBTEDecideIgnoreNtf {
 
 // 开始游戏通知
 message MahjongBTEPlayingNtf {
-    map<int64, int32> Colors = 1; // 每位玩家的定缺花色 map<短ID，定缺花色>
+    map<int64, MahjongCardType> Colors = 1; // 每位玩家的定缺花色 map<短ID，定缺花色>
 }
 
 // 玩家轮动通知
 message MahjongBTETurnNtf {
-    int64 OpShortId   = 1; // 操作者
-    int32 TotalCards  = 2; // 剩余总牌数
+    int32 TotalCards  = 1; // 剩余总牌数
+    int64 OpShortId   = 2; // 操作者
     int32 OpType      = 3; // 操作类型，1.碰、2.杠、3.胡、4.出牌
     int32 HuType      = 4; // 胡牌类型
     int32 NewCard     = 5; // 摸得的牌
