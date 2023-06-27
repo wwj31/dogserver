@@ -7,7 +7,7 @@ import (
 )
 
 type StateDeal struct {
-	*mahjong
+	*Mahjong
 }
 
 func (s StateDeal) State() int {
@@ -15,11 +15,11 @@ func (s StateDeal) State() int {
 }
 
 func (s StateDeal) Enter(fsm *room.FSM) {
-	log.Infow("mahjong enter deal ", "room", s.room.RoomId)
+	log.Infow("Mahjong enter deal ", "room", s.room.RoomId)
 }
 
 func (s StateDeal) Leave(fsm *room.FSM) {
-	log.Infow("mahjong leave ready", "room", s.room.RoomId)
+	log.Infow("Mahjong leave ready", "room", s.room.RoomId)
 }
 
 func (s StateDeal) Handle(fsm *room.FSM, i ...any) (result any) {
