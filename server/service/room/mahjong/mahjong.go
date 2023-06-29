@@ -22,6 +22,7 @@ func New(r *room.Room) *Mahjong {
 
 type mahjongPlayer struct {
 	*room.Player
+	masterIndex int
 
 	tickOutTimerId string // 准备倒计时
 }

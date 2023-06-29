@@ -2,34 +2,31 @@ syntax = "proto3";
 package outer;
 option  go_package = "/outer";
 
-import "base.proto";
-import "type.proto";
+import "mahjongtype.proto";
 
 // 麻将-血战到底 协议 (Mahjong-Battle to the End)
-
-enum MahjongBTEState {
-    BETStateUnknown = 0;
-}
 
 // 血战到底 游戏数据
 message MahjongBTEGameInfo {
     MahjongBTEState            State            = 1; // 当前状态
     int64                      StateEnterAt     = 2; // 当前状态的进入时间(毫秒)
-    repeated MahjongPlayerInfo Players          = 3; // 玩家信息
-    int32                      TotalCardsCount  = 4; // 剩余总牌数
+    int64                      StateEndAt       = 3; // 当前状态的结算时间(毫秒)
+    repeated MahjongPlayerInfo Players          = 4; // 东南西北 四方玩家信息
+    int32                      MasterIndex      = 5; // 庄家位置 东南西北(0-3)
+    int32                      TotalCardsCount  = 6; // 剩余总牌数
 
-    int64                      OpShortId        = 5; // 当前操作者
-    int64                      OpType           = 6; // 操作类型
-    int32                      HuType           = 7; // 胡牌类型
-    int32                      NewCard          = 8; // 摸得的牌
-    int64                      OpEndAt          = 9; // 操作结束结束时间(毫秒)
+    int64                      ActionShortId    = 7; // 当前执行者
+    int64                      ActionType       = 8; // 操作类型 0.过、1.碰、2.杠、3.胡
+    HuType                     HuType           = 9; // 胡牌类型
+    int32                      NewCard          = 10; // 摸得的牌
+    int64                      OpEndAt          = 11; // 操作结束结束时间(毫秒)
 }
 
 // 血战到底 参与游戏的玩家数据
 message MahjongPlayerInfo {
     int64    ShortId               = 1; // 参与者短ID
     MahjongCardType DecideColor    = 2; // 定缺花色 1.万、2.条、3.筒
-    repeated int32 Cards           = 3; // 手牌 (万11-19 条21-29 筒31-39)
+    repeated int32 Cards           = 3; // 手牌 (萬11-19 条21-29 筒31-39)
     repeated int32 CardPong        = 4; // 碰的牌组 数组长度表示几组碰，值代表牌
     repeated int32 CardGang        = 5; // 杠的牌组 数组长度表示几组杠，值代表牌
 }
@@ -44,7 +41,7 @@ message MahjongBTEExchange3Rsp {
 
 // 定缺确定
 message MahjongBTEDecideIgnoreReq {
-    MahjongCardType color = 1; // 1.万、2.条、3.筒
+    MahjongCardType color = 1;
 }
 message MahjongBTEDecideIgnoreRsp {
 }
@@ -59,9 +56,9 @@ message MahjongBTEDealRsp {
     repeated int32 CardGang   = 3; // 杠的牌组
 }
 
-// 过、碰、杠、胡
+// 执行操作 过、碰、杠、胡
 message MahjongBTEOperateReq {
-    int32 OpType = 1; // 0.过、1.碰、2.杠、3.胡
+    ActionType ActionType = 1;
 }
 message MahjongBTEOperateRsp {
     repeated int32 Cards      = 1; // 最新手牌
@@ -73,7 +70,7 @@ message MahjongBTEOperateRsp {
 ////////////////////////////////////////////// 游戏通知 //////////////////////////////////////////////
 // 开始发牌通知
 message MahjongBTEDealNtf {
-    repeated int32 Cards   = 1; // 手牌 (万11-19 条21-29 筒31-39)
+    repeated int32 Cards   = 1; // 手牌 (萬11-19 条21-29 筒31-39)
 }
 
 // 开始换三张
@@ -82,10 +79,10 @@ message MahjongBTEExchange3Ntf {
 
 // 换三张结束
 message MahjongBTEExchange3EndNtf {
-    int64 ShortId               = 1; // 换牌的玩家短id
+    int64          ShortId      = 1; // 换牌的玩家短id
     repeated int32 ThreeCardOut = 2; // 换出的三张牌
     repeated int32 ThreeCardIn  = 3; // 换来的三张牌
-    repeated int32 Cards        = 4; // 最新手牌 (万11-19 条21-29 筒31-39)
+    repeated int32 Cards        = 4; // 最新手牌 (萬11-19 条21-29 筒31-39)
 }
 
 // 开始定缺通知
@@ -99,18 +96,18 @@ message MahjongBTEPlayingNtf {
 
 // 玩家轮动通知
 message MahjongBTETurnNtf {
-    int32 TotalCards  = 1; // 剩余总牌数
-    int64 OpShortId   = 2; // 操作者
-    int32 OpType      = 3; // 操作类型，1.碰、2.杠、3.胡、4.出牌
-    int32 HuType      = 4; // 胡牌类型
-    int32 NewCard     = 5; // 摸得的牌
-    int64 OpEndAt     = 6; // 操作结束时间(毫秒)
+    int32      TotalCards    = 1; // 剩余总牌数
+    int64      ActionShortId = 2; // 操作者
+    ActionType ActionType    = 3; // 操作类型，1.碰、2.杠、3.胡、4.出牌
+    HuType     HuType        = 4; // 胡牌类型
+    int32      NewCard       = 5; // 摸牌
+    int64      ActionEndAt   = 6; // 操作结束时间(毫秒)
 }
 
 // 玩家操作结果通知
 message MahjongBTEOperaNtf {
-    int64 OpShortId   = 1; // 操作者
-    int32 OpType      = 3; // 操作类型，1.碰、2.杠、3.胡、4.出牌
-    int32 HuType      = 4; // 胡牌类型
-    int64 OpEndAt     = 6; // 操作结束时间(毫秒)
+    int64  OpShortId = 1; // 操作者
+    int32  OpType    = 3; // 操作类型，1.碰、2.杠、3.胡、4.出牌
+    HuType HuType    = 4; // 胡牌类型
+    int64  OpEndAt   = 6; // 操作结束时间(毫秒)
 }

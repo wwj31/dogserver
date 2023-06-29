@@ -1,0 +1,72 @@
+syntax = "proto3";
+package outer;
+option  go_package = "/outer";
+
+
+// 麻将 花色
+enum MahjongCardType {
+    CardUnknown = 0;
+    Wan         = 1; // 萬
+    Tiao        = 2; // 条
+    Tong        = 3; // 筒
+}
+
+// 麻将-血战到底 游戏状态机
+enum MahjongBTEState {
+    BETStateReady        = 0;   // 准备中状态
+    BETStateDecideMaster = 1;   // 定庄
+    BETStateDeal         = 2;   // 游戏开始发牌状态
+    BETStateExchange3    = 3;   // 换三张状态
+    BETStateDecideIgnore = 4;   // 定缺状态
+    BETStatePlaying      = 5;   // 游戏状态
+    BETStateSettlement   = 6;   // 结算
+}
+
+
+// 行动类型
+enum ActionType {
+    ActionPass        = 0; // 过
+    ActionPong        = 1; // 碰
+    ActionGang        = 2; // 杠
+    ActionHu          = 3; // 胡
+}
+
+// 胡牌类型
+enum HuType {
+    HuTypeUnknown = 0;  // 未胡牌
+    Hu            = 1;  // 平胡
+    DuiDuiHu      = 2;  // 对对胡
+    QingYiSe      = 3;  // 清一色
+    QiDui         = 4;  // 七对
+    LongQiDui     = 5;  // 龙七对
+    QingDui       = 6;  // 清对
+    QingQiDui     = 7;  // 清七对
+    QuanYaoJiu    = 8;  // 全幺九
+    JiangDui      = 9;  // 将对
+    JiangQiDui    = 10; // 将七对
+    MenQing       = 11; // 门清
+    ZhongZhang    = 12; // 中张
+    JiaXinWu      = 13; // 夹心五
+}
+
+// 额外番
+enum ExtraType {
+    ExtraInvalid  = 0;
+    Gen           = 1;  // 根
+    GangShangHua  = 2;  // 杠上开花
+    GangShangPao  = 3;  // 杠上炮
+    QiangGangHu   = 4;  // 抢杠胡
+    ShaoDiHu      = 5;  // 扫底胡
+    JinGouGou     = 6;  // 金钩胡
+    HaiDiPao      = 7;  // 海底炮
+    TianHu        = 8;  // 天胡
+    Dihu          = 9;  // 地胡
+}
+
+
+
+
+
+
+
+

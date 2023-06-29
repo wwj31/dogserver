@@ -16,10 +16,3 @@ enum GameType {
     Mahjong     = 0; // 麻将
     DDZ         = 1; // 斗地主
 }
-
-enum MahjongCardType {
-    CardUnknown = 0;
-    Wan         = 1; // 万
-    Tiao        = 2; // 条
-    Tong        = 3; // 筒
-}
