@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"math/rand"
 	"sort"
+
+	"server/common"
+	"server/common/log"
 )
 
 // RandomCards 获得洗好的一副新牌
@@ -47,6 +50,35 @@ func (c Cards) Insert(cards ...Card) Cards {
 	return dst
 }
 
+// Remove 移除一组牌,移除的牌必须全部在手牌中
+func (c Cards) Remove(cards ...Card) Cards {
+	cardMap := make(map[Card]int) // 统计要移除的牌数量
+	for _, card := range cards {
+		cardMap[card] += 1
+	}
+
+	dst := make(Cards, 0, c.Len())
+	for _, card := range c {
+		if cardMap[card] > 0 {
+			cardMap[card] -= 1
+			if cardMap[card] == 0 {
+				delete(cardMap, card)
+			}
+			continue
+		}
+
+		if cardMap[card] == 0 {
+			dst = append(dst, card)
+		}
+	}
+
+	if len(cardMap) != 0 {
+		log.Errorw("cards remove error handCards:%v cards:%v", c, cards)
+	}
+
+	return dst
+}
+
 // CanPong 判断当前牌组能不能碰
 func (c Cards) CanPong(card Card) bool {
 	var num int
@@ -64,19 +96,19 @@ func (c Cards) CanPong(card Card) bool {
 // Pong 碰,返回去除了碰牌后的新手牌，以及碰牌起始下标
 func (c Cards) Pong(card Card) (cards Cards, index int, err error) {
 	index = sort.Search(c.Len(), func(i int) bool { return c[i] >= card })
-	if c[index] != card {
+	if index >= c.Len() || c[index] != card {
 		err = fmt.Errorf("pong failed cannot find index cards:%v index:%v card:%v", c, index, card)
 		return
 	}
 
 	// 找到后把左边一张牌和当前牌，作为碰牌
 	// 检查左边那张牌必须相同
-	index--
-	if c[index] != card {
+	if index == 0 || c[index-1] != card {
 		err = fmt.Errorf("pong failed card number != 2:%v index:%v card:%v", c, index, card)
 		return
 	}
 
+	index--
 	cards = append(cards, c[:index]...)
 	cards = append(cards, c[index+2:]...)
 	return
@@ -99,19 +131,19 @@ func (c Cards) CanGang(card Card) bool {
 // Gang 杠,返回去除了杠牌后的新手牌，以及杠的起始下标
 func (c Cards) Gang(card Card) (cards Cards, index int, err error) {
 	index = sort.Search(c.Len(), func(i int) bool { return c[i] >= card })
-	if c[index] != card {
+	if index >= c.Len() || c[index] != card {
 		err = fmt.Errorf("gang failed cannot find index cards:%v index:%v card:%v", c, index, card)
 		return
 	}
 
 	// 找到后把左边两张牌和当前牌，作为杠
 	// 检查左边两张牌必须相同
-	index -= 2
-	if c[index] != card || c[index+1] != card {
+	if index < 2 || c[index-1] != card || c[index-2] != card {
 		err = fmt.Errorf("gang failed card number != 2:%v index:%v card:%v", c, index, card)
 		return
 	}
 
+	index -= 2
 	cards = append(cards, c[:index]...)
 	cards = append(cards, c[index+3:]...)
 	return
@@ -122,7 +154,77 @@ func (c Cards) IsTing() bool {
 	return false
 }
 
-func (c Cards) IsHu() {
+func (c Cards) IsHu() HuType {
 	// TODO
-	return
+	return HuInvalid
+}
+
+// Duizi 找对子
+func (c Cards) Duizi() []Cards {
+	var result []Cards
+	for i := 0; i < len(c)-1; i++ {
+		if c[i] == c[i+1] {
+			result = append(result, Cards{c[i], c[i+1]})
+			i++ // 跳过下一个已经配对的牌
+		}
+	}
+	return result
+}
+
+// Kezi 找刻子
+func (c Cards) Kezi() []Cards {
+	var result []Cards
+	for i := 0; i < len(c)-2; i++ {
+		if c[i] == c[i+1] && c[i+1] == c[i+2] {
+			result = append(result, Cards{c[i], c[i+1], c[i+2]})
+			// 跳过所有相同的牌
+			for i < len(c)-2 && c[i] == c[i+2] {
+				i++
+			}
+		}
+	}
+	return result
+}
+
+// RemoveDuplicate 去除对子和顺子中重复的牌组
+func RemoveDuplicate(cardsGroup []Cards) []Cards {
+	// 创建一个 map 来记录已经出现过的牌组
+	uniqueMap := make(map[Card]bool)
+	var result []Cards
+
+	// 对每个牌组进行处理
+	for _, cards := range cardsGroup {
+		// 检查是否已经看到过这个牌组
+		if !uniqueMap[cards[0]] {
+			uniqueMap[cards[0]] = true
+			result = append(result, cards)
+		}
+	}
+
+	return result
+}
+
+// Shunzi 找顺子
+func (c Cards) Shunzi() []Cards {
+	var result []Cards
+
+	// 用于保存每个牌的数量
+	cardCount := make(map[Card]int)
+	for _, card := range c {
+		cardCount[card]++
+	}
+
+	// 获取所有可能的顺子
+	for card, count := range cardCount {
+		if card%10 <= 7 && cardCount[card+1] > 0 && cardCount[card+2] > 0 {
+			for i := 0; i < min(count, cardCount[card+1], cardCount[card+2]); i++ {
+				result = append(result, Cards{card, card + 1, card + 2})
+			}
+		}
+	}
+	return result
+}
+
+func min(a, b, c int) int {
+	return common.Min(a, common.Min(b, c))
 }

@@ -1,6 +1,5 @@
 package mahjong
 
-type HuType int32
 type ExtFanType int32
 
 const (
@@ -17,8 +16,9 @@ const (
 	JiangQiDui        // 将七对
 	MenQing           // 门清
 	ZhongZhang        // 中张
-	JiaXinWu          // 夹心五
 )
+
+type HuType int32
 
 const (
 	ExtraInvalid ExtFanType = iota
@@ -47,7 +47,6 @@ var hu = map[HuType]string{
 	JiangQiDui: "将七对",
 	MenQing:    "门清",
 	ZhongZhang: "中张",
-	JiaXinWu:   "夹心五",
 }
 
 var extra = map[ExtFanType]string{
