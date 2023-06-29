@@ -212,6 +212,12 @@ func (c Cards) ColorCount() int {
 	return len(colorMap)
 }
 
+// HighCard 检查是否存在散牌，不能组成顺子、刻子的牌
+func (c Cards) HighCard() bool {
+	// TODO
+	return false
+}
+
 // Duizi 找对子
 func (c Cards) Duizi() []Cards {
 	var result []Cards
