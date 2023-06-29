@@ -1,6 +1,6 @@
 package mahjong
 
-type ExtFanType int32
+type HuType int32
 
 const (
 	HuInvalid  HuType = iota
@@ -18,7 +18,7 @@ const (
 	ZhongZhang        // 中张
 )
 
-type HuType int32
+type ExtFanType int32
 
 const (
 	ExtraInvalid ExtFanType = iota
