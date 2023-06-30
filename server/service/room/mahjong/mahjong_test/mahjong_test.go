@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"server/service/room/mahjong"
 )
 
@@ -58,4 +60,72 @@ func TestShunzi(t *testing.T) {
 	}
 	cards2 := cards.Remove(total...)
 	fmt.Println(cards2)
+}
+
+func TestHighCard(t *testing.T) {
+	cards := mahjong.Cards{11, 12, 13, 14, 15}
+	assert.False(t, cards.HighCard(cards.ConvertStruct()))
+
+	cards = mahjong.Cards{11, 13, 14, 15, 17}
+	assert.True(t, cards.HighCard(cards.ConvertStruct()))
+
+	cards = mahjong.Cards{11, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15}
+	assert.False(t, cards.HighCard(cards.ConvertStruct()))
+
+	cards = mahjong.Cards{11, 11, 11, 12, 12, 13, 14, 14, 15, 15, 17}
+	assert.True(t, cards.HighCard(cards.ConvertStruct()))
+
+	cards = mahjong.Cards{11, 11, 11, 11, 12, 12, 12, 13, 13, 13, 14, 14, 14, 15, 15, 15}
+	assert.False(t, cards.HighCard(cards.ConvertStruct()))
+
+	cards = mahjong.Cards{11, 11, 11, 11, 12, 12, 12, 13, 13, 13, 14, 14, 14, 15, 15, 17}
+	assert.True(t, cards.HighCard(cards.ConvertStruct()))
+
+	cards = mahjong.Cards{21, 23, 24, 25, 27}
+	assert.True(t, cards.HighCard(cards.ConvertStruct()))
+
+	cards = mahjong.Cards{21, 21, 21, 22, 22, 23, 23, 24, 24, 25, 25}
+	assert.False(t, cards.HighCard(cards.ConvertStruct()))
+
+	cards = mahjong.Cards{21, 21, 21, 22, 22, 23, 24, 24, 25, 25, 27}
+	assert.True(t, cards.HighCard(cards.ConvertStruct()))
+
+	cards = mahjong.Cards{21, 21, 21, 21, 22, 22, 22, 23, 23, 23, 24, 24, 24, 25, 25, 25}
+	assert.False(t, cards.HighCard(cards.ConvertStruct()))
+
+	cards = mahjong.Cards{21, 21, 21, 21, 22, 22, 22, 23, 23, 23, 24, 24, 24, 25, 25, 27}
+	assert.True(t, cards.HighCard(cards.ConvertStruct()))
+
+	cards = mahjong.Cards{11, 12, 13, 14, 15, 17, 18, 19, 31, 32, 33, 33, 34}
+	assert.False(t, cards.HighCard(cards.ConvertStruct()))
+
+	cards = mahjong.Cards{31, 32, 33, 34, 35, 37, 38, 39}
+	assert.False(t, cards.HighCard(cards.ConvertStruct()))
+}
+
+func TestRecurCheck(t *testing.T) {
+	tests := []struct {
+		name string
+		c    mahjong.Cards
+		want mahjong.HuType
+	}{
+		{
+			name: "Hu (平胡1)",
+			c:    mahjong.Cards{11, 11, 11, 12, 13, 14, 22, 23, 24, 24, 25, 26, 27, 27},
+			want: mahjong.Hu,
+		},
+		{
+			name: "Hu (平胡2)",
+			c:    mahjong.Cards{11, 12, 13, 14, 14, 14, 15, 16, 17, 21, 22, 23, 23, 23},
+			want: mahjong.Hu,
+		},
+		// Add more test cases for different Hu types...
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tt.c.IsHu()
+			assert.Equal(t, tt.want, tt.c.IsHu())
+		})
+	}
 }

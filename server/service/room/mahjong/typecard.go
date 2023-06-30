@@ -78,6 +78,10 @@ func (m Card) Int32() int32 {
 	return int32(m)
 }
 
+func (m Card) Int() int {
+	return int(m)
+}
+
 var cards108 = [108]Card{
 	WAN_1, WAN_1, WAN_1, WAN_1,
 	WAN_2, WAN_2, WAN_2, WAN_2,

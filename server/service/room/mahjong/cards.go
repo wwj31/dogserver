@@ -9,6 +9,8 @@ import (
 	"server/common/log"
 )
 
+const MaxCardNum = 41
+
 // RandomCards 获得洗好的一副新牌
 func RandomCards() Cards {
 	cards := cards108
@@ -154,6 +156,36 @@ func (c Cards) IsTing() bool {
 	return false
 }
 
+// RecurCheckHu 给一副去除了将牌的牌组，判断有没有一种组合能把所有牌都组成刻子或顺子
+func RecurCheckHu(cards Cards) bool {
+	if cards.Len() == 0 {
+		return true
+	}
+
+	// 当前牌组是散牌,返回失败
+	if cards.HighCard(cards.ConvertStruct()) {
+		return false
+	}
+
+	// 所有牌刚好全部是刻子,返回成功
+	allKezi := cards.Kezi()
+	if len(allKezi)*3 == cards.Len() {
+		return true
+	}
+
+	allShunzi := cards.Shunzi()
+
+	// 所有能组成的砍行
+	allKan := append(RemoveDuplicate(allKezi), RemoveDuplicate(allShunzi)...)
+	for _, kan := range allKan {
+		tmp := cards.Remove(kan...)
+		if RecurCheckHu(tmp) {
+			return true
+		}
+	}
+	return false
+}
+
 func (c Cards) IsHu() (typ HuType) {
 	duiziGroups := c.Duizi()
 	// 没有能做将的牌
@@ -165,28 +197,25 @@ func (c Cards) IsHu() (typ HuType) {
 	if len(duiziGroups) == 7 {
 		typ = QiDui
 	} else {
+		// 先检查是否是散牌
+		if c.HighCard(c.ConvertStruct()) {
+			return HuInvalid
+		}
+
 		// 去个重
 		duiziGroups = RemoveDuplicate(duiziGroups)
 
 		// 挨个做将，再分析剩下的牌型
 		for _, jiangCards := range duiziGroups {
-			var (
-				keziCards   []Cards
-				shunziCards []Cards
-			)
-
 			spareHandCards := c.Remove(jiangCards...)
-			for {
-				if spareHandCards.Len() == 0 {
-					typ = Hu
-					break
-				}
-
+			// 散牌换将
+			if spareHandCards.HighCard(spareHandCards.ConvertStruct()) {
+				continue
 			}
 
-			// 如果该对子做将没有hu,直接换下一个
-			if typ == HuInvalid {
-				continue
+			if RecurCheckHu(spareHandCards) {
+				typ = Hu
+				break
 			}
 
 			// 检查刻子和顺子的情况，判断是否升级
@@ -212,10 +241,55 @@ func (c Cards) ColorCount() int {
 	return len(colorMap)
 }
 
-// HighCard 检查是否存在散牌，不能组成顺子、刻子的牌
-func (c Cards) HighCard() bool {
-	// TODO
-	return false
+// HighCard 检查是否存在散牌，不能组成顺子、刻子、对子的牌
+func (c Cards) HighCard(cardsStat [MaxCardNum]int) bool {
+	if c.Len() == 0 {
+		return false
+	}
+
+	if c.Len() == 1 {
+		return true
+	}
+	var continuous int
+
+	check := func(i int) bool {
+		// 断开连后，如果之前连续是1或者2，那么这两张连着的牌，有一张是单牌，那就构成散牌
+		if 0 < continuous && continuous < 3 {
+			if cardsStat[i-1] == 1 || cardsStat[i-2] == 1 {
+				return true
+			}
+		}
+		return false
+	}
+
+	for i := 11; i < MaxCardNum; i++ {
+		if cardsStat[i] == 0 {
+			if check(i) {
+				return true
+			}
+			continuous = 0
+			continue
+		}
+
+		continuous++
+	}
+
+	return check(MaxCardNum)
+}
+
+// ConvertStruct 转换牌型结构为统计结构，槽位下标表示牌，值表示牌的数量，前11个槽位无用
+// 例如 [40]int{ [0]=0, [1]=0, ... [11]=2, [12]=3, [13]=2, [14]=0, [15]=2, }
+// 表示 一万2张，二万3张，三万2张，四万0张，五万2张
+func (c Cards) ConvertStruct() (result [MaxCardNum]int) {
+	for _, card := range c {
+		if card.Int() >= MaxCardNum {
+			log.Errorw("card number out of range ", "card", card)
+			return
+		}
+
+		result[card.Int()]++
+	}
+	return result
 }
 
 // Duizi 找对子
@@ -248,7 +322,7 @@ func (c Cards) Kezi() []Cards {
 // RemoveDuplicate 去除对子和顺子中重复的牌组
 func RemoveDuplicate(cardsGroup []Cards) []Cards {
 	// 创建一个 map 来记录已经出现过的牌组
-	uniqueMap := make(map[Card]bool)
+	uniqueMap := make(map[Card]bool, len(cardsGroup))
 	var result []Cards
 
 	// 对每个牌组进行处理
