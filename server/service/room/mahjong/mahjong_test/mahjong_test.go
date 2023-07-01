@@ -119,6 +119,21 @@ func TestRecurCheck(t *testing.T) {
 			c:    mahjong.Cards{11, 12, 13, 14, 14, 14, 15, 16, 17, 21, 22, 23, 23, 23},
 			want: mahjong.Hu,
 		},
+		{
+			name: "Hu (平胡3)",
+			c:    mahjong.Cards{11, 11, 11, 12, 12, 12, 13, 13, 13, 21, 22, 23, 23, 23},
+			want: mahjong.Hu,
+		},
+		{
+			name: "Hu (平胡4)",
+			c:    mahjong.Cards{22, 22},
+			want: mahjong.Hu,
+		},
+		{
+			name: "Hu (平胡5)",
+			c:    mahjong.Cards{11, 11, 12, 13, 14},
+			want: mahjong.Hu,
+		},
 		// Add more test cases for different Hu types...
 	}
 
