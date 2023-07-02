@@ -39,6 +39,8 @@ enum Msg {
     IdMahjongBTEDealRsp = 900639396;
     IdMahjongBTEOperateReq = 1792910030;
     IdMahjongBTEOperateRsp = 2094907235;
+    IdMahjongBTEReadyNtf = 23903615;
+    IdMahjongBTEDecideMasterNtf = 701290466;
     IdMahjongBTEDealNtf = 881890379;
     IdMahjongBTEExchange3Ntf = 735992092;
     IdMahjongBTEExchange3EndNtf = 595136049;

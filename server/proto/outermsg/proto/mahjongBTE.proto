@@ -12,25 +12,35 @@ message MahjongBTEGameInfo {
     int64                      StateEnterAt     = 2; // 当前状态的进入时间(毫秒)
     int64                      StateEndAt       = 3; // 当前状态的结算时间(毫秒)
     repeated MahjongPlayerInfo Players          = 4; // 东南西北 四方玩家信息
-    int32                      MasterIndex      = 5; // 庄家位置 东南西北(0-3)
-    int32                      TotalCardsCount  = 6; // 剩余总牌数
+    repeated int32             Dices            = 5; // 定庄的2颗骰子数
+    int32                      MasterIndex      = 6; // 庄家位置 东南西北(0-3)
+    Exchange3Info              Ex3FromShortId   = 7; // 换三张数据
+    int32                      TotalCardsCount  = 8; // 剩余总牌数
 
-    int64                      ActionShortId    = 7; // 当前执行者
-    int64                      ActionType       = 8; // 操作类型 0.过、1.碰、2.杠、3.胡
-    HuType                     HuType           = 9; // 胡牌类型
-    int32                      NewCard          = 10; // 摸得的牌
-    int64                      OpEndAt          = 11; // 操作结束结束时间(毫秒)
+    int64                      ActionShortId    = 9; // 当前执行者
+    int64                      ActionType       = 10; // 操作类型 0.过、1.碰、2.杠、3.胡
+    HuType                     HuType           = 11; // 胡牌类型
+    int32                      NewCard          = 12; // 摸得的牌
+    int64                      OpEndAt          = 13; // 操作结束结束时间(毫秒)
 }
 
 // 血战到底 参与游戏的玩家数据
 message MahjongPlayerInfo {
     int64    ShortId               = 1; // 参与者短ID
-    MahjongCardType DecideColor    = 2; // 定缺花色 1.万、2.条、3.筒
+    ColorType DecideColor          = 2; // 定缺花色
     repeated int32 Cards           = 3; // 手牌 (萬11-19 条21-29 筒31-39)
-    repeated int32 CardPong        = 4; // 碰的牌组 数组长度表示几组碰，值代表牌
-    repeated int32 CardGang        = 5; // 杠的牌组 数组长度表示几组杠，值代表牌
+    map<int32,int64> CardsPong     = 4; // 碰的牌组 <牌，出牌人shortId>
+    map<int32,int64> CardsGang     = 5; // 杠的牌组 <牌，出牌人shortId>
 }
 
+// 血战到底 换三张数据
+message Exchange3Info {
+    repeated int32 CardsFrom   = 1; // 得到的牌
+    int32          FromShortId = 2; // 谁给的
+
+    repeated int32 CardsTo     = 3; // 给出去的牌
+    int32          ToShortId   = 4; // 给谁
+}
 ////////////////////////////////////////////// 游戏操作请求 //////////////////////////////////////////////
 // 换三张确定
 message MahjongBTEExchange3Req {
@@ -41,7 +51,7 @@ message MahjongBTEExchange3Rsp {
 
 // 定缺确定
 message MahjongBTEDecideIgnoreReq {
-    MahjongCardType color = 1;
+    ColorType color = 1;
 }
 message MahjongBTEDecideIgnoreRsp {
 }
@@ -68,6 +78,16 @@ message MahjongBTEOperateRsp {
 
 
 ////////////////////////////////////////////// 游戏通知 //////////////////////////////////////////////
+// 进入准备中，（结算结束后会通知）
+message MahjongBTEReadyNtf {
+}
+
+// 开始定庄
+message MahjongBTEDecideMasterNtf {
+    repeated int32 Dices       = 1; // 两颗骰子数
+    int32          MasterIndex = 2; // 庄家位置 0,1,2,3
+}
+
 // 开始发牌通知
 message MahjongBTEDealNtf {
     repeated int32 Cards   = 1; // 手牌 (萬11-19 条21-29 筒31-39)
@@ -91,7 +111,7 @@ message MahjongBTEDecideIgnoreNtf {
 
 // 开始游戏通知
 message MahjongBTEPlayingNtf {
-    map<int64, MahjongCardType> Colors = 1; // 每位玩家的定缺花色 map<短ID，定缺花色>
+    map<int64, ColorType> Colors = 1; // 每位玩家的定缺花色 map<短ID，定缺花色>
 }
 
 // 玩家轮动通知

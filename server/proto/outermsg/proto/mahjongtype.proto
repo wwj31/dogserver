@@ -4,7 +4,7 @@ option  go_package = "/outer";
 
 
 // 麻将 花色
-enum MahjongCardType {
+enum ColorType {
     CardUnknown = 0;
     Wan         = 1; // 萬
     Tiao        = 2; // 条
@@ -62,11 +62,4 @@ enum ExtraType {
     TianHu        = 8;  // 天胡
     Dihu          = 9;  // 地胡
 }
-
-
-
-
-
-
-
 

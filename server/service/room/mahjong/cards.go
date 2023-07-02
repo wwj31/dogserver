@@ -9,6 +9,7 @@ import (
 	"server/common/log"
 )
 
+// MaxCardNum 创建一个41大小的数组，有效索引为11-39,即为牌，值为牌数量
 const MaxCardNum = 41
 
 // RandomCards 获得洗好的一副新牌
@@ -22,8 +23,9 @@ func RandomCards() Cards {
 	return cards[:]
 }
 
-func (c Cards) Sort() {
+func (c Cards) Sort() Cards {
 	sort.Slice(c, func(i, j int) bool { return c[i] < c[j] })
+	return c
 }
 
 func (c Cards) Len() int {
@@ -151,97 +153,78 @@ func (c Cards) Gang(card Card) (cards Cards, index int, err error) {
 	return
 }
 
-func (c Cards) IsTing() bool {
-	// TODO
-	return false
-}
-
 // RecurCheckHu 给一副去除了将牌的牌组，判断有没有一种组合能把所有牌都组成刻子或顺子
-func RecurCheckHu(cards Cards) bool {
+func RecurCheckHu(cards Cards, upCardsHas1or9 bool) HuType {
 	if cards.Len() == 0 {
-		return true
+		if upCardsHas1or9 {
+			return DaiYaoJiu
+		} else {
+			return Hu
+		}
 	}
 
 	// 当前牌组是散牌,返回失败
 	if cards.HighCard(cards.ConvertStruct()) {
-		return false
+		return HuInvalid
 	}
 
 	// 所有牌刚好全部是刻子,返回成功
 	allKezi := cards.Kezi()
 	if len(allKezi)*3 == cards.Len() {
-		return true
+		return DuiDuiHu
 	}
 
 	allShunzi := cards.Shunzi()
 
-	// 所有能组成的砍行
-	allKan := append(RemoveDuplicate(allKezi), RemoveDuplicate(allShunzi)...)
+	// 所有砍
+	allKan := append(RemoveDuplicate(allShunzi), RemoveDuplicate(allKezi)...)
 	for _, kan := range allKan {
 		tmp := cards.Remove(kan...)
-		if RecurCheckHu(tmp) {
+		if h := RecurCheckHu(tmp, kan.Has1or9()); h > HuInvalid {
+			return h
+		}
+	}
+	return HuInvalid
+}
+
+// Has1or9 是否带有1或9
+func (c Cards) Has1or9() bool {
+	for _, card := range c {
+		num := card.Int() / 10
+		if num == 1 || num == 9 {
 			return true
 		}
 	}
 	return false
 }
 
-func (c Cards) IsHu() (typ HuType) {
-	duiziGroups := c.Duizi()
-	// 没有能做将的牌
-	if len(duiziGroups) == 0 {
-		return HuInvalid
-	}
-
-	// 先判断是不是七对
-	if len(duiziGroups) == 7 {
-		typ = QiDui
-	} else {
-		// 先检查是否是散牌
-		if c.HighCard(c.ConvertStruct()) {
-			return HuInvalid
-		}
-
-		// 去个重
-		duiziGroups = RemoveDuplicate(duiziGroups)
-
-		// 挨个做将，再分析剩下的牌型
-		for _, jiangCards := range duiziGroups {
-			spareHandCards := c.Remove(jiangCards...)
-			// 散牌换将
-			if spareHandCards.HighCard(spareHandCards.ConvertStruct()) {
-				continue
-			}
-
-			if RecurCheckHu(spareHandCards) {
-				typ = Hu
-				break
-			}
-
-			// 检查刻子和顺子的情况，判断是否升级
-
-		}
-	}
-
-	if typ != HuInvalid {
-		// TODO 检查是否升级
-
-	}
-	return typ
-}
-
 // ColorCount 当前牌有几个花色
-func (c Cards) ColorCount() int {
+func (c Cards) colors() map[int]struct{} {
 	colorMap := make(map[int]struct{})
 	for _, card := range c {
 		color := int(card / 10)
 		colorMap[color] = struct{}{}
 	}
 
-	return len(colorMap)
+	return colorMap
 }
 
-// HighCard 检查是否存在散牌，不能组成顺子、刻子、对子的牌
+func (c Cards) ToSlice() (result []int32) {
+	for _, card := range c {
+		result = append(result, card.Int32())
+	}
+	return
+}
+
+func (c Cards) Range(fn func(color ColorType, number int) bool) {
+	for _, card := range c {
+		if fn(ColorType(card%10), int(card/10)) {
+			break
+		}
+	}
+}
+
+// HighCard 检查是否存在散牌,存在不能组成顺子、刻子、对子的单牌
 func (c Cards) HighCard(cardsStat [MaxCardNum]int) bool {
 	if c.Len() == 0 {
 		return false

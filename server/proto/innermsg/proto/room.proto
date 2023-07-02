@@ -4,9 +4,10 @@ option  go_package = "/inner";
 import "base.proto";
 
 message RoomPlayerInfo{
-  PlayerInfo BaseInfo = 1;
-  bool       Ready    = 2;
-  int64      EnterAt  = 3;
+  int32      SeatIndex = 1;
+  PlayerInfo BaseInfo  = 2;
+  bool       Ready     = 3;
+  int64      EnterAt   = 4;
 }
 
 message RoomInfo{

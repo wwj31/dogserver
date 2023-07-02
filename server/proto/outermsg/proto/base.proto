@@ -20,6 +20,7 @@ message PlayerInfo {
     int64    LoginAt     = 8;  // 登录时间(秒)
     int64    LogoutAt    = 9;  // 离线时间(秒)
     int64    UpShortId   = 10; // 上级id
+    int64    Gold        = 11; // 金币
 }
 
 // 游戏参数

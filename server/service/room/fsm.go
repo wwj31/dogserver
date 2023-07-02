@@ -8,7 +8,7 @@ type StateHandler interface {
 	State() int
 	Enter(*FSM)
 	Leave(*FSM)
-	Handle(*FSM, ...any) any
+	Handle(*FSM, any, int64) any
 }
 
 type (
@@ -57,8 +57,4 @@ func (s *FSM) Switch(nextState int) error {
 	s.states[s.State()].Enter(s)
 
 	return nil
-}
-
-func (s *FSM) Handle(v interface{}) {
-	s.CurrentStateHandler().Handle(s, v)
 }

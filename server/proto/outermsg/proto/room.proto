@@ -7,9 +7,10 @@ import "type.proto";
 
 // 房间内玩家数据
 message RoomPlayerInfo {
-    PlayerInfo BaseInfo = 1; // 玩家基础信息
-    bool       Ready    = 2; // true.准备、false.未准备
-    int64      EnterAt  = 3; // 进入房间的时间(毫秒)
+    int32      SeatIndex = 1; // 座位 0，1，2，3...
+    PlayerInfo BaseInfo  = 2; // 玩家基础信息
+    bool       Ready     = 3; // true.准备、false.未准备
+    int64      EnterAt   = 4; // 进入房间的时间(毫秒)
 }
 
 // 房间信息

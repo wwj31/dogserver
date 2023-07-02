@@ -45,7 +45,8 @@ type (
 		stopping       bool
 		CurrentMsg     actor.Message
 		RoomId         int64
-		GameType       int32             // 游戏类型
+		Dices          []int32           // 两颗骰子数
+		GameType       int32             // 游戏类型 0.血战 1.斗地主
 		GameParams     *outer.GameParams // 游戏参数
 		CreatorShortId int64             // 房间创建者
 		AllianceId     int32             // 归属联盟
@@ -60,11 +61,12 @@ func (r *Room) InjectGambling(gambling Gambling) {
 	r.gambling = gambling
 }
 
-func (r *Room) GamblingHandle(v any) (result any) {
-	return r.gambling.Handle(v)
+func (r *Room) GamblingHandle(v any, shortId int64) (result any) {
+	return r.gambling.Handle(v, shortId)
 }
 
 func (r *Room) OnInit() {
+	r.Dices = make([]int32, 2, 2) //
 	router.Result(r, r.responseHandle)
 	log.Debugf("Room:[%v] OnInit", r.RoomId)
 }
@@ -164,11 +166,11 @@ func (r *Room) PlayerEnter(playerInfo *inner.PlayerInfo) *inner.Error {
 		EnterAt:    time.Now(),
 	}
 	r.Players = append(r.Players, newPlayer)
-
-	r.Broadcast(&outer.RoomPlayerEnterNtf{Player: newPlayer.OuterPB()})
-
 	r.gambling.PlayerEnter(newPlayer)
-	log.Infow("room add player", "roomId", r.RoomId, "player", playerInfo.ShortId)
+
+	seatIndex := r.gambling.SeatIndex(playerInfo.ShortId)
+	r.Broadcast(&outer.RoomPlayerEnterNtf{Player: newPlayer.OuterPB(seatIndex)})
+	log.Infow("room add player", "roomId", r.RoomId, "gameType", r.GameType, "player", playerInfo.ShortId)
 	return nil
 }
 
@@ -247,7 +249,8 @@ func (r *Room) Broadcast(msg proto.Message, ignores ...int64) {
 func (r *Room) Info() *inner.RoomInfo {
 	var players []*inner.RoomPlayerInfo
 	for _, player := range r.Players {
-		players = append(players, player.InnerPB())
+		seadIndex := r.gambling.SeatIndex(player.ShortId)
+		players = append(players, player.InnerPB(seadIndex))
 	}
 
 	gameParamsBytes, _ := proto.Marshal(r.GameParams)
@@ -260,18 +263,20 @@ func (r *Room) Info() *inner.RoomInfo {
 	}
 }
 
-func (p *Player) InnerPB() *inner.RoomPlayerInfo {
+func (p *Player) InnerPB(seatIdx int32) *inner.RoomPlayerInfo {
 	return &inner.RoomPlayerInfo{
-		BaseInfo: p.PlayerInfo,
-		Ready:    p.Ready,
-		EnterAt:  p.EnterAt.UnixMilli(),
+		SeatIndex: seatIdx,
+		BaseInfo:  p.PlayerInfo,
+		Ready:     p.Ready,
+		EnterAt:   p.EnterAt.UnixMilli(),
 	}
 }
-func (p *Player) OuterPB() *outer.RoomPlayerInfo {
+func (p *Player) OuterPB(seatIdx int32) *outer.RoomPlayerInfo {
 	return &outer.RoomPlayerInfo{
-		BaseInfo: convert.PlayerInnerToOuter(p.PlayerInfo),
-		Ready:    p.Ready,
-		EnterAt:  p.EnterAt.UnixMilli(),
+		SeatIndex: seatIdx,
+		BaseInfo:  convert.PlayerInnerToOuter(p.PlayerInfo),
+		Ready:     p.Ready,
+		EnterAt:   p.EnterAt.UnixMilli(),
 	}
 }
 
