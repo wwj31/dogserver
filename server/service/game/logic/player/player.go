@@ -194,6 +194,7 @@ func (p *Player) PlayerInfo() *inner.PlayerInfo {
 		LoginAt:    tools.TimeFormat(p.Role().LoginAt()),
 		LogoutAt:   tools.TimeFormat(p.Role().LogoutAt()),
 		GSession:   p.gSession.String(),
+		Gold:       p.Role().Gold(),
 	}
 }
 func (p *Player) UpdateInfoToRedis() {

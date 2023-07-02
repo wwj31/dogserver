@@ -54,5 +54,6 @@ func PlayerInnerToOuter(player *inner.PlayerInfo) *outer.PlayerInfo {
 		LoginAt:    tools.TimeParse(player.LoginAt).Unix(),
 		LogoutAt:   tools.TimeParse(player.LogoutAt).Unix(),
 		UpShortId:  player.UpShortId,
+		Gold:       player.Gold,
 	}
 }

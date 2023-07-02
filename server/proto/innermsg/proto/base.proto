@@ -23,6 +23,7 @@ message PlayerInfo{
     string LoginAt    = 10;
     string LogoutAt   = 11;
     string GSession   = 12;
+    int64  Gold       = 13;
 }
 
 
