@@ -14,7 +14,6 @@ func (g GamblingType) Int32() int32 {
 }
 
 type Gambling interface {
-	Init()
 	SeatIndex(shortId int64) int32
 	CanEnter(p *inner.PlayerInfo) bool
 	CanLeave(p *inner.PlayerInfo) bool
