@@ -2,7 +2,9 @@ package rdsop
 
 import (
 	"context"
+
 	"github.com/spf13/cast"
+
 	"server/common"
 	"server/common/log"
 	"server/common/rds"
@@ -11,7 +13,6 @@ import (
 
 func AddAllianceRoom(roomId int64, allianceId int32) {
 	rds.Ins.SAdd(context.Background(), RoomsSetKey(allianceId), roomId)
-	rds.Ins.HSet(context.Background(), RoomsSetKey(allianceId))
 }
 
 func SubAllianceRoom(roomId int64, allianceId int32) {

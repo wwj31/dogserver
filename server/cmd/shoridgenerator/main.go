@@ -4,9 +4,11 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"github.com/spf13/cast"
 	"math/rand"
 	"os"
+
+	"github.com/spf13/cast"
+
 	"server/common/rds"
 )
 
@@ -14,6 +16,7 @@ var (
 	key  = flag.String("key", "shortid", "the key of the short id")
 	pwd  = flag.String("pwd", "", "the password of the redis")
 	addr = flag.String("addr", "localhost:6379", "the addr of the redis")
+	db   = flag.String("db", "1", "the addr of the redis")
 )
 
 func main() {
@@ -23,6 +26,7 @@ func main() {
 	if err := rds.NewBuilder().
 		Addr(*addr).
 		Password(*pwd).
+		DB(cast.ToInt(*db)).
 		Connect(); err != nil {
 		fmt.Println("redis connect failed", "err", err)
 		return

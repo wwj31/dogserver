@@ -5,6 +5,7 @@ etcd_addr       = "127.0.0.1:2379"
 #nats_url        = "nats://localhost:4222"
 redis_addr      = ["127.0.0.1:6379"]
 redis_password  = ""
+redis_db        = "1"
 #mysql      = "root:123456@tcp(127.0.0.1:3306)/%s?charset=utf8mb4&parseTime=True&loc=Local"
 mongo_addr      = "mongodb://localhost:27017"
 #mongo_addr   = "mongodb+srv://admin:ewqmh388@wwjmongocluster.fpdka24.mongodb.net/admin?replicaSet=atlas-lrdfhp-shard-0&readPreference=primary&connectTimeoutMS=10000&authSource=admin&authMechanism=SCRAM-SHA-1&3t.uriVersion=3&3t.connection.name=atlas-lrdfhp-shard-0&3t.databases=admin&3t.alwaysShowAuthDB=true&3t.alwaysShowDBFromUserRole=true&3t.sslTlsVersion=TLS"

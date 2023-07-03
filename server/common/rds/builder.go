@@ -16,6 +16,7 @@ type Builder struct {
 	userName       string
 	password       string
 	maxRetries     int
+	db             int
 	dialTimeout    time.Duration
 	readTimeout    time.Duration
 	writeTimeout   time.Duration
@@ -103,6 +104,11 @@ func (b *Builder) WriteTimeout(writeTimeout time.Duration) *Builder {
 	return b
 }
 
+func (b *Builder) DB(num int) *Builder {
+	b.db = num
+	return b
+}
+
 func (b *Builder) OnConnect(fn func()) *Builder {
 	b.onConnectHande = fn
 	return b
@@ -117,6 +123,7 @@ func (b *Builder) options() *redis.Options {
 		DialTimeout:  b.dialTimeout,
 		ReadTimeout:  b.readTimeout,
 		WriteTimeout: b.writeTimeout,
+		DB:           b.db,
 	}
 }
 

@@ -37,7 +37,7 @@ var _ = router.Reg(func(r *room.Room, msg *inner.JoinRoomReq) any {
 
 	// 玩家不在房间所属联盟中
 	if r.AllianceId != msg.Player.AllianceId {
-		return outer.ERROR_PLAYER_ALREADY_IN_ROOM
+		return outer.ERROR_PLAYER_NOT_IN_ALLIANCE
 	}
 
 	// 玩家已在房间内

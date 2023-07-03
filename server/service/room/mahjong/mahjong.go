@@ -23,6 +23,8 @@ func New(r *room.Room) *Mahjong {
 	_ = mahjong.fsm.Add(&StateDecideMaster{Mahjong: mahjong}) //
 	_ = mahjong.fsm.Add(&StateDecideMaster{Mahjong: mahjong})
 
+	mahjong.SwitchTo(Ready)
+
 	return mahjong
 }
 

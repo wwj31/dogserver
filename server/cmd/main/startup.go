@@ -71,6 +71,7 @@ func startup() {
 	if err := rds.NewBuilder().
 		Addr(toml.GetArray("redis_addr", "localhost:6379")...).
 		Password(toml.Get("redis_password", "")).
+		DB(cast.ToInt(toml.Get("redis_db", "0"))).
 		//ClusterMode().
 		Connect(); err != nil {
 		log.Errorw("redis connect failed", "err", err)

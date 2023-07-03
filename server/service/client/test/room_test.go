@@ -1,9 +1,11 @@
 package test
 
 import (
-	"github.com/stretchr/testify/assert"
-	"server/common/log"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+
+	"server/common/log"
 
 	"server/proto/outermsg/outer"
 	"server/service/client/client"
@@ -38,7 +40,7 @@ func TestRoomList(t *testing.T) {
 func TestJoinRoom(t *testing.T) {
 	cli := &client.Client{Addr: *Addr, DeviceID: "test2"}
 	Init(cli)
-	_, ok := cli.Req(outer.Msg_IdJoinRoomReq, &outer.JoinRoomReq{RoomId: 23}).(*outer.JoinRoomRsp)
+	_, ok := cli.Req(outer.Msg_IdJoinRoomReq, &outer.JoinRoomReq{RoomId: 1}).(*outer.JoinRoomRsp)
 	assert.True(t, ok)
 }
 

@@ -26,7 +26,7 @@ func (s *Login) initAccount(acc *account.Account, os, ver string, upShortId int6
 	}
 
 	if err != nil {
-		err = fmt.Errorf("shor id get failed :%v", err)
+		err = fmt.Errorf("short id get failed :%v", err)
 		log.Errorw(err.Error())
 		return
 	}
