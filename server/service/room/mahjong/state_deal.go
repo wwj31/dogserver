@@ -7,7 +7,6 @@ import (
 
 	"server/common/log"
 	"server/proto/outermsg/outer"
-	"server/service/room"
 )
 
 // 发牌状态
@@ -20,7 +19,7 @@ func (s *StateDeal) State() int {
 	return Deal
 }
 
-func (s *StateDeal) Enter(fsm *room.FSM) {
+func (s *StateDeal) Enter() {
 	log.Infow("[Mahjong] leave state  deal", "room", s.room.RoomId)
 	s.cards = RandomCards() // 总共108张
 	var i int
@@ -52,10 +51,10 @@ func (s *StateDeal) Enter(fsm *room.FSM) {
 
 }
 
-func (s *StateDeal) Leave(fsm *room.FSM) {
+func (s *StateDeal) Leave() {
 	log.Infow("[Mahjong] leave state deal", "room", s.room.RoomId)
 }
 
-func (s *StateDeal) Handle(fsm *room.FSM, v any, shortId int64) (result any) {
+func (s *StateDeal) Handle(shortId int64, v any) (result any) {
 	return nil
 }

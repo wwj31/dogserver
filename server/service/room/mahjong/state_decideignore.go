@@ -3,7 +3,6 @@ package mahjong
 import (
 	"server/common/log"
 	"server/proto/outermsg/outer"
-	"server/service/room"
 )
 
 // 定缺状态
@@ -16,16 +15,16 @@ func (s *StateDecideIgnore) State() int {
 	return DecideIgnore
 }
 
-func (s *StateDecideIgnore) Enter(fsm *room.FSM) {
+func (s *StateDecideIgnore) Enter() {
 
 	log.Infow("[Mahjong] leave state  exchange3", "room", s.room.RoomId)
 }
 
-func (s *StateDecideIgnore) Leave(fsm *room.FSM) {
+func (s *StateDecideIgnore) Leave() {
 	log.Infow("[Mahjong] leave state exchange3", "room", s.room.RoomId)
 }
 
-func (s *StateDecideIgnore) Handle(fsm *room.FSM, v any, shortId int64) (result any) {
+func (s *StateDecideIgnore) Handle(shortId int64, v any) (result any) {
 	switch msg := v.(type) {
 	case *outer.MahjongBTEDecideIgnoreReq:
 		if msg.Color == 0 {

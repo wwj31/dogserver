@@ -8,7 +8,6 @@ import (
 
 	"server/common/log"
 	"server/proto/outermsg/outer"
-	"server/service/room"
 )
 
 // 定庄状态
@@ -21,7 +20,7 @@ func (s *StateDecideMaster) State() int {
 	return DecideMaster
 }
 
-func (s *StateDecideMaster) Enter(fsm *room.FSM) {
+func (s *StateDecideMaster) Enter() {
 	s.room.Dices[0] = rand.Int31n(6) + 1
 	s.room.Dices[1] = rand.Int31n(6) + 1
 	// TODO 骰子定庄规则
@@ -41,10 +40,10 @@ func (s *StateDecideMaster) Enter(fsm *room.FSM) {
 		"room", s.room.RoomId, "dices", s.room.Dices, "master", s.masterIndex)
 }
 
-func (s *StateDecideMaster) Leave(fsm *room.FSM) {
+func (s *StateDecideMaster) Leave() {
 	log.Infow("[Mahjong] leave state decide master", "room", s.room.RoomId)
 }
 
-func (s *StateDecideMaster) Handle(fsm *room.FSM, v any, shortId int64) (result any) {
+func (s *StateDecideMaster) Handle(shortId int64, v any) (result any) {
 	return nil
 }

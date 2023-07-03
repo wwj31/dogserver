@@ -1,6 +1,7 @@
 package mahjong
 
 import (
+	"server/proto/outermsg/outer"
 	"time"
 
 	"github.com/wwj31/dogactor/tools"
@@ -20,8 +21,9 @@ func New(r *room.Room) *Mahjong {
 	_ = mahjong.fsm.Add(&StateReady{Mahjong: mahjong})        // 准备中
 	_ = mahjong.fsm.Add(&StateDeal{Mahjong: mahjong})         // 发牌中
 	_ = mahjong.fsm.Add(&StateDecideMaster{Mahjong: mahjong}) // 定庄
-	_ = mahjong.fsm.Add(&StateDecideMaster{Mahjong: mahjong}) //
-	_ = mahjong.fsm.Add(&StateDecideMaster{Mahjong: mahjong})
+	_ = mahjong.fsm.Add(&StateExchange3{Mahjong: mahjong})    // 换三张
+	_ = mahjong.fsm.Add(&StateDecideIgnore{Mahjong: mahjong}) // 定缺
+	_ = mahjong.fsm.Add(&StatePlaying{Mahjong: mahjong})      // 游戏中
 
 	mahjong.SwitchTo(Ready)
 
@@ -32,11 +34,12 @@ func New(r *room.Room) *Mahjong {
 type mahjongPlayer struct {
 	*room.Player
 
-	ignoreColor ColorType       // 定缺花色
-	handCards   Cards           // 手牌
-	lightGang   map[int32]int64 // map[杠牌]ShortId 明杠
-	darkGang    map[int32]int64 // map[杠牌]ShortId 暗杠
-	pong        map[int32]int64 // map[碰牌]ShortId
+	ignoreColor ColorType            // 定缺花色
+	exchange    *outer.Exchange3Info // 换三张信息
+	handCards   Cards                // 手牌
+	lightGang   map[int32]int64      // map[杠牌]ShortId 明杠
+	darkGang    map[int32]int64      // map[杠牌]ShortId 暗杠
+	pong        map[int32]int64      // map[碰牌]ShortId
 }
 
 type Mahjong struct {
@@ -85,6 +88,7 @@ func (m *Mahjong) CanLeave(p *inner.PlayerInfo) bool {
 	}
 	return false
 }
+
 func (m *Mahjong) CanReady(p *inner.PlayerInfo) bool {
 	if m.fsm.State() == Ready {
 		return true
@@ -136,7 +140,7 @@ func (m *Mahjong) PlayerReady(p *room.Player) {
 
 // Handle 麻将游戏消息，全部交由当前状态处理
 func (m *Mahjong) Handle(v any, shortId int64) any {
-	return m.fsm.CurrentStateHandler().Handle(m.fsm, v, shortId)
+	return m.fsm.CurrentStateHandler().Handle(shortId, v)
 }
 
 func (m *Mahjong) findMahjongPlayer(shortId int64) *mahjongPlayer {
@@ -146,4 +150,13 @@ func (m *Mahjong) findMahjongPlayer(shortId int64) *mahjongPlayer {
 		}
 	}
 	return nil
+}
+
+func (m *Mahjong) nextSeatIndex(index int32) int32 {
+	// 0,1,2,3 东南西北
+	index--
+	if index < 0 {
+		index = 3
+	}
+	return index
 }

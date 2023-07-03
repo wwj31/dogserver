@@ -6,9 +6,9 @@ import (
 
 type StateHandler interface {
 	State() int
-	Enter(*FSM)
-	Leave(*FSM)
-	Handle(*FSM, any, int64) any
+	Enter()
+	Leave()
+	Handle(int64, any) any
 }
 
 type (
@@ -51,10 +51,10 @@ func (s *FSM) SwitchTo(nextState int) error {
 	}
 
 	if s.State() != -1 {
-		s.states[s.State()].Leave(s)
+		s.states[s.State()].Leave()
 	}
 	s.currState = nextState
-	s.states[s.State()].Enter(s)
+	s.states[s.State()].Enter()
 
 	return nil
 }

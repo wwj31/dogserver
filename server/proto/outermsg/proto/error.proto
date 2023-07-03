@@ -34,6 +34,9 @@ enum ERROR {
    ROOM_CAN_NOT_LEAVE               = 28; // 房间当前不能退出
    ROOM_CAN_NOT_READY               = 29; // 房间当前不能切换准备状态
    ROOM_PLAYER_NOT_IN_GAME          = 30; // 玩家未参与游戏
+   MAHJONG_EXCHANGE3_LEN_ERROR      = 31; // 请求换三张长度不为3
+   MAHJONG_EXCHANGE3_INDEX_ERROR    = 32; // 请求换三张下标越界长度不为0-12
+   MAHJONG_EXCHANGE3_INDEX_EQUAL    = 33; // 请求换三张下标重复
 }
 
 message FailRsp {

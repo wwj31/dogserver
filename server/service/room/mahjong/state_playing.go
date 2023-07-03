@@ -2,7 +2,6 @@ package mahjong
 
 import (
 	"server/common/log"
-	"server/service/room"
 )
 
 // 游戏状态
@@ -15,14 +14,14 @@ func (s *StatePlaying) State() int {
 	return Playing
 }
 
-func (s *StatePlaying) Enter(fsm *room.FSM) {
+func (s *StatePlaying) Enter() {
 	log.Infow("[Mahjong] leave state  playing", "room", s.room.RoomId)
 }
 
-func (s *StatePlaying) Leave(fsm *room.FSM) {
+func (s *StatePlaying) Leave() {
 	log.Infow("[Mahjong] leave state playing", "room", s.room.RoomId)
 }
 
-func (s *StatePlaying) Handle(fsm *room.FSM, v any, shortId int64) (result any) {
+func (s *StatePlaying) Handle(shortId int64, v any) (result any) {
 	return nil
 }

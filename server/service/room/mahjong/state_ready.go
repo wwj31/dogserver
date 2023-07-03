@@ -3,7 +3,6 @@ package mahjong
 import (
 	"server/common/log"
 	"server/proto/outermsg/outer"
-	"server/service/room"
 )
 
 // 准备状态
@@ -16,16 +15,16 @@ func (s *StateReady) State() int {
 	return Ready
 }
 
-func (s *StateReady) Enter(fsm *room.FSM) {
+func (s *StateReady) Enter() {
 	log.Infow("[Mahjong] leave state  ready ", "room", s.room.RoomId)
 	s.room.Broadcast(&outer.MahjongBTEReadyNtf{})
 }
 
-func (s *StateReady) Leave(fsm *room.FSM) {
+func (s *StateReady) Leave() {
 	log.Infow("[Mahjong] leave state ready", "room", s.room.RoomId)
 }
 
-func (s *StateReady) Handle(fsm *room.FSM, v any, shortId int64) (result any) {
+func (s *StateReady) Handle(shortId int64, v any) (result any) {
 	switch msg := v.(type) {
 	case *outer.ReadyReq:
 		if msg.Ready && s.checkAllReady() {

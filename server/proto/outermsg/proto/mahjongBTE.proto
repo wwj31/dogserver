@@ -35,11 +35,11 @@ message MahjongPlayerInfo {
 
 // 血战到底 换三张数据
 message Exchange3Info {
-    repeated int32 CardsFrom   = 1; // 得到的牌
-    int32          FromShortId = 2; // 谁给的
+    repeated int32 CardsFrom     = 1; // 得到的牌
+    int32          FromSeatIndex = 2; // 谁给的
 
-    repeated int32 CardsTo     = 3; // 给出去的牌
-    int32          ToShortId   = 4; // 给谁
+    repeated int32 CardsTo       = 3; // 给出去的牌
+    int32          ToSeatIndex   = 4; // 给谁
 }
 ////////////////////////////////////////////// 游戏操作请求 //////////////////////////////////////////////
 // 换三张确定
@@ -99,9 +99,8 @@ message MahjongBTEExchange3Ntf {
 
 // 换三张结束
 message MahjongBTEExchange3EndNtf {
-    int64          ShortId      = 1; // 换牌的玩家短id
-    Exchange3Info  Ex3Info      = 2; // 换牌信息
-    repeated int32 Cards        = 3; // 最新手牌 (萬11-19 条21-29 筒31-39)
+    Exchange3Info  Ex3Info      = 1; // 换牌信息
+    repeated int32 Cards        = 2; // 最新手牌 (萬11-19 条21-29 筒31-39)
 }
 
 // 开始定缺通知
