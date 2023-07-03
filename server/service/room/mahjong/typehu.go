@@ -17,7 +17,6 @@ const (
 	JiangQiDui           // 将七对    4
 	QingLongQiDui        // 清龙七对   5
 	QuanYaoJiu           // 全幺九    3
-	DaiYaoJiu            // 带幺九    2
 	MenQing              // 门清      1
 	ZhongZhang           // 中张      1
 )
@@ -57,7 +56,6 @@ var huStr = map[HuType]string{
 	QingQiDui:     "清七对",
 	QingLongQiDui: "清龙对",
 	QuanYaoJiu:    "全幺九",
-	DaiYaoJiu:     "带幺九",
 	JiangDui:      "将对",
 	JiangQiDui:    "将七对",
 	MenQing:       "门清",

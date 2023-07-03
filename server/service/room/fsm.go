@@ -45,7 +45,7 @@ func (s *FSM) CurrentStateHandler() StateHandler {
 	return s.states[s.currState]
 }
 
-func (s *FSM) Switch(nextState int) error {
+func (s *FSM) SwitchTo(nextState int) error {
 	if _, exit := s.states[nextState]; !exit {
 		return fmt.Errorf("not found next_state:%v", nextState)
 	}

@@ -1,12 +1,14 @@
 package mahjong
 
 import (
-	"github.com/wwj31/dogactor/tools"
 	"math/rand"
+	"time"
+
+	"github.com/wwj31/dogactor/tools"
+
 	"server/common/log"
 	"server/proto/outermsg/outer"
 	"server/service/room"
-	"time"
 )
 
 // 定庄状态
@@ -30,19 +32,17 @@ func (s *StateDecideMaster) Enter(fsm *room.FSM) {
 		MasterIndex: int32(s.masterIndex),
 	})
 
-	// 10秒播完动画后，切入换三张状态
+	// 10秒播完动画后，切入换发牌
 	s.room.AddTimer(tools.XUID(), tools.Now().Add(10*time.Second), func(dt time.Duration) {
-		if err := s.fsm.Switch(Deal); err != nil {
-			log.Errorw("enter exchange3 failed on decideMaster", "err", err)
-		}
+		s.SwitchTo(Deal)
 	})
 
-	log.Infow("Mahjong enter decide master",
+	log.Infow("[Mahjong] leave state  decide master",
 		"room", s.room.RoomId, "dices", s.room.Dices, "master", s.masterIndex)
 }
 
 func (s *StateDecideMaster) Leave(fsm *room.FSM) {
-	log.Infow("Mahjong leave decide master", "room", s.room.RoomId)
+	log.Infow("[Mahjong] leave state decide master", "room", s.room.RoomId)
 }
 
 func (s *StateDecideMaster) Handle(fsm *room.FSM, v any, shortId int64) (result any) {

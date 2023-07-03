@@ -16,11 +16,11 @@ func (s *StatePlaying) State() int {
 }
 
 func (s *StatePlaying) Enter(fsm *room.FSM) {
-	log.Infow("Mahjong enter playing", "room", s.room.RoomId)
+	log.Infow("[Mahjong] leave state  playing", "room", s.room.RoomId)
 }
 
 func (s *StatePlaying) Leave(fsm *room.FSM) {
-	log.Infow("Mahjong leave playing", "room", s.room.RoomId)
+	log.Infow("[Mahjong] leave state playing", "room", s.room.RoomId)
 }
 
 func (s *StatePlaying) Handle(fsm *room.FSM, v any, shortId int64) (result any) {

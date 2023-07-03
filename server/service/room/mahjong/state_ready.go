@@ -17,12 +17,12 @@ func (s *StateReady) State() int {
 }
 
 func (s *StateReady) Enter(fsm *room.FSM) {
-	log.Infow("Mahjong enter ready ", "room", s.room.RoomId)
+	log.Infow("[Mahjong] leave state  ready ", "room", s.room.RoomId)
 	s.room.Broadcast(&outer.MahjongBTEReadyNtf{})
 }
 
 func (s *StateReady) Leave(fsm *room.FSM) {
-	log.Infow("Mahjong leave ready", "room", s.room.RoomId)
+	log.Infow("[Mahjong] leave state ready", "room", s.room.RoomId)
 }
 
 func (s *StateReady) Handle(fsm *room.FSM, v any, shortId int64) (result any) {
@@ -30,15 +30,10 @@ func (s *StateReady) Handle(fsm *room.FSM, v any, shortId int64) (result any) {
 	case *outer.ReadyReq:
 		if msg.Ready && s.checkAllReady() {
 			// 所有人准备了，进入定庄
-			var err error
 			if s.gameCount == 0 {
-				err = s.fsm.Switch(DecideMaster)
+				s.SwitchTo(DecideMaster)
 			} else {
-				err = s.fsm.Switch(Deal)
-			}
-
-			if err != nil {
-				log.Errorw("enter decide master failed on ready", "err", err)
+				s.SwitchTo(Deal)
 			}
 		}
 		return &outer.ReadyRsp{Ready: msg.Ready}

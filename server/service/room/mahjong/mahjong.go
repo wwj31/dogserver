@@ -3,6 +3,8 @@ package mahjong
 import (
 	"time"
 
+	"github.com/wwj31/dogactor/tools"
+
 	"server/common/log"
 	"server/proto/innermsg/inner"
 	"server/service/room"
@@ -30,13 +32,15 @@ type mahjongPlayer struct {
 
 	ignoreColor ColorType       // 定缺花色
 	handCards   Cards           // 手牌
-	gang        map[int32]int64 // map[杠牌]ShortId 用shortId区分明杠或暗杠
+	lightGang   map[int32]int64 // map[杠牌]ShortId 明杠
+	darkGang    map[int32]int64 // map[杠牌]ShortId 暗杠
 	pong        map[int32]int64 // map[碰牌]ShortId
 }
 
 type Mahjong struct {
-	room *room.Room
-	fsm  *room.FSM
+	room                *room.Room
+	fsm                 *room.FSM
+	currentStateEnterAt time.Time // 当前状态的进入时间
 
 	masterIndex int // 庄家位置 0,1,2,3
 	gameCount   int // 游戏的连续局数 结算后，有玩家退出，重置0
@@ -45,10 +49,14 @@ type Mahjong struct {
 	mahjongPlayers [4]*mahjongPlayer
 }
 
-func (m *Mahjong) Init() {
-	if err := m.fsm.Switch(Ready); err != nil {
-		log.Warnw("Mahjong start switch ready failed", m.room.LogInfo()...)
+func (m *Mahjong) SwitchTo(state int) {
+	if err := m.fsm.SwitchTo(state); err != nil {
+		current := m.fsm.CurrentStateHandler().State()
+		log.Errorw("Mahjong switch to next state failed",
+			append([]any{"current", current, "next", state}, m.room.LogInfo())...)
+		return
 	}
+	m.currentStateEnterAt = tools.Now()
 }
 
 func (m *Mahjong) SeatIndex(shortId int64) int32 {
@@ -66,6 +74,7 @@ func (m *Mahjong) CanEnter(p *inner.PlayerInfo) bool {
 	}
 	return false
 }
+
 func (m *Mahjong) CanLeave(p *inner.PlayerInfo) bool {
 	// 只有准备和结算时可以离开
 	switch m.fsm.State() {
@@ -87,9 +96,10 @@ func (m *Mahjong) PlayerEnter(p *room.Player) {
 		if player == nil {
 			seatIdx = i
 			m.mahjongPlayers[i] = &mahjongPlayer{
-				Player: p,
-				gang:   map[int32]int64{},
-				pong:   map[int32]int64{},
+				Player:    p,
+				lightGang: map[int32]int64{},
+				darkGang:  map[int32]int64{},
+				pong:      map[int32]int64{},
 			}
 			break
 		}

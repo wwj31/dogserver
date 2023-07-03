@@ -100,9 +100,8 @@ message MahjongBTEExchange3Ntf {
 // 换三张结束
 message MahjongBTEExchange3EndNtf {
     int64          ShortId      = 1; // 换牌的玩家短id
-    repeated int32 ThreeCardOut = 2; // 换出的三张牌
-    repeated int32 ThreeCardIn  = 3; // 换来的三张牌
-    repeated int32 Cards        = 4; // 最新手牌 (萬11-19 条21-29 筒31-39)
+    Exchange3Info  Ex3Info      = 2; // 换牌信息
+    repeated int32 Cards        = 3; // 最新手牌 (萬11-19 条21-29 筒31-39)
 }
 
 // 开始定缺通知

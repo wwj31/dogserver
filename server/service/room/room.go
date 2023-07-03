@@ -2,9 +2,10 @@ package room
 
 import (
 	"reflect"
+	"time"
+
 	"server/common/actortype"
 	"server/rdsop"
-	"time"
 
 	"github.com/golang/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"

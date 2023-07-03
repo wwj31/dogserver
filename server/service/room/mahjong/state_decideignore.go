@@ -18,11 +18,11 @@ func (s *StateDecideIgnore) State() int {
 
 func (s *StateDecideIgnore) Enter(fsm *room.FSM) {
 
-	log.Infow("Mahjong enter exchange3", "room", s.room.RoomId)
+	log.Infow("[Mahjong] leave state  exchange3", "room", s.room.RoomId)
 }
 
 func (s *StateDecideIgnore) Leave(fsm *room.FSM) {
-	log.Infow("Mahjong leave exchange3", "room", s.room.RoomId)
+	log.Infow("[Mahjong] leave state exchange3", "room", s.room.RoomId)
 }
 
 func (s *StateDecideIgnore) Handle(fsm *room.FSM, v any, shortId int64) (result any) {

@@ -1,6 +1,10 @@
 package mahjong
 
 import (
+	"time"
+
+	"github.com/wwj31/dogactor/tools"
+
 	"server/common/log"
 	"server/proto/outermsg/outer"
 	"server/service/room"
@@ -17,7 +21,7 @@ func (s *StateDeal) State() int {
 }
 
 func (s *StateDeal) Enter(fsm *room.FSM) {
-	log.Infow("Mahjong enter deal", "room", s.room.RoomId)
+	log.Infow("[Mahjong] leave state  deal", "room", s.room.RoomId)
 	s.cards = RandomCards() // 总共108张
 	var i int
 	for _, player := range s.mahjongPlayers {
@@ -31,18 +35,27 @@ func (s *StateDeal) Enter(fsm *room.FSM) {
 	}
 
 	s.cards = s.cards[52:]
+
+	// 发牌动画后，进入下个状态
+	s.room.AddTimer(tools.XUID(), tools.Now().Add(5*time.Second), func(dt time.Duration) {
+		var nextState State
+		if s.room.GameParams.Mahjong.HuanSanZhang == 2 {
+			nextState = DecideIgnore // 不换牌，直接定缺
+		} else {
+			nextState = Exchange3
+		}
+
+		s.SwitchTo(nextState)
+	})
+
 	log.Infow("deal finished cards", "room", s.room.RoomId, "spare cards", s.cards)
 
 }
 
 func (s *StateDeal) Leave(fsm *room.FSM) {
-	log.Infow("Mahjong leave deal", "room", s.room.RoomId)
+	log.Infow("[Mahjong] leave state deal", "room", s.room.RoomId)
 }
 
 func (s *StateDeal) Handle(fsm *room.FSM, v any, shortId int64) (result any) {
-	switch msg := v.(type) {
-	case *outer.JoinRoomReq:
-		_ = msg
-	}
 	return nil
 }

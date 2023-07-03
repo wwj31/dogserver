@@ -157,7 +157,7 @@ func (c Cards) Gang(card Card) (cards Cards, index int, err error) {
 func RecurCheckHu(cards Cards, upCardsHas1or9 bool) HuType {
 	if cards.Len() == 0 {
 		if upCardsHas1or9 {
-			return DaiYaoJiu
+			return QuanYaoJiu
 		} else {
 			return Hu
 		}
@@ -343,4 +343,14 @@ func (c Cards) Shunzi() []Cards {
 
 func min(a, b, c int) int {
 	return common.Min(a, common.Min(b, c))
+}
+
+func (p PongGang) Has1or9() bool {
+	for card := range p {
+		n := card / 10
+		if n == 1 || n == 9 {
+			return true
+		}
+	}
+	return false
 }

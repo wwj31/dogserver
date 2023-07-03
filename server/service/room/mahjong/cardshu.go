@@ -3,7 +3,7 @@ package mahjong
 import "server/common/log"
 
 // ignore 定缺花色, 返回所有能听牌的单牌以及对应的胡牌类型
-func (c Cards) ting(ignore ColorType, gang, pong map[Card]bool) (tingCards map[Card]HuType) {
+func (c Cards) ting(ignore ColorType, lightGang, darkGang, pong map[int32]int64) (tingCards map[Card]HuType) {
 	tingCards = make(map[Card]HuType)
 	if len(c.colors()) == 3 {
 		return
@@ -17,15 +17,15 @@ func (c Cards) ting(ignore ColorType, gang, pong map[Card]bool) (tingCards map[C
 
 	// 检查每一张牌的组合
 	for _, card := range allSingleCards {
-		if huType := c.Insert(card).isHu(gang, pong); huType != HuInvalid {
+		if huType := c.Insert(card).IsHu(lightGang, darkGang, pong); huType != HuInvalid {
 			tingCards[card] = huType
 		}
 	}
 	return
 }
 
-// 牌组能否胡牌
-func (c Cards) isHu(gang, pong map[Card]bool) (typ HuType) {
+// IsHu 牌组能否胡牌
+func (c Cards) IsHu(lightGang, darkGang, pong map[int32]int64) (typ HuType) {
 	colors := c.colors()
 	if len(colors) == 3 {
 		return HuInvalid
@@ -62,8 +62,11 @@ func (c Cards) isHu(gang, pong map[Card]bool) (typ HuType) {
 				continue
 			}
 
-			// 判断剩余牌是否胡了,(手牌有1、9，就加入带幺九判断)
-			typ = RecurCheckHu(spareHandCards, jiangCards.Has1or9())
+			// 将牌有幺九，并且碰杠也都有幺九，就带上幺九检测
+			has1or9 := jiangCards.Has1or9() && pongGangAllHas1or9(lightGang, darkGang, pong)
+
+			// 判断剩余牌是否胡了
+			typ = RecurCheckHu(spareHandCards, has1or9)
 			if typ > HuInvalid {
 				break
 			}
@@ -74,7 +77,7 @@ func (c Cards) isHu(gang, pong map[Card]bool) (typ HuType) {
 		return
 	}
 
-	return c.upgrade(colors, gang, pong, typ)
+	return c.upgrade(colors, lightGang, darkGang, pong, typ)
 }
 
 func (c Cards) qingYiSeUpgrade(colors map[int]struct{}, typ HuType) HuType {
@@ -96,24 +99,12 @@ func (c Cards) qingYiSeUpgrade(colors map[int]struct{}, typ HuType) HuType {
 	return typ
 }
 
-func (c Cards) upgrade(colors map[int]struct{}, gang, pong map[Card]bool, typ HuType) HuType {
+// 传入花色，传入明杠
+func (c Cards) upgrade(colors map[int]struct{}, lightGang, darkGang, pong map[int32]int64, typ HuType) HuType {
 	// 判断清一色升级牌型
 	typ = c.qingYiSeUpgrade(colors, typ)
 
 	switch typ {
-	case DaiYaoJiu: // 如果是带幺九，判断能否升级全幺九
-		upgrade := true
-		c.Range(func(color ColorType, number int) bool {
-			if number != 1 && number != 9 {
-				upgrade = false
-				return true
-			}
-			return false
-		})
-		if upgrade {
-			typ = QuanYaoJiu // 全幺九
-		}
-
 	case DuiDuiHu, QiDui, LongQiDui: // 对对胡->将对对、七对\龙七对->将七对
 		upgrade := true
 		c.Range(func(color ColorType, number int) bool {
@@ -133,27 +124,54 @@ func (c Cards) upgrade(colors map[int]struct{}, gang, pong map[Card]bool, typ Hu
 		}
 
 	case Hu:
-		// TODO 碰杠有19算不算中张？
-		// 判断平胡升中张
-		if !c.Has1or9() {
+		// 判断平胡升中张 碰杠有幺九不算中张
+		if !c.Has1or9() && pongGangAllHasNo1or9(lightGang, darkGang, pong) {
 			return ZhongZhang
 		}
 
 		// 判断平胡升门清
-
-		// 不能碰
 		if len(pong) == 0 {
+			// 不能碰
 			return typ
 		}
 
 		// 不能明杠
-		for _, ming := range gang {
-			if ming {
-				return typ
-			}
+		if len(lightGang) == 0 {
+			return MenQing
 		}
-		return MenQing
 
 	}
 	return typ
+}
+
+// 所有碰杠是否都有幺九牌
+func pongGangAllHas1or9(lightGang, darkGang, pong PongGang) bool {
+	if len(pong) > 0 && !pong.Has1or9() {
+		return false
+	}
+
+	if len(lightGang) > 0 && !lightGang.Has1or9() {
+		return false
+	}
+
+	if len(darkGang) > 0 && !darkGang.Has1or9() {
+		return false
+	}
+	return true
+}
+
+// 所有碰杠是否都没有幺九牌
+func pongGangAllHasNo1or9(lightGang, darkGang, pong PongGang) bool {
+	if len(pong) > 0 && pong.Has1or9() {
+		return false
+	}
+
+	if len(lightGang) > 0 && lightGang.Has1or9() {
+		return false
+	}
+
+	if len(darkGang) > 0 && darkGang.Has1or9() {
+		return false
+	}
+	return true
 }

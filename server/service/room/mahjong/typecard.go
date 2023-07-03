@@ -1,8 +1,9 @@
 package mahjong
 
 type (
-	Card  int32
-	Cards []Card
+	Card     int32
+	Cards    []Card
+	PongGang map[int32]int64
 )
 
 const (
