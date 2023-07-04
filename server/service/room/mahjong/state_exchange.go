@@ -31,6 +31,7 @@ func (s *StateExchange3) Leave() {
 	log.Infow("[Mahjong] leave state exchange3", "room", s.room.RoomId)
 }
 
+// 换三张结束
 func (s *StateExchange3) stateEnd() {
 	for idx, player := range s.mahjongPlayers {
 		s.checkAndInit(player)
@@ -45,6 +46,13 @@ func (s *StateExchange3) stateEnd() {
 			Insert(Card(rival.exchange.CardsFrom[0])).
 			Insert(Card(rival.exchange.CardsFrom[1])).
 			Insert(Card(rival.exchange.CardsFrom[2]))
+
+		log.Infow("exchanging ", "roomId", s.room.RoomId, "seatIndex", idx,
+			"player", player.ShortId, " exchange to seatIndex", player.exchange.ToSeatIndex,
+			"rival", rival.ShortId, "rival cards from", rival.exchange.CardsFrom,
+			"rival cards to seatIndex", rival.exchange.ToSeatIndex,
+			"rival cards to", rival.exchange.CardsTo,
+		)
 	}
 
 	for _, player := range s.mahjongPlayers {
@@ -67,6 +75,7 @@ func (s *StateExchange3) Handle(shortId int64, v any) (result any) {
 			return outer.ERROR_MAHJONG_EXCHANGE3_LEN_ERROR
 		}
 
+		// 三张不能有相同
 		if msg.Index[0] == msg.Index[1] ||
 			msg.Index[1] == msg.Index[2] ||
 			msg.Index[0] == msg.Index[2] {
@@ -78,6 +87,11 @@ func (s *StateExchange3) Handle(shortId int64, v any) (result any) {
 			return outer.ERROR_PLAYER_NOT_IN_ROOM
 		}
 
+		// 不能重复操作
+		if player.exchange != nil {
+			return outer.ERROR_MAHJONG_EXCHANGE3_OPERATED
+		}
+
 		var exchange3Cards Cards
 		for _, idx := range msg.Index {
 			if idx < 0 || idx > 12 {
@@ -87,6 +101,8 @@ func (s *StateExchange3) Handle(shortId int64, v any) (result any) {
 			exchange3Cards = append(exchange3Cards, player.handCards[idx])
 		}
 
+		seatIndex := s.SeatIndex(player.ShortId)
+		nextSeatIndex := s.nextSeatIndex(seatIndex)
 		player.exchange = &outer.Exchange3Info{
 			CardsFrom:     nil,
 			FromSeatIndex: -1,
@@ -94,6 +110,16 @@ func (s *StateExchange3) Handle(shortId int64, v any) (result any) {
 			ToSeatIndex:   s.nextSeatIndex(s.SeatIndex(player.ShortId)),
 		}
 
+		log.Infow("MahjongBTEExchange3Req ", "roomId", s.room.RoomId, "playerID", player.ShortId,
+			"cards", exchange3Cards,
+			"seatIndex", seatIndex,
+			"nextSeatIndex", nextSeatIndex,
+		)
+
+		// 所有人都准备好了，结束换三张
+		if s.IsAllReady() {
+			s.stateEnd()
+		}
 		return &outer.MahjongBTEExchange3Rsp{}
 	}
 	return nil
@@ -108,4 +134,13 @@ func (s *StateExchange3) checkAndInit(player *mahjongPlayer) {
 			ToSeatIndex:   s.nextSeatIndex(s.SeatIndex(player.ShortId)),
 		}
 	}
+}
+
+func (s *StateExchange3) IsAllReady() bool {
+	for _, player := range s.mahjongPlayers {
+		if player.exchange == nil {
+			return false
+		}
+	}
+	return true
 }

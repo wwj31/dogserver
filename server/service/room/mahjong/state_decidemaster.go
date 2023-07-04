@@ -36,7 +36,7 @@ func (s *StateDecideMaster) Enter() {
 		s.SwitchTo(Deal)
 	})
 
-	log.Infow("[Mahjong] leave state  decide master",
+	log.Infow("[Mahjong] enter state  decide master",
 		"room", s.room.RoomId, "dices", s.room.Dices, "master", s.masterIndex)
 }
 

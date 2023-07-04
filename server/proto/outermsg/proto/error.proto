@@ -37,6 +37,7 @@ enum ERROR {
    MAHJONG_EXCHANGE3_LEN_ERROR      = 31; // 请求换三张长度不为3
    MAHJONG_EXCHANGE3_INDEX_ERROR    = 32; // 请求换三张下标越界长度不为0-12
    MAHJONG_EXCHANGE3_INDEX_EQUAL    = 33; // 请求换三张下标重复
+   MAHJONG_EXCHANGE3_OPERATED       = 34; // 请求换三张已经操作过
 }
 
 message FailRsp {

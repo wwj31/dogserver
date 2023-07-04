@@ -20,7 +20,7 @@ func (s *StateDeal) State() int {
 }
 
 func (s *StateDeal) Enter() {
-	log.Infow("[Mahjong] leave state  deal", "room", s.room.RoomId)
+	log.Infow("[Mahjong] enter state deal", "room", s.room.RoomId)
 	s.cards = RandomCards() // 总共108张
 	var i int
 	for _, player := range s.mahjongPlayers {

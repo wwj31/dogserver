@@ -1,8 +1,9 @@
 package mahjong
 
 import (
-	"server/proto/outermsg/outer"
 	"time"
+
+	"server/proto/outermsg/outer"
 
 	"github.com/wwj31/dogactor/tools"
 
@@ -159,4 +160,16 @@ func (m *Mahjong) nextSeatIndex(index int32) int32 {
 		index = 3
 	}
 	return index
+}
+
+// 重置玩家上一把游戏数据
+func (m *Mahjong) clearMahjongPlayerInfo() {
+	for _, player := range m.mahjongPlayers {
+		player.ignoreColor = ColorUnknown
+		player.exchange = nil
+		player.handCards = nil
+		player.lightGang = map[int32]int64{}
+		player.darkGang = map[int32]int64{}
+		player.pong = map[int32]int64{}
+	}
 }

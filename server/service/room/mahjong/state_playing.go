@@ -15,7 +15,7 @@ func (s *StatePlaying) State() int {
 }
 
 func (s *StatePlaying) Enter() {
-	log.Infow("[Mahjong] leave state  playing", "room", s.room.RoomId)
+	log.Infow("[Mahjong] enter state playing", "room", s.room.RoomId)
 }
 
 func (s *StatePlaying) Leave() {

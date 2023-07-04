@@ -17,7 +17,7 @@ func (s *StateDecideIgnore) State() int {
 
 func (s *StateDecideIgnore) Enter() {
 
-	log.Infow("[Mahjong] leave state  exchange3", "room", s.room.RoomId)
+	log.Infow("[Mahjong] enter state exchange3", "room", s.room.RoomId)
 }
 
 func (s *StateDecideIgnore) Leave() {

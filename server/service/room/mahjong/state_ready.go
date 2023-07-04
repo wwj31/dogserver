@@ -16,7 +16,7 @@ func (s *StateReady) State() int {
 }
 
 func (s *StateReady) Enter() {
-	log.Infow("[Mahjong] leave state  ready ", "room", s.room.RoomId)
+	log.Infow("[Mahjong] enter state ready ", "room", s.room.RoomId)
 	s.room.Broadcast(&outer.MahjongBTEReadyNtf{})
 }
 
