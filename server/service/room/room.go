@@ -199,6 +199,7 @@ func (r *Room) PlayerReady(shortId int64, ready bool) (ok bool, err outer.ERROR)
 		log.Warnw("leave the room cannot find player", "roomId", r.RoomId, "msg", shortId)
 		return false, outer.ERROR_PLAYER_NOT_IN_ROOM
 	}
+
 	if p.Ready == ready {
 		return true, 0
 	}
