@@ -117,7 +117,7 @@ func (s *StateExchange3) Handle(shortId int64, v any) (result any) {
 		)
 
 		// 所有人都准备好了，结束换三张
-		if s.IsAllReady() {
+		if s.isAllReady() {
 			s.stateEnd()
 		}
 		return &outer.MahjongBTEExchange3Rsp{}
@@ -136,7 +136,7 @@ func (s *StateExchange3) checkAndInit(player *mahjongPlayer) {
 	}
 }
 
-func (s *StateExchange3) IsAllReady() bool {
+func (s *StateExchange3) isAllReady() bool {
 	for _, player := range s.mahjongPlayers {
 		if player.exchange == nil {
 			return false

@@ -16,12 +16,14 @@ message MahjongBTEGameInfo {
     int32                      MasterIndex      = 6; // 庄家位置 东南西北(0-3)
     Exchange3Info              Ex3FromShortId   = 7; // 换三张数据
     int32                      TotalCardsCount  = 8; // 剩余总牌数
-
-    int64                      ActionShortId    = 9; // 当前执行者
-    int64                      ActionType       = 10; // 操作类型 0.过、1.碰、2.杠、3.胡
-    HuType                     HuType           = 11; // 胡牌类型
-    int32                      NewCard          = 12; // 摸得的牌
-    int64                      OpEndAt          = 13; // 操作结束结束时间(毫秒)
+    repeated int32             Cards            = 9; // 打出去的所有牌
+    int64                      ActionShortId    = 10; // 当前操作者
+    int64                      ActionEndAt      = 11; // 操作结束时间(毫秒)
+    // 以下数据只发操作者本人
+    repeated ActionType ActionType              = 12; // 可操作类型，1.碰、2.杠、3.胡、4.出牌
+    repeated HuType     HuType                  = 13; // 可胡牌的类型
+    repeated int32      GangCards               = 14; // 可杠的牌 出牌时，手牌中可能已经存在多副杠牌
+    int32               NewCard                 = 15; // 摸得的牌
 }
 
 // 血战到底 参与游戏的玩家数据
@@ -62,18 +64,20 @@ message MahjongBTEDealReq {
 }
 message MahjongBTEDealRsp {
     repeated int32 Cards      = 1; // 最新手牌
-    repeated int32 CardPong   = 2; // 碰的牌组
-    repeated int32 CardGang   = 3; // 杠的牌组
+    repeated int32 CardPong   = 2; // 最新碰的牌组 值代表牌
+    repeated int32 CardGang   = 3; // 最新杠的牌组 值代表牌
 }
 
 // 执行操作 过、碰、杠、胡
 message MahjongBTEOperateReq {
     ActionType ActionType = 1;
+    HuType     Hu         = 2; // 胡的牌型
+    int32      Gang       = 3; // 杠的牌
 }
 message MahjongBTEOperateRsp {
     repeated int32 Cards      = 1; // 最新手牌
-    repeated int32 CardPong   = 2; // 碰的牌组 数组长度表示几组碰，值代表牌
-    repeated int32 CardGang   = 3; // 杠的牌组 数组长度表示几组杠，值代表牌
+    repeated int32 CardPong   = 2; // 碰的牌组 值代表牌
+    repeated int32 CardGang   = 3; // 杠的牌组 值代表牌
 }
 
 
@@ -121,16 +125,22 @@ message MahjongBTETurnNtf {
     int32      TotalCards          = 1; // 剩余总牌数
     int64      ActionShortId       = 2; // 操作者
     int64      ActionEndAt         = 3; // 操作结束时间(毫秒)
-    // 以下内容，仅发给自己
-    repeated ActionType ActionType = 4; // 操作类型，1.碰、2.杠、3.胡、4.出牌
-    HuType     HuType              = 5; // 胡牌类型
-    int32      NewCard             = 6; // 摸牌
+    // 以下数据只发操作者本人
+    repeated ActionType ActionType = 4; // 可操作类型，1.碰、2.杠、3.胡、4.出牌
+    repeated HuType     HuType     = 5; // 可胡牌的类型
+    repeated int32      GangCards  = 6; // 可杠的牌 出牌时，手牌中可能已经存在多副杠牌
+    int32               NewCard    = 7; // 摸牌
 }
 
 // 玩家操作结果通知
 message MahjongBTEOperaNtf {
-    int64  OpShortId = 1; // 操作者
-    int32  OpType    = 3; // 操作类型，1.碰、2.杠、3.胡、4.出牌
-    HuType HuType    = 4; // 胡牌类型
-    int64  OpEndAt   = 6; // 操作结束时间(毫秒)
+    int64  OpShortId    = 1; // 操作者
+    int32  OpType       = 3; // 操作类型，1.碰、2.杠、3.胡、4.出牌
+    HuType HuType       = 4; // 胡牌类型
+    int32  Card         = 5; // 碰、杠、出牌的牌
+}
+
+// 结算通知
+message MahjongBTESettlementNtf {
+    // TODO
 }

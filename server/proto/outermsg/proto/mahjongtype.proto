@@ -29,6 +29,7 @@ enum ActionType {
     ActionPong        = 1; // 碰
     ActionGang        = 2; // 杠
     ActionHu          = 3; // 胡
+    ActionPlayCard    = 4; // 出牌
 }
 
 // 胡牌类型

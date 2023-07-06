@@ -19,6 +19,7 @@ message RoomInfo {
     GameType   GameType             = 2;
     GameParams GameParams           = 3;
     repeated RoomPlayerInfo Players = 4; // 房间内的成员信息
+    bytes      GameData             = 5; // 游戏数据
 }
 
 // 创建房间

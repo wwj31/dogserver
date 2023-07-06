@@ -53,11 +53,16 @@ type Mahjong struct {
 	masterIndex int // 庄家位置 0,1,2,3
 	gameCount   int // 游戏的连续局数 结算后，有玩家退出，重置0
 
-	cards              Cards                  // 剩余牌组
-	mahjongPlayers     [maxNum]*mahjongPlayer // 参与游戏的玩家
-	currentActionIndex int                    // 当前行动者位置
-	currentActionEndAt time.Time              // 当前行动者结束时间
-	currentActions     []outer.ActionType     // 当前行动者能执行的行为
+	cards           Cards                  // 剩余牌组
+	mahjongPlayers  [maxNum]*mahjongPlayer // 参与游戏的玩家
+	latestDrawIndex int                    // 最后一个摸牌的位置
+	latestPlayIndex int                    // 最后一个打牌的位置
+
+	currentActionIndex int                // 当前行动者位置
+	currentActionEndAt time.Time          // 当前行动者结束时间
+	currentActions     []outer.ActionType // 当前行动者能执行的行为
+	currentHus         []outer.HuType     // 当前行动者能胡的牌
+	currentGang        []int32            // 当前行动者能杠的牌
 }
 
 func (m *Mahjong) SwitchTo(state int) {

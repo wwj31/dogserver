@@ -32,13 +32,6 @@ func (c Cards) Len() int {
 	return len(c)
 }
 
-func (c Cards) ToInt32() (result []int32) {
-	for _, v := range c {
-		result = append(result, v.Int32())
-	}
-	return
-}
-
 // Insert 插入一组牌
 func (c Cards) Insert(cards ...Card) Cards {
 	src := c
@@ -118,8 +111,8 @@ func (c Cards) Pong(card Card) (cards Cards, index int, err error) {
 	return
 }
 
-// CanGang 判断当前牌组能不能杠
-func (c Cards) CanGang(card Card) bool {
+// CanGangTo 能否杠这张牌
+func (c Cards) CanGangTo(card Card) bool {
 	var num int
 	for _, handCard := range c {
 		if handCard == card {
@@ -130,6 +123,17 @@ func (c Cards) CanGang(card Card) bool {
 		}
 	}
 	return false
+}
+
+// HasGang 有没有能杠的牌
+func (c Cards) HasGang() (cards Cards) {
+	cs := c.ConvertStruct()
+	for i := 11; i < MaxCardNum; i++ {
+		if cs[i] == 4 {
+			cards = append(cards, Card(i))
+		}
+	}
+	return
 }
 
 // Gang 杠,返回去除了杠牌后的新手牌，以及杠的起始下标
