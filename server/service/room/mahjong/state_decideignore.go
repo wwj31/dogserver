@@ -38,6 +38,7 @@ func (s *StateDecideIgnore) Handle(shortId int64, v any) (result any) {
 		if msg.Color == 0 {
 			return outer.ERROR_MSG_REQ_PARAM_INVALID
 		}
+
 		player := s.findMahjongPlayer(shortId)
 		if player == nil {
 			return outer.ERROR_ROOM_PLAYER_NOT_IN_GAME
@@ -47,6 +48,7 @@ func (s *StateDecideIgnore) Handle(shortId int64, v any) (result any) {
 		log.Infow("MahjongBTEDecideIgnoreReq", "roomId", s.room.RoomId,
 			"player", player.ShortId, "ignore color", player.ignoreColor)
 
+		// 所有人都定缺完成，就进入游戏状态
 		if s.isAllDecide() {
 			s.stateEnd()
 		}
