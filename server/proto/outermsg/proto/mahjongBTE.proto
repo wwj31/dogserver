@@ -118,12 +118,13 @@ message MahjongBTEPlayingNtf {
 
 // 玩家轮动通知
 message MahjongBTETurnNtf {
-    int32      TotalCards    = 1; // 剩余总牌数
-    int64      ActionShortId = 2; // 操作者
-    ActionType ActionType    = 3; // 操作类型，1.碰、2.杠、3.胡、4.出牌
-    HuType     HuType        = 4; // 胡牌类型
-    int32      NewCard       = 5; // 摸牌
-    int64      ActionEndAt   = 6; // 操作结束时间(毫秒)
+    int32      TotalCards          = 1; // 剩余总牌数
+    int64      ActionShortId       = 2; // 操作者
+    int64      ActionEndAt         = 3; // 操作结束时间(毫秒)
+    // 以下内容，仅发给自己
+    repeated ActionType ActionType = 4; // 操作类型，1.碰、2.杠、3.胡、4.出牌
+    HuType     HuType              = 5; // 胡牌类型
+    int32      NewCard             = 6; // 摸牌
 }
 
 // 玩家操作结果通知
