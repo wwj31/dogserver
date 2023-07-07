@@ -39,7 +39,7 @@ func (s *StateDecideIgnore) Handle(shortId int64, v any) (result any) {
 			return outer.ERROR_MSG_REQ_PARAM_INVALID
 		}
 
-		player := s.findMahjongPlayer(shortId)
+		player, _ := s.findMahjongPlayer(shortId)
 		if player == nil {
 			return outer.ERROR_ROOM_PLAYER_NOT_IN_GAME
 		}

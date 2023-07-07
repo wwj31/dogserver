@@ -31,39 +31,43 @@ func New(r *room.Room) *Mahjong {
 	return mahjong
 }
 
-// 麻将-血战到底 参与游戏的玩家数据
-type mahjongPlayer struct {
-	*room.Player
-
-	ignoreColor ColorType            // 定缺花色
-	exchange    *outer.Exchange3Info // 换三张信息
-	handCards   Cards                // 手牌
-	lightGang   map[int32]int64      // map[杠牌]ShortId 明杠
-	darkGang    map[int32]int64      // map[杠牌]ShortId 暗杠
-	pong        map[int32]int64      // map[碰牌]ShortId
-}
-
 const maxNum = 4
 
-type Mahjong struct {
-	room                *room.Room
-	fsm                 *room.FSM
-	currentStateEnterAt time.Time // 当前状态的进入时间
+type (
+	// 麻将-血战到底 参与游戏的玩家数据
+	mahjongPlayer struct {
+		*room.Player
 
-	masterIndex int // 庄家位置 0,1,2,3
-	gameCount   int // 游戏的连续局数 结算后，有玩家退出，重置0
+		ignoreColor ColorType            // 定缺花色
+		exchange    *outer.Exchange3Info // 换三张信息
+		handCards   Cards                // 手牌
+		lightGang   map[int32]int64      // map[杠牌]ShortId 明杠
+		darkGang    map[int32]int64      // map[杠牌]ShortId 暗杠
+		pong        map[int32]int64      // map[碰牌]ShortId
+	}
 
-	cards           Cards                  // 剩余牌组
-	mahjongPlayers  [maxNum]*mahjongPlayer // 参与游戏的玩家
-	latestDrawIndex int                    // 最后一个摸牌的位置
-	latestPlayIndex int                    // 最后一个打牌的位置
+	action struct {
+		currentActions []outer.ActionType // 当前行动者能执行的行为
+		currentHus     []outer.HuType     // 当前行动者能胡的牌
+		currentGang    []int32            // 当前行动者能杠的牌
+	}
 
-	currentActionIndex int                // 当前行动者位置
-	currentActionEndAt time.Time          // 当前行动者结束时间
-	currentActions     []outer.ActionType // 当前行动者能执行的行为
-	currentHus         []outer.HuType     // 当前行动者能胡的牌
-	currentGang        []int32            // 当前行动者能杠的牌
-}
+	Mahjong struct {
+		room                *room.Room
+		fsm                 *room.FSM
+		currentStateEnterAt time.Time // 当前状态的进入时间
+
+		masterIndex int // 庄家位置 0,1,2,3
+		gameCount   int // 游戏的连续局数 结算后，有玩家退出，重置0
+
+		cards              Cards                  // 剩余牌组
+		mahjongPlayers     [maxNum]*mahjongPlayer // 参与游戏的玩家
+		latestDrawIndex    int                    // 最后一个摸牌的位置
+		latestPlayIndex    int                    // 最后一个打牌的位置
+		actionMap          map[int]*action        // 行动者们
+		currentActionEndAt time.Time              // 当前行动者结束时间
+	}
+)
 
 func (m *Mahjong) SwitchTo(state int) {
 	if err := m.fsm.SwitchTo(state); err != nil {
@@ -154,13 +158,13 @@ func (m *Mahjong) Handle(v any, shortId int64) any {
 	return m.fsm.CurrentStateHandler().Handle(shortId, v)
 }
 
-func (m *Mahjong) findMahjongPlayer(shortId int64) *mahjongPlayer {
-	for _, player := range m.mahjongPlayers {
+func (m *Mahjong) findMahjongPlayer(shortId int64) (*mahjongPlayer, int) {
+	for i, player := range m.mahjongPlayers {
 		if player != nil && player.ShortId == shortId {
-			return player
+			return player, i
 		}
 	}
-	return nil
+	return nil, -1
 }
 
 func (m *Mahjong) nextSeatIndex(index int32) int32 {
@@ -182,4 +186,23 @@ func (m *Mahjong) clearMahjongPlayerInfo() {
 		player.darkGang = map[int32]int64{}
 		player.pong = map[int32]int64{}
 	}
+}
+
+func (m *mahjongPlayer) allCardsToPB() *outer.CardsOfBTE {
+	return &outer.CardsOfBTE{
+		Cards:     m.handCards.ToSlice(),
+		LightGang: m.lightGang,
+		DarkGang:  m.darkGang,
+		Pong:      m.pong,
+	}
+}
+
+// 检查某个行为是否有效
+func (m *action) isValidAction(actionType outer.ActionType) bool {
+	for _, act := range m.currentActions {
+		if act == actionType {
+			return true
+		}
+	}
+	return false
 }

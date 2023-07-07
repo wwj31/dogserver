@@ -82,7 +82,7 @@ func (s *StateExchange3) Handle(shortId int64, v any) (result any) {
 			return outer.ERROR_MAHJONG_EXCHANGE3_INDEX_EQUAL
 		}
 
-		player := s.findMahjongPlayer(shortId)
+		player, _ := s.findMahjongPlayer(shortId)
 		if player == nil {
 			return outer.ERROR_PLAYER_NOT_IN_ROOM
 		}

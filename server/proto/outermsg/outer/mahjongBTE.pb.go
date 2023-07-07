@@ -187,11 +187,9 @@ type MahjongPlayerInfo struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	ShortId     int64           `protobuf:"varint,1,opt,name=ShortId,proto3" json:"ShortId,omitempty"`                                                                                              // 参与者短ID
-	DecideColor ColorType       `protobuf:"varint,2,opt,name=DecideColor,proto3,enum=outer.ColorType" json:"DecideColor,omitempty"`                                                                 // 定缺花色
-	Cards       []int32         `protobuf:"varint,3,rep,packed,name=Cards,proto3" json:"Cards,omitempty"`                                                                                           // 手牌 (萬11-19 条21-29 筒31-39)
-	CardsPong   map[int32]int64 `protobuf:"bytes,4,rep,name=CardsPong,proto3" json:"CardsPong,omitempty" protobuf_key:"varint,1,opt,name=key,proto3" protobuf_val:"varint,2,opt,name=value,proto3"` // 碰的牌组 <牌，出牌人shortId>
-	CardsGang   map[int32]int64 `protobuf:"bytes,5,rep,name=CardsGang,proto3" json:"CardsGang,omitempty" protobuf_key:"varint,1,opt,name=key,proto3" protobuf_val:"varint,2,opt,name=value,proto3"` // 杠的牌组 <牌，出牌人shortId>
+	ShortId     int64       `protobuf:"varint,1,opt,name=ShortId,proto3" json:"ShortId,omitempty"`                              // 参与者短ID
+	DecideColor ColorType   `protobuf:"varint,2,opt,name=DecideColor,proto3,enum=outer.ColorType" json:"DecideColor,omitempty"` // 定缺花色
+	AllCards    *CardsOfBTE `protobuf:"bytes,3,opt,name=AllCards,proto3" json:"AllCards,omitempty"`                             // 玩家的所有牌，手牌、碰、杠
 }
 
 func (x *MahjongPlayerInfo) Reset() {
@@ -240,23 +238,9 @@ func (x *MahjongPlayerInfo) GetDecideColor() ColorType {
 	return ColorType_CardUnknown
 }
 
-func (x *MahjongPlayerInfo) GetCards() []int32 {
+func (x *MahjongPlayerInfo) GetAllCards() *CardsOfBTE {
 	if x != nil {
-		return x.Cards
-	}
-	return nil
-}
-
-func (x *MahjongPlayerInfo) GetCardsPong() map[int32]int64 {
-	if x != nil {
-		return x.CardsPong
-	}
-	return nil
-}
-
-func (x *MahjongPlayerInfo) GetCardsGang() map[int32]int64 {
-	if x != nil {
-		return x.CardsGang
+		return x.AllCards
 	}
 	return nil
 }
@@ -333,6 +317,78 @@ func (x *Exchange3Info) GetToSeatIndex() int32 {
 	return 0
 }
 
+// 血战到底 牌数据
+type CardsOfBTE struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Cards     []int32         `protobuf:"varint,1,rep,packed,name=Cards,proto3" json:"Cards,omitempty"`                                                                                           // 手牌 (萬11-19 条21-29 筒31-39)
+	LightGang map[int32]int64 `protobuf:"bytes,2,rep,name=LightGang,proto3" json:"LightGang,omitempty" protobuf_key:"varint,1,opt,name=key,proto3" protobuf_val:"varint,2,opt,name=value,proto3"` // 明杠
+	DarkGang  map[int32]int64 `protobuf:"bytes,3,rep,name=DarkGang,proto3" json:"DarkGang,omitempty" protobuf_key:"varint,1,opt,name=key,proto3" protobuf_val:"varint,2,opt,name=value,proto3"`   // 暗杠
+	Pong      map[int32]int64 `protobuf:"bytes,4,rep,name=Pong,proto3" json:"Pong,omitempty" protobuf_key:"varint,1,opt,name=key,proto3" protobuf_val:"varint,2,opt,name=value,proto3"`           // 碰
+}
+
+func (x *CardsOfBTE) Reset() {
+	*x = CardsOfBTE{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_mahjongBTE_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *CardsOfBTE) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CardsOfBTE) ProtoMessage() {}
+
+func (x *CardsOfBTE) ProtoReflect() protoreflect.Message {
+	mi := &file_mahjongBTE_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CardsOfBTE.ProtoReflect.Descriptor instead.
+func (*CardsOfBTE) Descriptor() ([]byte, []int) {
+	return file_mahjongBTE_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *CardsOfBTE) GetCards() []int32 {
+	if x != nil {
+		return x.Cards
+	}
+	return nil
+}
+
+func (x *CardsOfBTE) GetLightGang() map[int32]int64 {
+	if x != nil {
+		return x.LightGang
+	}
+	return nil
+}
+
+func (x *CardsOfBTE) GetDarkGang() map[int32]int64 {
+	if x != nil {
+		return x.DarkGang
+	}
+	return nil
+}
+
+func (x *CardsOfBTE) GetPong() map[int32]int64 {
+	if x != nil {
+		return x.Pong
+	}
+	return nil
+}
+
 // //////////////////////////////////////////// 游戏操作请求 //////////////////////////////////////////////
 // 换三张确定
 type MahjongBTEExchange3Req struct {
@@ -346,7 +402,7 @@ type MahjongBTEExchange3Req struct {
 func (x *MahjongBTEExchange3Req) Reset() {
 	*x = MahjongBTEExchange3Req{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_mahjongBTE_proto_msgTypes[3]
+		mi := &file_mahjongBTE_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -359,7 +415,7 @@ func (x *MahjongBTEExchange3Req) String() string {
 func (*MahjongBTEExchange3Req) ProtoMessage() {}
 
 func (x *MahjongBTEExchange3Req) ProtoReflect() protoreflect.Message {
-	mi := &file_mahjongBTE_proto_msgTypes[3]
+	mi := &file_mahjongBTE_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -372,7 +428,7 @@ func (x *MahjongBTEExchange3Req) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MahjongBTEExchange3Req.ProtoReflect.Descriptor instead.
 func (*MahjongBTEExchange3Req) Descriptor() ([]byte, []int) {
-	return file_mahjongBTE_proto_rawDescGZIP(), []int{3}
+	return file_mahjongBTE_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *MahjongBTEExchange3Req) GetIndex() []int32 {
@@ -391,7 +447,7 @@ type MahjongBTEExchange3Rsp struct {
 func (x *MahjongBTEExchange3Rsp) Reset() {
 	*x = MahjongBTEExchange3Rsp{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_mahjongBTE_proto_msgTypes[4]
+		mi := &file_mahjongBTE_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -404,7 +460,7 @@ func (x *MahjongBTEExchange3Rsp) String() string {
 func (*MahjongBTEExchange3Rsp) ProtoMessage() {}
 
 func (x *MahjongBTEExchange3Rsp) ProtoReflect() protoreflect.Message {
-	mi := &file_mahjongBTE_proto_msgTypes[4]
+	mi := &file_mahjongBTE_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -417,7 +473,7 @@ func (x *MahjongBTEExchange3Rsp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MahjongBTEExchange3Rsp.ProtoReflect.Descriptor instead.
 func (*MahjongBTEExchange3Rsp) Descriptor() ([]byte, []int) {
-	return file_mahjongBTE_proto_rawDescGZIP(), []int{4}
+	return file_mahjongBTE_proto_rawDescGZIP(), []int{5}
 }
 
 // 定缺确定
@@ -432,7 +488,7 @@ type MahjongBTEDecideIgnoreReq struct {
 func (x *MahjongBTEDecideIgnoreReq) Reset() {
 	*x = MahjongBTEDecideIgnoreReq{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_mahjongBTE_proto_msgTypes[5]
+		mi := &file_mahjongBTE_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -445,7 +501,7 @@ func (x *MahjongBTEDecideIgnoreReq) String() string {
 func (*MahjongBTEDecideIgnoreReq) ProtoMessage() {}
 
 func (x *MahjongBTEDecideIgnoreReq) ProtoReflect() protoreflect.Message {
-	mi := &file_mahjongBTE_proto_msgTypes[5]
+	mi := &file_mahjongBTE_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -458,7 +514,7 @@ func (x *MahjongBTEDecideIgnoreReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MahjongBTEDecideIgnoreReq.ProtoReflect.Descriptor instead.
 func (*MahjongBTEDecideIgnoreReq) Descriptor() ([]byte, []int) {
-	return file_mahjongBTE_proto_rawDescGZIP(), []int{5}
+	return file_mahjongBTE_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *MahjongBTEDecideIgnoreReq) GetColor() ColorType {
@@ -477,7 +533,7 @@ type MahjongBTEDecideIgnoreRsp struct {
 func (x *MahjongBTEDecideIgnoreRsp) Reset() {
 	*x = MahjongBTEDecideIgnoreRsp{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_mahjongBTE_proto_msgTypes[6]
+		mi := &file_mahjongBTE_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -490,7 +546,7 @@ func (x *MahjongBTEDecideIgnoreRsp) String() string {
 func (*MahjongBTEDecideIgnoreRsp) ProtoMessage() {}
 
 func (x *MahjongBTEDecideIgnoreRsp) ProtoReflect() protoreflect.Message {
-	mi := &file_mahjongBTE_proto_msgTypes[6]
+	mi := &file_mahjongBTE_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -503,11 +559,11 @@ func (x *MahjongBTEDecideIgnoreRsp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MahjongBTEDecideIgnoreRsp.ProtoReflect.Descriptor instead.
 func (*MahjongBTEDecideIgnoreRsp) Descriptor() ([]byte, []int) {
-	return file_mahjongBTE_proto_rawDescGZIP(), []int{6}
+	return file_mahjongBTE_proto_rawDescGZIP(), []int{7}
 }
 
 // 出牌
-type MahjongBTEDealReq struct {
+type MahjongBTEPlayCardReq struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -515,57 +571,8 @@ type MahjongBTEDealReq struct {
 	Index int32 `protobuf:"varint,1,opt,name=Index,proto3" json:"Index,omitempty"` // 手牌下标 0开始
 }
 
-func (x *MahjongBTEDealReq) Reset() {
-	*x = MahjongBTEDealReq{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_mahjongBTE_proto_msgTypes[7]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *MahjongBTEDealReq) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*MahjongBTEDealReq) ProtoMessage() {}
-
-func (x *MahjongBTEDealReq) ProtoReflect() protoreflect.Message {
-	mi := &file_mahjongBTE_proto_msgTypes[7]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use MahjongBTEDealReq.ProtoReflect.Descriptor instead.
-func (*MahjongBTEDealReq) Descriptor() ([]byte, []int) {
-	return file_mahjongBTE_proto_rawDescGZIP(), []int{7}
-}
-
-func (x *MahjongBTEDealReq) GetIndex() int32 {
-	if x != nil {
-		return x.Index
-	}
-	return 0
-}
-
-type MahjongBTEDealRsp struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Cards    []int32 `protobuf:"varint,1,rep,packed,name=Cards,proto3" json:"Cards,omitempty"`       // 最新手牌
-	CardPong []int32 `protobuf:"varint,2,rep,packed,name=CardPong,proto3" json:"CardPong,omitempty"` // 最新碰的牌组 值代表牌
-	CardGang []int32 `protobuf:"varint,3,rep,packed,name=CardGang,proto3" json:"CardGang,omitempty"` // 最新杠的牌组 值代表牌
-}
-
-func (x *MahjongBTEDealRsp) Reset() {
-	*x = MahjongBTEDealRsp{}
+func (x *MahjongBTEPlayCardReq) Reset() {
+	*x = MahjongBTEPlayCardReq{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_mahjongBTE_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -573,13 +580,13 @@ func (x *MahjongBTEDealRsp) Reset() {
 	}
 }
 
-func (x *MahjongBTEDealRsp) String() string {
+func (x *MahjongBTEPlayCardReq) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*MahjongBTEDealRsp) ProtoMessage() {}
+func (*MahjongBTEPlayCardReq) ProtoMessage() {}
 
-func (x *MahjongBTEDealRsp) ProtoReflect() protoreflect.Message {
+func (x *MahjongBTEPlayCardReq) ProtoReflect() protoreflect.Message {
 	mi := &file_mahjongBTE_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -591,28 +598,61 @@ func (x *MahjongBTEDealRsp) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use MahjongBTEDealRsp.ProtoReflect.Descriptor instead.
-func (*MahjongBTEDealRsp) Descriptor() ([]byte, []int) {
+// Deprecated: Use MahjongBTEPlayCardReq.ProtoReflect.Descriptor instead.
+func (*MahjongBTEPlayCardReq) Descriptor() ([]byte, []int) {
 	return file_mahjongBTE_proto_rawDescGZIP(), []int{8}
 }
 
-func (x *MahjongBTEDealRsp) GetCards() []int32 {
+func (x *MahjongBTEPlayCardReq) GetIndex() int32 {
 	if x != nil {
-		return x.Cards
+		return x.Index
 	}
-	return nil
+	return 0
 }
 
-func (x *MahjongBTEDealRsp) GetCardPong() []int32 {
-	if x != nil {
-		return x.CardPong
-	}
-	return nil
+type MahjongBTEPlayCardRsp struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	AllCards *CardsOfBTE `protobuf:"bytes,1,opt,name=AllCards,proto3" json:"AllCards,omitempty"` // 玩家的所有牌，手牌、碰、杠
 }
 
-func (x *MahjongBTEDealRsp) GetCardGang() []int32 {
+func (x *MahjongBTEPlayCardRsp) Reset() {
+	*x = MahjongBTEPlayCardRsp{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_mahjongBTE_proto_msgTypes[9]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *MahjongBTEPlayCardRsp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MahjongBTEPlayCardRsp) ProtoMessage() {}
+
+func (x *MahjongBTEPlayCardRsp) ProtoReflect() protoreflect.Message {
+	mi := &file_mahjongBTE_proto_msgTypes[9]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MahjongBTEPlayCardRsp.ProtoReflect.Descriptor instead.
+func (*MahjongBTEPlayCardRsp) Descriptor() ([]byte, []int) {
+	return file_mahjongBTE_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *MahjongBTEPlayCardRsp) GetAllCards() *CardsOfBTE {
 	if x != nil {
-		return x.CardGang
+		return x.AllCards
 	}
 	return nil
 }
@@ -631,7 +671,7 @@ type MahjongBTEOperateReq struct {
 func (x *MahjongBTEOperateReq) Reset() {
 	*x = MahjongBTEOperateReq{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_mahjongBTE_proto_msgTypes[9]
+		mi := &file_mahjongBTE_proto_msgTypes[10]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -644,7 +684,7 @@ func (x *MahjongBTEOperateReq) String() string {
 func (*MahjongBTEOperateReq) ProtoMessage() {}
 
 func (x *MahjongBTEOperateReq) ProtoReflect() protoreflect.Message {
-	mi := &file_mahjongBTE_proto_msgTypes[9]
+	mi := &file_mahjongBTE_proto_msgTypes[10]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -657,7 +697,7 @@ func (x *MahjongBTEOperateReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MahjongBTEOperateReq.ProtoReflect.Descriptor instead.
 func (*MahjongBTEOperateReq) Descriptor() ([]byte, []int) {
-	return file_mahjongBTE_proto_rawDescGZIP(), []int{9}
+	return file_mahjongBTE_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *MahjongBTEOperateReq) GetActionType() ActionType {
@@ -686,15 +726,13 @@ type MahjongBTEOperateRsp struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Cards    []int32 `protobuf:"varint,1,rep,packed,name=Cards,proto3" json:"Cards,omitempty"`       // 最新手牌
-	CardPong []int32 `protobuf:"varint,2,rep,packed,name=CardPong,proto3" json:"CardPong,omitempty"` // 碰的牌组 值代表牌
-	CardGang []int32 `protobuf:"varint,3,rep,packed,name=CardGang,proto3" json:"CardGang,omitempty"` // 杠的牌组 值代表牌
+	AllCards *CardsOfBTE `protobuf:"bytes,1,opt,name=AllCards,proto3" json:"AllCards,omitempty"` // 玩家的所有牌，手牌、碰、杠
 }
 
 func (x *MahjongBTEOperateRsp) Reset() {
 	*x = MahjongBTEOperateRsp{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_mahjongBTE_proto_msgTypes[10]
+		mi := &file_mahjongBTE_proto_msgTypes[11]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -707,7 +745,7 @@ func (x *MahjongBTEOperateRsp) String() string {
 func (*MahjongBTEOperateRsp) ProtoMessage() {}
 
 func (x *MahjongBTEOperateRsp) ProtoReflect() protoreflect.Message {
-	mi := &file_mahjongBTE_proto_msgTypes[10]
+	mi := &file_mahjongBTE_proto_msgTypes[11]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -720,26 +758,12 @@ func (x *MahjongBTEOperateRsp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MahjongBTEOperateRsp.ProtoReflect.Descriptor instead.
 func (*MahjongBTEOperateRsp) Descriptor() ([]byte, []int) {
-	return file_mahjongBTE_proto_rawDescGZIP(), []int{10}
+	return file_mahjongBTE_proto_rawDescGZIP(), []int{11}
 }
 
-func (x *MahjongBTEOperateRsp) GetCards() []int32 {
+func (x *MahjongBTEOperateRsp) GetAllCards() *CardsOfBTE {
 	if x != nil {
-		return x.Cards
-	}
-	return nil
-}
-
-func (x *MahjongBTEOperateRsp) GetCardPong() []int32 {
-	if x != nil {
-		return x.CardPong
-	}
-	return nil
-}
-
-func (x *MahjongBTEOperateRsp) GetCardGang() []int32 {
-	if x != nil {
-		return x.CardGang
+		return x.AllCards
 	}
 	return nil
 }
@@ -755,7 +779,7 @@ type MahjongBTEReadyNtf struct {
 func (x *MahjongBTEReadyNtf) Reset() {
 	*x = MahjongBTEReadyNtf{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_mahjongBTE_proto_msgTypes[11]
+		mi := &file_mahjongBTE_proto_msgTypes[12]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -768,7 +792,7 @@ func (x *MahjongBTEReadyNtf) String() string {
 func (*MahjongBTEReadyNtf) ProtoMessage() {}
 
 func (x *MahjongBTEReadyNtf) ProtoReflect() protoreflect.Message {
-	mi := &file_mahjongBTE_proto_msgTypes[11]
+	mi := &file_mahjongBTE_proto_msgTypes[12]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -781,7 +805,7 @@ func (x *MahjongBTEReadyNtf) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MahjongBTEReadyNtf.ProtoReflect.Descriptor instead.
 func (*MahjongBTEReadyNtf) Descriptor() ([]byte, []int) {
-	return file_mahjongBTE_proto_rawDescGZIP(), []int{11}
+	return file_mahjongBTE_proto_rawDescGZIP(), []int{12}
 }
 
 // 开始定庄
@@ -797,7 +821,7 @@ type MahjongBTEDecideMasterNtf struct {
 func (x *MahjongBTEDecideMasterNtf) Reset() {
 	*x = MahjongBTEDecideMasterNtf{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_mahjongBTE_proto_msgTypes[12]
+		mi := &file_mahjongBTE_proto_msgTypes[13]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -810,7 +834,7 @@ func (x *MahjongBTEDecideMasterNtf) String() string {
 func (*MahjongBTEDecideMasterNtf) ProtoMessage() {}
 
 func (x *MahjongBTEDecideMasterNtf) ProtoReflect() protoreflect.Message {
-	mi := &file_mahjongBTE_proto_msgTypes[12]
+	mi := &file_mahjongBTE_proto_msgTypes[13]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -823,7 +847,7 @@ func (x *MahjongBTEDecideMasterNtf) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MahjongBTEDecideMasterNtf.ProtoReflect.Descriptor instead.
 func (*MahjongBTEDecideMasterNtf) Descriptor() ([]byte, []int) {
-	return file_mahjongBTE_proto_rawDescGZIP(), []int{12}
+	return file_mahjongBTE_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *MahjongBTEDecideMasterNtf) GetDices() []int32 {
@@ -852,7 +876,7 @@ type MahjongBTEDealNtf struct {
 func (x *MahjongBTEDealNtf) Reset() {
 	*x = MahjongBTEDealNtf{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_mahjongBTE_proto_msgTypes[13]
+		mi := &file_mahjongBTE_proto_msgTypes[14]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -865,7 +889,7 @@ func (x *MahjongBTEDealNtf) String() string {
 func (*MahjongBTEDealNtf) ProtoMessage() {}
 
 func (x *MahjongBTEDealNtf) ProtoReflect() protoreflect.Message {
-	mi := &file_mahjongBTE_proto_msgTypes[13]
+	mi := &file_mahjongBTE_proto_msgTypes[14]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -878,7 +902,7 @@ func (x *MahjongBTEDealNtf) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MahjongBTEDealNtf.ProtoReflect.Descriptor instead.
 func (*MahjongBTEDealNtf) Descriptor() ([]byte, []int) {
-	return file_mahjongBTE_proto_rawDescGZIP(), []int{13}
+	return file_mahjongBTE_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *MahjongBTEDealNtf) GetCards() []int32 {
@@ -898,7 +922,7 @@ type MahjongBTEExchange3Ntf struct {
 func (x *MahjongBTEExchange3Ntf) Reset() {
 	*x = MahjongBTEExchange3Ntf{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_mahjongBTE_proto_msgTypes[14]
+		mi := &file_mahjongBTE_proto_msgTypes[15]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -911,7 +935,7 @@ func (x *MahjongBTEExchange3Ntf) String() string {
 func (*MahjongBTEExchange3Ntf) ProtoMessage() {}
 
 func (x *MahjongBTEExchange3Ntf) ProtoReflect() protoreflect.Message {
-	mi := &file_mahjongBTE_proto_msgTypes[14]
+	mi := &file_mahjongBTE_proto_msgTypes[15]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -924,7 +948,7 @@ func (x *MahjongBTEExchange3Ntf) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MahjongBTEExchange3Ntf.ProtoReflect.Descriptor instead.
 func (*MahjongBTEExchange3Ntf) Descriptor() ([]byte, []int) {
-	return file_mahjongBTE_proto_rawDescGZIP(), []int{14}
+	return file_mahjongBTE_proto_rawDescGZIP(), []int{15}
 }
 
 // 换三张结束
@@ -940,7 +964,7 @@ type MahjongBTEExchange3EndNtf struct {
 func (x *MahjongBTEExchange3EndNtf) Reset() {
 	*x = MahjongBTEExchange3EndNtf{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_mahjongBTE_proto_msgTypes[15]
+		mi := &file_mahjongBTE_proto_msgTypes[16]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -953,7 +977,7 @@ func (x *MahjongBTEExchange3EndNtf) String() string {
 func (*MahjongBTEExchange3EndNtf) ProtoMessage() {}
 
 func (x *MahjongBTEExchange3EndNtf) ProtoReflect() protoreflect.Message {
-	mi := &file_mahjongBTE_proto_msgTypes[15]
+	mi := &file_mahjongBTE_proto_msgTypes[16]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -966,7 +990,7 @@ func (x *MahjongBTEExchange3EndNtf) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MahjongBTEExchange3EndNtf.ProtoReflect.Descriptor instead.
 func (*MahjongBTEExchange3EndNtf) Descriptor() ([]byte, []int) {
-	return file_mahjongBTE_proto_rawDescGZIP(), []int{15}
+	return file_mahjongBTE_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *MahjongBTEExchange3EndNtf) GetEx3Info() *Exchange3Info {
@@ -993,7 +1017,7 @@ type MahjongBTEDecideIgnoreNtf struct {
 func (x *MahjongBTEDecideIgnoreNtf) Reset() {
 	*x = MahjongBTEDecideIgnoreNtf{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_mahjongBTE_proto_msgTypes[16]
+		mi := &file_mahjongBTE_proto_msgTypes[17]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1006,7 +1030,7 @@ func (x *MahjongBTEDecideIgnoreNtf) String() string {
 func (*MahjongBTEDecideIgnoreNtf) ProtoMessage() {}
 
 func (x *MahjongBTEDecideIgnoreNtf) ProtoReflect() protoreflect.Message {
-	mi := &file_mahjongBTE_proto_msgTypes[16]
+	mi := &file_mahjongBTE_proto_msgTypes[17]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1019,7 +1043,7 @@ func (x *MahjongBTEDecideIgnoreNtf) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MahjongBTEDecideIgnoreNtf.ProtoReflect.Descriptor instead.
 func (*MahjongBTEDecideIgnoreNtf) Descriptor() ([]byte, []int) {
-	return file_mahjongBTE_proto_rawDescGZIP(), []int{16}
+	return file_mahjongBTE_proto_rawDescGZIP(), []int{17}
 }
 
 // 定缺结束
@@ -1034,7 +1058,7 @@ type MahjongBTEDecideIgnoreEndNtf struct {
 func (x *MahjongBTEDecideIgnoreEndNtf) Reset() {
 	*x = MahjongBTEDecideIgnoreEndNtf{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_mahjongBTE_proto_msgTypes[17]
+		mi := &file_mahjongBTE_proto_msgTypes[18]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1047,7 +1071,7 @@ func (x *MahjongBTEDecideIgnoreEndNtf) String() string {
 func (*MahjongBTEDecideIgnoreEndNtf) ProtoMessage() {}
 
 func (x *MahjongBTEDecideIgnoreEndNtf) ProtoReflect() protoreflect.Message {
-	mi := &file_mahjongBTE_proto_msgTypes[17]
+	mi := &file_mahjongBTE_proto_msgTypes[18]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1060,7 +1084,7 @@ func (x *MahjongBTEDecideIgnoreEndNtf) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MahjongBTEDecideIgnoreEndNtf.ProtoReflect.Descriptor instead.
 func (*MahjongBTEDecideIgnoreEndNtf) Descriptor() ([]byte, []int) {
-	return file_mahjongBTE_proto_rawDescGZIP(), []int{17}
+	return file_mahjongBTE_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *MahjongBTEDecideIgnoreEndNtf) GetColors() map[int64]ColorType {
@@ -1080,7 +1104,7 @@ type MahjongBTEPlayingNtf struct {
 func (x *MahjongBTEPlayingNtf) Reset() {
 	*x = MahjongBTEPlayingNtf{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_mahjongBTE_proto_msgTypes[18]
+		mi := &file_mahjongBTE_proto_msgTypes[19]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1093,7 +1117,7 @@ func (x *MahjongBTEPlayingNtf) String() string {
 func (*MahjongBTEPlayingNtf) ProtoMessage() {}
 
 func (x *MahjongBTEPlayingNtf) ProtoReflect() protoreflect.Message {
-	mi := &file_mahjongBTE_proto_msgTypes[18]
+	mi := &file_mahjongBTE_proto_msgTypes[19]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1106,7 +1130,7 @@ func (x *MahjongBTEPlayingNtf) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MahjongBTEPlayingNtf.ProtoReflect.Descriptor instead.
 func (*MahjongBTEPlayingNtf) Descriptor() ([]byte, []int) {
-	return file_mahjongBTE_proto_rawDescGZIP(), []int{18}
+	return file_mahjongBTE_proto_rawDescGZIP(), []int{19}
 }
 
 // 玩家轮动通知
@@ -1128,7 +1152,7 @@ type MahjongBTETurnNtf struct {
 func (x *MahjongBTETurnNtf) Reset() {
 	*x = MahjongBTETurnNtf{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_mahjongBTE_proto_msgTypes[19]
+		mi := &file_mahjongBTE_proto_msgTypes[20]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1141,7 +1165,7 @@ func (x *MahjongBTETurnNtf) String() string {
 func (*MahjongBTETurnNtf) ProtoMessage() {}
 
 func (x *MahjongBTETurnNtf) ProtoReflect() protoreflect.Message {
-	mi := &file_mahjongBTE_proto_msgTypes[19]
+	mi := &file_mahjongBTE_proto_msgTypes[20]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1154,7 +1178,7 @@ func (x *MahjongBTETurnNtf) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MahjongBTETurnNtf.ProtoReflect.Descriptor instead.
 func (*MahjongBTETurnNtf) Descriptor() ([]byte, []int) {
-	return file_mahjongBTE_proto_rawDescGZIP(), []int{19}
+	return file_mahjongBTE_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *MahjongBTETurnNtf) GetTotalCards() int32 {
@@ -1212,16 +1236,16 @@ type MahjongBTEOperaNtf struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	OpShortId int64  `protobuf:"varint,1,opt,name=OpShortId,proto3" json:"OpShortId,omitempty"`             // 操作者
-	OpType    int32  `protobuf:"varint,3,opt,name=OpType,proto3" json:"OpType,omitempty"`                   // 操作类型，1.碰、2.杠、3.胡、4.出牌
-	HuType    HuType `protobuf:"varint,4,opt,name=HuType,proto3,enum=outer.HuType" json:"HuType,omitempty"` // 胡牌类型
-	Card      int32  `protobuf:"varint,5,opt,name=Card,proto3" json:"Card,omitempty"`                       // 碰、杠、出牌的牌
+	OpShortId int64      `protobuf:"varint,1,opt,name=OpShortId,proto3" json:"OpShortId,omitempty"`                 // 操作者
+	OpType    ActionType `protobuf:"varint,3,opt,name=OpType,proto3,enum=outer.ActionType" json:"OpType,omitempty"` // 操作类型，1.碰、2.杠、3.胡、4.出牌
+	HuType    HuType     `protobuf:"varint,4,opt,name=HuType,proto3,enum=outer.HuType" json:"HuType,omitempty"`     // 胡牌类型
+	Card      int32      `protobuf:"varint,5,opt,name=Card,proto3" json:"Card,omitempty"`                           // 碰、杠、出牌的牌
 }
 
 func (x *MahjongBTEOperaNtf) Reset() {
 	*x = MahjongBTEOperaNtf{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_mahjongBTE_proto_msgTypes[20]
+		mi := &file_mahjongBTE_proto_msgTypes[21]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1234,7 +1258,7 @@ func (x *MahjongBTEOperaNtf) String() string {
 func (*MahjongBTEOperaNtf) ProtoMessage() {}
 
 func (x *MahjongBTEOperaNtf) ProtoReflect() protoreflect.Message {
-	mi := &file_mahjongBTE_proto_msgTypes[20]
+	mi := &file_mahjongBTE_proto_msgTypes[21]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1247,7 +1271,7 @@ func (x *MahjongBTEOperaNtf) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MahjongBTEOperaNtf.ProtoReflect.Descriptor instead.
 func (*MahjongBTEOperaNtf) Descriptor() ([]byte, []int) {
-	return file_mahjongBTE_proto_rawDescGZIP(), []int{20}
+	return file_mahjongBTE_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *MahjongBTEOperaNtf) GetOpShortId() int64 {
@@ -1257,11 +1281,11 @@ func (x *MahjongBTEOperaNtf) GetOpShortId() int64 {
 	return 0
 }
 
-func (x *MahjongBTEOperaNtf) GetOpType() int32 {
+func (x *MahjongBTEOperaNtf) GetOpType() ActionType {
 	if x != nil {
 		return x.OpType
 	}
-	return 0
+	return ActionType_ActionPass
 }
 
 func (x *MahjongBTEOperaNtf) GetHuType() HuType {
@@ -1288,7 +1312,7 @@ type MahjongBTESettlementNtf struct {
 func (x *MahjongBTESettlementNtf) Reset() {
 	*x = MahjongBTESettlementNtf{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_mahjongBTE_proto_msgTypes[21]
+		mi := &file_mahjongBTE_proto_msgTypes[22]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1301,7 +1325,7 @@ func (x *MahjongBTESettlementNtf) String() string {
 func (*MahjongBTESettlementNtf) ProtoMessage() {}
 
 func (x *MahjongBTESettlementNtf) ProtoReflect() protoreflect.Message {
-	mi := &file_mahjongBTE_proto_msgTypes[21]
+	mi := &file_mahjongBTE_proto_msgTypes[22]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1314,7 +1338,7 @@ func (x *MahjongBTESettlementNtf) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MahjongBTESettlementNtf.ProtoReflect.Descriptor instead.
 func (*MahjongBTESettlementNtf) Descriptor() ([]byte, []int) {
-	return file_mahjongBTE_proto_rawDescGZIP(), []int{21}
+	return file_mahjongBTE_proto_rawDescGZIP(), []int{22}
 }
 
 var File_mahjongBTE_proto protoreflect.FileDescriptor
@@ -1359,74 +1383,80 @@ var file_mahjongBTE_proto_rawDesc = []byte{
 	0x65, 0x12, 0x1c, 0x0a, 0x09, 0x47, 0x61, 0x6e, 0x67, 0x43, 0x61, 0x72, 0x64, 0x73, 0x18, 0x0e,
 	0x20, 0x03, 0x28, 0x05, 0x52, 0x09, 0x47, 0x61, 0x6e, 0x67, 0x43, 0x61, 0x72, 0x64, 0x73, 0x12,
 	0x18, 0x0a, 0x07, 0x4e, 0x65, 0x77, 0x43, 0x61, 0x72, 0x64, 0x18, 0x0f, 0x20, 0x01, 0x28, 0x05,
-	0x52, 0x07, 0x4e, 0x65, 0x77, 0x43, 0x61, 0x72, 0x64, 0x22, 0x81, 0x03, 0x0a, 0x11, 0x4d, 0x61,
+	0x52, 0x07, 0x4e, 0x65, 0x77, 0x43, 0x61, 0x72, 0x64, 0x22, 0x90, 0x01, 0x0a, 0x11, 0x4d, 0x61,
 	0x68, 0x6a, 0x6f, 0x6e, 0x67, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x6e, 0x66, 0x6f, 0x12,
 	0x18, 0x0a, 0x07, 0x53, 0x68, 0x6f, 0x72, 0x74, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03,
 	0x52, 0x07, 0x53, 0x68, 0x6f, 0x72, 0x74, 0x49, 0x64, 0x12, 0x32, 0x0a, 0x0b, 0x44, 0x65, 0x63,
 	0x69, 0x64, 0x65, 0x43, 0x6f, 0x6c, 0x6f, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x10,
 	0x2e, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x43, 0x6f, 0x6c, 0x6f, 0x72, 0x54, 0x79, 0x70, 0x65,
-	0x52, 0x0b, 0x44, 0x65, 0x63, 0x69, 0x64, 0x65, 0x43, 0x6f, 0x6c, 0x6f, 0x72, 0x12, 0x14, 0x0a,
-	0x05, 0x43, 0x61, 0x72, 0x64, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28, 0x05, 0x52, 0x05, 0x43, 0x61,
-	0x72, 0x64, 0x73, 0x12, 0x45, 0x0a, 0x09, 0x43, 0x61, 0x72, 0x64, 0x73, 0x50, 0x6f, 0x6e, 0x67,
-	0x18, 0x04, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x4d,
-	0x61, 0x68, 0x6a, 0x6f, 0x6e, 0x67, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x6e, 0x66, 0x6f,
-	0x2e, 0x43, 0x61, 0x72, 0x64, 0x73, 0x50, 0x6f, 0x6e, 0x67, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x52,
-	0x09, 0x43, 0x61, 0x72, 0x64, 0x73, 0x50, 0x6f, 0x6e, 0x67, 0x12, 0x45, 0x0a, 0x09, 0x43, 0x61,
-	0x72, 0x64, 0x73, 0x47, 0x61, 0x6e, 0x67, 0x18, 0x05, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x27, 0x2e,
-	0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x4d, 0x61, 0x68, 0x6a, 0x6f, 0x6e, 0x67, 0x50, 0x6c, 0x61,
-	0x79, 0x65, 0x72, 0x49, 0x6e, 0x66, 0x6f, 0x2e, 0x43, 0x61, 0x72, 0x64, 0x73, 0x47, 0x61, 0x6e,
-	0x67, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x52, 0x09, 0x43, 0x61, 0x72, 0x64, 0x73, 0x47, 0x61, 0x6e,
-	0x67, 0x1a, 0x3c, 0x0a, 0x0e, 0x43, 0x61, 0x72, 0x64, 0x73, 0x50, 0x6f, 0x6e, 0x67, 0x45, 0x6e,
+	0x52, 0x0b, 0x44, 0x65, 0x63, 0x69, 0x64, 0x65, 0x43, 0x6f, 0x6c, 0x6f, 0x72, 0x12, 0x2d, 0x0a,
+	0x08, 0x41, 0x6c, 0x6c, 0x43, 0x61, 0x72, 0x64, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x11, 0x2e, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x43, 0x61, 0x72, 0x64, 0x73, 0x4f, 0x66, 0x42,
+	0x54, 0x45, 0x52, 0x08, 0x41, 0x6c, 0x6c, 0x43, 0x61, 0x72, 0x64, 0x73, 0x22, 0x8f, 0x01, 0x0a,
+	0x0d, 0x45, 0x78, 0x63, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x33, 0x49, 0x6e, 0x66, 0x6f, 0x12, 0x1c,
+	0x0a, 0x09, 0x43, 0x61, 0x72, 0x64, 0x73, 0x46, 0x72, 0x6f, 0x6d, 0x18, 0x01, 0x20, 0x03, 0x28,
+	0x05, 0x52, 0x09, 0x43, 0x61, 0x72, 0x64, 0x73, 0x46, 0x72, 0x6f, 0x6d, 0x12, 0x24, 0x0a, 0x0d,
+	0x46, 0x72, 0x6f, 0x6d, 0x53, 0x65, 0x61, 0x74, 0x49, 0x6e, 0x64, 0x65, 0x78, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x05, 0x52, 0x0d, 0x46, 0x72, 0x6f, 0x6d, 0x53, 0x65, 0x61, 0x74, 0x49, 0x6e, 0x64,
+	0x65, 0x78, 0x12, 0x18, 0x0a, 0x07, 0x43, 0x61, 0x72, 0x64, 0x73, 0x54, 0x6f, 0x18, 0x03, 0x20,
+	0x03, 0x28, 0x05, 0x52, 0x07, 0x43, 0x61, 0x72, 0x64, 0x73, 0x54, 0x6f, 0x12, 0x20, 0x0a, 0x0b,
+	0x54, 0x6f, 0x53, 0x65, 0x61, 0x74, 0x49, 0x6e, 0x64, 0x65, 0x78, 0x18, 0x04, 0x20, 0x01, 0x28,
+	0x05, 0x52, 0x0b, 0x54, 0x6f, 0x53, 0x65, 0x61, 0x74, 0x49, 0x6e, 0x64, 0x65, 0x78, 0x22, 0x84,
+	0x03, 0x0a, 0x0a, 0x43, 0x61, 0x72, 0x64, 0x73, 0x4f, 0x66, 0x42, 0x54, 0x45, 0x12, 0x14, 0x0a,
+	0x05, 0x43, 0x61, 0x72, 0x64, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x05, 0x52, 0x05, 0x43, 0x61,
+	0x72, 0x64, 0x73, 0x12, 0x3e, 0x0a, 0x09, 0x4c, 0x69, 0x67, 0x68, 0x74, 0x47, 0x61, 0x6e, 0x67,
+	0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x20, 0x2e, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x43,
+	0x61, 0x72, 0x64, 0x73, 0x4f, 0x66, 0x42, 0x54, 0x45, 0x2e, 0x4c, 0x69, 0x67, 0x68, 0x74, 0x47,
+	0x61, 0x6e, 0x67, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x52, 0x09, 0x4c, 0x69, 0x67, 0x68, 0x74, 0x47,
+	0x61, 0x6e, 0x67, 0x12, 0x3b, 0x0a, 0x08, 0x44, 0x61, 0x72, 0x6b, 0x47, 0x61, 0x6e, 0x67, 0x18,
+	0x03, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1f, 0x2e, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x43, 0x61,
+	0x72, 0x64, 0x73, 0x4f, 0x66, 0x42, 0x54, 0x45, 0x2e, 0x44, 0x61, 0x72, 0x6b, 0x47, 0x61, 0x6e,
+	0x67, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x52, 0x08, 0x44, 0x61, 0x72, 0x6b, 0x47, 0x61, 0x6e, 0x67,
+	0x12, 0x2f, 0x0a, 0x04, 0x50, 0x6f, 0x6e, 0x67, 0x18, 0x04, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1b,
+	0x2e, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x43, 0x61, 0x72, 0x64, 0x73, 0x4f, 0x66, 0x42, 0x54,
+	0x45, 0x2e, 0x50, 0x6f, 0x6e, 0x67, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x52, 0x04, 0x50, 0x6f, 0x6e,
+	0x67, 0x1a, 0x3c, 0x0a, 0x0e, 0x4c, 0x69, 0x67, 0x68, 0x74, 0x47, 0x61, 0x6e, 0x67, 0x45, 0x6e,
 	0x74, 0x72, 0x79, 0x12, 0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05,
 	0x52, 0x03, 0x6b, 0x65, 0x79, 0x12, 0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02,
 	0x20, 0x01, 0x28, 0x03, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x3a, 0x02, 0x38, 0x01, 0x1a,
-	0x3c, 0x0a, 0x0e, 0x43, 0x61, 0x72, 0x64, 0x73, 0x47, 0x61, 0x6e, 0x67, 0x45, 0x6e, 0x74, 0x72,
-	0x79, 0x12, 0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x03,
-	0x6b, 0x65, 0x79, 0x12, 0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01,
-	0x28, 0x03, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x3a, 0x02, 0x38, 0x01, 0x22, 0x8f, 0x01,
-	0x0a, 0x0d, 0x45, 0x78, 0x63, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x33, 0x49, 0x6e, 0x66, 0x6f, 0x12,
-	0x1c, 0x0a, 0x09, 0x43, 0x61, 0x72, 0x64, 0x73, 0x46, 0x72, 0x6f, 0x6d, 0x18, 0x01, 0x20, 0x03,
-	0x28, 0x05, 0x52, 0x09, 0x43, 0x61, 0x72, 0x64, 0x73, 0x46, 0x72, 0x6f, 0x6d, 0x12, 0x24, 0x0a,
-	0x0d, 0x46, 0x72, 0x6f, 0x6d, 0x53, 0x65, 0x61, 0x74, 0x49, 0x6e, 0x64, 0x65, 0x78, 0x18, 0x02,
-	0x20, 0x01, 0x28, 0x05, 0x52, 0x0d, 0x46, 0x72, 0x6f, 0x6d, 0x53, 0x65, 0x61, 0x74, 0x49, 0x6e,
-	0x64, 0x65, 0x78, 0x12, 0x18, 0x0a, 0x07, 0x43, 0x61, 0x72, 0x64, 0x73, 0x54, 0x6f, 0x18, 0x03,
-	0x20, 0x03, 0x28, 0x05, 0x52, 0x07, 0x43, 0x61, 0x72, 0x64, 0x73, 0x54, 0x6f, 0x12, 0x20, 0x0a,
-	0x0b, 0x54, 0x6f, 0x53, 0x65, 0x61, 0x74, 0x49, 0x6e, 0x64, 0x65, 0x78, 0x18, 0x04, 0x20, 0x01,
-	0x28, 0x05, 0x52, 0x0b, 0x54, 0x6f, 0x53, 0x65, 0x61, 0x74, 0x49, 0x6e, 0x64, 0x65, 0x78, 0x22,
-	0x2e, 0x0a, 0x16, 0x4d, 0x61, 0x68, 0x6a, 0x6f, 0x6e, 0x67, 0x42, 0x54, 0x45, 0x45, 0x78, 0x63,
-	0x68, 0x61, 0x6e, 0x67, 0x65, 0x33, 0x52, 0x65, 0x71, 0x12, 0x14, 0x0a, 0x05, 0x49, 0x6e, 0x64,
-	0x65, 0x78, 0x18, 0x01, 0x20, 0x03, 0x28, 0x05, 0x52, 0x05, 0x49, 0x6e, 0x64, 0x65, 0x78, 0x22,
-	0x18, 0x0a, 0x16, 0x4d, 0x61, 0x68, 0x6a, 0x6f, 0x6e, 0x67, 0x42, 0x54, 0x45, 0x45, 0x78, 0x63,
-	0x68, 0x61, 0x6e, 0x67, 0x65, 0x33, 0x52, 0x73, 0x70, 0x22, 0x43, 0x0a, 0x19, 0x4d, 0x61, 0x68,
-	0x6a, 0x6f, 0x6e, 0x67, 0x42, 0x54, 0x45, 0x44, 0x65, 0x63, 0x69, 0x64, 0x65, 0x49, 0x67, 0x6e,
-	0x6f, 0x72, 0x65, 0x52, 0x65, 0x71, 0x12, 0x26, 0x0a, 0x05, 0x63, 0x6f, 0x6c, 0x6f, 0x72, 0x18,
-	0x01, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x10, 0x2e, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x43, 0x6f,
-	0x6c, 0x6f, 0x72, 0x54, 0x79, 0x70, 0x65, 0x52, 0x05, 0x63, 0x6f, 0x6c, 0x6f, 0x72, 0x22, 0x1b,
-	0x0a, 0x19, 0x4d, 0x61, 0x68, 0x6a, 0x6f, 0x6e, 0x67, 0x42, 0x54, 0x45, 0x44, 0x65, 0x63, 0x69,
-	0x64, 0x65, 0x49, 0x67, 0x6e, 0x6f, 0x72, 0x65, 0x52, 0x73, 0x70, 0x22, 0x29, 0x0a, 0x11, 0x4d,
-	0x61, 0x68, 0x6a, 0x6f, 0x6e, 0x67, 0x42, 0x54, 0x45, 0x44, 0x65, 0x61, 0x6c, 0x52, 0x65, 0x71,
-	0x12, 0x14, 0x0a, 0x05, 0x49, 0x6e, 0x64, 0x65, 0x78, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52,
-	0x05, 0x49, 0x6e, 0x64, 0x65, 0x78, 0x22, 0x61, 0x0a, 0x11, 0x4d, 0x61, 0x68, 0x6a, 0x6f, 0x6e,
-	0x67, 0x42, 0x54, 0x45, 0x44, 0x65, 0x61, 0x6c, 0x52, 0x73, 0x70, 0x12, 0x14, 0x0a, 0x05, 0x43,
-	0x61, 0x72, 0x64, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x05, 0x52, 0x05, 0x43, 0x61, 0x72, 0x64,
-	0x73, 0x12, 0x1a, 0x0a, 0x08, 0x43, 0x61, 0x72, 0x64, 0x50, 0x6f, 0x6e, 0x67, 0x18, 0x02, 0x20,
-	0x03, 0x28, 0x05, 0x52, 0x08, 0x43, 0x61, 0x72, 0x64, 0x50, 0x6f, 0x6e, 0x67, 0x12, 0x1a, 0x0a,
-	0x08, 0x43, 0x61, 0x72, 0x64, 0x47, 0x61, 0x6e, 0x67, 0x18, 0x03, 0x20, 0x03, 0x28, 0x05, 0x52,
-	0x08, 0x43, 0x61, 0x72, 0x64, 0x47, 0x61, 0x6e, 0x67, 0x22, 0x7c, 0x0a, 0x14, 0x4d, 0x61, 0x68,
-	0x6a, 0x6f, 0x6e, 0x67, 0x42, 0x54, 0x45, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x65, 0x52, 0x65,
-	0x71, 0x12, 0x31, 0x0a, 0x0a, 0x41, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x18,
-	0x01, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x11, 0x2e, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x41, 0x63,
-	0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x52, 0x0a, 0x41, 0x63, 0x74, 0x69, 0x6f, 0x6e,
-	0x54, 0x79, 0x70, 0x65, 0x12, 0x1d, 0x0a, 0x02, 0x48, 0x75, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0e,
-	0x32, 0x0d, 0x2e, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x48, 0x75, 0x54, 0x79, 0x70, 0x65, 0x52,
-	0x02, 0x48, 0x75, 0x12, 0x12, 0x0a, 0x04, 0x47, 0x61, 0x6e, 0x67, 0x18, 0x03, 0x20, 0x01, 0x28,
-	0x05, 0x52, 0x04, 0x47, 0x61, 0x6e, 0x67, 0x22, 0x64, 0x0a, 0x14, 0x4d, 0x61, 0x68, 0x6a, 0x6f,
-	0x6e, 0x67, 0x42, 0x54, 0x45, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x65, 0x52, 0x73, 0x70, 0x12,
-	0x14, 0x0a, 0x05, 0x43, 0x61, 0x72, 0x64, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x05, 0x52, 0x05,
-	0x43, 0x61, 0x72, 0x64, 0x73, 0x12, 0x1a, 0x0a, 0x08, 0x43, 0x61, 0x72, 0x64, 0x50, 0x6f, 0x6e,
-	0x67, 0x18, 0x02, 0x20, 0x03, 0x28, 0x05, 0x52, 0x08, 0x43, 0x61, 0x72, 0x64, 0x50, 0x6f, 0x6e,
-	0x67, 0x12, 0x1a, 0x0a, 0x08, 0x43, 0x61, 0x72, 0x64, 0x47, 0x61, 0x6e, 0x67, 0x18, 0x03, 0x20,
-	0x03, 0x28, 0x05, 0x52, 0x08, 0x43, 0x61, 0x72, 0x64, 0x47, 0x61, 0x6e, 0x67, 0x22, 0x14, 0x0a,
+	0x3b, 0x0a, 0x0d, 0x44, 0x61, 0x72, 0x6b, 0x47, 0x61, 0x6e, 0x67, 0x45, 0x6e, 0x74, 0x72, 0x79,
+	0x12, 0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x03, 0x6b,
+	0x65, 0x79, 0x12, 0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x03, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x3a, 0x02, 0x38, 0x01, 0x1a, 0x37, 0x0a, 0x09,
+	0x50, 0x6f, 0x6e, 0x67, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x12, 0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x03, 0x6b, 0x65, 0x79, 0x12, 0x14, 0x0a, 0x05, 0x76,
+	0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x03, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75,
+	0x65, 0x3a, 0x02, 0x38, 0x01, 0x22, 0x2e, 0x0a, 0x16, 0x4d, 0x61, 0x68, 0x6a, 0x6f, 0x6e, 0x67,
+	0x42, 0x54, 0x45, 0x45, 0x78, 0x63, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x33, 0x52, 0x65, 0x71, 0x12,
+	0x14, 0x0a, 0x05, 0x49, 0x6e, 0x64, 0x65, 0x78, 0x18, 0x01, 0x20, 0x03, 0x28, 0x05, 0x52, 0x05,
+	0x49, 0x6e, 0x64, 0x65, 0x78, 0x22, 0x18, 0x0a, 0x16, 0x4d, 0x61, 0x68, 0x6a, 0x6f, 0x6e, 0x67,
+	0x42, 0x54, 0x45, 0x45, 0x78, 0x63, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x33, 0x52, 0x73, 0x70, 0x22,
+	0x43, 0x0a, 0x19, 0x4d, 0x61, 0x68, 0x6a, 0x6f, 0x6e, 0x67, 0x42, 0x54, 0x45, 0x44, 0x65, 0x63,
+	0x69, 0x64, 0x65, 0x49, 0x67, 0x6e, 0x6f, 0x72, 0x65, 0x52, 0x65, 0x71, 0x12, 0x26, 0x0a, 0x05,
+	0x63, 0x6f, 0x6c, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x10, 0x2e, 0x6f, 0x75,
+	0x74, 0x65, 0x72, 0x2e, 0x43, 0x6f, 0x6c, 0x6f, 0x72, 0x54, 0x79, 0x70, 0x65, 0x52, 0x05, 0x63,
+	0x6f, 0x6c, 0x6f, 0x72, 0x22, 0x1b, 0x0a, 0x19, 0x4d, 0x61, 0x68, 0x6a, 0x6f, 0x6e, 0x67, 0x42,
+	0x54, 0x45, 0x44, 0x65, 0x63, 0x69, 0x64, 0x65, 0x49, 0x67, 0x6e, 0x6f, 0x72, 0x65, 0x52, 0x73,
+	0x70, 0x22, 0x2d, 0x0a, 0x15, 0x4d, 0x61, 0x68, 0x6a, 0x6f, 0x6e, 0x67, 0x42, 0x54, 0x45, 0x50,
+	0x6c, 0x61, 0x79, 0x43, 0x61, 0x72, 0x64, 0x52, 0x65, 0x71, 0x12, 0x14, 0x0a, 0x05, 0x49, 0x6e,
+	0x64, 0x65, 0x78, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x05, 0x49, 0x6e, 0x64, 0x65, 0x78,
+	0x22, 0x46, 0x0a, 0x15, 0x4d, 0x61, 0x68, 0x6a, 0x6f, 0x6e, 0x67, 0x42, 0x54, 0x45, 0x50, 0x6c,
+	0x61, 0x79, 0x43, 0x61, 0x72, 0x64, 0x52, 0x73, 0x70, 0x12, 0x2d, 0x0a, 0x08, 0x41, 0x6c, 0x6c,
+	0x43, 0x61, 0x72, 0x64, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x11, 0x2e, 0x6f, 0x75,
+	0x74, 0x65, 0x72, 0x2e, 0x43, 0x61, 0x72, 0x64, 0x73, 0x4f, 0x66, 0x42, 0x54, 0x45, 0x52, 0x08,
+	0x41, 0x6c, 0x6c, 0x43, 0x61, 0x72, 0x64, 0x73, 0x22, 0x7c, 0x0a, 0x14, 0x4d, 0x61, 0x68, 0x6a,
+	0x6f, 0x6e, 0x67, 0x42, 0x54, 0x45, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x65, 0x52, 0x65, 0x71,
+	0x12, 0x31, 0x0a, 0x0a, 0x41, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x0e, 0x32, 0x11, 0x2e, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x41, 0x63, 0x74,
+	0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x52, 0x0a, 0x41, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x54,
+	0x79, 0x70, 0x65, 0x12, 0x1d, 0x0a, 0x02, 0x48, 0x75, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0e, 0x32,
+	0x0d, 0x2e, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x48, 0x75, 0x54, 0x79, 0x70, 0x65, 0x52, 0x02,
+	0x48, 0x75, 0x12, 0x12, 0x0a, 0x04, 0x47, 0x61, 0x6e, 0x67, 0x18, 0x03, 0x20, 0x01, 0x28, 0x05,
+	0x52, 0x04, 0x47, 0x61, 0x6e, 0x67, 0x22, 0x45, 0x0a, 0x14, 0x4d, 0x61, 0x68, 0x6a, 0x6f, 0x6e,
+	0x67, 0x42, 0x54, 0x45, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x65, 0x52, 0x73, 0x70, 0x12, 0x2d,
+	0x0a, 0x08, 0x41, 0x6c, 0x6c, 0x43, 0x61, 0x72, 0x64, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b,
+	0x32, 0x11, 0x2e, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x43, 0x61, 0x72, 0x64, 0x73, 0x4f, 0x66,
+	0x42, 0x54, 0x45, 0x52, 0x08, 0x41, 0x6c, 0x6c, 0x43, 0x61, 0x72, 0x64, 0x73, 0x22, 0x14, 0x0a,
 	0x12, 0x4d, 0x61, 0x68, 0x6a, 0x6f, 0x6e, 0x67, 0x42, 0x54, 0x45, 0x52, 0x65, 0x61, 0x64, 0x79,
 	0x4e, 0x74, 0x66, 0x22, 0x53, 0x0a, 0x19, 0x4d, 0x61, 0x68, 0x6a, 0x6f, 0x6e, 0x67, 0x42, 0x54,
 	0x45, 0x44, 0x65, 0x63, 0x69, 0x64, 0x65, 0x4d, 0x61, 0x73, 0x74, 0x65, 0x72, 0x4e, 0x74, 0x66,
@@ -1475,19 +1505,20 @@ var file_mahjongBTE_proto_rawDesc = []byte{
 	0x54, 0x79, 0x70, 0x65, 0x12, 0x1c, 0x0a, 0x09, 0x47, 0x61, 0x6e, 0x67, 0x43, 0x61, 0x72, 0x64,
 	0x73, 0x18, 0x06, 0x20, 0x03, 0x28, 0x05, 0x52, 0x09, 0x47, 0x61, 0x6e, 0x67, 0x43, 0x61, 0x72,
 	0x64, 0x73, 0x12, 0x18, 0x0a, 0x07, 0x4e, 0x65, 0x77, 0x43, 0x61, 0x72, 0x64, 0x18, 0x07, 0x20,
-	0x01, 0x28, 0x05, 0x52, 0x07, 0x4e, 0x65, 0x77, 0x43, 0x61, 0x72, 0x64, 0x22, 0x85, 0x01, 0x0a,
+	0x01, 0x28, 0x05, 0x52, 0x07, 0x4e, 0x65, 0x77, 0x43, 0x61, 0x72, 0x64, 0x22, 0x98, 0x01, 0x0a,
 	0x12, 0x4d, 0x61, 0x68, 0x6a, 0x6f, 0x6e, 0x67, 0x42, 0x54, 0x45, 0x4f, 0x70, 0x65, 0x72, 0x61,
 	0x4e, 0x74, 0x66, 0x12, 0x1c, 0x0a, 0x09, 0x4f, 0x70, 0x53, 0x68, 0x6f, 0x72, 0x74, 0x49, 0x64,
 	0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x09, 0x4f, 0x70, 0x53, 0x68, 0x6f, 0x72, 0x74, 0x49,
-	0x64, 0x12, 0x16, 0x0a, 0x06, 0x4f, 0x70, 0x54, 0x79, 0x70, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28,
-	0x05, 0x52, 0x06, 0x4f, 0x70, 0x54, 0x79, 0x70, 0x65, 0x12, 0x25, 0x0a, 0x06, 0x48, 0x75, 0x54,
-	0x79, 0x70, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x0d, 0x2e, 0x6f, 0x75, 0x74, 0x65,
-	0x72, 0x2e, 0x48, 0x75, 0x54, 0x79, 0x70, 0x65, 0x52, 0x06, 0x48, 0x75, 0x54, 0x79, 0x70, 0x65,
-	0x12, 0x12, 0x0a, 0x04, 0x43, 0x61, 0x72, 0x64, 0x18, 0x05, 0x20, 0x01, 0x28, 0x05, 0x52, 0x04,
-	0x43, 0x61, 0x72, 0x64, 0x22, 0x19, 0x0a, 0x17, 0x4d, 0x61, 0x68, 0x6a, 0x6f, 0x6e, 0x67, 0x42,
-	0x54, 0x45, 0x53, 0x65, 0x74, 0x74, 0x6c, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x4e, 0x74, 0x66, 0x42,
-	0x08, 0x5a, 0x06, 0x2f, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x33,
+	0x64, 0x12, 0x29, 0x0a, 0x06, 0x4f, 0x70, 0x54, 0x79, 0x70, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28,
+	0x0e, 0x32, 0x11, 0x2e, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x41, 0x63, 0x74, 0x69, 0x6f, 0x6e,
+	0x54, 0x79, 0x70, 0x65, 0x52, 0x06, 0x4f, 0x70, 0x54, 0x79, 0x70, 0x65, 0x12, 0x25, 0x0a, 0x06,
+	0x48, 0x75, 0x54, 0x79, 0x70, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x0d, 0x2e, 0x6f,
+	0x75, 0x74, 0x65, 0x72, 0x2e, 0x48, 0x75, 0x54, 0x79, 0x70, 0x65, 0x52, 0x06, 0x48, 0x75, 0x54,
+	0x79, 0x70, 0x65, 0x12, 0x12, 0x0a, 0x04, 0x43, 0x61, 0x72, 0x64, 0x18, 0x05, 0x20, 0x01, 0x28,
+	0x05, 0x52, 0x04, 0x43, 0x61, 0x72, 0x64, 0x22, 0x19, 0x0a, 0x17, 0x4d, 0x61, 0x68, 0x6a, 0x6f,
+	0x6e, 0x67, 0x42, 0x54, 0x45, 0x53, 0x65, 0x74, 0x74, 0x6c, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x4e,
+	0x74, 0x66, 0x42, 0x08, 0x5a, 0x06, 0x2f, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x62, 0x06, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1502,61 +1533,68 @@ func file_mahjongBTE_proto_rawDescGZIP() []byte {
 	return file_mahjongBTE_proto_rawDescData
 }
 
-var file_mahjongBTE_proto_msgTypes = make([]protoimpl.MessageInfo, 25)
+var file_mahjongBTE_proto_msgTypes = make([]protoimpl.MessageInfo, 27)
 var file_mahjongBTE_proto_goTypes = []interface{}{
 	(*MahjongBTEGameInfo)(nil),           // 0: outer.MahjongBTEGameInfo
 	(*MahjongPlayerInfo)(nil),            // 1: outer.MahjongPlayerInfo
 	(*Exchange3Info)(nil),                // 2: outer.Exchange3Info
-	(*MahjongBTEExchange3Req)(nil),       // 3: outer.MahjongBTEExchange3Req
-	(*MahjongBTEExchange3Rsp)(nil),       // 4: outer.MahjongBTEExchange3Rsp
-	(*MahjongBTEDecideIgnoreReq)(nil),    // 5: outer.MahjongBTEDecideIgnoreReq
-	(*MahjongBTEDecideIgnoreRsp)(nil),    // 6: outer.MahjongBTEDecideIgnoreRsp
-	(*MahjongBTEDealReq)(nil),            // 7: outer.MahjongBTEDealReq
-	(*MahjongBTEDealRsp)(nil),            // 8: outer.MahjongBTEDealRsp
-	(*MahjongBTEOperateReq)(nil),         // 9: outer.MahjongBTEOperateReq
-	(*MahjongBTEOperateRsp)(nil),         // 10: outer.MahjongBTEOperateRsp
-	(*MahjongBTEReadyNtf)(nil),           // 11: outer.MahjongBTEReadyNtf
-	(*MahjongBTEDecideMasterNtf)(nil),    // 12: outer.MahjongBTEDecideMasterNtf
-	(*MahjongBTEDealNtf)(nil),            // 13: outer.MahjongBTEDealNtf
-	(*MahjongBTEExchange3Ntf)(nil),       // 14: outer.MahjongBTEExchange3Ntf
-	(*MahjongBTEExchange3EndNtf)(nil),    // 15: outer.MahjongBTEExchange3EndNtf
-	(*MahjongBTEDecideIgnoreNtf)(nil),    // 16: outer.MahjongBTEDecideIgnoreNtf
-	(*MahjongBTEDecideIgnoreEndNtf)(nil), // 17: outer.MahjongBTEDecideIgnoreEndNtf
-	(*MahjongBTEPlayingNtf)(nil),         // 18: outer.MahjongBTEPlayingNtf
-	(*MahjongBTETurnNtf)(nil),            // 19: outer.MahjongBTETurnNtf
-	(*MahjongBTEOperaNtf)(nil),           // 20: outer.MahjongBTEOperaNtf
-	(*MahjongBTESettlementNtf)(nil),      // 21: outer.MahjongBTESettlementNtf
-	nil,                                  // 22: outer.MahjongPlayerInfo.CardsPongEntry
-	nil,                                  // 23: outer.MahjongPlayerInfo.CardsGangEntry
-	nil,                                  // 24: outer.MahjongBTEDecideIgnoreEndNtf.ColorsEntry
-	(MahjongBTEState)(0),                 // 25: outer.MahjongBTEState
-	(ActionType)(0),                      // 26: outer.ActionType
-	(HuType)(0),                          // 27: outer.HuType
-	(ColorType)(0),                       // 28: outer.ColorType
+	(*CardsOfBTE)(nil),                   // 3: outer.CardsOfBTE
+	(*MahjongBTEExchange3Req)(nil),       // 4: outer.MahjongBTEExchange3Req
+	(*MahjongBTEExchange3Rsp)(nil),       // 5: outer.MahjongBTEExchange3Rsp
+	(*MahjongBTEDecideIgnoreReq)(nil),    // 6: outer.MahjongBTEDecideIgnoreReq
+	(*MahjongBTEDecideIgnoreRsp)(nil),    // 7: outer.MahjongBTEDecideIgnoreRsp
+	(*MahjongBTEPlayCardReq)(nil),        // 8: outer.MahjongBTEPlayCardReq
+	(*MahjongBTEPlayCardRsp)(nil),        // 9: outer.MahjongBTEPlayCardRsp
+	(*MahjongBTEOperateReq)(nil),         // 10: outer.MahjongBTEOperateReq
+	(*MahjongBTEOperateRsp)(nil),         // 11: outer.MahjongBTEOperateRsp
+	(*MahjongBTEReadyNtf)(nil),           // 12: outer.MahjongBTEReadyNtf
+	(*MahjongBTEDecideMasterNtf)(nil),    // 13: outer.MahjongBTEDecideMasterNtf
+	(*MahjongBTEDealNtf)(nil),            // 14: outer.MahjongBTEDealNtf
+	(*MahjongBTEExchange3Ntf)(nil),       // 15: outer.MahjongBTEExchange3Ntf
+	(*MahjongBTEExchange3EndNtf)(nil),    // 16: outer.MahjongBTEExchange3EndNtf
+	(*MahjongBTEDecideIgnoreNtf)(nil),    // 17: outer.MahjongBTEDecideIgnoreNtf
+	(*MahjongBTEDecideIgnoreEndNtf)(nil), // 18: outer.MahjongBTEDecideIgnoreEndNtf
+	(*MahjongBTEPlayingNtf)(nil),         // 19: outer.MahjongBTEPlayingNtf
+	(*MahjongBTETurnNtf)(nil),            // 20: outer.MahjongBTETurnNtf
+	(*MahjongBTEOperaNtf)(nil),           // 21: outer.MahjongBTEOperaNtf
+	(*MahjongBTESettlementNtf)(nil),      // 22: outer.MahjongBTESettlementNtf
+	nil,                                  // 23: outer.CardsOfBTE.LightGangEntry
+	nil,                                  // 24: outer.CardsOfBTE.DarkGangEntry
+	nil,                                  // 25: outer.CardsOfBTE.PongEntry
+	nil,                                  // 26: outer.MahjongBTEDecideIgnoreEndNtf.ColorsEntry
+	(MahjongBTEState)(0),                 // 27: outer.MahjongBTEState
+	(ActionType)(0),                      // 28: outer.ActionType
+	(HuType)(0),                          // 29: outer.HuType
+	(ColorType)(0),                       // 30: outer.ColorType
 }
 var file_mahjongBTE_proto_depIdxs = []int32{
-	25, // 0: outer.MahjongBTEGameInfo.State:type_name -> outer.MahjongBTEState
+	27, // 0: outer.MahjongBTEGameInfo.State:type_name -> outer.MahjongBTEState
 	1,  // 1: outer.MahjongBTEGameInfo.Players:type_name -> outer.MahjongPlayerInfo
 	2,  // 2: outer.MahjongBTEGameInfo.Ex3FromShortId:type_name -> outer.Exchange3Info
-	26, // 3: outer.MahjongBTEGameInfo.ActionType:type_name -> outer.ActionType
-	27, // 4: outer.MahjongBTEGameInfo.HuType:type_name -> outer.HuType
-	28, // 5: outer.MahjongPlayerInfo.DecideColor:type_name -> outer.ColorType
-	22, // 6: outer.MahjongPlayerInfo.CardsPong:type_name -> outer.MahjongPlayerInfo.CardsPongEntry
-	23, // 7: outer.MahjongPlayerInfo.CardsGang:type_name -> outer.MahjongPlayerInfo.CardsGangEntry
-	28, // 8: outer.MahjongBTEDecideIgnoreReq.color:type_name -> outer.ColorType
-	26, // 9: outer.MahjongBTEOperateReq.ActionType:type_name -> outer.ActionType
-	27, // 10: outer.MahjongBTEOperateReq.Hu:type_name -> outer.HuType
-	2,  // 11: outer.MahjongBTEExchange3EndNtf.Ex3Info:type_name -> outer.Exchange3Info
-	24, // 12: outer.MahjongBTEDecideIgnoreEndNtf.Colors:type_name -> outer.MahjongBTEDecideIgnoreEndNtf.ColorsEntry
-	26, // 13: outer.MahjongBTETurnNtf.ActionType:type_name -> outer.ActionType
-	27, // 14: outer.MahjongBTETurnNtf.HuType:type_name -> outer.HuType
-	27, // 15: outer.MahjongBTEOperaNtf.HuType:type_name -> outer.HuType
-	28, // 16: outer.MahjongBTEDecideIgnoreEndNtf.ColorsEntry.value:type_name -> outer.ColorType
-	17, // [17:17] is the sub-list for method output_type
-	17, // [17:17] is the sub-list for method input_type
-	17, // [17:17] is the sub-list for extension type_name
-	17, // [17:17] is the sub-list for extension extendee
-	0,  // [0:17] is the sub-list for field type_name
+	28, // 3: outer.MahjongBTEGameInfo.ActionType:type_name -> outer.ActionType
+	29, // 4: outer.MahjongBTEGameInfo.HuType:type_name -> outer.HuType
+	30, // 5: outer.MahjongPlayerInfo.DecideColor:type_name -> outer.ColorType
+	3,  // 6: outer.MahjongPlayerInfo.AllCards:type_name -> outer.CardsOfBTE
+	23, // 7: outer.CardsOfBTE.LightGang:type_name -> outer.CardsOfBTE.LightGangEntry
+	24, // 8: outer.CardsOfBTE.DarkGang:type_name -> outer.CardsOfBTE.DarkGangEntry
+	25, // 9: outer.CardsOfBTE.Pong:type_name -> outer.CardsOfBTE.PongEntry
+	30, // 10: outer.MahjongBTEDecideIgnoreReq.color:type_name -> outer.ColorType
+	3,  // 11: outer.MahjongBTEPlayCardRsp.AllCards:type_name -> outer.CardsOfBTE
+	28, // 12: outer.MahjongBTEOperateReq.ActionType:type_name -> outer.ActionType
+	29, // 13: outer.MahjongBTEOperateReq.Hu:type_name -> outer.HuType
+	3,  // 14: outer.MahjongBTEOperateRsp.AllCards:type_name -> outer.CardsOfBTE
+	2,  // 15: outer.MahjongBTEExchange3EndNtf.Ex3Info:type_name -> outer.Exchange3Info
+	26, // 16: outer.MahjongBTEDecideIgnoreEndNtf.Colors:type_name -> outer.MahjongBTEDecideIgnoreEndNtf.ColorsEntry
+	28, // 17: outer.MahjongBTETurnNtf.ActionType:type_name -> outer.ActionType
+	29, // 18: outer.MahjongBTETurnNtf.HuType:type_name -> outer.HuType
+	28, // 19: outer.MahjongBTEOperaNtf.OpType:type_name -> outer.ActionType
+	29, // 20: outer.MahjongBTEOperaNtf.HuType:type_name -> outer.HuType
+	30, // 21: outer.MahjongBTEDecideIgnoreEndNtf.ColorsEntry.value:type_name -> outer.ColorType
+	22, // [22:22] is the sub-list for method output_type
+	22, // [22:22] is the sub-list for method input_type
+	22, // [22:22] is the sub-list for extension type_name
+	22, // [22:22] is the sub-list for extension extendee
+	0,  // [0:22] is the sub-list for field type_name
 }
 
 func init() { file_mahjongBTE_proto_init() }
@@ -1603,7 +1641,7 @@ func file_mahjongBTE_proto_init() {
 			}
 		}
 		file_mahjongBTE_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MahjongBTEExchange3Req); i {
+			switch v := v.(*CardsOfBTE); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1615,7 +1653,7 @@ func file_mahjongBTE_proto_init() {
 			}
 		}
 		file_mahjongBTE_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MahjongBTEExchange3Rsp); i {
+			switch v := v.(*MahjongBTEExchange3Req); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1627,7 +1665,7 @@ func file_mahjongBTE_proto_init() {
 			}
 		}
 		file_mahjongBTE_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MahjongBTEDecideIgnoreReq); i {
+			switch v := v.(*MahjongBTEExchange3Rsp); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1639,7 +1677,7 @@ func file_mahjongBTE_proto_init() {
 			}
 		}
 		file_mahjongBTE_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MahjongBTEDecideIgnoreRsp); i {
+			switch v := v.(*MahjongBTEDecideIgnoreReq); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1651,7 +1689,7 @@ func file_mahjongBTE_proto_init() {
 			}
 		}
 		file_mahjongBTE_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MahjongBTEDealReq); i {
+			switch v := v.(*MahjongBTEDecideIgnoreRsp); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1663,7 +1701,7 @@ func file_mahjongBTE_proto_init() {
 			}
 		}
 		file_mahjongBTE_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MahjongBTEDealRsp); i {
+			switch v := v.(*MahjongBTEPlayCardReq); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1675,7 +1713,7 @@ func file_mahjongBTE_proto_init() {
 			}
 		}
 		file_mahjongBTE_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MahjongBTEOperateReq); i {
+			switch v := v.(*MahjongBTEPlayCardRsp); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1687,7 +1725,7 @@ func file_mahjongBTE_proto_init() {
 			}
 		}
 		file_mahjongBTE_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MahjongBTEOperateRsp); i {
+			switch v := v.(*MahjongBTEOperateReq); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1699,7 +1737,7 @@ func file_mahjongBTE_proto_init() {
 			}
 		}
 		file_mahjongBTE_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MahjongBTEReadyNtf); i {
+			switch v := v.(*MahjongBTEOperateRsp); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1711,7 +1749,7 @@ func file_mahjongBTE_proto_init() {
 			}
 		}
 		file_mahjongBTE_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MahjongBTEDecideMasterNtf); i {
+			switch v := v.(*MahjongBTEReadyNtf); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1723,7 +1761,7 @@ func file_mahjongBTE_proto_init() {
 			}
 		}
 		file_mahjongBTE_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MahjongBTEDealNtf); i {
+			switch v := v.(*MahjongBTEDecideMasterNtf); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1735,7 +1773,7 @@ func file_mahjongBTE_proto_init() {
 			}
 		}
 		file_mahjongBTE_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MahjongBTEExchange3Ntf); i {
+			switch v := v.(*MahjongBTEDealNtf); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1747,7 +1785,7 @@ func file_mahjongBTE_proto_init() {
 			}
 		}
 		file_mahjongBTE_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MahjongBTEExchange3EndNtf); i {
+			switch v := v.(*MahjongBTEExchange3Ntf); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1759,7 +1797,7 @@ func file_mahjongBTE_proto_init() {
 			}
 		}
 		file_mahjongBTE_proto_msgTypes[16].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MahjongBTEDecideIgnoreNtf); i {
+			switch v := v.(*MahjongBTEExchange3EndNtf); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1771,7 +1809,7 @@ func file_mahjongBTE_proto_init() {
 			}
 		}
 		file_mahjongBTE_proto_msgTypes[17].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MahjongBTEDecideIgnoreEndNtf); i {
+			switch v := v.(*MahjongBTEDecideIgnoreNtf); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1783,7 +1821,7 @@ func file_mahjongBTE_proto_init() {
 			}
 		}
 		file_mahjongBTE_proto_msgTypes[18].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MahjongBTEPlayingNtf); i {
+			switch v := v.(*MahjongBTEDecideIgnoreEndNtf); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1795,7 +1833,7 @@ func file_mahjongBTE_proto_init() {
 			}
 		}
 		file_mahjongBTE_proto_msgTypes[19].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MahjongBTETurnNtf); i {
+			switch v := v.(*MahjongBTEPlayingNtf); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1807,7 +1845,7 @@ func file_mahjongBTE_proto_init() {
 			}
 		}
 		file_mahjongBTE_proto_msgTypes[20].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MahjongBTEOperaNtf); i {
+			switch v := v.(*MahjongBTETurnNtf); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1819,6 +1857,18 @@ func file_mahjongBTE_proto_init() {
 			}
 		}
 		file_mahjongBTE_proto_msgTypes[21].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*MahjongBTEOperaNtf); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_mahjongBTE_proto_msgTypes[22].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*MahjongBTESettlementNtf); i {
 			case 0:
 				return &v.state
@@ -1837,7 +1887,7 @@ func file_mahjongBTE_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_mahjongBTE_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   25,
+			NumMessages:   27,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
