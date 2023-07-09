@@ -25,6 +25,7 @@ func New(r *room.Room) *Mahjong {
 	_ = mahjong.fsm.Add(&StateExchange3{Mahjong: mahjong})    // 换三张
 	_ = mahjong.fsm.Add(&StateDecideIgnore{Mahjong: mahjong}) // 定缺
 	_ = mahjong.fsm.Add(&StatePlaying{Mahjong: mahjong})      // 游戏中
+	_ = mahjong.fsm.Add(&StateSettlement{Mahjong: mahjong})   // 游戏结束结算界面
 
 	mahjong.SwitchTo(Ready)
 
@@ -41,6 +42,7 @@ type (
 		ignoreColor ColorType            // 定缺花色
 		exchange    *outer.Exchange3Info // 换三张信息
 		handCards   Cards                // 手牌
+		hu          HuType               // 胡牌
 		lightGang   map[int32]int64      // map[杠牌]ShortId 明杠
 		darkGang    map[int32]int64      // map[杠牌]ShortId 暗杠
 		pong        map[int32]int64      // map[碰牌]ShortId
@@ -171,9 +173,16 @@ func (m *Mahjong) findMahjongPlayer(shortId int64) (*mahjongPlayer, int) {
 // 逆时针轮动座位索引
 func (m *Mahjong) nextSeatIndex(index int) int {
 	// 0,1,2,3 东南西北
-	index--
-	if index < 0 {
-		index = 3
+	for {
+		index--
+		if index < 0 {
+			index = 3
+		}
+
+		player := m.mahjongPlayers[index]
+		if player.hu == HuInvalid {
+			break
+		}
 	}
 	return index
 }
@@ -184,6 +193,7 @@ func (m *Mahjong) clearMahjongPlayerInfo() {
 		player.ignoreColor = ColorUnknown
 		player.exchange = nil
 		player.handCards = nil
+		player.hu = HuInvalid
 		player.lightGang = map[int32]int64{}
 		player.darkGang = map[int32]int64{}
 		player.pong = map[int32]int64{}

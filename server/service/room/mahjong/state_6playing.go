@@ -15,9 +15,25 @@ const (
 	playCardExpire      = 15 * time.Second // 摸牌后的行为持续时间(出牌，杠，胡)
 )
 
+type checkCardType int32
+
+const (
+	drawCardType checkCardType = 1 // 摸牌
+	playCardType checkCardType = 2 // 打牌
+)
+
+type (
+	peerCard struct {
+		typ  checkCardType
+		card Card
+		seat int
+	}
+)
+
 type StatePlaying struct {
 	*Mahjong
 	actionTimerId string
+	peerCards     []peerCard
 }
 
 func (s *StatePlaying) State() int {
@@ -25,6 +41,8 @@ func (s *StatePlaying) State() int {
 }
 
 func (s *StatePlaying) Enter() {
+	s.peerCards = make([]peerCard, 0)
+	s.actionTimerId = ""
 	log.Infow("[Mahjong] enter state playing", "room", s.room.RoomId)
 	s.drawCard(s.masterIndex)
 }
@@ -35,17 +53,13 @@ func (s *StatePlaying) Leave() {
 }
 
 func (s *StatePlaying) Handle(shortId int64, v any) (result any) {
+	player, seatIndex, err := s.getPlayerAndSeatE(shortId)
+	if err != outer.ERROR_OK {
+		return err
+	}
+
 	switch msg := v.(type) {
 	case *outer.MahjongBTEPlayCardReq: // 打牌
-		player, seatIndex := s.findMahjongPlayer(shortId)
-		if player == nil {
-			return outer.ERROR_PLAYER_NOT_IN_ROOM
-		}
-
-		if _, ok := s.actionMap[seatIndex]; !ok {
-			return outer.ERROR_MAHJONG_ACTION_PLAYER_NOT_MATCH
-		}
-
 		if msg.Index < 0 || int(msg.Index) >= player.handCards.Len() {
 			return outer.ERROR_MSG_REQ_PARAM_INVALID
 		}
@@ -57,176 +71,25 @@ func (s *StatePlaying) Handle(shortId int64, v any) (result any) {
 		return &outer.MahjongBTEPlayCardRsp{AllCards: player.allCardsToPB()}
 
 	case *outer.MahjongBTEOperateReq: // 碰、杠、胡、过
-		// TODO
+		if ok, errCode := s.operate(player, seatIndex, msg.ActionType); !ok {
+			return errCode
+		}
+		return &outer.MahjongBTEOperateRsp{AllCards: player.allCardsToPB()}
+
 	}
 	return nil
 }
 
-// 摸一张牌,产生一个行动者
-func (s *StatePlaying) drawCard(seatIndex int) {
-	// 摸牌的时候，行动者必须是nil
-	if len(s.actionMap) > 0 {
-		log.Errorw("draw a card exception", "roomId", s.room.RoomId, s.actionMap)
-		return
+func (s *StatePlaying) getPlayerAndSeatE(shortId int64) (*mahjongPlayer, int, outer.ERROR) {
+	player, seatIndex := s.findMahjongPlayer(shortId)
+	if player == nil {
+		return nil, -1, outer.ERROR_PLAYER_NOT_IN_ROOM
 	}
 
-	player := s.mahjongPlayers[seatIndex] // 当前摸牌者
-
-	newCard := s.cards[0]
-	s.cards = s.cards.Remove(newCard)
-	player.handCards.Insert(newCard)
-
-	// 摸牌后的行为持续时间
-	s.currentActionEndAt = tools.Now().Add(playCardExpire)
-
-	// 为摸牌者创建一个action
-	newAction := &action{}
-
-	// 客户端根据总牌数量是否少一张，来判断是否播摸牌动画
-	notifyMsg := &outer.MahjongBTETurnNtf{
-		TotalCards:    int32(s.cards.Len()),
-		ActionShortId: player.ShortId,
-		ActionEndAt:   s.currentActionEndAt.UnixMilli(),
+	if _, ok := s.actionMap[seatIndex]; !ok {
+		return nil, -1, outer.ERROR_MAHJONG_ACTION_PLAYER_NOT_MATCH
 	}
-
-	// 广播通知当前行动者(排除行动者自己)
-	s.room.Broadcast(notifyMsg, player.ShortId)
-
-	// 以下分析玩家可行的操作方式
-
-	// 摸牌后必须出牌，所以先加入出牌操作
-	newAction.currentActions = []outer.ActionType{outer.ActionType_ActionPlayCard}
-	// 判断能否杠
-	gangs := player.handCards.HasGang()
-	newAction.currentGang = gangs.ToSlice()
-	if len(newAction.currentGang) > 0 {
-		newAction.currentActions = append(newAction.currentActions, outer.ActionType_ActionGang)
-		notifyMsg.GangCards = newAction.currentGang
-	}
-	// 判断能否胡牌
-	hu := player.handCards.IsHu(player.lightGang, player.darkGang, player.pong)
-	if hu != HuInvalid {
-		newAction.currentActions = append(newAction.currentActions, outer.ActionType_ActionHu)
-		notifyMsg.HuType = []outer.HuType{hu.PB()}
-	}
-	s.actionMap[seatIndex] = newAction // 摸牌者加入行动组
-
-	// 通知行动者自己
-	notifyMsg.ActionType = newAction.currentActions
-	notifyMsg.NewCard = newCard.Int32() // 摸到的新牌
-	s.room.SendToPlayer(player.ShortId, notifyMsg)
-
-	s.actionTimer() // 出牌行动倒计时
-	log.Infow("draw a card", "roomId", s.room.RoomId, "seatIndex", seatIndex,
-		"newAction", newAction, "newCard", newCard, "current hand", player.handCards)
-}
-
-// 打一张牌
-func (s *StatePlaying) playCard(cardIndex, seatIndex int) (bool, outer.ERROR) {
-	var (
-		act   *action
-		exist bool
-	)
-
-	// 检查是否是行动者,以及行为是否有效
-	if act, exist = s.actionMap[seatIndex]; !exist {
-		return false, outer.ERROR_MAHJONG_ACTION_PLAYER_NOT_MATCH
-	} else if !act.isValidAction(outer.ActionType_ActionPlayCard) {
-		return false, outer.ERROR_MAHJONG_ACTION_PLAYER_NOT_OPERA
-	}
-
-	// 把打的牌从手牌移除
-	player := s.mahjongPlayers[seatIndex]
-	playCard := player.handCards[cardIndex]
-	player.handCards = player.handCards.Remove(playCard)
-
-	s.latestPlayIndex = seatIndex                         // 设置最后一次出牌的玩家
-	delete(s.actionMap, seatIndex)                        // 提前将打牌的人从行动者中删除
-	s.cardsInDesktop = append(s.cardsInDesktop, playCard) // 按照打牌顺序加入桌面牌
-
-	// 先把打牌消息广播出去
-	s.room.Broadcast(&outer.MahjongBTEOperaNtf{
-		OpShortId: player.ShortId,
-		OpType:    outer.ActionType_ActionPlayCard,
-		HuType:    outer.HuType_HuTypeUnknown,
-		Card:      playCard.Int32(),
-	})
-	log.Infow("play a card",
-		"roomId", s.room.RoomId, "player", player.ShortId, "play", playCard, "hand", player.handCards)
-
-	var (
-		actionEndAt    time.Time // 通过此时间是否为Zero，可以判断是否有人需要碰、杠、胡
-		actionShortIds []int64   // 能操作的玩家加入集合
-	)
-	// 其余三家对这张牌依次做分析
-	for idx, other := range s.mahjongPlayers {
-		if seatIndex == idx { // 跳过自己
-			continue
-		}
-
-		var (
-			newAction action
-			pass      bool
-		)
-		if other.handCards.CanGangTo(playCard) {
-			newAction.currentActions = append(newAction.currentActions, outer.ActionType_ActionGang)
-			newAction.currentGang = append(newAction.currentGang, playCard.Int32())
-			pass = true
-		}
-		if other.handCards.CanPongTo(playCard) {
-			newAction.currentActions = append(newAction.currentActions, outer.ActionType_ActionPong)
-			pass = true
-		}
-		if hu := other.handCards.IsHu(other.lightGang, other.darkGang, other.pong); hu != HuInvalid {
-			newAction.currentActions = append(newAction.currentActions, outer.ActionType_ActionHu)
-			newAction.currentHus = append(newAction.currentHus, hu.PB())
-			pass = true
-		}
-		if pass {
-			newAction.currentActions = append(newAction.currentActions, outer.ActionType_ActionPass)
-		}
-		if newAction.isActivated() {
-			if actionEndAt.IsZero() {
-				actionEndAt = tools.Now().Add(pongGangHuGuoExpire)
-			}
-			s.actionMap[idx] = &newAction // 碰杠胡的玩家加入行动组
-			s.room.SendToPlayer(other.ShortId, &outer.MahjongBTETurnNtf{
-				TotalCards:    int32(s.cards.Len()),
-				ActionShortId: other.ShortId,
-				ActionEndAt:   actionEndAt.UnixMilli(),
-				ActionType:    newAction.currentActions,
-				HuType:        newAction.currentHus,
-				GangCards:     newAction.currentGang,
-				NewCard:       -1, // 客户端自己取桌面牌最后一张
-			})
-
-			log.Infow("active a new action by play",
-				"roomId", s.room.RoomId, "seat", idx, "other", other.ShortId,
-				"play", playCard, "hand", other.handCards, "new action", newAction)
-		}
-	}
-
-	// 行动组有人，优先让能操作的人行动, 通知剩下不能操作的人，展示"有人正在操作中..."
-	if len(s.actionMap) > 0 {
-		s.currentActionEndAt = actionEndAt
-		notifyPlayerMsg := &outer.MahjongBTETurnNtf{
-			TotalCards:  int32(s.cards.Len()),
-			ActionEndAt: s.currentActionEndAt.UnixMilli(),
-		}
-		s.room.Broadcast(notifyPlayerMsg, actionShortIds...)
-		s.actionTimer() // 碰,杠,胡,过,行动倒计时
-		return true, outer.ERROR_OK
-	}
-
-	// 检查是否需要结算
-	if s.cards.Len() == 0 {
-		s.SwitchTo(Settlement)
-		return true, outer.ERROR_OK
-	}
-
-	// 到这里，说明出的牌没有任何人能碰杠胡，正常轮动到下家出牌，统一广播下个摸牌的人
-	s.drawCard(s.nextSeatIndex(seatIndex))
-	return true, outer.ERROR_OK
+	return player, seatIndex, outer.ERROR_OK
 }
 
 // 取消行动倒计时
@@ -244,7 +107,6 @@ func (s *StatePlaying) actionTimer() {
 			return
 		}
 
-		// 根据能执行的行为，默认为玩家操作
 		for seatIndex, act := range s.actionMap {
 			player := s.mahjongPlayers[seatIndex]
 			// 出牌人，只可能有一个行动者
@@ -270,9 +132,29 @@ func (s *StatePlaying) actionTimer() {
 				s.playCard(playIndex, seatIndex)
 				break
 			} else {
-				// 碰杠胡过行动者，优先打胡->杠->碰
-				// TODO ...
+				// (碰杠胡过)行动者，优先打胡->杠->碰
+				if act.isValidAction(outer.ActionType_ActionHu) {
+					s.operateHu(player, seatIndex)
+				} else if act.isValidAction(outer.ActionType_ActionGang) {
+					s.operateGang(player, seatIndex)
+				} else if act.isValidAction(outer.ActionType_ActionPong) {
+					s.operatePong(player, seatIndex)
+				} else {
+					log.Warnw("action exception",
+						"roomId", s.room.RoomId, "player", seatIndex, "act", act)
+				}
 			}
 		}
 	})
+}
+
+func (s *StatePlaying) AppendPeerCard(typ checkCardType, card Card, seat int) {
+	s.peerCards = append(s.peerCards, peerCard{
+		typ:  typ,
+		card: card,
+		seat: seat,
+	})
+	if len(s.peerCards) > 2 {
+		s.peerCards = s.peerCards[1:]
+	}
 }
