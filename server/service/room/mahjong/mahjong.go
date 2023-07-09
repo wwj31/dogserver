@@ -65,8 +65,6 @@ type (
 		cards              Cards                  // 剩余牌组
 		cardsInDesktop     Cards                  // 打出的牌
 		mahjongPlayers     [maxNum]*mahjongPlayer // 参与游戏的玩家
-		latestDrawIndex    int                    // 最后一个摸牌的位置
-		latestPlayIndex    int                    // 最后一个打牌的位置
 		actionMap          map[int]*action        // 行动者们
 		currentActionEndAt time.Time              // 当前行动者结束时间
 	}
@@ -222,4 +220,14 @@ func (a *action) isValidAction(actionType outer.ActionType) bool {
 // 判断当前action是否有效
 func (a *action) isActivated() bool {
 	return len(a.currentActions) > 0
+}
+
+// 删除一个行为
+func (a *action) remove(actionType outer.ActionType) {
+	for i, act := range a.currentActions {
+		if act == actionType {
+			a.currentActions = append(a.currentActions[:i], a.currentActions[i+1:]...)
+			return
+		}
+	}
 }

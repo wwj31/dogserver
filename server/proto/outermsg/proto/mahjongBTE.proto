@@ -49,6 +49,13 @@ message CardsOfBTE {
     map<int32,int64> DarkGang      = 3; // 暗杠
     map<int32,int64> Pong          = 4; // 碰
 }
+
+// 最后一位操作牌的人(摸牌、出牌、明杠(下杠))
+message LatestOperaCard {
+    int32 Card     = 1;
+    int64 ShortId  = 2;
+    int32 Typ      = 3; // 1.摸牌、2.出牌、3.杠
+}
 ////////////////////////////////////////////// 游戏操作请求 //////////////////////////////////////////////
 // 换三张确定
 message MahjongBTEExchange3Req {
@@ -136,10 +143,12 @@ message MahjongBTETurnNtf {
 
 // 玩家操作结果通知
 message MahjongBTEOperaNtf {
-    int64  OpShortId    = 1; // 操作者
-    ActionType OpType   = 3; // 操作类型，1.碰、2.杠、3.胡、4.出牌
-    HuType HuType       = 4; // 胡牌类型
-    int32  Card         = 5; // 碰、杠、出牌的牌
+    int64  OpShortId        = 1; // 操作者
+    ActionType OpType       = 3; // 操作类型，1.碰、2.杠、3.胡、4.出牌
+    HuType HuType           = 4; // 胡牌类型
+    int32  QiangGangHuCard  = 5; // 抢杠胡的牌
+    int32  GangType         = 6; // 1.明杠、2.暗杠
+    int32  Card             = 7; // 碰、杠、出牌的牌
 }
 
 // 结算通知

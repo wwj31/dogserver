@@ -28,7 +28,6 @@ func (s *StatePlaying) playCard(cardIndex, seatIndex int) (bool, outer.ERROR) {
 	outCard := player.handCards[cardIndex]
 	player.handCards = player.handCards.Remove(outCard)
 
-	s.latestPlayIndex = seatIndex                        // 设置最后一次出牌的玩家
 	delete(s.actionMap, seatIndex)                       // 提前将打牌的人从行动者中删除
 	s.cardsInDesktop = append(s.cardsInDesktop, outCard) // 按照打牌顺序加入桌面牌
 	s.AppendPeerCard(playCardType, outCard, seatIndex)
@@ -66,7 +65,7 @@ func (s *StatePlaying) playCard(cardIndex, seatIndex int) (bool, outer.ERROR) {
 			newAction.currentActions = append(newAction.currentActions, outer.ActionType_ActionPong)
 			pass = true
 		}
-		if hu := other.handCards.IsHu(other.lightGang, other.darkGang, other.pong); hu != HuInvalid {
+		if hu := other.handCards.Insert(outCard).IsHu(other.lightGang, other.darkGang, other.pong); hu != HuInvalid {
 			newAction.currentActions = append(newAction.currentActions, outer.ActionType_ActionHu)
 			newAction.currentHus = append(newAction.currentHus, hu.PB())
 			pass = true
@@ -97,13 +96,13 @@ func (s *StatePlaying) playCard(cardIndex, seatIndex int) (bool, outer.ERROR) {
 
 	// 行动组有人，优先让能操作的人行动, 通知剩下不能操作的人，展示"有人正在操作中..."
 	if len(s.actionMap) > 0 {
-		s.currentActionEndAt = actionEndAt
+		s.actionTimer(actionEndAt) // 碰,杠,胡,过,行动倒计时
+
 		notifyPlayerMsg := &outer.MahjongBTETurnNtf{
 			TotalCards:  int32(s.cards.Len()),
-			ActionEndAt: s.currentActionEndAt.UnixMilli(),
+			ActionEndAt: actionEndAt.UnixMilli(),
 		}
 		s.room.Broadcast(notifyPlayerMsg, actionShortIds...)
-		s.actionTimer() // 碰,杠,胡,过,行动倒计时
 		return true, outer.ERROR_OK
 	}
 

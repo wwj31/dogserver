@@ -18,8 +18,9 @@ const (
 type checkCardType int32
 
 const (
-	drawCardType checkCardType = 1 // 摸牌
-	playCardType checkCardType = 2 // 打牌
+	drawCardType  checkCardType = 1 // 摸牌
+	playCardType  checkCardType = 2 // 打牌
+	lightGangType checkCardType = 2 // 明杠(下杠)
 )
 
 type (
@@ -33,7 +34,7 @@ type (
 type StatePlaying struct {
 	*Mahjong
 	actionTimerId string
-	peerCards     []peerCard
+	peerCards     []peerCard // 最后2次操作数据
 }
 
 func (s *StatePlaying) State() int {
@@ -42,6 +43,7 @@ func (s *StatePlaying) State() int {
 
 func (s *StatePlaying) Enter() {
 	s.peerCards = make([]peerCard, 0)
+	s.actionMap = make(map[int]*action)
 	s.actionTimerId = ""
 	log.Infow("[Mahjong] enter state playing", "room", s.room.RoomId)
 	s.drawCard(s.masterIndex)
@@ -71,7 +73,7 @@ func (s *StatePlaying) Handle(shortId int64, v any) (result any) {
 		return &outer.MahjongBTEPlayCardRsp{AllCards: player.allCardsToPB()}
 
 	case *outer.MahjongBTEOperateReq: // 碰、杠、胡、过
-		if ok, errCode := s.operate(player, seatIndex, msg.ActionType); !ok {
+		if ok, errCode := s.operate(player, seatIndex, msg.ActionType, Card(msg.Gang)); !ok {
 			return errCode
 		}
 		return &outer.MahjongBTEOperateRsp{AllCards: player.allCardsToPB()}
@@ -98,8 +100,9 @@ func (s *StatePlaying) cancelActionTimer() {
 }
 
 // 行动倒计时
-func (s *StatePlaying) actionTimer() {
+func (s *StatePlaying) actionTimer(expireAt time.Time) {
 	s.cancelActionTimer()
+	s.currentActionEndAt = expireAt
 	s.actionTimerId = s.room.AddTimer(tools.XUID(), s.currentActionEndAt, func(dt time.Duration) {
 		if len(s.actionMap) == 0 {
 			// 所有行动计时器都会被正常释放，无行动者超时属于异常
@@ -132,17 +135,27 @@ func (s *StatePlaying) actionTimer() {
 				s.playCard(playIndex, seatIndex)
 				break
 			} else {
+				var (
+					defaultOperaType outer.ActionType
+					card             Card
+				)
+
 				// (碰杠胡过)行动者，优先打胡->杠->碰
 				if act.isValidAction(outer.ActionType_ActionHu) {
-					s.operateHu(player, seatIndex)
+					defaultOperaType = outer.ActionType_ActionHu
 				} else if act.isValidAction(outer.ActionType_ActionGang) {
-					s.operateGang(player, seatIndex)
+					defaultOperaType = outer.ActionType_ActionGang
+					card = Card(act.currentGang[0])
 				} else if act.isValidAction(outer.ActionType_ActionPong) {
-					s.operatePong(player, seatIndex)
+					defaultOperaType = outer.ActionType_ActionPong
+					card = s.cards[s.cards.Len()-1]
 				} else {
 					log.Warnw("action exception",
 						"roomId", s.room.RoomId, "player", seatIndex, "act", act)
+					continue
 				}
+
+				s.operate(player, seatIndex, defaultOperaType, card)
 			}
 		}
 	})

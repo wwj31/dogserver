@@ -23,7 +23,8 @@ func (s *StatePlaying) drawCard(seatIndex int) {
 	s.AppendPeerCard(drawCardType, newCard, seatIndex)
 
 	// 摸牌后的行为持续时间
-	s.currentActionEndAt = tools.Now().Add(playCardExpire)
+	actionExpireAt := tools.Now().Add(playCardExpire)
+	s.actionTimer(actionExpireAt) // 出牌行动倒计时
 
 	// 为摸牌者创建一个action
 	newAction := &action{}
@@ -32,7 +33,7 @@ func (s *StatePlaying) drawCard(seatIndex int) {
 	notifyMsg := &outer.MahjongBTETurnNtf{
 		TotalCards:    int32(s.cards.Len()),
 		ActionShortId: player.ShortId,
-		ActionEndAt:   s.currentActionEndAt.UnixMilli(),
+		ActionEndAt:   actionExpireAt.UnixMilli(),
 	}
 
 	// 广播通知当前行动者(排除行动者自己)
@@ -42,13 +43,19 @@ func (s *StatePlaying) drawCard(seatIndex int) {
 
 	// 摸牌后必须出牌，所以先加入出牌操作
 	newAction.currentActions = []outer.ActionType{outer.ActionType_ActionPlayCard}
+
 	// 判断能否杠
-	gangs := player.handCards.HasGang()
+	var gangs Cards
+	gangs = player.handCards.HasGang()                   // 检查手牌
+	if _, exist := player.pong[newCard.Int32()]; exist { // 检查碰牌组
+		gangs = gangs.Insert(newCard)
+	}
 	newAction.currentGang = gangs.ToSlice()
 	if len(newAction.currentGang) > 0 {
 		newAction.currentActions = append(newAction.currentActions, outer.ActionType_ActionGang)
 		notifyMsg.GangCards = newAction.currentGang
 	}
+
 	// 判断能否胡牌
 	hu := player.handCards.IsHu(player.lightGang, player.darkGang, player.pong)
 	if hu != HuInvalid {
@@ -62,7 +69,6 @@ func (s *StatePlaying) drawCard(seatIndex int) {
 	notifyMsg.NewCard = newCard.Int32() // 摸到的新牌
 	s.room.SendToPlayer(player.ShortId, notifyMsg)
 
-	s.actionTimer() // 出牌行动倒计时
 	log.Infow("draw a card", "roomId", s.room.RoomId, "seatIndex", seatIndex,
 		"newAction", newAction, "newCard", newCard, "current hand", player.handCards)
 }
