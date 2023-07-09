@@ -170,7 +170,7 @@ func (r *Room) PlayerEnter(playerInfo *inner.PlayerInfo) *inner.Error {
 	r.gambling.PlayerEnter(newPlayer)
 
 	seatIndex := r.gambling.SeatIndex(playerInfo.ShortId)
-	r.Broadcast(&outer.RoomPlayerEnterNtf{Player: newPlayer.OuterPB(seatIndex)})
+	r.Broadcast(&outer.RoomPlayerEnterNtf{Player: newPlayer.OuterPB(int32(seatIndex))})
 	log.Infow("room add player", "roomId", r.RoomId, "gameType", r.GameType, "player", playerInfo.ShortId)
 	return nil
 }
@@ -252,7 +252,7 @@ func (r *Room) Info() *inner.RoomInfo {
 	var players []*inner.RoomPlayerInfo
 	for _, player := range r.Players {
 		seadIndex := r.gambling.SeatIndex(player.ShortId)
-		players = append(players, player.InnerPB(seadIndex))
+		players = append(players, player.InnerPB(int32(seadIndex)))
 	}
 
 	gameParamsBytes, _ := proto.Marshal(r.GameParams)
