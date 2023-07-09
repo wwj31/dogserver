@@ -2,7 +2,7 @@ package mahjong
 
 import "server/common/log"
 
-// ignore 定缺花色, 返回所有能听牌的单牌以及对应的胡牌类型
+// 返回所有能听牌的单牌以及对应的胡牌类型
 func (c Cards) ting(ignore ColorType, lightGang, darkGang, pong map[int32]int64) (tingCards map[Card]HuType) {
 	tingCards = make(map[Card]HuType)
 	if len(c.colors()) == 3 {

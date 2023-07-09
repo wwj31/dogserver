@@ -76,8 +76,8 @@ func (c Cards) Remove(cards ...Card) Cards {
 	return dst
 }
 
-// CanPong 判断当前牌组能不能碰
-func (c Cards) CanPong(card Card) bool {
+// CanPongTo 判断当前牌组能不能碰
+func (c Cards) CanPongTo(card Card) bool {
 	var num int
 	for _, handCard := range c {
 		if handCard == card {
@@ -211,6 +211,35 @@ func (c Cards) colors() map[int]struct{} {
 	}
 
 	return colorMap
+}
+
+// colorCards 获得某个花色的所有牌
+func (c Cards) colorCards(color ColorType) Cards {
+	var cards Cards
+	for _, card := range c {
+		if ColorType(card/10) == color {
+			cards = append(cards, card)
+		}
+	}
+
+	return cards
+}
+
+func (c Cards) Random() Card {
+	if c.Len() == 0 {
+		return Card(0)
+	}
+	return c[rand.Intn(len(c))]
+}
+
+// CardIndex 返回第一张找的牌的位置
+func (c Cards) CardIndex(dstCard Card) int {
+	for index, card := range c {
+		if card == dstCard {
+			return index
+		}
+	}
+	return -1
 }
 
 func (c Cards) ToSlice() (result []int32) {

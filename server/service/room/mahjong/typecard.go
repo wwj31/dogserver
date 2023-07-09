@@ -1,5 +1,7 @@
 package mahjong
 
+import "github.com/spf13/cast"
+
 type (
 	Card     int32
 	Cards    []Card
@@ -72,7 +74,7 @@ var strCard = map[Card]string{
 }
 
 func (m Card) String() string {
-	return strCard[m]
+	return cast.ToString(m.Int())
 }
 
 func (m Card) Int32() int32 {

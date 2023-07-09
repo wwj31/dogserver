@@ -61,6 +61,7 @@ type (
 		gameCount   int // 游戏的连续局数 结算后，有玩家退出，重置0
 
 		cards              Cards                  // 剩余牌组
+		cardsInDesktop     Cards                  // 打出的牌
 		mahjongPlayers     [maxNum]*mahjongPlayer // 参与游戏的玩家
 		latestDrawIndex    int                    // 最后一个摸牌的位置
 		latestPlayIndex    int                    // 最后一个打牌的位置
@@ -79,10 +80,10 @@ func (m *Mahjong) SwitchTo(state int) {
 	m.currentStateEnterAt = tools.Now()
 }
 
-func (m *Mahjong) SeatIndex(shortId int64) int32 {
-	for i, player := range m.mahjongPlayers {
+func (m *Mahjong) SeatIndex(shortId int64) int {
+	for seatIndex, player := range m.mahjongPlayers {
 		if player != nil && player.ShortId == shortId {
-			return int32(i)
+			return seatIndex
 		}
 	}
 	return -1
@@ -167,7 +168,8 @@ func (m *Mahjong) findMahjongPlayer(shortId int64) (*mahjongPlayer, int) {
 	return nil, -1
 }
 
-func (m *Mahjong) nextSeatIndex(index int32) int32 {
+// 逆时针轮动座位索引
+func (m *Mahjong) nextSeatIndex(index int) int {
 	// 0,1,2,3 东南西北
 	index--
 	if index < 0 {
@@ -197,12 +199,17 @@ func (m *mahjongPlayer) allCardsToPB() *outer.CardsOfBTE {
 	}
 }
 
-// 检查某个行为是否有效
-func (m *action) isValidAction(actionType outer.ActionType) bool {
-	for _, act := range m.currentActions {
+// 检测该行为是否在当前可操作行为中
+func (a *action) isValidAction(actionType outer.ActionType) bool {
+	for _, act := range a.currentActions {
 		if act == actionType {
 			return true
 		}
 	}
 	return false
+}
+
+// 判断当前action是否有效
+func (a *action) isActivated() bool {
+	return len(a.currentActions) > 0
 }

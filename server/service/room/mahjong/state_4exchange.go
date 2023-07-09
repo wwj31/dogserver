@@ -107,7 +107,7 @@ func (s *StateExchange3) Handle(shortId int64, v any) (result any) {
 			CardsFrom:     nil,
 			FromSeatIndex: -1,
 			CardsTo:       exchange3Cards.ToSlice(),
-			ToSeatIndex:   s.nextSeatIndex(s.SeatIndex(player.ShortId)),
+			ToSeatIndex:   int32(s.nextSeatIndex(s.SeatIndex(player.ShortId))),
 		}
 
 		log.Infow("MahjongBTEExchange3Req ", "roomId", s.room.RoomId, "playerID", player.ShortId,
@@ -131,7 +131,7 @@ func (s *StateExchange3) checkAndInit(player *mahjongPlayer) {
 			CardsFrom:     nil,
 			FromSeatIndex: -1,
 			CardsTo:       player.handCards[:3].ToSlice(),
-			ToSeatIndex:   s.nextSeatIndex(s.SeatIndex(player.ShortId)),
+			ToSeatIndex:   int32(s.nextSeatIndex(s.SeatIndex(player.ShortId))),
 		}
 	}
 }
