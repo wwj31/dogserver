@@ -20,7 +20,7 @@ type checkCardType int32
 const (
 	drawCardType  checkCardType = 1 // 摸牌
 	playCardType  checkCardType = 2 // 打牌
-	lightGangType checkCardType = 3 // 明杠(下杠)
+	lightGangType checkCardType = 3 // 明杠(面下杠)
 )
 
 type (

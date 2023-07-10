@@ -41,6 +41,7 @@ enum ERROR {
    MAHJONG_EXCHANGE3_OPERATED       = 35; // 请求换三张已经操作过
    MAHJONG_ACTION_PLAYER_NOT_MATCH  = 36; // 当前未轮到该玩家行动
    MAHJONG_ACTION_PLAYER_NOT_OPERA  = 37; // 当前玩家可以行动，但是执行的行动无效
+   MAHJONG_HU_INVALID               = 38; // 玩家当前牌型不能胡牌
 }
 
 message FailRsp {

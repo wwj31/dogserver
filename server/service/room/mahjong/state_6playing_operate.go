@@ -1,11 +1,13 @@
 package mahjong
 
 import (
+	"time"
+
 	"github.com/gogo/protobuf/proto"
 	"github.com/wwj31/dogactor/tools"
+
 	"server/common/log"
 	"server/proto/outermsg/outer"
-	"time"
 )
 
 // 碰杠胡过
@@ -198,34 +200,33 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 	case drawCardType: // 摸牌
 		if _, ok := p.pong[card.Int32()]; ok {
 			delete(p.pong, card.Int32())
+			ntf.GangType = 1 // 面下杠（刮风）
+			// 可抢杠胡
+			s.AppendPeerCard(lightGangType, card, seatIndex)
+			qiang = true
 		} else {
-			if p.handCards.CanGangTo(card) {
-				log.Errorw("operate gang failed player cannot Gang",
-					"roomId", s.room.RoomId, "player", p.ShortId)
-				return false, false, outer.ERROR_MSG_REQ_PARAM_INVALID
-			}
 			// 暗杠（下雨）
-			p.handCards, _, _ = p.handCards.Gang(card)
+			for _, gang := range p.handCards.HasGang() {
+				if gang == card {
+					p.handCards = p.handCards.Remove(card, card, card, card)
+					break
+				}
+			}
 			ntf.GangType = 2
 		}
 		p.darkGang[card.Int32()] = p.ShortId
 
 	case playCardType: // 打牌
 		if _, ok := p.pong[card.Int32()]; ok {
-			// 下杠,可以抢杠胡
 			delete(p.pong, card.Int32())
-			ntf.GangType = 1 // 明杠（刮风）
-			s.AppendPeerCard(lightGangType, card, seatIndex)
-			qiang = true
 		} else {
 			if p.handCards.CanGangTo(card) {
 				log.Errorw("operate gang failed player cannot Gang",
 					"roomId", s.room.RoomId, "player", p.ShortId)
 				return false, false, outer.ERROR_MSG_REQ_PARAM_INVALID
 			}
-			// 明杠（刮风）
 			p.handCards, _, _ = p.handCards.Gang(card)
-			ntf.GangType = 2
+			ntf.GangType = 1 // 直杠（刮风）
 		}
 		p.lightGang[card.Int32()] = s.mahjongPlayers[peer.seat].ShortId
 	}
@@ -237,7 +238,36 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 
 // 胡牌操作
 func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.MahjongBTEOperaNtf) (bool, outer.ERROR) {
-	// TODO
+	var paySeat []int // 需要赔前的座位
+	// 获得最后一次操作的牌
+	peer := s.peerCards[len(s.peerCards)-1]
+	var hu HuType
+	switch peer.typ {
+	case drawCardType: // 自摸
+		hu = p.handCards.IsHu(p.lightGang, p.darkGang, p.pong)
+		// 其余没胡的都有赔钱
+		for seat, other := range s.mahjongPlayers {
+			if other.hu != HuInvalid || other.ShortId == p.ShortId {
+				continue
+			}
+			paySeat = append(paySeat, seat)
+		}
+
+	case playCardType, lightGangType: // 点炮,抢杠
+		hu = p.handCards.Insert(peer.card).IsHu(p.lightGang, p.darkGang, p.pong)
+		paySeat = append(paySeat, peer.seat) // 点炮的人陪钱
+	}
+
+	if hu == HuInvalid {
+		log.Errorw("operate hu invalid", "roomId", s.room.RoomId, "player", p.ShortId, "hand", p.handCards)
+		return false, outer.ERROR_MAHJONG_HU_INVALID
+	}
+
+	p.hu = hu
+	ntf.HuType = hu.PB()
+	if peer.typ == lightGangType {
+		ntf.QiangGangHuCard = peer.card.Int32()
+	}
 
 	// 胡成功后，删除Gang和Pong(可以一炮多响,但是胡了，就不能碰、杠)
 	for seat, act := range s.actionMap {
@@ -250,6 +280,20 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 		}
 		if len(act.currentActions) == 0 {
 			delete(s.actionMap, seat)
+		}
+	}
+
+	// TODO 算番
+
+	// 进入结算
+	huCount := 0
+	for _, player := range s.mahjongPlayers {
+		if player.hu != HuInvalid {
+			huCount++
+			if huCount >= 3 {
+				s.SwitchTo(Settlement)
+				break
+			}
 		}
 	}
 	return true, outer.ERROR_OK
