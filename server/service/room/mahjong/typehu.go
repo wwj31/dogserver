@@ -19,6 +19,7 @@ const (
 	QuanYaoJiu           // 全幺九    3
 	MenQing              // 门清      1
 	ZhongZhang           // 中张      1
+	JiaXinWu             // 夹心五      1
 )
 
 type ExtFanType int32

@@ -167,7 +167,4 @@ func (s *StatePlaying) AppendPeerCard(typ checkCardType, card Card, seat int) {
 		card: card,
 		seat: seat,
 	})
-	if len(s.peerCards) > 2 {
-		s.peerCards = s.peerCards[1:]
-	}
 }

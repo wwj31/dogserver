@@ -269,15 +269,15 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 		ntf.QiangGangHuCard = peer.card.Int32()
 	}
 
+	// 计算额外加番
+	p.huExtra = s.huExtra(seatIndex)
+	ntf.HuExtraType = p.huExtra.PB()
+
 	// 胡成功后，删除Gang和Pong(可以一炮多响,但是胡了，就不能碰、杠)
 	for seat, act := range s.actionMap {
-		if act.isValidAction(outer.ActionType_ActionPong) {
-			act.remove(outer.ActionType_ActionPong)
-		}
-		if act.isValidAction(outer.ActionType_ActionGang) {
-			act.remove(outer.ActionType_ActionGang)
-			act.currentGang = []int32{}
-		}
+		act.remove(outer.ActionType_ActionGang)
+		act.remove(outer.ActionType_ActionPong)
+		act.currentGang = []int32{}
 		if len(act.currentActions) == 0 {
 			delete(s.actionMap, seat)
 		}
@@ -297,4 +297,16 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 		}
 	}
 	return true, outer.ERROR_OK
+}
+
+// 分析是否有额外加番
+func (s *StatePlaying) huExtra(seatIndex int) ExtFanType {
+	if len(s.peerCards) == 1 {
+		return TianHu
+	}
+
+	if len(s.peerCards) == 2 {
+		return Dihu
+	}
+	return 0
 }

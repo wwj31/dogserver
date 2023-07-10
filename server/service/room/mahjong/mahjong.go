@@ -43,6 +43,7 @@ type (
 		exchange    *outer.Exchange3Info // 换三张信息
 		handCards   Cards                // 手牌
 		hu          HuType               // 胡牌
+		huExtra     ExtFanType           // 胡牌额外加番
 		lightGang   map[int32]int64      // map[杠牌]ShortId 明杠
 		darkGang    map[int32]int64      // map[杠牌]ShortId 暗杠
 		pong        map[int32]int64      // map[碰牌]ShortId
