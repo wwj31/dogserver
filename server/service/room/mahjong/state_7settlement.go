@@ -11,6 +11,8 @@ type StateSettlement struct {
 }
 
 func (s *StateSettlement) State() int {
+	s.gameCount++
+	// TODO 可以提前计算下个庄稼位置
 	return Settlement
 }
 
@@ -20,6 +22,7 @@ func (s *StateSettlement) Enter() {
 }
 
 func (s *StateSettlement) Leave() {
+	s.clear()
 	log.Infow("[Mahjong] leave state settlement", "room", s.room.RoomId)
 }
 

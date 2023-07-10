@@ -118,12 +118,7 @@ func (m *Mahjong) PlayerEnter(p *room.Player) {
 	for i, player := range m.mahjongPlayers {
 		if player == nil {
 			seatIdx = i
-			m.mahjongPlayers[i] = &mahjongPlayer{
-				Player:    p,
-				lightGang: map[int32]int64{},
-				darkGang:  map[int32]int64{},
-				pong:      map[int32]int64{},
-			}
+			m.mahjongPlayers[i] = m.newMahjongPlayer(p)
 			break
 		}
 	}
@@ -186,17 +181,25 @@ func (m *Mahjong) nextSeatIndex(index int) int {
 	return index
 }
 
-// 重置玩家上一把游戏数据
-func (m *Mahjong) clearMahjongPlayerInfo() {
-	for _, player := range m.mahjongPlayers {
-		player.ignoreColor = ColorUnknown
-		player.exchange = nil
-		player.handCards = nil
-		player.hu = HuInvalid
-		player.lightGang = map[int32]int64{}
-		player.darkGang = map[int32]int64{}
-		player.pong = map[int32]int64{}
+func (m *Mahjong) newMahjongPlayer(p *room.Player) *mahjongPlayer {
+	return &mahjongPlayer{
+		Player:    p,
+		lightGang: map[int32]int64{},
+		darkGang:  map[int32]int64{},
+		pong:      map[int32]int64{},
 	}
+}
+
+func (m *Mahjong) clear() {
+	// 重置玩家数据
+	for i, p := range m.mahjongPlayers {
+		m.mahjongPlayers[i] = m.newMahjongPlayer(p.Player)
+	}
+
+	m.cards = nil
+	m.cardsInDesktop = nil
+	m.actionMap = make(map[int]*action)
+	m.currentActionEndAt = time.Time{}
 }
 
 func (m *mahjongPlayer) allCardsToPB() *outer.CardsOfBTE {
