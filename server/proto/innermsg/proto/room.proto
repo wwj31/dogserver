@@ -82,6 +82,11 @@ message RoomLogoutReq{
 message RoomLogoutRsp{
 }
 
+// 玩家被踢出房间
+message RoomKickOutNtf{
+  int64 RoomId = 1;
+}
+
 message GamblingMsgToRoomWrapper{
   string MsgType = 1;
   bytes  Data    = 2;

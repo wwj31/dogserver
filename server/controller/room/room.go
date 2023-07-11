@@ -71,7 +71,7 @@ var _ = router.Reg(func(r *room.Room, msg *inner.LeaveRoomReq) any {
 		return outer.ERROR_ROOM_CAN_NOT_LEAVE
 	}
 
-	r.PlayerLeave(msg.ShortId)
+	r.PlayerLeave(msg.ShortId, false)
 	return &inner.LeaveRoomRsp{}
 })
 

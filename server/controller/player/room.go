@@ -1,10 +1,11 @@
 package player
 
 import (
-	"github.com/golang/protobuf/proto"
 	"sync"
 	"sync/atomic"
 	"time"
+
+	"github.com/golang/protobuf/proto"
 
 	"server/common"
 	"server/common/actortype"
@@ -180,6 +181,17 @@ var _ = router.Reg(func(p *player.Player, msg *outer.ReadyReq) any {
 	}
 
 	return &outer.ReadyRsp{Ready: msg.Ready}
+})
+
+// 被房间主动踢出
+var _ = router.Reg(func(p *player.Player, msg *inner.RoomKickOutNtf) any {
+	if p.Room().RoomId() != msg.RoomId {
+		log.Warnw("player kick out room unexception", "player room info", p.Room().RoomId(), "msg", msg.String())
+		return nil
+	}
+
+	p.Room().SetRoomInfo(nil)
+	return nil
 })
 
 // 转发所有Client游戏消息至房间

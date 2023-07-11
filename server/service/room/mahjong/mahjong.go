@@ -12,7 +12,7 @@ import (
 	"server/service/room"
 )
 
-const ReadyTimeout = 20 * time.Second
+const ReadyTimeout = 5 * time.Second
 
 func New(r *room.Room) *Mahjong {
 	mahjong := &Mahjong{
@@ -125,7 +125,7 @@ func (m *Mahjong) PlayerEnter(p *room.Player) {
 
 	if seatIdx >= 0 {
 		m.room.AddTimer(p.RID, time.Now().Add(ReadyTimeout), func(dt time.Duration) {
-			m.room.PlayerLeave(p.ShortId)
+			m.room.PlayerLeave(p.ShortId, true)
 		})
 	}
 }
@@ -145,7 +145,7 @@ func (m *Mahjong) PlayerReady(p *room.Player) {
 		m.room.CancelTimer(p.RID)
 	} else {
 		m.room.AddTimer(p.RID, time.Now().Add(ReadyTimeout), func(dt time.Duration) {
-			m.room.PlayerLeave(p.ShortId)
+			m.room.PlayerLeave(p.ShortId, true)
 		})
 	}
 }

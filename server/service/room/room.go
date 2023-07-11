@@ -175,20 +175,33 @@ func (r *Room) PlayerEnter(playerInfo *inner.PlayerInfo) *inner.Error {
 	return nil
 }
 
-func (r *Room) PlayerLeave(shortId int64) {
-	var ntf bool
+func (r *Room) PlayerLeave(shortId int64, kickOut bool) {
+	var (
+		rid    string
+		delIdx int
+	)
+
 	for i, player := range r.Players {
 		if player.ShortId == shortId {
+			rid = player.RID
 			r.gambling.PlayerLeave(player)
-			r.Players = append(r.Players[:i], r.Players[i+1:]...)
-			ntf = true
+			delIdx = i
 			log.Infow("room del player", "roomId", r.RoomId, "shortId", shortId)
 			break
 		}
 	}
 
-	if ntf {
-		r.Broadcast(&outer.RoomPlayerLeaveNtf{ShortId: shortId})
+	if rid == "" {
+		return
+	}
+
+	r.Broadcast(&outer.RoomPlayerLeaveNtf{ShortId: shortId})
+	r.Players = append(r.Players[:delIdx], r.Players[delIdx+1:]...)
+
+	if kickOut {
+		// 通知game，玩家被房间踢出
+		playerActor := actortype.PlayerId(rid)
+		_ = r.Send(playerActor, &inner.RoomKickOutNtf{RoomId: r.RoomId})
 	}
 }
 
