@@ -34,6 +34,7 @@ type Client struct {
 
 func (s *Client) OnInit() {
 	s.cli = Dial(s.Addr, &SessionHandler{client: s}).Startup()
+	go Run(s)
 
 	s.login(1)
 
@@ -42,14 +43,14 @@ func (s *Client) OnInit() {
 		s.SendToServer(outer.Msg_IdHeartReq.Int32(), &outer.HeartReq{})
 	}, -1)
 
-	if s.Reconnect != -1 {
-		s.AddTimer(tools.XUID(), tools.Now().Add(time.Duration(s.Reconnect)*time.Millisecond), func(dt time.Duration) {
-			s.cli.Close()
-			time.Sleep(5 * time.Millisecond)
-			s.cli = Dial(s.Addr, &SessionHandler{client: s}).Startup()
-			s.login(1)
-		}, -1)
-	}
+	//if s.Reconnect != -1 {
+	//	s.AddTimer(tools.XUID(), tools.Now().Add(time.Duration(s.Reconnect)*time.Millisecond), func(dt time.Duration) {
+	//		s.cli.Close()
+	//		time.Sleep(5 * time.Millisecond)
+	//		s.cli = Dial(s.Addr, &SessionHandler{client: s}).Startup()
+	//		s.login(1)
+	//	}, -1)
+	//}
 }
 func (s *Client) Close() {
 	s.cli.Close()
@@ -61,10 +62,15 @@ func (s *Client) Req(msgId outer.Msg, pb proto.Message) proto.Message {
 	}
 
 	s.waiter = make(chan proto.Message, 1)
-	s.Send(s.ID(), func() {
-		s.SendToServer(msgId.Int32(), pb)
-	})
-	return <-s.waiter
+	defer func() { s.waiter = nil }()
+
+	s.SendToServer(msgId.Int32(), pb)
+	select {
+	case msg := <-s.waiter:
+		return msg
+	case <-time.After(3 * time.Second):
+		return nil
+	}
 }
 
 func (s *Client) SendToServer(msgId int32, pb proto.Message) {
@@ -81,7 +87,7 @@ func (s *Client) SendToServer(msgId int32, pb proto.Message) {
 func (s *Client) OnHandle(m actor.Message) {
 	switch msg := m.Payload().(type) {
 	case *outer.HeartRsp:
-		log.Infow("aliving~")
+		//log.Infow("aliving~")
 	case *outer.FailRsp:
 		log.Infow("msg respones fail", "err:", msg.String())
 	// 登录
@@ -114,6 +120,8 @@ func (s *Client) OnHandle(m actor.Message) {
 	default:
 		pb := msg.(proto.Message)
 		log.Infow("msg", "type", reflect.TypeOf(pb), "data", pb.String())
-		s.waiter <- pb
+		if s.waiter != nil {
+			s.waiter <- pb
+		}
 	}
 }
