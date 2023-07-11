@@ -19,6 +19,7 @@ import (
 	"server/service/client/client"
 )
 
+// -addr ws://localhost:7001/
 var (
 	addr      = flag.String("addr", "ws://localhost:7001/", "链接地址")
 	reconnect = flag.Int64("recon", -1, "重连时间(毫秒)")
