@@ -151,7 +151,7 @@ func (m *Mahjong) PlayerReady(p *room.Player) {
 }
 
 // Handle 麻将游戏消息，全部交由当前状态处理
-func (m *Mahjong) Handle(v any, shortId int64) any {
+func (m *Mahjong) Handle(shortId int64, v any) any {
 	return m.fsm.CurrentStateHandler().Handle(shortId, v)
 }
 

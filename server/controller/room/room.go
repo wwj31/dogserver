@@ -92,7 +92,7 @@ var _ = router.Reg(func(r *room.Room, msg *inner.ReadyReq) any {
 	if ok, err := r.PlayerReady(msg.ShortId, msg.Ready); !ok {
 		return err
 	}
-	return &inner.ReadyRsp{}
+	return r.GamblingHandle(p.ShortId, msg)
 })
 
 // 上线通知
@@ -138,5 +138,5 @@ var _ = router.Reg(func(r *room.Room, msg *inner.GamblingMsgToRoomWrapper) any {
 	}
 
 	outerMsg := r.System().ProtoIndex().UnmarshalPbMsg(msgId, msg.Data)
-	return r.GamblingHandle(outerMsg, p.ShortId)
+	return r.GamblingHandle(p.ShortId, outerMsg)
 })

@@ -62,8 +62,8 @@ func (r *Room) InjectGambling(gambling Gambling) {
 	r.gambling = gambling
 }
 
-func (r *Room) GamblingHandle(v any, shortId int64) (result any) {
-	return r.gambling.Handle(v, shortId)
+func (r *Room) GamblingHandle(shortId int64, v any) (result any) {
+	return r.gambling.Handle(shortId, v)
 }
 
 func (r *Room) OnInit() {

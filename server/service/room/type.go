@@ -21,5 +21,5 @@ type Gambling interface {
 	PlayerEnter(player *Player)
 	PlayerLeave(player *Player)
 	PlayerReady(player *Player)
-	Handle(v any, shortId int64) any
+	Handle(shortId int64, v any) any
 }
