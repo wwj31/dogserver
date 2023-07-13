@@ -1,7 +1,10 @@
 package mahjong
 
 import (
+	"reflect"
+
 	"server/common/log"
+	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
 )
 
@@ -26,7 +29,7 @@ func (s *StateReady) Leave() {
 
 func (s *StateReady) Handle(shortId int64, v any) (result any) {
 	switch msg := v.(type) {
-	case *outer.ReadyReq:
+	case *inner.ReadyReq:
 		if msg.Ready && s.checkAllReady() {
 			// 所有人准备了，进入定庄
 			if s.gameCount == 0 {
@@ -35,7 +38,9 @@ func (s *StateReady) Handle(shortId int64, v any) (result any) {
 				s.SwitchTo(Deal)
 			}
 		}
-		return &outer.ReadyRsp{Ready: msg.Ready}
+		return &inner.ReadyRsp{}
+	default:
+		log.Warnw("the current status has received an unknown message", "msg", reflect.TypeOf(msg).String())
 	}
 	return nil
 }

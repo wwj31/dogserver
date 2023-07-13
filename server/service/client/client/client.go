@@ -30,11 +30,14 @@ type Client struct {
 	UpShortId int64
 	EnterGame atomic.Bool
 	waiter    chan proto.Message
+	Test      bool
 }
 
 func (s *Client) OnInit() {
 	s.cli = Dial(s.Addr, &SessionHandler{client: s}).Startup()
-	go Run(s)
+	if !s.Test {
+		go Run(s)
+	}
 
 	s.login(1)
 
