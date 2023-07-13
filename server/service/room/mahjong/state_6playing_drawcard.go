@@ -19,7 +19,7 @@ func (s *StatePlaying) drawCard(seatIndex int) {
 
 	newCard := s.cards[0]
 	s.cards = s.cards.Remove(newCard)
-	player.handCards.Insert(newCard)
+	player.handCards = player.handCards.Insert(newCard)
 	s.AppendPeerCard(drawCardType, newCard, seatIndex)
 
 	// 摸牌后的行为持续时间

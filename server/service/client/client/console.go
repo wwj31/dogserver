@@ -21,7 +21,8 @@ func Run(c *Client) {
 	for {
 		fmt.Println("请输入:")
 		input, _ := reader.ReadString('\n')
-		input = strings.Replace(input, "\r\n", "", -1)
+		input = strings.Replace(input, "\n", "", -1)
+		input = strings.Replace(input, "\r", "", -1)
 		str := strings.Split(input, " ")
 		if len(str) == 0 {
 			fmt.Println("无效命令", input)

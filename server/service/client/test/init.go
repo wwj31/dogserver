@@ -2,7 +2,6 @@ package test
 
 import (
 	"flag"
-
 	"github.com/wwj31/dogactor/actor"
 	"github.com/wwj31/dogactor/tools"
 

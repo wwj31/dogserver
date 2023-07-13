@@ -24,7 +24,7 @@ func (s *StateExchange3) Enter() {
 	s.room.AddTimer(tools.XUID(), tools.Now().Add(15*time.Second), func(time.Duration) {
 		s.stateEnd()
 	})
-	log.Infow("[Mahjong] leave state  exchange3", "room", s.room.RoomId)
+	log.Infow("[Mahjong] enter state  exchange3", "room", s.room.RoomId)
 }
 
 func (s *StateExchange3) Leave() {
