@@ -16,13 +16,14 @@ func (s *StateSettlement) State() int {
 
 func (s *StateSettlement) Enter() {
 	s.gameCount++
+
+	s.clear()
+	s.nextMasterIndex() // 计算下一局庄家
 	log.Infow("[Mahjong] enter state settlement",
 		"room", s.room.RoomId, "dices", s.room.Dices, "master", s.masterIndex)
 }
 
 func (s *StateSettlement) Leave() {
-	s.clear()
-	s.nextMasterIndex() // 计算下一局庄家
 	log.Infow("[Mahjong] leave state settlement", "room", s.room.RoomId)
 }
 
