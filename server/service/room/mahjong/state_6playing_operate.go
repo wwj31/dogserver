@@ -266,6 +266,9 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 		return false, outer.ERROR_MAHJONG_HU_INVALID
 	}
 
+	if s.firstHuIndex == -1 {
+		s.firstHuIndex = seatIndex
+	}
 	p.hu = hu
 	ntf.HuType = hu.PB()
 	if peer.typ == GangType1 {

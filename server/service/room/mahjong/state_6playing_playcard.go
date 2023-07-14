@@ -47,6 +47,7 @@ func (s *StatePlaying) playCard(cardIndex, seatIndex int) (bool, outer.ERROR) {
 		actionShortIds []int64   // 能操作的玩家加入集合
 	)
 	// 其余三家对这张牌依次做分析
+	huCount := 0
 	for idx, other := range s.mahjongPlayers {
 		if seatIndex == idx { // 跳过自己
 			continue
@@ -66,6 +67,7 @@ func (s *StatePlaying) playCard(cardIndex, seatIndex int) (bool, outer.ERROR) {
 			pass = true
 		}
 		if hu := other.handCards.Insert(outCard).IsHu(other.lightGang, other.darkGang, other.pong); hu != HuInvalid {
+			huCount++
 			newAction.currentActions = append(newAction.currentActions, outer.ActionType_ActionHu)
 			newAction.currentHus = append(newAction.currentHus, hu.PB())
 			pass = true
@@ -92,6 +94,10 @@ func (s *StatePlaying) playCard(cardIndex, seatIndex int) (bool, outer.ERROR) {
 				"roomId", s.room.RoomId, "seat", idx, "other", other.ShortId,
 				"play", outCard, "hand", other.handCards, "new action", newAction)
 		}
+	}
+
+	if huCount >= 2 {
+		s.mutilHuByIndex = seatIndex // 一炮多响，下局坐庄
 	}
 
 	// 行动组有人，优先让能操作的人行动, 通知剩下不能操作的人，展示"有人正在操作中..."

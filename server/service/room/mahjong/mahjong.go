@@ -12,7 +12,7 @@ import (
 	"server/service/room"
 )
 
-const ReadyTimeout = 5 * time.Second
+const ReadyTimeout = 20 * time.Second
 
 func New(r *room.Room) *Mahjong {
 	mahjong := &Mahjong{
@@ -60,8 +60,10 @@ type (
 		fsm                 *room.FSM
 		currentStateEnterAt time.Time // 当前状态的进入时间
 
-		masterIndex int // 庄家位置 0,1,2,3
-		gameCount   int // 游戏的连续局数 结算后，有玩家退出，重置0
+		masterIndex    int // 庄家位置 0,1,2,3
+		gameCount      int // 游戏的连续局数
+		firstHuIndex   int // 第一个胡牌的人
+		mutilHuByIndex int // 一炮多响点炮的人
 
 		cards              Cards                  // 剩余牌组
 		cardsInDesktop     Cards                  // 打出的牌

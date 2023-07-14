@@ -20,6 +20,8 @@ func (s *StateReady) State() int {
 
 func (s *StateReady) Enter() {
 	log.Infow("[Mahjong] enter state ready ", "room", s.room.RoomId)
+	s.firstHuIndex = -1
+	s.mutilHuByIndex = -1
 	s.room.Broadcast(&outer.MahjongBTEReadyNtf{})
 }
 

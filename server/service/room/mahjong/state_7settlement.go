@@ -22,9 +22,20 @@ func (s *StateSettlement) Enter() {
 
 func (s *StateSettlement) Leave() {
 	s.clear()
+	s.nextMasterIndex() // 计算下一局庄家
 	log.Infow("[Mahjong] leave state settlement", "room", s.room.RoomId)
 }
 
 func (s *StateSettlement) Handle(shortId int64, v any) (result any) {
 	return nil
+}
+
+func (s *StateSettlement) nextMasterIndex() {
+	if s.mutilHuByIndex != -1 {
+		s.masterIndex = s.mutilHuByIndex
+	} else if s.firstHuIndex != -1 {
+		s.masterIndex = s.firstHuIndex
+	} else {
+		s.masterIndex = s.nextSeatIndex(s.masterIndex)
+	}
 }
