@@ -16,6 +16,11 @@ func (s *StateSettlement) State() int {
 
 func (s *StateSettlement) Enter() {
 	s.gameCount++
+	if s.isNoHu() {
+		// TODO 流局，查大叫
+	} else {
+
+	}
 
 	s.clear()
 	s.nextMasterIndex() // 计算下一局庄家
@@ -39,4 +44,14 @@ func (s *StateSettlement) nextMasterIndex() {
 	} else {
 		s.masterIndex = s.nextSeatIndex(s.masterIndex)
 	}
+}
+
+// 检查是否流局
+func (s *StateSettlement) isNoHu() bool {
+	for _, player := range s.mahjongPlayers {
+		if player.hu != HuInvalid {
+			return false
+		}
+	}
+	return true
 }

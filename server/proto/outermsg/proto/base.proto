@@ -31,13 +31,15 @@ message GameParams {
 
 // 麻将
 message MahjongParams{
-    int32 ZiMoJia            = 1; // 自摸 0.自摸加番、1.自摸加底
-    int32 DianGangHua        = 2; // 点杠花 0.点炮、1.自摸
-    int32 HuanSanZhang       = 3; // 换三张 0.同花色换三张、1.任意换三张、2.无换三张
-    bool  YaoJiuDui          = 4; // 幺九将对
-    bool  MenQingZhongZhang  = 5; // 门清中张
-    bool  TianDiHu           = 6; // 天地胡
-    bool  DianPaoPingHu      = 7; // 点炮可平胡
+    int32 BaseScore          = 1; // 底分
+    float BaseScoreTimes     = 2; // 倍数 0.1、0.5、1、2
+    int32 ZiMoJia            = 3; // 自摸 0.自摸加番、1.自摸加底
+    int32 DianGangHua        = 4; // 点杠花 0.点炮、1.自摸
+    int32 HuanSanZhang       = 5; // 换三张 0.同花色换三张、1.任意换三张、2.无换三张
+    bool  YaoJiuDui          = 6; // 幺九将对
+    bool  MenQingZhongZhang  = 7; // 门清中张
+    bool  TianDiHu           = 8; // 天地胡
+    bool  DianPaoPingHu      = 9; // 点炮可平胡
 }
 
 // 斗地主
