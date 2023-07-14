@@ -125,6 +125,8 @@ func (m *Mahjong) PlayerEnter(p *room.Player) {
 
 	if seatIdx >= 0 {
 		m.room.AddTimer(p.RID, time.Now().Add(ReadyTimeout), func(dt time.Duration) {
+			log.Infow("the player was kicked out of the room due to a timeout in the ready period",
+				"roomId", m.room.RoomId, "player", p.ShortId)
 			m.room.PlayerLeave(p.ShortId, true)
 		})
 	}

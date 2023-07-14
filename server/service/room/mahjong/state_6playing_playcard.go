@@ -88,7 +88,7 @@ func (s *StatePlaying) playCard(cardIndex, seatIndex int) (bool, outer.ERROR) {
 				NewCard:       -1, // 客户端自己取桌面牌最后一张
 			})
 
-			log.Infow("active a new action by play",
+			log.Infow("active a new action by play a card",
 				"roomId", s.room.RoomId, "seat", idx, "other", other.ShortId,
 				"play", outCard, "hand", other.handCards, "new action", newAction)
 		}

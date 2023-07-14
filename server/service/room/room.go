@@ -171,7 +171,7 @@ func (r *Room) PlayerEnter(playerInfo *inner.PlayerInfo) *inner.Error {
 
 	seatIndex := r.gambling.SeatIndex(playerInfo.ShortId)
 	r.Broadcast(&outer.RoomPlayerEnterNtf{Player: newPlayer.OuterPB(int32(seatIndex))})
-	log.Infow("room add player", "roomId", r.RoomId, "gameType", r.GameType, "player", playerInfo.ShortId)
+	log.Infow("room add player", "roomId", r.RoomId, "gameType", r.GameType, "player", playerInfo.ShortId, "seat", seatIndex)
 	return nil
 }
 
@@ -181,12 +181,12 @@ func (r *Room) PlayerLeave(shortId int64, kickOut bool) {
 		delIdx int
 	)
 
-	for i, player := range r.Players {
+	for seatIdx, player := range r.Players {
 		if player.ShortId == shortId {
 			rid = player.RID
 			r.gambling.PlayerLeave(player)
-			delIdx = i
-			log.Infow("room del player", "roomId", r.RoomId, "shortId", shortId)
+			delIdx = seatIdx
+			log.Infow("room del player", "roomId", r.RoomId, "shortId", shortId, "seat", delIdx)
 			break
 		}
 	}

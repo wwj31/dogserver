@@ -18,9 +18,12 @@ const (
 type checkCardType int32
 
 const (
-	drawCardType  checkCardType = 1 // 摸牌
-	playCardType  checkCardType = 2 // 打牌
-	lightGangType checkCardType = 3 // 明杠(面下杠)
+	drawCardType checkCardType = 1 // 摸牌
+	playCardType checkCardType = 2 // 打牌
+	GangType1    checkCardType = 3 // 明杠,自己摸牌，杠碰的牌(可抢杠胡)
+	GangType2    checkCardType = 4 // 明杠,补杠，别人打牌出我碰的牌
+	GangType3    checkCardType = 4 // 明杠,直杠，别人打牌出我手牌里有三张
+	GangType4    checkCardType = 5 // 暗杠,自己摸牌，自己手牌有三张
 )
 
 type (
@@ -34,7 +37,7 @@ type (
 type StatePlaying struct {
 	*Mahjong
 	actionTimerId string
-	peerCards     []peerCard // 最后2次操作数据
+	peerCards     []peerCard // 每次操作追加操作记录
 }
 
 func (s *StatePlaying) State() int {

@@ -202,7 +202,7 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 			delete(p.pong, card.Int32())
 			ntf.GangType = 1 // 面下杠（刮风）
 			// 可抢杠胡
-			s.AppendPeerCard(lightGangType, card, seatIndex)
+			s.AppendPeerCard(GangType1, card, seatIndex)
 			qiang = true
 		} else {
 			// 暗杠（下雨）
@@ -213,20 +213,23 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 				}
 			}
 			ntf.GangType = 2
+			s.AppendPeerCard(GangType4, card, seatIndex)
 		}
 		p.darkGang[card.Int32()] = p.ShortId
 
 	case playCardType: // 打牌
 		if _, ok := p.pong[card.Int32()]; ok {
 			delete(p.pong, card.Int32())
+			s.AppendPeerCard(GangType2, card, seatIndex)
 		} else {
-			if p.handCards.CanGangTo(card) {
+			if !p.handCards.CanGangTo(card) {
 				log.Errorw("operate gang failed player cannot Gang",
 					"roomId", s.room.RoomId, "player", p.ShortId)
 				return false, false, outer.ERROR_MSG_REQ_PARAM_INVALID
 			}
 			p.handCards, _, _ = p.handCards.Gang(card)
 			ntf.GangType = 1 // 直杠（刮风）
+			s.AppendPeerCard(GangType3, card, seatIndex)
 		}
 		p.lightGang[card.Int32()] = s.mahjongPlayers[peer.seat].ShortId
 	}
@@ -253,19 +256,19 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 			paySeat = append(paySeat, seat)
 		}
 
-	case playCardType, lightGangType: // 点炮,抢杠
+	case playCardType, GangType1: // 点炮,抢杠
 		hu = p.handCards.Insert(peer.card).IsHu(p.lightGang, p.darkGang, p.pong)
 		paySeat = append(paySeat, peer.seat) // 点炮的人陪钱
 	}
 
 	if hu == HuInvalid {
-		log.Errorw("operate hu invalid", "roomId", s.room.RoomId, "player", p.ShortId, "hand", p.handCards)
+		log.Errorw("operate hu invalid", "roomId", s.room.RoomId, "player", p.ShortId, "seat", seatIndex, "hand", p.handCards)
 		return false, outer.ERROR_MAHJONG_HU_INVALID
 	}
 
 	p.hu = hu
 	ntf.HuType = hu.PB()
-	if peer.typ == lightGangType {
+	if peer.typ == GangType1 {
 		ntf.QiangGangHuCard = peer.card.Int32()
 	}
 
@@ -283,7 +286,7 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 		}
 	}
 
-	// TODO 算番
+	// TODO 算番算分
 
 	// 进入结算
 	huCount := 0
@@ -301,6 +304,9 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 
 // 分析是否有额外加番
 func (s *StatePlaying) huExtra(seatIndex int) ExtFanType {
+	var extraFan []ExtFanType
+
+	// 根据番数大到小，优先计算大番型
 	if len(s.peerCards) == 1 {
 		return TianHu
 	}
@@ -308,5 +314,41 @@ func (s *StatePlaying) huExtra(seatIndex int) ExtFanType {
 	if len(s.peerCards) == 2 {
 		return Dihu
 	}
+
+	lastPeerCard := s.peerCards[len(s.peerCards)-1]
+
+	// 没牌了，执行[扫底胡]和[海底炮]检测
+	if s.cards.Len() == 0 {
+		switch lastPeerCard.typ {
+		case drawCardType:
+			extraFan = append(extraFan, ShaoDiHu) // 最后一张牌，摸起来胡了，扫底胡
+		case playCardType:
+			extraFan = append(extraFan, HaiDiPao) // 最后一张牌，摸起来后出牌点炮了，海底炮
+		}
+	}
+
+	p := s.mahjongPlayers[seatIndex]
+	if p.handCards.Len() == 2 {
+		extraFan = append(extraFan, JinGouGou) // 只剩2张牌做将，金钩胡
+	}
+
+	// 如果上上次是杠，那么上次一定是摸牌，判断是否杠上花
+	if len(s.peerCards) >= 2 {
+		beforeLastPeerCard := s.peerCards[len(s.peerCards)-2]
+		if beforeLastPeerCard.typ >= GangType1 {
+			extraFan = append(extraFan, GangShangHua) // 刚上花
+		}
+	}
+
+	// 如果上上上次是杠，那么上次一定是出牌，判断是否杠上炮
+	if len(s.peerCards) >= 3 {
+		beforeBeforeLastPeerCard := s.peerCards[len(s.peerCards)-3]
+		if beforeBeforeLastPeerCard.typ >= GangType1 {
+			extraFan = append(extraFan, GangShangPao) // 杠上炮
+		}
+	}
+
+	// TODO 根？？？？
+
 	return 0
 }
