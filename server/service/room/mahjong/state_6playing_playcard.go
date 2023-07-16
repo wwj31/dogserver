@@ -40,16 +40,22 @@ func (s *StatePlaying) playCard(cardIndex, seatIndex int) (bool, outer.ERROR) {
 		Card:      outCard.Int32(),
 	})
 	log.Infow("play a card",
-		"roomId", s.room.RoomId, "player", player.ShortId, "play", outCard, "hand", player.handCards)
+		"roomId", s.room.RoomId, "seat", seatIndex, "player", player.ShortId, "play", outCard, "hand", player.handCards)
 
 	var (
 		actionEndAt    time.Time // 通过此时间是否为Zero，可以判断是否有人需要碰、杠、胡
 		actionShortIds []int64   // 能操作的玩家加入集合
 	)
+
 	// 其余三家对这张牌依次做分析
-	huCount := 0
 	for idx, other := range s.mahjongPlayers {
-		if seatIndex == idx { // 跳过自己
+		// 跳过自己
+		if seatIndex == idx {
+			continue
+		}
+
+		// 提过胡牌的玩家
+		if other.hu != HuInvalid {
 			continue
 		}
 
@@ -67,7 +73,6 @@ func (s *StatePlaying) playCard(cardIndex, seatIndex int) (bool, outer.ERROR) {
 			pass = true
 		}
 		if hu := other.handCards.Insert(outCard).IsHu(other.lightGang, other.darkGang, other.pong); hu != HuInvalid {
-			huCount++
 			newAction.currentActions = append(newAction.currentActions, outer.ActionType_ActionHu)
 			newAction.currentHus = append(newAction.currentHus, hu.PB())
 			pass = true
@@ -77,7 +82,7 @@ func (s *StatePlaying) playCard(cardIndex, seatIndex int) (bool, outer.ERROR) {
 		}
 		if newAction.isActivated() {
 			if actionEndAt.IsZero() {
-				actionEndAt = tools.Now().Add(pongGangHuGuoExpire)
+				actionEndAt = tools.Now().Add(pongGangHuGuoExpiration)
 			}
 			s.actionMap[idx] = &newAction // 碰杠胡的玩家加入行动组
 			s.room.SendToPlayer(other.ShortId, &outer.MahjongBTETurnNtf{
@@ -90,18 +95,18 @@ func (s *StatePlaying) playCard(cardIndex, seatIndex int) (bool, outer.ERROR) {
 				NewCard:       -1, // 客户端自己取桌面牌最后一张
 			})
 
-			log.Infow("active a new action by play a card",
+			log.Infow("a new action",
 				"roomId", s.room.RoomId, "seat", idx, "other", other.ShortId,
-				"play", outCard, "hand", other.handCards, "new action", newAction)
+				"play", outCard, "hand", other.handCards, "action", &newAction)
 		}
-	}
-
-	if huCount >= 2 {
-		s.mutilHuByIndex = seatIndex // 一炮多响，下局坐庄
 	}
 
 	// 行动组有人，优先让能操作的人行动, 通知剩下不能操作的人，展示"有人正在操作中..."
 	if len(s.actionMap) > 0 {
+		if len(s.actionMap) >= 2 {
+			s.mutilHuByIndex = seatIndex // 一炮多响，下局坐庄
+		}
+
 		s.actionTimer(actionEndAt) // 碰,杠,胡,过,行动倒计时
 
 		notifyPlayerMsg := &outer.MahjongBTETurnNtf{
@@ -113,7 +118,7 @@ func (s *StatePlaying) playCard(cardIndex, seatIndex int) (bool, outer.ERROR) {
 	}
 
 	// 检查是否需要结算
-	if s.cards.Len() == 0 {
+	if s.gameOver() {
 		s.SwitchTo(Settlement)
 		return true, outer.ERROR_OK
 	}

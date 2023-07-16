@@ -67,7 +67,8 @@ func (r *Room) GamblingHandle(shortId int64, v any) (result any) {
 }
 
 func (r *Room) OnInit() {
-	r.Dices = make([]int32, 2, 2) //
+	r.GameParams.Mahjong.HuanSanZhang = 2 // TODO TEST
+	r.Dices = make([]int32, 2, 2)         //
 	router.Result(r, r.responseHandle)
 	log.Debugf("Room:[%v] OnInit", r.RoomId)
 }
@@ -276,6 +277,16 @@ func (r *Room) Info() *inner.RoomInfo {
 		CreatorShortId: r.CreatorShortId,
 		Players:        players,
 	}
+}
+
+// GamblingData 游戏数据
+func (r *Room) GamblingData() []byte {
+	data, err := proto.Marshal(r.gambling.Data())
+	if err != nil {
+		log.Errorw("gambling data marshal failed", "roomId", r.RoomId, "param", r.GameParams.String())
+	}
+
+	return data
 }
 
 func (p *Player) InnerPB(seatIdx int32) *inner.RoomPlayerInfo {

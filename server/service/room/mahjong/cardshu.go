@@ -129,14 +129,8 @@ func (c Cards) upgrade(colors map[int]struct{}, lightGang, darkGang, pong map[in
 			return ZhongZhang
 		}
 
-		// 判断平胡升门清
-		if len(pong) == 0 {
-			// 不能碰
-			return typ
-		}
-
-		// 不能明杠
-		if len(lightGang) == 0 {
+		// 不能碰、不能有明杠,就能进阶成门清
+		if len(pong) == 0 && len(lightGang) == 0 {
 			return MenQing
 		}
 

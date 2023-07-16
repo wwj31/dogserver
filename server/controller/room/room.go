@@ -54,7 +54,10 @@ var _ = router.Reg(func(r *room.Room, msg *inner.JoinRoomReq) any {
 		return err
 	}
 
-	return &inner.JoinRoomRsp{RoomInfo: r.Info()}
+	return &inner.JoinRoomRsp{
+		RoomInfo:     r.Info(),
+		GamblingData: r.GamblingData(),
+	}
 })
 
 // 离开房间
@@ -106,7 +109,10 @@ var _ = router.Reg(func(r *room.Room, msg *inner.RoomLoginReq) any {
 
 	p.PlayerInfo = msg.Player
 	r.Broadcast(&outer.RoomPlayerOnlineNtf{ShortId: p.ShortId, Online: true}, p.ShortId)
-	return &inner.RoomLoginRsp{RoomInfo: r.Info()}
+	return &inner.RoomLoginRsp{
+		RoomInfo:     r.Info(),
+		GamblingData: r.GamblingData(),
+	}
 })
 
 // 下线通知

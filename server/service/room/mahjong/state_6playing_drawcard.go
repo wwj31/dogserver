@@ -23,7 +23,7 @@ func (s *StatePlaying) drawCard(seatIndex int) {
 	s.AppendPeerCard(drawCardType, newCard, seatIndex)
 
 	// 摸牌后的行为持续时间
-	actionExpireAt := tools.Now().Add(playCardExpire)
+	actionExpireAt := tools.Now().Add(playCardExpiration)
 	s.actionTimer(actionExpireAt) // 出牌行动倒计时
 
 	// 为摸牌者创建一个action
@@ -69,6 +69,6 @@ func (s *StatePlaying) drawCard(seatIndex int) {
 	notifyMsg.NewCard = newCard.Int32() // 摸到的新牌
 	s.room.SendToPlayer(player.ShortId, notifyMsg)
 
-	log.Infow("draw a card", "roomId", s.room.RoomId, "seatIndex", seatIndex,
-		"newAction", newAction, "newCard", newCard, "current hand", player.handCards)
+	log.Infow("draw a card", "roomId", s.room.RoomId, "seat", seatIndex, "player", player.ShortId,
+		"newCard", newCard, "action", newAction, "totalCards", s.cards.Len(), "hand", player.handCards)
 }

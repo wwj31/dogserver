@@ -1,7 +1,9 @@
 package mahjong
 
 import (
+	"github.com/wwj31/dogactor/tools"
 	"server/common/log"
+	"time"
 )
 
 // 结算状态
@@ -22,8 +24,15 @@ func (s *StateSettlement) Enter() {
 
 	}
 
+	// 分都算完了，就可以清理数据了
 	s.clear()
 	s.nextMasterIndex() // 计算下一局庄家
+
+	// 结算给个短暂的时间
+	s.room.AddTimer(tools.XUID(), tools.Now().Add(SettlementDuration), func(dt time.Duration) {
+		s.SwitchTo(Ready)
+	})
+
 	log.Infow("[Mahjong] enter state settlement",
 		"room", s.room.RoomId, "dices", s.room.Dices, "master", s.masterIndex)
 }
@@ -42,7 +51,7 @@ func (s *StateSettlement) nextMasterIndex() {
 	} else if s.firstHuIndex != -1 {
 		s.masterIndex = s.firstHuIndex
 	} else {
-		s.masterIndex = s.nextSeatIndex(s.masterIndex)
+		s.masterIndex = s.nextSeatIndexWithoutHu(s.masterIndex)
 	}
 }
 

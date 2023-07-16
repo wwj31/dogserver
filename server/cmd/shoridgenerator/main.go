@@ -16,7 +16,7 @@ var (
 	key  = flag.String("key", "shortid", "the key of the short id")
 	pwd  = flag.String("pwd", "", "the password of the redis")
 	addr = flag.String("addr", "localhost:6379", "the addr of the redis")
-	db   = flag.String("db", "1", "the addr of the redis")
+	db   = flag.String("db", "0", "the addr of the redis")
 )
 
 func main() {

@@ -40,9 +40,10 @@ message EnterGameReq { // tag:player
 
 message EnterGameRsp {
     // 是否是新玩家
-    bool     NewPlayer = 1;
-    RoleInfo RoleInfo  = 2; // 角色信息
-    RoomInfo RoomInfo  = 3; // 房间信息
+    bool     NewPlayer    = 1;
+    RoleInfo RoleInfo     = 2; // 角色信息
+    RoomInfo RoomInfo     = 3; // 房间信息
+    bytes    GamblingData = 4; // 房间游戏数据
 }
 
 // 角色信息

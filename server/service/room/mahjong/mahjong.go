@@ -1,6 +1,8 @@
 package mahjong
 
 import (
+	"fmt"
+	"github.com/golang/protobuf/proto"
 	"time"
 
 	"server/proto/outermsg/outer"
@@ -12,7 +14,18 @@ import (
 	"server/service/room"
 )
 
-const ReadyTimeout = 20 * time.Second
+const (
+	ReadyExpiration          = 20 * time.Second // 准备超时时间
+	DecideMasterShowDuration = 3 * time.Second  // 定庄广播后的动画播放时间
+	DealShowDuration         = 2 * time.Second  // 发牌广播后的动画播放时间
+	Exchange3Expiration      = 5 * time.Second  // 换三张持续时间
+	Exchange3ShowDuration    = 1 * time.Second  // 换三张结束后的动画播放时间
+	DecideIgnoreExpiration   = 5 * time.Second  // 定缺持续时间
+	DecideIgnoreDuration     = 1 * time.Second  // 定缺结束后的动画播放时间
+	pongGangHuGuoExpiration  = 6 * time.Second  // 碰、杠、胡、过持续时间
+	playCardExpiration       = 3 * time.Second  // 摸牌后的行为持续时间(出牌，杠，胡)
+	SettlementDuration       = 2 * time.Second  // 结算持续时间
+)
 
 func New(r *room.Room) *Mahjong {
 	mahjong := &Mahjong{
@@ -83,6 +96,10 @@ func (m *Mahjong) SwitchTo(state int) {
 	m.currentStateEnterAt = tools.Now()
 }
 
+func (m *Mahjong) Data() proto.Message {
+	return &outer.MahjongBTEGameInfo{}
+}
+
 func (m *Mahjong) SeatIndex(shortId int64) int {
 	for seatIndex, player := range m.mahjongPlayers {
 		if player != nil && player.ShortId == shortId {
@@ -126,7 +143,7 @@ func (m *Mahjong) PlayerEnter(p *room.Player) {
 	}
 
 	if seatIdx >= 0 {
-		m.room.AddTimer(p.RID, time.Now().Add(ReadyTimeout), func(dt time.Duration) {
+		m.room.AddTimer(p.RID, time.Now().Add(ReadyExpiration), func(dt time.Duration) {
 			log.Infow("the player was kicked out of the room due to a timeout in the ready period",
 				"roomId", m.room.RoomId, "player", p.ShortId)
 			m.room.PlayerLeave(p.ShortId, true)
@@ -148,7 +165,7 @@ func (m *Mahjong) PlayerReady(p *room.Player) {
 	if p.Ready {
 		m.room.CancelTimer(p.RID)
 	} else {
-		m.room.AddTimer(p.RID, time.Now().Add(ReadyTimeout), func(dt time.Duration) {
+		m.room.AddTimer(p.RID, time.Now().Add(ReadyExpiration), func(dt time.Duration) {
 			m.room.PlayerLeave(p.ShortId, true)
 		})
 	}
@@ -168,7 +185,7 @@ func (m *Mahjong) findMahjongPlayer(shortId int64) (*mahjongPlayer, int) {
 	return nil, -1
 }
 
-// 逆时针轮动座位索引
+// 逆时针轮动座位索引,index 当前位置
 func (m *Mahjong) nextSeatIndex(index int) int {
 	// 0,1,2,3 东南西北
 	for {
@@ -181,6 +198,15 @@ func (m *Mahjong) nextSeatIndex(index int) int {
 		if player.hu == HuInvalid {
 			break
 		}
+	}
+	return index
+}
+
+func (m *Mahjong) nextSeatIndexWithoutHu(index int) int {
+	// 0,1,2,3 东南西北
+	index--
+	if index < 0 {
+		index = 3
 	}
 	return index
 }
@@ -198,6 +224,7 @@ func (m *Mahjong) clear() {
 	// 重置玩家数据
 	for i, p := range m.mahjongPlayers {
 		m.mahjongPlayers[i] = m.newMahjongPlayer(p.Player)
+		m.mahjongPlayers[i].Ready = false
 	}
 
 	m.cards = nil
@@ -238,4 +265,8 @@ func (a *action) remove(actionType outer.ActionType) {
 			return
 		}
 	}
+}
+
+func (a *action) String() string {
+	return fmt.Sprintf("actions:%v,hus:%v,gang:%v", a.currentActions, a.currentHus, a.currentGang)
 }

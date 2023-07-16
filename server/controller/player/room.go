@@ -143,7 +143,10 @@ var _ = router.Reg(func(p *player.Player, msg *outer.JoinRoomReq) any {
 	p.Room().SetRoomInfo(joinRoomRsp.RoomInfo)
 	roomInfo := convert.RoomInfoInnerToOuter(joinRoomRsp.RoomInfo)
 	p.UpdateInfoToRedis()
-	return &outer.JoinRoomRsp{Room: roomInfo}
+	return &outer.JoinRoomRsp{
+		Room:         roomInfo,
+		GamblingData: joinRoomRsp.GamblingData,
+	}
 })
 
 // 离开房间

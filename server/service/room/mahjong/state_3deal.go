@@ -23,20 +23,20 @@ func (s *StateDeal) Enter() {
 	log.Infow("[Mahjong] enter state deal", "room", s.room.RoomId)
 	s.cards = RandomCards() // 总共108张
 	var i int
-	for _, player := range s.mahjongPlayers {
+	for seatIndex, player := range s.mahjongPlayers {
 		player.handCards = append(Cards{}, s.cards[i:i+13]...).Sort()
 		i += 13
 
 		s.room.SendToPlayer(player.ShortId, &outer.MahjongBTEDealNtf{
 			Cards: player.handCards.ToSlice(),
 		})
-		log.Infow("dealing", "room", s.room.RoomId, "player", player.ShortId, "cards", player.handCards)
+		log.Infow("dealing", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId, "cards", player.handCards)
 	}
 
 	s.cards = s.cards[52:]
 
 	// 发牌动画后，进入下个状态
-	s.room.AddTimer(tools.XUID(), tools.Now().Add(5*time.Second), func(dt time.Duration) {
+	s.room.AddTimer(tools.XUID(), tools.Now().Add(DealShowDuration), func(dt time.Duration) {
 		var nextState State
 		if s.room.GameParams.Mahjong.HuanSanZhang == 2 {
 			nextState = DecideIgnore // 不换牌，直接定缺

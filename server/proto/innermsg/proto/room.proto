@@ -41,7 +41,7 @@ message DisbandRoomRsp{
 message RoomInfoReq{
 }
 message RoomInfoRsp{
-  RoomInfo RoomInfo = 1;
+  RoomInfo RoomInfo  = 1;
 }
 
 // 加入房间
@@ -49,7 +49,8 @@ message JoinRoomReq{
   PlayerInfo Player = 1; // 加入者
 }
 message JoinRoomRsp{
-  RoomInfo RoomInfo = 1;
+  RoomInfo RoomInfo  = 1;
+  bytes GamblingData = 2; // 游戏数据
 }
 
 // 离开房间
@@ -74,6 +75,7 @@ message RoomLoginReq{
 message RoomLoginRsp{
   int32 Err         = 1;
   RoomInfo RoomInfo = 2;
+  bytes GamblingData = 3;
 }
 
 message RoomLogoutReq{

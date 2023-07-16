@@ -44,6 +44,7 @@ func (s *Room) OnLogin(first bool, enterGameRsp *outer.EnterGameRsp) {
 				clear = true
 			} else {
 				s.RoomInfo = loginCheckRsp.RoomInfo
+				enterGameRsp.GamblingData = loginCheckRsp.GetGamblingData()
 			}
 		}
 

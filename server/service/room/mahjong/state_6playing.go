@@ -9,12 +9,6 @@ import (
 	"server/proto/outermsg/outer"
 )
 
-// 游戏状态
-const (
-	pongGangHuGuoExpire = 10 * time.Second // 碰、杠、胡、过持续时间
-	playCardExpire      = 15 * time.Second // 摸牌后的行为持续时间(出牌，杠，胡)
-)
-
 type checkCardType int32
 
 const (
@@ -115,8 +109,21 @@ func (s *StatePlaying) actionTimer(expireAt time.Time) {
 
 		for seatIndex, act := range s.actionMap {
 			player := s.mahjongPlayers[seatIndex]
-			// 出牌人，只可能有一个行动者
-			if act.isValidAction(outer.ActionType_ActionPlayCard) {
+			var (
+				defaultOperaType outer.ActionType
+				card             Card
+			)
+
+			// (碰杠胡过)行动者，优先打胡->杠->碰->打牌
+			if act.isValidAction(outer.ActionType_ActionHu) {
+				defaultOperaType = outer.ActionType_ActionHu
+			} else if act.isValidAction(outer.ActionType_ActionGang) {
+				defaultOperaType = outer.ActionType_ActionGang
+				card = Card(act.currentGang[0])
+			} else if act.isValidAction(outer.ActionType_ActionPong) {
+				defaultOperaType = outer.ActionType_ActionPong
+				card = s.cards[s.cards.Len()-1]
+			} else if act.isValidAction(outer.ActionType_ActionPlayCard) {
 				var defaultPlayCard Card
 
 				// 优先打定缺花色,没有定缺花色的牌，就选手牌
@@ -138,28 +145,12 @@ func (s *StatePlaying) actionTimer(expireAt time.Time) {
 				s.playCard(playIndex, seatIndex)
 				break
 			} else {
-				var (
-					defaultOperaType outer.ActionType
-					card             Card
-				)
-
-				// (碰杠胡过)行动者，优先打胡->杠->碰
-				if act.isValidAction(outer.ActionType_ActionHu) {
-					defaultOperaType = outer.ActionType_ActionHu
-				} else if act.isValidAction(outer.ActionType_ActionGang) {
-					defaultOperaType = outer.ActionType_ActionGang
-					card = Card(act.currentGang[0])
-				} else if act.isValidAction(outer.ActionType_ActionPong) {
-					defaultOperaType = outer.ActionType_ActionPong
-					card = s.cards[s.cards.Len()-1]
-				} else {
-					log.Warnw("action exception",
-						"roomId", s.room.RoomId, "player", seatIndex, "act", act)
-					continue
-				}
-
-				s.operate(player, seatIndex, defaultOperaType, card)
+				log.Warnw("action exception",
+					"roomId", s.room.RoomId, "player", seatIndex, "act", act)
+				continue
 			}
+
+			s.operate(player, seatIndex, defaultOperaType, card)
 		}
 	})
 }

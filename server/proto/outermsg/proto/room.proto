@@ -19,7 +19,6 @@ message RoomInfo {
     GameType   GameType             = 2;
     GameParams GameParams           = 3;
     repeated RoomPlayerInfo Players = 4; // 房间内的成员信息
-    bytes      GameData             = 5; // 游戏数据
 }
 
 // 创建房间
@@ -51,7 +50,8 @@ message JoinRoomReq {// tag:player
     int64 RoomId = 1;
 }
 message JoinRoomRsp {
-    RoomInfo Room = 1;
+    RoomInfo Room         = 1; // 房间基础信息
+    bytes    GamblingData = 2; // 房间游戏数据
 }
 
 // 离开房间

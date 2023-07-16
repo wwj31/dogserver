@@ -14,6 +14,7 @@ import (
 
 type StateDecideIgnore struct {
 	*Mahjong
+	colorMap map[int64]outer.ColorType
 }
 
 func (s *StateDecideIgnore) State() int {
@@ -21,15 +22,16 @@ func (s *StateDecideIgnore) State() int {
 }
 
 func (s *StateDecideIgnore) Enter() {
+	s.colorMap = make(map[int64]outer.ColorType)
 	s.room.Broadcast(&outer.MahjongBTEDecideIgnoreNtf{})
-	s.room.AddTimer(tools.XUID(), tools.Now().Add(15*time.Second), func(time.Duration) {
+	s.room.AddTimer(tools.XUID(), tools.Now().Add(DecideIgnoreExpiration), func(time.Duration) {
 		s.stateEnd()
 	})
 	log.Infow("[Mahjong] enter state decide ignore", "room", s.room.RoomId)
 }
 
 func (s *StateDecideIgnore) Leave() {
-	log.Infow("[Mahjong] leave state decide ignore", "room", s.room.RoomId)
+	log.Infow("[Mahjong] leave state decide ignore", "room", s.room.RoomId, "colors", s.colorMap)
 }
 
 func (s *StateDecideIgnore) Handle(shortId int64, v any) (result any) {
@@ -59,18 +61,17 @@ func (s *StateDecideIgnore) Handle(shortId int64, v any) (result any) {
 
 // 定缺完成
 func (s *StateDecideIgnore) stateEnd() {
-	colorMap := map[int64]outer.ColorType{}
 	for _, player := range s.mahjongPlayers {
 		if player.ignoreColor == ColorUnknown {
 			player.ignoreColor = ColorType(rand.Int31n(3) + 1)
 		}
 
-		colorMap[player.ShortId] = player.ignoreColor.PB()
+		s.colorMap[player.ShortId] = player.ignoreColor.PB()
 	}
-	s.room.Broadcast(&outer.MahjongBTEDecideIgnoreEndNtf{Colors: colorMap})
+	s.room.Broadcast(&outer.MahjongBTEDecideIgnoreEndNtf{Colors: s.colorMap})
 
 	// 定缺结束，给个几秒播动画
-	s.room.AddTimer(tools.XUID(), tools.Now().Add(15*time.Second), func(time.Duration) {
+	s.room.AddTimer(tools.XUID(), tools.Now().Add(DecideIgnoreDuration), func(time.Duration) {
 		s.SwitchTo(Playing)
 	})
 }

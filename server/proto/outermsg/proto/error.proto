@@ -39,9 +39,10 @@ enum ERROR {
    MAHJONG_EXCHANGE3_INDEX_ERROR    = 33; // 请求换三张下标越界长度不为0-12
    MAHJONG_EXCHANGE3_INDEX_EQUAL    = 34; // 请求换三张下标重复
    MAHJONG_EXCHANGE3_OPERATED       = 35; // 请求换三张已经操作过
-   MAHJONG_ACTION_PLAYER_NOT_MATCH  = 36; // 当前未轮到该玩家行动
-   MAHJONG_ACTION_PLAYER_NOT_OPERA  = 37; // 当前玩家可以行动，但是执行的行动无效
-   MAHJONG_HU_INVALID               = 38; // 玩家当前牌型不能胡牌
+   MAHJONG_EXCHANGE3_COLOR_ERROR    = 36; // 同花色换三张，花色不同
+   MAHJONG_ACTION_PLAYER_NOT_MATCH  = 37; // 当前未轮到该玩家行动
+   MAHJONG_ACTION_PLAYER_NOT_OPERA  = 38; // 当前玩家可以行动，但是执行的行动无效
+   MAHJONG_HU_INVALID               = 39; // 玩家当前牌型不能胡牌
 }
 
 message FailRsp {

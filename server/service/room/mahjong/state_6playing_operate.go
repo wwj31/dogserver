@@ -46,16 +46,28 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 	switch op {
 	case outer.ActionType_ActionPass:
 		ok = true
+		log.Infow("pass", "roomId", s.room.RoomId, "seat", seatIndex, "player", player.ShortId, "hand", player.handCards)
+
 	case outer.ActionType_ActionPong:
 		ok, err, playCardAfterPongNtf = s.operatePong(player, seatIndex)
 		ntf.Card = peer.card.Int32() // 碰的牌
+
+		log.Infow("pong!", "roomId", s.room.RoomId, "seat", seatIndex, "player", player.ShortId,
+			"peer", &peer, "hand", player.handCards, "pong cards", player.pong)
 
 	case outer.ActionType_ActionGang:
 		ok, qiangGang, err = s.operateGang(player, seatIndex, card, ntf)
 		ntf.Card = card.Int32() // 杠的牌
 
+		log.Infow("gang!", "roomId", s.room.RoomId, "seat", seatIndex, "player", player.ShortId,
+			"peer", &peer, "hand", player.handCards, "lightGang cards", player.lightGang, "darkGang cards", player.darkGang)
+
 	case outer.ActionType_ActionHu:
 		ok, err = s.operateHu(player, seatIndex, ntf)
+
+		log.Infow("hu!", "roomId", s.room.RoomId, "seat", seatIndex, "player", player.ShortId, "peer", &peer, "hand", player.handCards,
+			"pong", player.pong, "lightGang cards", player.lightGang, "darkGang cards", player.darkGang, "hu", player.hu, "hu extra", player.huExtra)
+
 	default:
 		log.Errorw("unknown action op",
 			"roomId", s.room.RoomId, "player", player.ShortId, "op", op)
@@ -71,14 +83,18 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 		s.room.Broadcast(ntf)
 	}
 
-	// 所有操作者都执行完了，进入下一次摸牌，或者结束本局
+	// 所有操作者都执行后，判断下家该谁摸牌
 	switch op {
+	case outer.ActionType_ActionHu:
+		// 胡牌的下家摸牌
+		nextDrawShortIndex = s.nextSeatIndex(seatIndex)
+
 	case outer.ActionType_ActionPong:
+		// 碰的人出牌，不需要摸牌
 		s.room.Broadcast(playCardAfterPongNtf)
-		// 操作碰完成，需要出牌，不用检查结算
 		return
 	case outer.ActionType_ActionGang:
-		// 杠操作完成，需要自身摸一张牌(如果还能摸的情况下)
+		// 杠的人自己摸一张
 		nextDrawShortIndex = seatIndex
 
 		// 抢杠胡，检查是否有人能抢
@@ -94,7 +110,7 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 
 				if hu := other.handCards.Insert(card).IsHu(other.lightGang, other.darkGang, other.pong); hu != HuInvalid {
 					if qiangActionEndAt.IsZero() {
-						qiangActionEndAt = tools.Now().Add(pongGangHuGuoExpire)
+						qiangActionEndAt = tools.Now().Add(pongGangHuGuoExpiration)
 					}
 					newAction := action{}
 					newAction.currentActions = append(newAction.currentActions, outer.ActionType_ActionHu, outer.ActionType_ActionPass)
@@ -125,15 +141,34 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 		}
 	}
 
-	// 操作杠、胡、过、完成，需要检查结算
+	// 没有可行动的人，就判断游戏是否结束，没结束就继续摸牌
 	if len(s.actionMap) == 0 {
-		if s.cards.Len() > 0 {
-			s.drawCard(nextDrawShortIndex)
-		} else {
+		if s.gameOver() {
 			s.SwitchTo(Settlement)
+			return
+		}
+
+		s.drawCard(nextDrawShortIndex)
+	}
+
+	return true, outer.ERROR_OK
+}
+
+func (s *StatePlaying) gameOver() bool {
+	huCount := 0
+	for _, p := range s.mahjongPlayers {
+		if p.hu != HuInvalid {
+			huCount++
+			if huCount >= 3 {
+				return true
+			}
 		}
 	}
-	return true, outer.ERROR_OK
+
+	if s.cards.Len() == 0 {
+		return true
+	}
+	return false
 }
 
 // 碰牌操作
@@ -163,7 +198,15 @@ func (s *StatePlaying) operatePong(p *mahjongPlayer, seatIndex int) (bool, outer
 	// 检查,不可能自己碰自己的牌
 	if peer.seat == seatIndex {
 		log.Errorw("unexpected logic ",
-			s.room.RoomId, "player", p.ShortId, "peer", peer, "seatIndex", seatIndex)
+			s.room.RoomId, "player", p.ShortId, "peer", peer, "seat", seatIndex)
+		return false, outer.ERROR_MSG_REQ_PARAM_INVALID, nil
+	}
+
+	var err error
+	p.handCards, _, err = p.handCards.Pong(peer.card)
+	if err != nil {
+		log.Errorw("unexpected logic pong failed",
+			"roomId", s.room.RoomId, "player", p.ShortId, "peer", peer, "seat", seatIndex, "err", err)
 		return false, outer.ERROR_MSG_REQ_PARAM_INVALID, nil
 	}
 
@@ -174,7 +217,7 @@ func (s *StatePlaying) operatePong(p *mahjongPlayer, seatIndex int) (bool, outer
 	s.actionMap = make(map[int]*action)
 	s.actionMap[seatIndex] = &action{currentActions: []outer.ActionType{outer.ActionType_ActionPlayCard}} // 碰后出牌行为
 
-	actionExpireAt := tools.Now().Add(playCardExpire)
+	actionExpireAt := tools.Now().Add(playCardExpiration)
 	s.actionTimer(actionExpireAt) // 碰后出牌操作时间
 	playCardNtf := &outer.MahjongBTETurnNtf{
 		TotalCards:    int32(s.cards.Len()),
@@ -291,17 +334,6 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 
 	// TODO 算番算分
 
-	// 进入结算
-	huCount := 0
-	for _, player := range s.mahjongPlayers {
-		if player.hu != HuInvalid {
-			huCount++
-			if huCount >= 3 {
-				s.SwitchTo(Settlement)
-				break
-			}
-		}
-	}
 	return true, outer.ERROR_OK
 }
 

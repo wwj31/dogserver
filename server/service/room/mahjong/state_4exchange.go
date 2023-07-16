@@ -21,7 +21,7 @@ func (s *StateExchange3) State() int {
 
 func (s *StateExchange3) Enter() {
 	s.room.Broadcast(&outer.MahjongBTEExchange3Ntf{})
-	s.room.AddTimer(tools.XUID(), tools.Now().Add(15*time.Second), func(time.Duration) {
+	s.room.AddTimer(tools.XUID(), tools.Now().Add(Exchange3Expiration), func(time.Duration) {
 		s.stateEnd()
 	})
 	log.Infow("[Mahjong] enter state  exchange3", "room", s.room.RoomId)
@@ -29,6 +29,9 @@ func (s *StateExchange3) Enter() {
 
 func (s *StateExchange3) Leave() {
 	log.Infow("[Mahjong] leave state exchange3", "room", s.room.RoomId)
+	for seatIndex, player := range s.mahjongPlayers {
+		log.Infow("hand cards", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId, "cards", player.handCards)
+	}
 }
 
 // 换三张结束
@@ -63,7 +66,7 @@ func (s *StateExchange3) stateEnd() {
 	}
 
 	// 状态结束，给个换牌动画播放延迟，进入定缺
-	s.room.AddTimer(tools.XUID(), tools.Now().Add(3*time.Second), func(time.Duration) {
+	s.room.AddTimer(tools.XUID(), tools.Now().Add(Exchange3ShowDuration), func(time.Duration) {
 		s.SwitchTo(DecideIgnore)
 	})
 }
@@ -80,6 +83,15 @@ func (s *StateExchange3) Handle(shortId int64, v any) (result any) {
 			msg.Index[1] == msg.Index[2] ||
 			msg.Index[0] == msg.Index[2] {
 			return outer.ERROR_MAHJONG_EXCHANGE3_INDEX_EQUAL
+		}
+
+		// 同花色换三张
+		if s.room.GameParams.Mahjong.HuanSanZhang == 0 {
+			if msg.Index[0]%10 == msg.Index[1]%10 ||
+				msg.Index[1]%10 == msg.Index[2]%10 ||
+				msg.Index[0]%10 == msg.Index[2]%10 {
+				return outer.ERROR_MAHJONG_EXCHANGE3_COLOR_ERROR
+			}
 		}
 
 		player, _ := s.findMahjongPlayer(shortId)

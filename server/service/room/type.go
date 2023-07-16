@@ -1,6 +1,9 @@
 package room
 
-import "server/proto/innermsg/inner"
+import (
+	"github.com/golang/protobuf/proto"
+	"server/proto/innermsg/inner"
+)
 
 type GamblingType int32
 
@@ -14,6 +17,7 @@ func (g GamblingType) Int32() int32 {
 }
 
 type Gambling interface {
+	Data() proto.Message
 	SeatIndex(shortId int64) int
 	CanEnter(p *inner.PlayerInfo) bool
 	CanLeave(p *inner.PlayerInfo) bool

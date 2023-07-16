@@ -100,12 +100,11 @@ func (c Cards) Pong(card Card) (cards Cards, index int, err error) {
 
 	// 找到后把左边一张牌和当前牌，作为碰牌
 	// 检查左边那张牌必须相同
-	if index == 0 || c[index-1] != card {
+	if c[index+1] != card {
 		err = fmt.Errorf("pong failed card number != 2:%v index:%v card:%v", c, index, card)
 		return
 	}
 
-	index--
 	cards = append(cards, c[:index]...)
 	cards = append(cards, c[index+2:]...)
 	return
@@ -146,12 +145,11 @@ func (c Cards) Gang(card Card) (cards Cards, index int, err error) {
 
 	// 找到后把左边两张牌和当前牌，作为杠
 	// 检查左边两张牌必须相同
-	if index < 2 || c[index-1] != card || c[index-2] != card {
+	if c[index+1] != card || c[index+2] != card {
 		err = fmt.Errorf("gang failed card number != 2:%v index:%v card:%v", c, index, card)
 		return
 	}
 
-	index -= 2
 	cards = append(cards, c[:index]...)
 	cards = append(cards, c[index+3:]...)
 	return
