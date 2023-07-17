@@ -82,7 +82,7 @@ func (m Card) Color() ColorType {
 }
 
 func (m Card) Point() int32 {
-	return m % 10
+	return int32(m % 10)
 }
 
 func (m Card) Int32() int32 {

@@ -53,14 +53,13 @@ enum HuType {
 // 额外番
 enum ExtraType {
     ExtraInvalid  = 0;
-    Gen           = 1;  // 根
-    GangShangHua  = 2;  // 杠上开花
-    GangShangPao  = 3;  // 杠上炮
-    QiangGangHu   = 4;  // 抢杠胡
-    ShaoDiHu      = 5;  // 扫底胡
-    JinGouGou     = 6;  // 金钩胡
-    HaiDiPao      = 7;  // 海底炮
-    TianHu        = 8;  // 天胡
-    Dihu          = 9;  // 地胡
+    GangShangHua  = 1;  // 杠上开花
+    GangShangPao  = 2;  // 杠上炮
+    QiangGangHu   = 3;  // 抢杠胡
+    ShaoDiHu      = 4;  // 扫底胡
+    JinGouGou     = 5;  // 金钩胡
+    HaiDiPao      = 6;  // 海底炮
+    TianHu        = 7;  // 天胡
+    Dihu          = 8;  // 地胡
 }
 

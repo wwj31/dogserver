@@ -26,7 +26,6 @@ type ExtFanType int32
 
 const (
 	ExtraInvalid ExtFanType = iota
-	Gen                     // 根
 	GangShangHua            // 杠上开花
 	GangShangPao            // 杠上炮
 	QiangGangHu             // 抢杠胡
@@ -64,7 +63,6 @@ var huStr = map[HuType]string{
 }
 
 var extraStr = map[ExtFanType]string{
-	Gen:          "根",
 	GangShangHua: "杠上开花",
 	GangShangPao: "杠上炮",
 	QiangGangHu:  "抢杠胡",

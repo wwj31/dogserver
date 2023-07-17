@@ -72,7 +72,7 @@ func (s *StatePlaying) playCard(cardIndex, seatIndex int) (bool, outer.ERROR) {
 			newAction.currentActions = append(newAction.currentActions, outer.ActionType_ActionPong)
 			pass = true
 		}
-		if hu := other.handCards.Insert(outCard).IsHu(other.lightGang, other.darkGang, other.pong); hu != HuInvalid {
+		if hu := other.handCards.Insert(outCard).IsHu(other.lightGang, other.darkGang, other.pong, outCard); hu != HuInvalid {
 			newAction.currentActions = append(newAction.currentActions, outer.ActionType_ActionHu)
 			newAction.currentHus = append(newAction.currentHus, hu.PB())
 			pass = true
