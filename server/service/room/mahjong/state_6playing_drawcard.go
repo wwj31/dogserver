@@ -13,10 +13,9 @@ func (s *StatePlaying) drawCard(seatIndex int) {
 		return
 	}
 
-	player := s.mahjongPlayers[seatIndex] // 当前摸牌者
-
 	newCard := s.cards[0]
 	s.cards = s.cards.Remove(newCard)
+	player := s.mahjongPlayers[seatIndex] // 当前摸牌者
 	player.handCards = player.handCards.Insert(newCard)
 	s.appendPeerCard(drawCardType, newCard, seatIndex)
 
@@ -31,6 +30,7 @@ func (s *StatePlaying) drawCard(seatIndex int) {
 	if _, exist := player.pong[newCard.Int32()]; exist { // 检查碰牌组
 		gangs = gangs.Insert(newCard)
 	}
+
 	newAction.currentGang = gangs.ToSlice()
 	if len(newAction.currentGang) > 0 {
 		newAction.currentActions = append(newAction.currentActions, outer.ActionType_ActionGang)

@@ -155,6 +155,7 @@ func (s *StatePlaying) nextAction() {
 		canHu       []int
 		actionEndAt time.Time
 	)
+
 	if len(s.actionMap) == 0 {
 		log.Errorw("next action error no action", "room", s.room.RoomId)
 		return
@@ -175,7 +176,6 @@ func (s *StatePlaying) nextAction() {
 
 	nextPlayer := s.mahjongPlayers[nextSeat]
 	nextAct := s.actionMap[nextSeat]
-
 	if nextAct.isValidAction(outer.ActionType_ActionPlayCard) {
 		actionEndAt = tools.Now().Add(playCardExpiration)
 	} else {
