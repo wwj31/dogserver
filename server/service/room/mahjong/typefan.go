@@ -19,7 +19,6 @@ var (
 	}
 
 	extraFan = map[ExtFanType]int{
-		Gen:          1, // 根
 		GangShangHua: 1, // 杠上开花
 		GangShangPao: 1, // 杠上炮
 		QiangGangHu:  1, // 抢杠胡

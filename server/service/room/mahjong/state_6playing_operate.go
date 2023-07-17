@@ -369,6 +369,11 @@ func (s *StatePlaying) huExtra(seatIndex int) ExtFanType {
 		extraFans = append(extraFans, JinGouGou) // 只剩2张牌做将，金钩胡
 	}
 
+	// 抢杠
+	if lastPeerCard.typ == GangType1 {
+		extraFans = append(extraFans, QiangGangHu) // 抢杠胡
+	}
+
 	// 如果上上次是杠，那么上次一定是摸牌，判断是否杠上花
 	if len(s.peerCards) >= 2 {
 		beforeLastPeerCard := s.peerCards[len(s.peerCards)-2]
