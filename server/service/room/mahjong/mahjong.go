@@ -2,8 +2,9 @@ package mahjong
 
 import (
 	"fmt"
-	"github.com/golang/protobuf/proto"
 	"time"
+
+	"github.com/golang/protobuf/proto"
 
 	"server/proto/outermsg/outer"
 
@@ -57,6 +58,7 @@ type (
 		handCards   Cards                // 手牌
 		hu          HuType               // 胡牌
 		huExtra     ExtFanType           // 胡牌额外加番
+		huGen       int32                // 胡牌有几根
 		lightGang   map[int32]int64      // map[杠牌]ShortId 明杠
 		darkGang    map[int32]int64      // map[杠牌]ShortId 暗杠
 		pong        map[int32]int64      // map[碰牌]ShortId
@@ -145,7 +147,7 @@ func (m *Mahjong) PlayerEnter(p *room.Player) {
 	if seatIdx >= 0 {
 		m.room.AddTimer(p.RID, time.Now().Add(ReadyExpiration), func(dt time.Duration) {
 			log.Infow("the player was kicked out of the room due to a timeout in the ready period",
-				"roomId", m.room.RoomId, "player", p.ShortId)
+				"room", m.room.RoomId, "player", p.ShortId)
 			m.room.PlayerLeave(p.ShortId, true)
 		})
 	}

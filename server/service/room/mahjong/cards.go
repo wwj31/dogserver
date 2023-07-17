@@ -200,6 +200,31 @@ func (c Cards) Has1or9() bool {
 	return false
 }
 
+// HasJiaXinWu 是否具备夹心五
+func (c Cards) HasJiaXinWu(card Card) bool {
+	if card.Int32()%10 != 5 {
+		return false
+	}
+
+	var has4, has6 bool
+	c.Range(func(card Card) bool {
+		if card.Int() == card.Int()-1 {
+			has4 = true
+		}
+
+		if card.Int() == card.Int()-1 {
+			has6 = true
+		}
+
+		if has4 && has6 {
+			return true
+		}
+
+		return false
+	})
+	return false
+}
+
 // ColorCount 当前牌有几个花色
 func (c Cards) colors() map[int]struct{} {
 	colorMap := make(map[int]struct{})
@@ -247,9 +272,17 @@ func (c Cards) ToSlice() (result []int32) {
 	return
 }
 
-func (c Cards) Range(fn func(color ColorType, number int) bool) {
+func (c Cards) RangeSplit(fn func(color ColorType, number int) bool) {
 	for _, card := range c {
 		if fn(ColorType(card%10), int(card/10)) {
+			break
+		}
+	}
+}
+
+func (c Cards) Range(fn func(card Card) bool) {
+	for _, card := range c {
+		if fn(card) {
 			break
 		}
 	}

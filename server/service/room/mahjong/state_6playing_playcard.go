@@ -40,7 +40,7 @@ func (s *StatePlaying) playCard(cardIndex, seatIndex int) (bool, outer.ERROR) {
 		Card:      outCard.Int32(),
 	})
 	log.Infow("play a card",
-		"roomId", s.room.RoomId, "seat", seatIndex, "player", player.ShortId, "play", outCard, "hand", player.handCards)
+		"room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId, "play", outCard, "hand", player.handCards)
 
 	var (
 		actionEndAt    time.Time // 通过此时间是否为Zero，可以判断是否有人需要碰、杠、胡
@@ -96,7 +96,7 @@ func (s *StatePlaying) playCard(cardIndex, seatIndex int) (bool, outer.ERROR) {
 			})
 
 			log.Infow("a new action",
-				"roomId", s.room.RoomId, "seat", idx, "other", other.ShortId,
+				"room", s.room.RoomId, "seat", idx, "other", other.ShortId,
 				"play", outCard, "hand", other.handCards, "action", &newAction)
 		}
 	}

@@ -138,7 +138,7 @@ func (s *StatePlaying) actionTimer(expireAt time.Time) {
 				playIndex := player.handCards.CardIndex(defaultPlayCard)
 				if playIndex == -1 {
 					log.Errorw("action timeout, playIndex == -1",
-						"roomId", s.room.RoomId, "player", player.ShortId, "act", act,
+						"room", s.room.RoomId, "player", player.ShortId, "act", act,
 						"hand", player.handCards, "play", defaultPlayCard)
 					return
 				}
@@ -146,7 +146,7 @@ func (s *StatePlaying) actionTimer(expireAt time.Time) {
 				break
 			} else {
 				log.Warnw("action exception",
-					"roomId", s.room.RoomId, "player", seatIndex, "act", act)
+					"room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId, "act", act)
 				continue
 			}
 

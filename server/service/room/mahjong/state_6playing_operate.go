@@ -46,31 +46,31 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 	switch op {
 	case outer.ActionType_ActionPass:
 		ok = true
-		log.Infow("pass", "roomId", s.room.RoomId, "seat", seatIndex, "player", player.ShortId, "hand", player.handCards)
+		log.Infow("pass", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId, "hand", player.handCards)
 
 	case outer.ActionType_ActionPong:
 		ok, err, playCardAfterPongNtf = s.operatePong(player, seatIndex)
 		ntf.Card = peer.card.Int32() // 碰的牌
 
-		log.Infow("pong!", "roomId", s.room.RoomId, "seat", seatIndex, "player", player.ShortId,
+		log.Infow("pong!", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId,
 			"peer", &peer, "hand", player.handCards, "pong cards", player.pong)
 
 	case outer.ActionType_ActionGang:
 		ok, qiangGang, err = s.operateGang(player, seatIndex, card, ntf)
 		ntf.Card = card.Int32() // 杠的牌
 
-		log.Infow("gang!", "roomId", s.room.RoomId, "seat", seatIndex, "player", player.ShortId,
+		log.Infow("gang!", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId,
 			"peer", &peer, "hand", player.handCards, "lightGang cards", player.lightGang, "darkGang cards", player.darkGang)
 
 	case outer.ActionType_ActionHu:
 		ok, err = s.operateHu(player, seatIndex, ntf)
 
-		log.Infow("hu!", "roomId", s.room.RoomId, "seat", seatIndex, "player", player.ShortId, "peer", &peer, "hand", player.handCards,
+		log.Infow("hu!", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId, "peer", &peer, "hand", player.handCards,
 			"pong", player.pong, "lightGang cards", player.lightGang, "darkGang cards", player.darkGang, "hu", player.hu, "hu extra", player.huExtra)
 
 	default:
 		log.Errorw("unknown action op",
-			"roomId", s.room.RoomId, "player", player.ShortId, "op", op)
+			"room", s.room.RoomId, "player", player.ShortId, "op", op)
 		return false, outer.ERROR_MSG_REQ_PARAM_INVALID
 	}
 
@@ -108,7 +108,7 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 					continue
 				}
 
-				if hu := other.handCards.Insert(card).IsHu(other.lightGang, other.darkGang, other.pong); hu != HuInvalid {
+				if hu := other.handCards.Insert(card).IsHu(other.lightGang, other.darkGang, other.pong, card); hu != HuInvalid {
 					if qiangActionEndAt.IsZero() {
 						qiangActionEndAt = tools.Now().Add(pongGangHuGuoExpiration)
 					}
@@ -175,14 +175,14 @@ func (s *StatePlaying) gameOver() bool {
 func (s *StatePlaying) operatePong(p *mahjongPlayer, seatIndex int) (bool, outer.ERROR, proto.Message) {
 	if len(s.peerCards) == 0 {
 		log.Errorw("operate pong failed peerCards len = 0",
-			"roomId", s.room.RoomId, "player", p.ShortId)
+			"room", s.room.RoomId, "player", p.ShortId)
 		return false, outer.ERROR_MSG_REQ_PARAM_INVALID, nil
 	}
 	// 获得打出的那张牌
 	peer := s.peerCards[len(s.peerCards)-1]
 	if peer.typ != playCardType {
 		log.Errorw("operate pong failed peer is drawCard",
-			"roomId", s.room.RoomId, "player", p.ShortId, "peerCards", s.peerCards)
+			"room", s.room.RoomId, "player", p.ShortId, "peerCards", s.peerCards)
 		return false, outer.ERROR_MSG_REQ_PARAM_INVALID, nil
 	}
 
@@ -191,7 +191,7 @@ func (s *StatePlaying) operatePong(p *mahjongPlayer, seatIndex int) (bool, outer
 	desktopCard := s.cardsInDesktop[tail]
 	if desktopCard != peer.card {
 		log.Errorw("operate pong logic error",
-			"roomId", s.room.RoomId, "player", p.ShortId, "peerCards", s.peerCards, "desktopCard", desktopCard)
+			"room", s.room.RoomId, "player", p.ShortId, "peerCards", s.peerCards, "desktopCard", desktopCard)
 		return false, outer.ERROR_MSG_REQ_PARAM_INVALID, nil
 	}
 
@@ -206,7 +206,7 @@ func (s *StatePlaying) operatePong(p *mahjongPlayer, seatIndex int) (bool, outer
 	p.handCards, _, err = p.handCards.Pong(peer.card)
 	if err != nil {
 		log.Errorw("unexpected logic pong failed",
-			"roomId", s.room.RoomId, "player", p.ShortId, "peer", peer, "seat", seatIndex, "err", err)
+			"room", s.room.RoomId, "seat", seatIndex, "player", p.ShortId, "peer", peer, "err", err)
 		return false, outer.ERROR_MSG_REQ_PARAM_INVALID, nil
 	}
 
@@ -233,7 +233,7 @@ func (s *StatePlaying) operatePong(p *mahjongPlayer, seatIndex int) (bool, outer
 func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, ntf *outer.MahjongBTEOperaNtf) (ok, qiang bool, err outer.ERROR) {
 	if len(s.peerCards) == 0 {
 		log.Errorw("operate gang failed peerCards len = 0",
-			"roomId", s.room.RoomId, "player", p.ShortId)
+			"room", s.room.RoomId, "player", p.ShortId)
 		return false, false, outer.ERROR_MSG_REQ_PARAM_INVALID
 	}
 
@@ -267,7 +267,7 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 		} else {
 			if !p.handCards.CanGangTo(card) {
 				log.Errorw("operate gang failed player cannot Gang",
-					"roomId", s.room.RoomId, "player", p.ShortId)
+					"room", s.room.RoomId, "player", p.ShortId)
 				return false, false, outer.ERROR_MSG_REQ_PARAM_INVALID
 			}
 			p.handCards, _, _ = p.handCards.Gang(card)
@@ -290,8 +290,8 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 	var hu HuType
 	switch peer.typ {
 	case drawCardType: // 自摸
-		hu = p.handCards.IsHu(p.lightGang, p.darkGang, p.pong)
-		// 其余没胡的都有赔钱
+		hu = p.handCards.IsHu(p.lightGang, p.darkGang, p.pong, peer.card)
+		// 其余没胡的都要赔钱
 		for seat, other := range s.mahjongPlayers {
 			if other.hu != HuInvalid || other.ShortId == p.ShortId {
 				continue
@@ -300,12 +300,12 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 		}
 
 	case playCardType, GangType1: // 点炮,抢杠
-		hu = p.handCards.Insert(peer.card).IsHu(p.lightGang, p.darkGang, p.pong)
+		hu = p.handCards.Insert(peer.card).IsHu(p.lightGang, p.darkGang, p.pong, peer.card)
 		paySeat = append(paySeat, peer.seat) // 点炮的人陪钱
 	}
 
 	if hu == HuInvalid {
-		log.Errorw("operate hu invalid", "roomId", s.room.RoomId, "player", p.ShortId, "seat", seatIndex, "hand", p.handCards)
+		log.Errorw("operate hu invalid", "room", s.room.RoomId, "seat", seatIndex, "player", p.ShortId, "hand", p.handCards)
 		return false, outer.ERROR_MAHJONG_HU_INVALID
 	}
 
@@ -320,6 +320,8 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 
 	// 计算额外加番
 	p.huExtra = s.huExtra(seatIndex)
+	p.huGen = int32(s.huGen(seatIndex))
+
 	ntf.HuExtraType = p.huExtra.PB()
 
 	// 胡成功后，删除Gang和Pong(可以一炮多响,但是胡了，就不能碰、杠)
@@ -339,7 +341,7 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 
 // 分析是否有额外加番
 func (s *StatePlaying) huExtra(seatIndex int) ExtFanType {
-	var extraFan []ExtFanType
+	var extraFans []ExtFanType
 
 	// 根据番数大到小，优先计算大番型
 	if len(s.peerCards) == 1 {
@@ -356,22 +358,22 @@ func (s *StatePlaying) huExtra(seatIndex int) ExtFanType {
 	if s.cards.Len() == 0 {
 		switch lastPeerCard.typ {
 		case drawCardType:
-			extraFan = append(extraFan, ShaoDiHu) // 最后一张牌，摸起来胡了，扫底胡
+			extraFans = append(extraFans, ShaoDiHu) // 最后一张牌，摸起来胡了，扫底胡
 		case playCardType:
-			extraFan = append(extraFan, HaiDiPao) // 最后一张牌，摸起来后出牌点炮了，海底炮
+			extraFans = append(extraFans, HaiDiPao) // 最后一张牌，摸起来后出牌点炮了，海底炮
 		}
 	}
 
 	p := s.mahjongPlayers[seatIndex]
 	if p.handCards.Len() == 2 {
-		extraFan = append(extraFan, JinGouGou) // 只剩2张牌做将，金钩胡
+		extraFans = append(extraFans, JinGouGou) // 只剩2张牌做将，金钩胡
 	}
 
 	// 如果上上次是杠，那么上次一定是摸牌，判断是否杠上花
 	if len(s.peerCards) >= 2 {
 		beforeLastPeerCard := s.peerCards[len(s.peerCards)-2]
 		if beforeLastPeerCard.typ >= GangType1 {
-			extraFan = append(extraFan, GangShangHua) // 刚上花
+			extraFans = append(extraFans, GangShangHua) // 刚上花
 		}
 	}
 
@@ -379,11 +381,32 @@ func (s *StatePlaying) huExtra(seatIndex int) ExtFanType {
 	if len(s.peerCards) >= 3 {
 		beforeBeforeLastPeerCard := s.peerCards[len(s.peerCards)-3]
 		if beforeBeforeLastPeerCard.typ >= GangType1 {
-			extraFan = append(extraFan, GangShangPao) // 杠上炮
+			extraFans = append(extraFans, GangShangPao) // 杠上炮
 		}
 	}
 
-	// TODO 根？？？？
-
 	return 0
+}
+
+// 算根
+func (s *StatePlaying) huGen(seatIndex int) (count int) {
+	p := s.mahjongPlayers[seatIndex]
+	count = len(p.lightGang) + len(p.darkGang)
+	for pongCard := range p.pong {
+		p.handCards.Range(func(card Card) bool {
+			if pongCard == card.Int32() {
+				count++
+				return true
+			}
+			return false
+		})
+	}
+
+	cardsStat := p.handCards.ConvertStruct()
+	for _, num := range cardsStat {
+		if num == 4 {
+			count++
+		}
+	}
+	return
 }

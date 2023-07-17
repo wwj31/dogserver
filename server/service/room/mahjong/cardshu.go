@@ -17,7 +17,7 @@ func (c Cards) ting(ignore ColorType, lightGang, darkGang, pong map[int32]int64)
 
 	// 检查每一张牌的组合
 	for _, card := range allSingleCards {
-		if huType := c.Insert(card).IsHu(lightGang, darkGang, pong); huType != HuInvalid {
+		if huType := c.Insert(card).IsHu(lightGang, darkGang, pong, card); huType != HuInvalid {
 			tingCards[card] = huType
 		}
 	}
@@ -25,7 +25,7 @@ func (c Cards) ting(ignore ColorType, lightGang, darkGang, pong map[int32]int64)
 }
 
 // IsHu 牌组能否胡牌
-func (c Cards) IsHu(lightGang, darkGang, pong map[int32]int64) (typ HuType) {
+func (c Cards) IsHu(lightGang, darkGang, pong map[int32]int64, triggerCard Card) (typ HuType) {
 	colors := c.colors()
 	if len(colors) == 3 {
 		return HuInvalid
@@ -77,7 +77,7 @@ func (c Cards) IsHu(lightGang, darkGang, pong map[int32]int64) (typ HuType) {
 		return
 	}
 
-	return c.upgrade(colors, lightGang, darkGang, pong, typ)
+	return c.upgrade(colors, lightGang, darkGang, pong, typ, triggerCard)
 }
 
 func (c Cards) qingYiSeUpgrade(colors map[int]struct{}, typ HuType) HuType {
@@ -100,14 +100,14 @@ func (c Cards) qingYiSeUpgrade(colors map[int]struct{}, typ HuType) HuType {
 }
 
 // 传入花色，传入明杠
-func (c Cards) upgrade(colors map[int]struct{}, lightGang, darkGang, pong map[int32]int64, typ HuType) HuType {
+func (c Cards) upgrade(colors map[int]struct{}, lightGang, darkGang, pong map[int32]int64, typ HuType, triggerCard Card) HuType {
 	// 判断清一色升级牌型
 	typ = c.qingYiSeUpgrade(colors, typ)
 
 	switch typ {
 	case DuiDuiHu, QiDui, LongQiDui: // 对对胡->将对对、七对\龙七对->将七对
 		upgrade := true
-		c.Range(func(color ColorType, number int) bool {
+		c.RangeSplit(func(color ColorType, number int) bool {
 			if number != 2 && number != 5 && number != 8 {
 				upgrade = false
 				return true
@@ -124,6 +124,11 @@ func (c Cards) upgrade(colors map[int]struct{}, lightGang, darkGang, pong map[in
 		}
 
 	case Hu:
+		// 夹心五
+		if c.HasJiaXinWu(triggerCard) {
+			return JiaXinWu
+		}
+
 		// 判断平胡升中张 碰杠有幺九不算中张
 		if !c.Has1or9() && pongGangAllHasNo1or9(lightGang, darkGang, pong) {
 			return ZhongZhang

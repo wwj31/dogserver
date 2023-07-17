@@ -50,11 +50,8 @@ func (s *StateExchange3) stateEnd() {
 			Insert(Card(rival.exchange.CardsFrom[1])).
 			Insert(Card(rival.exchange.CardsFrom[2]))
 
-		log.Infow("exchanging ", "roomId", s.room.RoomId, "seatIndex", idx,
-			"player", player.ShortId, " exchange to seatIndex", player.exchange.ToSeatIndex,
-			"rival", rival.ShortId, "rival cards from", rival.exchange.CardsFrom,
-			"rival cards to seatIndex", rival.exchange.ToSeatIndex,
-			"rival cards to", rival.exchange.CardsTo,
+		log.Infow("exchanging ", "room", s.room.RoomId, "seat", idx, "player", player.ShortId,
+			"to seat", player.exchange.ToSeatIndex, "to player", rival.ShortId, "to cards", player.exchange.CardsTo,
 		)
 	}
 
@@ -79,17 +76,14 @@ func (s *StateExchange3) Handle(shortId int64, v any) (result any) {
 		}
 
 		// 三张不能有相同
-		if msg.Index[0] == msg.Index[1] ||
-			msg.Index[1] == msg.Index[2] ||
-			msg.Index[0] == msg.Index[2] {
+		if msg.Index[0] == msg.Index[1] || msg.Index[1] == msg.Index[2] {
 			return outer.ERROR_MAHJONG_EXCHANGE3_INDEX_EQUAL
 		}
 
 		// 同花色换三张
 		if s.room.GameParams.Mahjong.HuanSanZhang == 0 {
-			if msg.Index[0]%10 == msg.Index[1]%10 ||
-				msg.Index[1]%10 == msg.Index[2]%10 ||
-				msg.Index[0]%10 == msg.Index[2]%10 {
+			if Card(msg.Index[0]).Color() != Card(msg.Index[1]).Color() ||
+				Card(msg.Index[1]).Color() != Card(msg.Index[2]).Color() {
 				return outer.ERROR_MAHJONG_EXCHANGE3_COLOR_ERROR
 			}
 		}
@@ -122,7 +116,7 @@ func (s *StateExchange3) Handle(shortId int64, v any) (result any) {
 			ToSeatIndex:   int32(s.nextSeatIndex(s.SeatIndex(player.ShortId))),
 		}
 
-		log.Infow("MahjongBTEExchange3Req ", "roomId", s.room.RoomId, "playerID", player.ShortId,
+		log.Infow("MahjongBTEExchange3Req ", "room", s.room.RoomId, "playerID", player.ShortId,
 			"cards", exchange3Cards,
 			"seatIndex", seatIndex,
 			"nextSeatIndex", nextSeatIndex,

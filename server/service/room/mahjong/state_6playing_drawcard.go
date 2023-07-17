@@ -11,7 +11,7 @@ import (
 func (s *StatePlaying) drawCard(seatIndex int) {
 	// 摸牌的时候，行动者必须是nil
 	if len(s.actionMap) > 0 {
-		log.Errorw("draw a card exception", "roomId", s.room.RoomId, s.actionMap)
+		log.Errorw("draw a card exception", "room", s.room.RoomId, s.actionMap)
 		return
 	}
 
@@ -57,7 +57,7 @@ func (s *StatePlaying) drawCard(seatIndex int) {
 	}
 
 	// 判断能否胡牌
-	hu := player.handCards.IsHu(player.lightGang, player.darkGang, player.pong)
+	hu := player.handCards.IsHu(player.lightGang, player.darkGang, player.pong, newCard)
 	if hu != HuInvalid {
 		newAction.currentActions = append(newAction.currentActions, outer.ActionType_ActionHu)
 		notifyMsg.HuType = []outer.HuType{hu.PB()}
@@ -69,6 +69,6 @@ func (s *StatePlaying) drawCard(seatIndex int) {
 	notifyMsg.NewCard = newCard.Int32() // 摸到的新牌
 	s.room.SendToPlayer(player.ShortId, notifyMsg)
 
-	log.Infow("draw a card", "roomId", s.room.RoomId, "seat", seatIndex, "player", player.ShortId,
+	log.Infow("draw a card", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId,
 		"newCard", newCard, "action", newAction, "totalCards", s.cards.Len(), "hand", player.handCards)
 }

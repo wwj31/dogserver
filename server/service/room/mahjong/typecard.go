@@ -77,6 +77,14 @@ func (m Card) String() string {
 	return cast.ToString(m.Int())
 }
 
+func (m Card) Color() ColorType {
+	return ColorType(m / 10)
+}
+
+func (m Card) Point() int32 {
+	return m % 10
+}
+
 func (m Card) Int32() int32 {
 	return int32(m)
 }

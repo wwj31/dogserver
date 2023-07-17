@@ -65,7 +65,7 @@ var _ = router.Reg(func(r *room.Room, msg *inner.LeaveRoomReq) any {
 	// 玩家不在房间内
 	p := r.FindPlayer(msg.ShortId)
 	if p == nil {
-		log.Warnw("leave the room cannot find player", "roomId", r.RoomId, "msg", msg.ShortId)
+		log.Warnw("leave the room cannot find player", "room", r.RoomId, "msg", msg.ShortId)
 		return &inner.LeaveRoomRsp{}
 	}
 
@@ -83,7 +83,7 @@ var _ = router.Reg(func(r *room.Room, msg *inner.ReadyReq) any {
 	// 玩家不在房间内
 	p := r.FindPlayer(msg.ShortId)
 	if p == nil {
-		log.Warnw("ready the room cannot find player", "roomId", r.RoomId, "msg", msg.ShortId)
+		log.Warnw("ready the room cannot find player", "room", r.RoomId, "msg", msg.ShortId)
 		return outer.ERROR_PLAYER_NOT_IN_ROOM
 	}
 
@@ -139,7 +139,7 @@ var _ = router.Reg(func(r *room.Room, msg *inner.GamblingMsgToRoomWrapper) any {
 
 	msgId, ok := r.System().ProtoIndex().MsgNameToId(msg.MsgType)
 	if !ok {
-		log.Warnw("MsgGamblingMsgToClientWrapper msg name to id failed", "player", p.ShortId, "roomId", r.RoomId, "type", r.GameType, "msg", msg.String())
+		log.Warnw("MsgGamblingMsgToClientWrapper msg name to id failed", "player", p.ShortId, "room", r.RoomId, "type", r.GameType, "msg", msg.String())
 		return outer.ERROR_FAILED
 	}
 

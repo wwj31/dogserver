@@ -33,14 +33,13 @@ func (s *Room) OnLogin(first bool, enterGameRsp *outer.EnterGameRsp) {
 			Player: s.Player.PlayerInfo(),
 		})
 		if yes, _ := common.IsErr(v, err); yes {
-			log.Warnw("room invalid",
-				"shortId", s.Player.Role().ShortId(), "roomId", roomActor)
+			log.Warnw("room invalid", "room", roomActor, "shortId", s.Player.Role().ShortId())
 			clear = true
 		} else {
 			loginCheckRsp := v.(*inner.RoomLoginRsp)
 			if loginCheckRsp.Err != 0 {
 				log.Warnw("room check rsp failed",
-					"shortId", s.Player.Role().ShortId(), "roomId", roomActor, "err", loginCheckRsp.Err)
+					"shortId", s.Player.Role().ShortId(), "roomActor", roomActor, "err", loginCheckRsp.Err)
 				clear = true
 			} else {
 				s.RoomInfo = loginCheckRsp.RoomInfo
@@ -63,7 +62,7 @@ func (s *Room) OnLogout() {
 		if err != nil {
 			log.Warnw("logout room rsp failed",
 				"shortId", s.Player.Role().ShortId(),
-				"roomId", roomActor,
+				"roomActor", roomActor,
 			)
 		}
 	}
