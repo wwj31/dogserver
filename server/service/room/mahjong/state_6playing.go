@@ -44,6 +44,7 @@ func (s *StatePlaying) Enter() {
 	s.actionTimerId = ""
 	log.Infow("[Mahjong] enter state playing", "room", s.room.RoomId)
 	s.drawCard(s.masterIndex)
+	s.nextAction()
 }
 
 func (s *StatePlaying) Leave() {

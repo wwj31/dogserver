@@ -68,6 +68,7 @@ type (
 		currentActions []outer.ActionType // 当前行动者能执行的行为
 		currentHus     []outer.HuType     // 当前行动者能胡的牌
 		currentGang    []int32            // 当前行动者能杠的牌
+		newCard        Card               // 当前行动者摸到的新牌
 	}
 
 	Mahjong struct {

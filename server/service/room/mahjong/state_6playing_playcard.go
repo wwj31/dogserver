@@ -1,6 +1,7 @@
 package mahjong
 
 import (
+	"math/rand"
 	"time"
 
 	"github.com/wwj31/dogactor/tools"
@@ -42,11 +43,6 @@ func (s *StatePlaying) playCard(cardIndex, seatIndex int) (bool, outer.ERROR) {
 	log.Infow("play a card",
 		"room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId, "play", outCard, "hand", player.handCards)
 
-	var (
-		actionEndAt    time.Time // 通过此时间是否为Zero，可以判断是否有人需要碰、杠、胡
-		actionShortIds []int64   // 能操作的玩家加入集合
-	)
-
 	// 其余三家对这张牌依次做分析
 	for idx, other := range s.mahjongPlayers {
 		// 跳过自己
@@ -81,19 +77,19 @@ func (s *StatePlaying) playCard(cardIndex, seatIndex int) (bool, outer.ERROR) {
 			newAction.currentActions = append(newAction.currentActions, outer.ActionType_ActionPass)
 		}
 		if newAction.isActivated() {
-			if actionEndAt.IsZero() {
-				actionEndAt = tools.Now().Add(pongGangHuGuoExpiration)
-			}
 			s.actionMap[idx] = &newAction // 碰杠胡的玩家加入行动组
-			s.room.SendToPlayer(other.ShortId, &outer.MahjongBTETurnNtf{
-				TotalCards:    int32(s.cards.Len()),
-				ActionShortId: other.ShortId,
-				ActionEndAt:   actionEndAt.UnixMilli(),
-				ActionType:    newAction.currentActions,
-				HuType:        newAction.currentHus,
-				GangCards:     newAction.currentGang,
-				NewCard:       -1, // 客户端自己取桌面牌最后一张
-			})
+			//if actionEndAt.IsZero() {
+			//	actionEndAt = tools.Now().Add(pongGangHuGuoExpiration)
+			//}
+			//s.room.SendToPlayer(other.ShortId, &outer.MahjongBTETurnNtf{
+			//	TotalCards:    int32(s.cards.Len()),
+			//	ActionShortId: other.ShortId,
+			//	ActionEndAt:   actionEndAt.UnixMilli(),
+			//	ActionType:    newAction.currentActions,
+			//	HuType:        newAction.currentHus,
+			//	GangCards:     newAction.currentGang,
+			//	NewCard:       -1, // 客户端自己取桌面牌最后一张
+			//})
 
 			log.Infow("a new action",
 				"room", s.room.RoomId, "seat", idx, "other", other.ShortId,
@@ -101,19 +97,8 @@ func (s *StatePlaying) playCard(cardIndex, seatIndex int) (bool, outer.ERROR) {
 		}
 	}
 
-	// 行动组有人，优先让能操作的人行动, 通知剩下不能操作的人，展示"有人正在操作中..."
 	if len(s.actionMap) > 0 {
-		if len(s.actionMap) >= 2 {
-			s.mutilHuByIndex = seatIndex // 一炮多响，下局坐庄
-		}
-
-		s.actionTimer(actionEndAt) // 碰,杠,胡,过,行动倒计时
-
-		notifyPlayerMsg := &outer.MahjongBTETurnNtf{
-			TotalCards:  int32(s.cards.Len()),
-			ActionEndAt: actionEndAt.UnixMilli(),
-		}
-		s.room.Broadcast(notifyPlayerMsg, actionShortIds...)
+		s.nextAction()
 		return true, outer.ERROR_OK
 	}
 
@@ -125,5 +110,59 @@ func (s *StatePlaying) playCard(cardIndex, seatIndex int) (bool, outer.ERROR) {
 
 	// 到这里，说明出的牌没有任何人能碰杠胡，正常轮动到下家出牌，统一广播下个摸牌的人
 	s.drawCard(s.nextSeatIndex(seatIndex))
+	s.nextAction()
 	return true, outer.ERROR_OK
+}
+
+// 行动组有人，优先让能操作的人行动, 通知剩下不能操作的人，展示"有人正在操作中..."
+func (s *StatePlaying) nextAction() {
+	var (
+		nextSeat    int
+		canHu       []int
+		actionEndAt time.Time
+	)
+
+	defer func() {
+		delete(s.actionMap, nextSeat)
+	}()
+
+	// 先把能胡的人找出来
+	for seat, act := range s.actionMap {
+		if act.isValidAction(outer.ActionType_ActionHu) {
+			canHu = append(canHu, seat)
+		}
+		nextSeat = seat // 一边找就一边设置下个行动者，如果找不到胡的人，就直接用他,，默认就是碰杠
+	}
+
+	// 有人能胡，就随机找一个，让他先行动
+	if len(canHu) > 0 {
+		nextSeat = canHu[rand.Intn(len(canHu))]
+	}
+
+	nextPlayer := s.mahjongPlayers[nextSeat]
+	nextAct := s.actionMap[nextSeat]
+
+	if nextAct.isValidAction(outer.ActionType_ActionPlayCard) {
+		actionEndAt = tools.Now().Add(playCardExpiration)
+	} else {
+		actionEndAt = tools.Now().Add(pongGangHuGuoExpiration)
+	}
+	s.actionTimer(actionEndAt) // 碰,杠,胡,过,行动倒计时
+
+	// 通知行动者
+	s.room.SendToPlayer(nextPlayer.ShortId, &outer.MahjongBTETurnNtf{
+		TotalCards:    int32(s.cards.Len()),
+		ActionShortId: nextPlayer.ShortId,
+		ActionEndAt:   actionEndAt.UnixMilli(),
+		ActionType:    nextAct.currentActions,
+		HuType:        nextAct.currentHus,
+		GangCards:     nextAct.currentGang,
+		NewCard:       nextAct.newCard.Int32(), // 客户端自己取桌面牌最后一张
+	})
+
+	notifyPlayerMsg := &outer.MahjongBTETurnNtf{
+		TotalCards:  int32(s.cards.Len()),
+		ActionEndAt: actionEndAt.UnixMilli(),
+	}
+	s.room.Broadcast(notifyPlayerMsg, nextPlayer.ShortId)
 }
