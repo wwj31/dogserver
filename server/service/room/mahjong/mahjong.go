@@ -81,11 +81,14 @@ type (
 		firstHuIndex   int // 第一个胡牌的人
 		mutilHuByIndex int // 一炮多响点炮的人
 
-		cards              Cards                  // 剩余牌组
-		cardsInDesktop     Cards                  // 打出的牌
-		mahjongPlayers     [maxNum]*mahjongPlayer // 参与游戏的玩家
-		actionMap          map[int]*action        // 行动者们
-		currentActionEndAt time.Time              // 当前行动者结束时间
+		cards          Cards                  // 剩余牌组
+		cardsInDesktop Cards                  // 打出的牌
+		mahjongPlayers [maxNum]*mahjongPlayer // 参与游戏的玩家
+		actionMap      map[int]*action        // 行动者们
+
+		currentAction      *action   // 当前行动者
+		currentActionSeat  int       // 当前行动者座位
+		currentActionEndAt time.Time // 当前行动者结束时间
 	}
 )
 

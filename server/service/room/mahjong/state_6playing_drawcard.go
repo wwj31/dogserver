@@ -18,7 +18,7 @@ func (s *StatePlaying) drawCard(seatIndex int) {
 	newCard := s.cards[0]
 	s.cards = s.cards.Remove(newCard)
 	player.handCards = player.handCards.Insert(newCard)
-	s.AppendPeerCard(drawCardType, newCard, seatIndex)
+	s.appendPeerCard(drawCardType, newCard, seatIndex)
 
 	// 摸牌后必须出牌，所以先加入出牌操作
 	newAction := &action{}
