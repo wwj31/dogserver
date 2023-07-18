@@ -258,7 +258,7 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 		return false, outer.ERROR_MAHJONG_HU_INVALID
 	}
 
-	// 一炮多响
+	// 一炮多响,如果还有人胡了这个peer，那么就算一炮多响
 	if s.checkMutilHu(lastPeerIndex) {
 		s.mutilHuByIndex = peer.seat
 	}
