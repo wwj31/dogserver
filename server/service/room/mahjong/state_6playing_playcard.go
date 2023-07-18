@@ -76,19 +76,10 @@ func (s *StatePlaying) playCard(cardIndex, seatIndex int) (bool, outer.ERROR) {
 		}
 	}
 
-	if len(s.actionMap) > 0 {
-		s.nextAction()
-		return true, outer.ERROR_OK
+	if len(s.actionMap) == 0 {
+		s.drawCard(s.nextSeatIndex(seatIndex))
 	}
+	s.nextAction() // 出牌后的下个行为
 
-	// 检查是否需要结算
-	if s.gameOver() {
-		s.SwitchTo(Settlement)
-		return true, outer.ERROR_OK
-	}
-
-	// 到这里，说明出的牌没有任何人能碰杠胡，正常轮动到下家出牌，统一广播下个摸牌的人
-	s.drawCard(s.nextSeatIndex(seatIndex))
-	s.nextAction()
 	return true, outer.ERROR_OK
 }

@@ -46,16 +46,16 @@ func (s *StatePlaying) Enter() {
 	s.actionMap = make(map[int]*action)
 	s.actionTimerId = ""
 	s.currentStateEnterAt = time.Time{}
+
+	s.currentAction = &action{currentActions: []outer.ActionType{outer.ActionType_ActionPlayCard}}
+	s.currentActionSeat = s.masterIndex
+	s.actionMap[s.masterIndex] = s.currentAction
 	log.Infow("[Mahjong] enter state playing", "room", s.room.RoomId)
-	s.drawCard(s.masterIndex)
-	s.nextAction()
+	s.nextAction() // 庄家出牌
 }
 
 func (s *StatePlaying) Leave() {
 	s.cancelActionTimer()
-	s.currentAction = nil
-	s.currentActionSeat = -1
-	s.currentActionEndAt = time.Time{}
 	log.Infow("[Mahjong] leave state playing", "room", s.room.RoomId)
 }
 
@@ -162,16 +162,15 @@ func (s *StatePlaying) actionTimer(expireAt time.Time, seat int) {
 
 // 行动组有人，优先让能操作的人行动, 通知剩下不能操作的人，展示"有人正在操作中..."
 func (s *StatePlaying) nextAction() {
+	if len(s.actionMap) == 0 {
+		return
+	}
+
 	var (
 		nextSeat    int
 		canHu       []int
 		actionEndAt time.Time
 	)
-
-	if len(s.actionMap) == 0 {
-		log.Errorw("next action error no action", "room", s.room.RoomId)
-		return
-	}
 
 	// 先把能胡的人找出来
 	for seat, act := range s.actionMap {

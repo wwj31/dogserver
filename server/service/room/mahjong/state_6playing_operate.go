@@ -77,7 +77,7 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 	if len(s.actionMap) == 0 {
 		s.drawCard(nextDrawShortIndex)
 	}
-	s.nextAction()
+	s.nextAction() // 碰、杠、胡、过 后的下个行为
 
 	return true, outer.ERROR_OK
 }

@@ -101,7 +101,7 @@ func (s *StateExchange3) Handle(shortId int64, v any) (result any) {
 
 		var exchange3Cards Cards
 		for _, idx := range msg.Index {
-			if idx < 0 || idx > 12 {
+			if idx < 0 || idx >= int32(player.handCards.Len()) {
 				return outer.ERROR_MAHJONG_EXCHANGE3_INDEX_ERROR
 			}
 

@@ -310,6 +310,8 @@ func (m *Mahjong) clear() {
 
 	m.cards = nil
 	m.cardsInDesktop = nil
+	m.currentAction = nil
+	m.currentActionSeat = -1
 	m.actionMap = make(map[int]*action)
 	m.currentActionEndAt = time.Time{}
 }
