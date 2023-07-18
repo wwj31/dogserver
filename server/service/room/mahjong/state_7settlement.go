@@ -29,12 +29,13 @@ func (s *StateSettlement) Enter() {
 	s.nextMasterIndex() // 计算下一局庄家
 
 	// 结算给个短暂的时间
-	s.room.AddTimer(tools.XUID(), tools.Now().Add(SettlementDuration), func(dt time.Duration) {
+	s.currentStateEndAt = tools.Now().Add(SettlementDuration)
+	s.room.AddTimer(tools.XUID(), s.currentStateEndAt, func(dt time.Duration) {
 		s.SwitchTo(Ready)
 	})
 
 	log.Infow("[Mahjong] enter state settlement",
-		"room", s.room.RoomId, "dices", s.room.Dices, "master", s.masterIndex)
+		"room", s.room.RoomId, "master", s.masterIndex)
 }
 
 func (s *StateSettlement) Leave() {

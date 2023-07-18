@@ -34,7 +34,8 @@ func (s *StateDecideMaster) Enter() {
 	})
 
 	// 10秒播完动画后，切入换发牌
-	s.room.AddTimer(tools.XUID(), tools.Now().Add(DecideMasterShowDuration), func(dt time.Duration) {
+	s.currentStateEndAt = tools.Now().Add(DecideMasterShowDuration)
+	s.room.AddTimer(tools.XUID(), s.currentStateEndAt, func(dt time.Duration) {
 		s.SwitchTo(Deal)
 	})
 

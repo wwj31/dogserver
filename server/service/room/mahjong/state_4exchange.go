@@ -21,7 +21,8 @@ func (s *StateExchange3) State() int {
 
 func (s *StateExchange3) Enter() {
 	s.room.Broadcast(&outer.MahjongBTEExchange3Ntf{})
-	s.room.AddTimer(tools.XUID(), tools.Now().Add(Exchange3Expiration), func(time.Duration) {
+	s.currentStateEndAt = tools.Now().Add(Exchange3Expiration)
+	s.room.AddTimer(tools.XUID(), s.currentStateEndAt, func(time.Duration) {
 		s.stateEnd()
 	})
 	log.Infow("[Mahjong] enter state  exchange3", "room", s.room.RoomId)

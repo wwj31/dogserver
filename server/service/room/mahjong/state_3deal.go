@@ -37,7 +37,8 @@ func (s *StateDeal) Enter() {
 	s.cards = s.cards[52:]
 
 	// 发牌动画后，进入下个状态
-	s.room.AddTimer(tools.XUID(), tools.Now().Add(DealShowDuration), func(dt time.Duration) {
+	s.currentStateEndAt = tools.Now().Add(DealShowDuration)
+	s.room.AddTimer(tools.XUID(), s.currentStateEndAt, func(dt time.Duration) {
 		var nextState State
 		if s.room.GameParams.Mahjong.HuanSanZhang == 2 {
 			nextState = DecideIgnore // 不换牌，直接定缺

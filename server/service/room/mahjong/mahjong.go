@@ -78,6 +78,7 @@ type (
 		room                *room.Room
 		fsm                 *room.FSM
 		currentStateEnterAt time.Time // 当前状态的进入时间
+		currentStateEndAt   time.Time // 当前状态的结束时间
 
 		dices          []int32 // 两颗骰子数
 		masterIndex    int     // 庄家位置 0,1,2,3
@@ -107,25 +108,51 @@ func (m *Mahjong) SwitchTo(state int) {
 }
 
 func (m *Mahjong) Data(shortId int64) proto.Message {
-	return &outer.MahjongBTEGameInfo{
+	info := &outer.MahjongBTEGameInfo{
 		State:           outer.MahjongBTEState(m.fsm.State()),
 		StateEnterAt:    m.currentStateEnterAt.UnixMilli(),
-		StateEndAt:      m.currentActionEndAt.UnixMilli(),
+		StateEndAt:      0,
 		Players:         m.playersToPB(shortId),
 		Dices:           m.dices,
 		MasterIndex:     int32(m.masterIndex),
-		Ex3FromShortId:  nil,
-		TotalCardsCount: 0,
-		Cards:           nil,
+		Ex3Info:         m.ex3Info(shortId),
+		TotalCardsCount: int32(m.cards.Len()),
+		Cards:           m.cards.ToSlice(),
+		ActionEndAt:     m.currentActionEndAt.UnixMilli(),
 		ActionShortId:   0,
-		ActionEndAt:     0,
 		ActionType:      nil,
 		HuType:          nil,
 		GangCards:       nil,
 		NewCard:         0,
 	}
+
+	// 只有当行动者是出牌状态，才广播行动者
+	if m.currentAction.isValidAction(outer.ActionType_ActionPlayCard) {
+		info.ActionShortId = m.mahjongPlayers[m.currentActionSeat].ShortId
+	}
+
+	// 判断是当前行动者本人，就发行动数据
+	if m.currentActionSeat > 0 {
+		p := m.mahjongPlayers[m.currentActionSeat]
+		if p.ShortId == shortId {
+			info.ActionType = m.currentAction.currentActions
+			info.HuType = m.currentAction.currentHus
+			info.GangCards = m.currentAction.currentGang
+			info.NewCard = m.currentAction.newCard.Int32()
+		}
+	}
+
+	return info
 }
-func (m *Mahjong) ex3(shortId int64) (players []*outer.MahjongPlayerInfo) {
+
+func (m *Mahjong) ex3Info(shortId int64) (info *outer.Exchange3Info) {
+	p, _ := m.findMahjongPlayer(shortId)
+	if p == nil {
+		return nil
+	}
+	return p.exchange
+}
+
 func (m *Mahjong) playersToPB(shortId int64) (players []*outer.MahjongPlayerInfo) {
 	for _, player := range m.mahjongPlayers {
 		if player == nil {

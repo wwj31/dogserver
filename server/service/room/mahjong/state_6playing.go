@@ -45,6 +45,7 @@ func (s *StatePlaying) Enter() {
 	s.peerCards = make([]peerCard, 0)
 	s.actionMap = make(map[int]*action)
 	s.actionTimerId = ""
+	s.currentStateEnterAt = time.Time{}
 	log.Infow("[Mahjong] enter state playing", "room", s.room.RoomId)
 	s.drawCard(s.masterIndex)
 	s.nextAction()
@@ -52,6 +53,9 @@ func (s *StatePlaying) Enter() {
 
 func (s *StatePlaying) Leave() {
 	s.cancelActionTimer()
+	s.currentAction = nil
+	s.currentActionSeat = -1
+	s.currentActionEndAt = time.Time{}
 	log.Infow("[Mahjong] leave state playing", "room", s.room.RoomId)
 }
 
