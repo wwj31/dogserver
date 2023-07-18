@@ -231,3 +231,16 @@ func (s *StatePlaying) appendPeerCard(typ checkCardType, card Card, seat int, ga
 		afterQiangPass: gangFn,
 	})
 }
+
+// 检查是否一炮多响
+func (s *StatePlaying) checkMutilHu(huPeerIndex int) bool {
+	if huPeerIndex == 0 {
+		return false
+	}
+	for _, player := range s.mahjongPlayers {
+		if player.huPeerIndex != 0 && player.huPeerIndex == huPeerIndex {
+			return true
+		}
+	}
+	return false
+}

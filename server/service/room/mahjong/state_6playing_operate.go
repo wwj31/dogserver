@@ -234,7 +234,8 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.MahjongBTEOperaNtf) (bool, outer.ERROR) {
 	var paySeat []int // 需要赔前的座位
 	// 获得最后一次操作的牌
-	peer := s.peerCards[len(s.peerCards)-1]
+	lastPeerIndex := len(s.peerCards) - 1
+	peer := s.peerCards[lastPeerIndex]
 	var hu HuType
 	switch peer.typ {
 	case drawCardType: // 自摸
@@ -257,10 +258,16 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 		return false, outer.ERROR_MAHJONG_HU_INVALID
 	}
 
+	// 一炮多响
+	if s.checkMutilHu(lastPeerIndex) {
+		s.mutilHuByIndex = peer.seat
+	}
+
 	if s.firstHuIndex == -1 {
 		s.firstHuIndex = seatIndex
 	}
 	p.hu = hu
+	p.huPeerIndex = len(s.peerCards) - 1
 	ntf.HuType = hu.PB()
 	if peer.typ == GangType1 || peer.typ == GangType3 {
 		peer.afterQiangPass = nil // 抢杠成功，杠的人，杠失败
