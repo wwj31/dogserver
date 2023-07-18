@@ -7,15 +7,7 @@ import (
 
 // 打一张牌
 func (s *StatePlaying) playCard(cardIndex, seatIndex int) (bool, outer.ERROR) {
-	var (
-		act   *action
-		exist bool
-	)
-
-	// 检查是否是行动者,以及行为是否有效
-	if act, exist = s.actionMap[seatIndex]; !exist {
-		return false, outer.ERROR_MAHJONG_ACTION_PLAYER_NOT_MATCH
-	} else if !act.isValidAction(outer.ActionType_ActionPlayCard) {
+	if !s.currentAction.isValidAction(outer.ActionType_ActionPlayCard) {
 		return false, outer.ERROR_MAHJONG_ACTION_PLAYER_NOT_OPERA
 	}
 
@@ -24,9 +16,8 @@ func (s *StatePlaying) playCard(cardIndex, seatIndex int) (bool, outer.ERROR) {
 	outCard := player.handCards[cardIndex]
 	player.handCards = player.handCards.Remove(outCard)
 
-	delete(s.actionMap, seatIndex)                       // 提前将打牌的人从行动者中删除
 	s.cardsInDesktop = append(s.cardsInDesktop, outCard) // 按照打牌顺序加入桌面牌
-	s.appendPeerCard(playCardType, outCard, seatIndex)
+	s.appendPeerCard(playCardType, outCard, seatIndex, nil)
 
 	// 先把打牌消息广播出去
 	s.room.Broadcast(&outer.MahjongBTEOperaNtf{
@@ -54,23 +45,28 @@ func (s *StatePlaying) playCard(cardIndex, seatIndex int) (bool, outer.ERROR) {
 			newAction action
 			pass      bool
 		)
+
 		if other.handCards.CanGangTo(outCard) {
 			newAction.currentActions = append(newAction.currentActions, outer.ActionType_ActionGang)
 			newAction.currentGang = append(newAction.currentGang, outCard.Int32())
 			pass = true
 		}
+
 		if other.handCards.CanPongTo(outCard) {
 			newAction.currentActions = append(newAction.currentActions, outer.ActionType_ActionPong)
 			pass = true
 		}
+
 		if hu := other.handCards.Insert(outCard).IsHu(other.lightGang, other.darkGang, other.pong, outCard); hu != HuInvalid {
 			newAction.currentActions = append(newAction.currentActions, outer.ActionType_ActionHu)
 			newAction.currentHus = append(newAction.currentHus, hu.PB())
 			pass = true
 		}
+
 		if pass {
 			newAction.currentActions = append(newAction.currentActions, outer.ActionType_ActionPass)
 		}
+
 		if newAction.isActivated() {
 			s.actionMap[idx] = &newAction // 碰杠胡的玩家加入行动组
 

@@ -16,7 +16,6 @@ const (
 	drawCardType checkCardType = 1 // 摸牌
 	playCardType checkCardType = 2 // 打牌
 	GangType1    checkCardType = 3 // 明杠,自己摸牌，杠碰的牌(可抢杠胡)
-	GangType2    checkCardType = 4 // 明杠,补杠，别人打牌出我碰的牌
 	GangType3    checkCardType = 4 // 明杠,直杠，别人打牌出我手牌里有三张
 	GangType4    checkCardType = 5 // 暗杠,自己摸牌，自己手牌有三张
 )
@@ -26,6 +25,9 @@ type (
 		typ  checkCardType
 		card Card
 		seat int
+
+		// 以下操作用于杠
+		afterQiangPass func() // 主要用于抢杠胡 不抢的情况下，继续执行杠的行为
 	}
 )
 
@@ -57,6 +59,11 @@ func (s *StatePlaying) Handle(shortId int64, v any) (result any) {
 	player, seatIndex, err := s.getPlayerAndSeatE(shortId)
 	if err != outer.ERROR_OK {
 		return err
+	}
+
+	if s.currentActionSeat != seatIndex {
+		log.Warnw("illegal operation", "current seat", s.currentAction, "seat", seatIndex, "player", player.ShortId)
+		return outer.ERROR_MAHJONG_ACTION_PLAYER_NOT_MATCH
 	}
 
 	switch msg := v.(type) {
@@ -138,6 +145,7 @@ func (s *StatePlaying) actionTimer(expireAt time.Time, seat int) {
 				return
 			}
 			s.playCard(playIndex, seat)
+			return
 		} else {
 			log.Warnw("action exception",
 				"room", s.room.RoomId, "seat", seat, "player", player.ShortId, "act", act)
@@ -176,11 +184,24 @@ func (s *StatePlaying) nextAction() {
 
 	nextPlayer := s.mahjongPlayers[nextSeat]
 	nextAct := s.actionMap[nextSeat]
-	if nextAct.isValidAction(outer.ActionType_ActionPlayCard) {
-		actionEndAt = tools.Now().Add(playCardExpiration)
-	} else {
-		actionEndAt = tools.Now().Add(pongGangHuGuoExpiration)
+
+	// 广播协议
+	notifyPlayerMsg := &outer.MahjongBTETurnNtf{
+		TotalCards: int32(s.cards.Len()),
 	}
+
+	var expireDuration time.Duration
+	if nextAct.isValidAction(outer.ActionType_ActionPlayCard) {
+		expireDuration = playCardExpiration
+		// 打牌操作，需要广播出牌人以及出牌行为
+		notifyPlayerMsg.ActionShortId = nextPlayer.ShortId
+		notifyPlayerMsg.ActionType = []outer.ActionType{outer.ActionType_ActionPlayCard}
+	} else {
+		expireDuration = pongGangHuGuoExpiration
+	}
+
+	actionEndAt = tools.Now().Add(expireDuration)
+	notifyPlayerMsg.ActionEndAt = actionEndAt.UnixMilli()
 
 	s.currentActionEndAt = actionEndAt
 	s.currentAction = nextAct
@@ -199,18 +220,14 @@ func (s *StatePlaying) nextAction() {
 		NewCard:       nextAct.newCard.Int32(), // 客户端自己取桌面牌最后一张
 	})
 
-	// 通知其他玩家
-	notifyPlayerMsg := &outer.MahjongBTETurnNtf{
-		TotalCards:  int32(s.cards.Len()),
-		ActionEndAt: actionEndAt.UnixMilli(),
-	}
 	s.room.Broadcast(notifyPlayerMsg, nextPlayer.ShortId)
 }
 
-func (s *StatePlaying) appendPeerCard(typ checkCardType, card Card, seat int) {
+func (s *StatePlaying) appendPeerCard(typ checkCardType, card Card, seat int, gangFn func()) {
 	s.peerCards = append(s.peerCards, peerCard{
-		typ:  typ,
-		card: card,
-		seat: seat,
+		typ:            typ,
+		card:           card,
+		seat:           seat,
+		afterQiangPass: gangFn,
 	})
 }

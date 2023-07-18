@@ -20,8 +20,9 @@ func (s *StateDeal) State() int {
 }
 
 func (s *StateDeal) Enter() {
-	log.Infow("[Mahjong] enter state deal", "room", s.room.RoomId)
 	s.cards = RandomCards() // 总共108张
+	log.Infow("[Mahjong] enter state deal", "room", s.room.RoomId, "cards", s.cards)
+
 	var i int
 	for seatIndex, player := range s.mahjongPlayers {
 		player.handCards = append(Cards{}, s.cards[i:i+13]...).Sort()

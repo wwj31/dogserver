@@ -12,11 +12,6 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 		return false, outer.ERROR_MSG_REQ_PARAM_INVALID
 	}
 
-	if s.currentActionSeat != seatIndex {
-		log.Warnw("illegal operation", "current seat", s.currentAction, "seat", seatIndex, "player", player.ShortId)
-		return false, outer.ERROR_MAHJONG_ACTION_PLAYER_NOT_MATCH
-	}
-
 	if !s.currentAction.isValidAction(op) {
 		return false, outer.ERROR_MAHJONG_ACTION_PLAYER_NOT_OPERA
 	}
@@ -31,6 +26,13 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 	peer := s.peerCards[len(s.peerCards)-1]
 	switch op {
 	case outer.ActionType_ActionPass:
+		// 检查抢杠胡的情况，所有人都过了，需要执行杠的行为
+		if len(s.actionMap) == 0 && len(s.peerCards) > 0 {
+			lastPeer := s.peerCards[len(s.peerCards)-1]
+			if lastPeer.typ >= GangType1 && lastPeer.afterQiangPass != nil {
+				lastPeer.afterQiangPass()
+			}
+		}
 		ok = true
 		log.Infow("pass", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId, "hand", player.handCards)
 
@@ -45,7 +47,6 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 		ok, err = s.operateGang(player, seatIndex, card, ntf)
 		ntf.Card = card.Int32()        // 杠的牌
 		nextDrawShortIndex = seatIndex // 杠的人自己摸一张
-		s.drawCard(nextDrawShortIndex)
 
 		log.Infow("gang!", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId,
 			"peer", &peer, "hand", player.handCards, "lightGang cards", player.lightGang, "darkGang cards", player.darkGang)
@@ -72,6 +73,7 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 		s.room.Broadcast(ntf)
 	}
 
+	// 每次操作结束后，还有能行动的人就优先行动
 	if len(s.actionMap) > 0 {
 		s.nextAction()
 	} else if s.gameOver() {
@@ -154,49 +156,8 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 		return false, outer.ERROR_MSG_REQ_PARAM_INVALID
 	}
 
-	qiangGang := true
-	// 获得最后一次操作的牌
-	peer := s.peerCards[len(s.peerCards)-1]
-	switch peer.typ {
-	case drawCardType: // 摸牌
-		if _, ok := p.pong[card.Int32()]; ok {
-			delete(p.pong, card.Int32())
-			ntf.GangType = 1 // 面下杠（刮风）
-			// 可抢杠胡
-			s.appendPeerCard(GangType1, card, seatIndex)
-		} else {
-			// 暗杠（下雨）
-			for _, gang := range p.handCards.HasGang() {
-				if gang == card {
-					p.handCards = p.handCards.Remove(card, card, card, card)
-					break
-				}
-			}
-			ntf.GangType = 2
-			s.appendPeerCard(GangType4, card, seatIndex)
-			qiangGang = false
-		}
-		p.darkGang[card.Int32()] = p.ShortId
-
-	case playCardType: // 打牌
-		if _, ok := p.pong[card.Int32()]; ok {
-			delete(p.pong, card.Int32())
-			s.appendPeerCard(GangType2, card, seatIndex)
-		} else {
-			if !p.handCards.CanGangTo(card) {
-				log.Errorw("operate gang failed player cannot Gang",
-					"room", s.room.RoomId, "player", p.ShortId)
-				return false, outer.ERROR_MSG_REQ_PARAM_INVALID
-			}
-			p.handCards, _, _ = p.handCards.Gang(card)
-			ntf.GangType = 1 // 直杠（刮风）
-			s.appendPeerCard(GangType3, card, seatIndex)
-		}
-		p.lightGang[card.Int32()] = s.mahjongPlayers[peer.seat].ShortId
-	}
-
-	// 抢杠
-	if qiangGang {
+	hasQiangGang := func() bool {
+		b := false
 		for seat, other := range s.mahjongPlayers {
 			if seatIndex == seat {
 				continue
@@ -207,9 +168,65 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 				newAction.currentActions = append(newAction.currentActions, outer.ActionType_ActionHu, outer.ActionType_ActionPass)
 				newAction.currentHus = append(newAction.currentHus, hu.PB())
 				s.actionMap[seat] = &newAction // 抢杠胡操作
+				b = true
 			}
 		}
+		return b
 	}
+
+	qiangGang := false
+	// 获得最后一次操作的牌
+	peer := s.peerCards[len(s.peerCards)-1]
+	var (
+		gangFunc func()
+		gangType checkCardType
+	)
+	switch peer.typ {
+	case drawCardType: // 摸牌
+		if _, ok := p.pong[card.Int32()]; ok {
+			ntf.GangType = 1 // 面下杠（刮风）
+			gangType = GangType1
+
+			gangFunc = func() {
+				delete(p.pong, card.Int32())
+				p.darkGang[card.Int32()] = p.ShortId
+			}
+
+			qiangGang = hasQiangGang()
+		} else {
+			ntf.GangType = 2
+			gangType = GangType4
+
+			// 暗杠（下雨）
+			gangFunc = func() {
+				for _, gang := range p.handCards.HasGang() {
+					if gang == card {
+						p.handCards = p.handCards.Remove(card, card, card, card)
+						break
+					}
+				}
+				p.darkGang[card.Int32()] = p.ShortId
+			}
+		}
+
+	case playCardType:
+		ntf.GangType = 1 // 直杠（刮风）
+		gangType = GangType3
+		gangFunc = func() {
+			p.handCards, _, _ = p.handCards.Gang(card)
+			p.lightGang[card.Int32()] = s.mahjongPlayers[peer.seat].ShortId
+		}
+
+		qiangGang = hasQiangGang()
+	}
+
+	// 没有人能抢杠，直接执行杠
+	if !qiangGang {
+		gangFunc()
+		gangFunc = nil
+	}
+
+	s.appendPeerCard(gangType, card, seatIndex, gangFunc)
 	return true, outer.ERROR_OK
 }
 
@@ -245,7 +262,8 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 	}
 	p.hu = hu
 	ntf.HuType = hu.PB()
-	if peer.typ == GangType1 {
+	if peer.typ == GangType1 || peer.typ == GangType3 {
+		peer.afterQiangPass = nil // 抢杠成功，杠的人，杠失败
 		ntf.QiangGangHuCard = peer.card.Int32()
 	}
 
@@ -255,11 +273,17 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 
 	ntf.HuExtraType = p.huExtra.PB()
 
-	// 胡成功后，删除Gang和Pong(可以一炮多响,但是胡了，就不能碰、杠)
+	// 胡成功后，删除Gang和Pong(可以一炮多响,但是有人胡了就不能再碰、杠)
 	for seat, act := range s.actionMap {
 		act.remove(outer.ActionType_ActionGang)
 		act.remove(outer.ActionType_ActionPong)
 		act.currentGang = []int32{}
+
+		// 只剩下[过]操作，删掉
+		if len(act.currentActions) == 1 && act.isValidAction(outer.ActionType_ActionPass) {
+			act.remove(outer.ActionType_ActionPass)
+		}
+
 		if len(act.currentActions) == 0 {
 			delete(s.actionMap, seat)
 		}
