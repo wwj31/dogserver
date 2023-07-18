@@ -73,15 +73,11 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 		s.room.Broadcast(ntf)
 	}
 
-	// 每次操作结束后，还有能行动的人就优先行动
-	if len(s.actionMap) > 0 {
-		s.nextAction()
-	} else if s.gameOver() {
-		s.SwitchTo(Settlement)
-	} else {
+	// 没有可行动的人，就摸牌
+	if len(s.actionMap) == 0 {
 		s.drawCard(nextDrawShortIndex)
-		s.nextAction()
 	}
+	s.nextAction()
 
 	return true, outer.ERROR_OK
 }

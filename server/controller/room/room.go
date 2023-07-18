@@ -56,7 +56,7 @@ var _ = router.Reg(func(r *room.Room, msg *inner.JoinRoomReq) any {
 
 	return &inner.JoinRoomRsp{
 		RoomInfo:     r.Info(),
-		GamblingData: r.GamblingData(),
+		GamblingData: r.GamblingData(msg.Player.ShortId),
 	}
 })
 
@@ -111,7 +111,7 @@ var _ = router.Reg(func(r *room.Room, msg *inner.RoomLoginReq) any {
 	r.Broadcast(&outer.RoomPlayerOnlineNtf{ShortId: p.ShortId, Online: true}, p.ShortId)
 	return &inner.RoomLoginRsp{
 		RoomInfo:     r.Info(),
-		GamblingData: r.GamblingData(),
+		GamblingData: r.GamblingData(msg.Player.ShortId),
 	}
 })
 
@@ -124,7 +124,7 @@ var _ = router.Reg(func(r *room.Room, msg *inner.RoomLogoutReq) any {
 	}
 	p.GSession = ""
 
-	r.Broadcast(&outer.RoomPlayerOnlineNtf{ShortId: msg.GetShortId(), Online: false}, msg.GetShortId())
+	r.Broadcast(&outer.RoomPlayerOnlineNtf{ShortId: msg.ShortId, Online: false}, msg.GetShortId())
 	return nil
 })
 

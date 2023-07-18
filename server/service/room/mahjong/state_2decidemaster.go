@@ -21,15 +21,15 @@ func (s *StateDecideMaster) State() int {
 }
 
 func (s *StateDecideMaster) Enter() {
-	s.room.Dices[0] = rand.Int31n(6) + 1
-	s.room.Dices[1] = rand.Int31n(6) + 1
+	s.dices[0] = rand.Int31n(6) + 1
+	s.dices[1] = rand.Int31n(6) + 1
 
 	//s.masterIndex = rand.Intn(maxNum)
 	s.masterIndex = 0
 
 	// 广播定庄 庄家和骰子
 	s.room.Broadcast(&outer.MahjongBTEDecideMasterNtf{
-		Dices:       s.room.Dices,
+		Dices:       s.dices,
 		MasterIndex: int32(s.masterIndex),
 	})
 
@@ -39,7 +39,7 @@ func (s *StateDecideMaster) Enter() {
 	})
 
 	log.Infow("[Mahjong] enter state  decide master",
-		"room", s.room.RoomId, "dices", s.room.Dices, "master", s.masterIndex)
+		"room", s.room.RoomId, "dices", s.dices, "master", s.masterIndex)
 }
 
 func (s *StateDecideMaster) Leave() {

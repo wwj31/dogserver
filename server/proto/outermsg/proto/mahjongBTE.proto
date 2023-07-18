@@ -14,7 +14,7 @@ message MahjongBTEGameInfo {
     repeated MahjongPlayerInfo Players          = 4; // 东南西北 四方玩家信息
     repeated int32             Dices            = 5; // 定庄的2颗骰子数
     int32                      MasterIndex      = 6; // 庄家位置 东南西北(0-3)
-    Exchange3Info              Ex3FromShortId   = 7; // 换三张数据
+    Exchange3Info              Ex3Info          = 7; // 换三张数据
     int32                      TotalCardsCount  = 8; // 剩余总牌数
     repeated int32             Cards            = 9; // 打出去的所有牌
     int64                      ActionShortId    = 10; // 当前操作者

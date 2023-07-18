@@ -17,7 +17,7 @@ func (g GamblingType) Int32() int32 {
 }
 
 type Gambling interface {
-	Data() proto.Message
+	Data(shortId int64) proto.Message
 	SeatIndex(shortId int64) int
 	CanEnter(p *inner.PlayerInfo) bool
 	CanLeave(p *inner.PlayerInfo) bool

@@ -46,7 +46,6 @@ type (
 		stopping       bool
 		CurrentMsg     actor.Message
 		RoomId         int64
-		Dices          []int32           // 两颗骰子数
 		GameType       int32             // 游戏类型 0.血战 1.斗地主
 		GameParams     *outer.GameParams // 游戏参数
 		CreatorShortId int64             // 房间创建者
@@ -68,7 +67,6 @@ func (r *Room) GamblingHandle(shortId int64, v any) (result any) {
 
 func (r *Room) OnInit() {
 	r.GameParams.Mahjong.HuanSanZhang = 2 // TODO TEST
-	r.Dices = make([]int32, 2, 2)         //
 	router.Result(r, r.responseHandle)
 	log.Debugf("Room:[%v] OnInit", r.RoomId)
 }
@@ -280,8 +278,8 @@ func (r *Room) Info() *inner.RoomInfo {
 }
 
 // GamblingData 游戏数据
-func (r *Room) GamblingData() []byte {
-	data, err := proto.Marshal(r.gambling.Data())
+func (r *Room) GamblingData(shortId int64) []byte {
+	data, err := proto.Marshal(r.gambling.Data(shortId))
 	if err != nil {
 		log.Errorw("gambling data marshal failed", "room", r.RoomId, "param", r.GameParams.String())
 	}

@@ -79,10 +79,11 @@ type (
 		fsm                 *room.FSM
 		currentStateEnterAt time.Time // 当前状态的进入时间
 
-		masterIndex    int // 庄家位置 0,1,2,3
-		gameCount      int // 游戏的连续局数
-		firstHuIndex   int // 第一个胡牌的人
-		mutilHuByIndex int // 一炮多响点炮的人
+		dices          []int32 // 两颗骰子数
+		masterIndex    int     // 庄家位置 0,1,2,3
+		gameCount      int     // 游戏的连续局数
+		firstHuIndex   int     // 第一个胡牌的人
+		mutilHuByIndex int     // 一炮多响点炮的人
 
 		cards          Cards                  // 剩余牌组
 		cardsInDesktop Cards                  // 打出的牌
@@ -105,8 +106,52 @@ func (m *Mahjong) SwitchTo(state int) {
 	m.currentStateEnterAt = tools.Now()
 }
 
-func (m *Mahjong) Data() proto.Message {
-	return &outer.MahjongBTEGameInfo{}
+func (m *Mahjong) Data(shortId int64) proto.Message {
+	return &outer.MahjongBTEGameInfo{
+		State:           outer.MahjongBTEState(m.fsm.State()),
+		StateEnterAt:    m.currentStateEnterAt.UnixMilli(),
+		StateEndAt:      m.currentActionEndAt.UnixMilli(),
+		Players:         m.playersToPB(shortId),
+		Dices:           m.dices,
+		MasterIndex:     int32(m.masterIndex),
+		Ex3FromShortId:  nil,
+		TotalCardsCount: 0,
+		Cards:           nil,
+		ActionShortId:   0,
+		ActionEndAt:     0,
+		ActionType:      nil,
+		HuType:          nil,
+		GangCards:       nil,
+		NewCard:         0,
+	}
+}
+func (m *Mahjong) ex3(shortId int64) (players []*outer.MahjongPlayerInfo) {
+func (m *Mahjong) playersToPB(shortId int64) (players []*outer.MahjongPlayerInfo) {
+	for _, player := range m.mahjongPlayers {
+		if player == nil {
+			players = append(players, nil)
+		} else {
+			var allCards []int32
+			if player.ShortId == shortId {
+				allCards = player.handCards.ToSlice()
+			} else {
+				handLen := player.handCards.Len()
+				allCards = make([]int32, handLen, handLen)
+			}
+
+			players = append(players, &outer.MahjongPlayerInfo{
+				ShortId:     player.ShortId,
+				DecideColor: outer.ColorType(player.ignoreColor),
+				AllCards: &outer.CardsOfBTE{
+					Cards:     allCards,
+					LightGang: player.lightGang,
+					DarkGang:  player.darkGang,
+					Pong:      player.pong,
+				},
+			})
+		}
+	}
+	return
 }
 
 func (m *Mahjong) SeatIndex(shortId int64) int {
