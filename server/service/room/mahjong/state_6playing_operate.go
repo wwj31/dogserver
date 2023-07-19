@@ -6,7 +6,7 @@ import (
 )
 
 // 碰杠胡过
-func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.ActionType, card Card) (ok bool, err outer.ERROR) {
+func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.ActionType, hu HuType, card Card) (ok bool, err outer.ERROR) {
 	if op == outer.ActionType_ActionPlayCard {
 		// 此函数不受理打牌
 		return false, outer.ERROR_MSG_REQ_PARAM_INVALID
@@ -152,6 +152,12 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 		return false, outer.ERROR_MSG_REQ_PARAM_INVALID
 	}
 
+	if !s.currentAction.canGang(card) {
+		log.Errorw("operate gang failed invalid gang card",
+			"room", s.room.RoomId, "player", p.ShortId, "currentGang", s.currentAction.currentGang, "card", card)
+		return false, outer.ERROR_MSG_REQ_PARAM_INVALID
+	}
+
 	hasQiangGang := func() bool {
 		b := false
 		for seat, other := range s.mahjongPlayers {
@@ -259,9 +265,7 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 		s.mutilHuByIndex = peer.seat
 	}
 
-	if s.firstHuIndex == -1 {
-		s.firstHuIndex = seatIndex
-	}
+	s.huSeat = append(s.huSeat, seatIndex)
 	p.hu = hu
 	p.huPeerIndex = len(s.peerCards) - 1
 	ntf.HuType = hu.PB()

@@ -29,7 +29,7 @@ func (s *StateDecideMaster) Enter() {
 
 	// 广播定庄 庄家和骰子
 	s.room.Broadcast(&outer.MahjongBTEDecideMasterNtf{
-		Dices:       s.dices,
+		Dices:       s.dices[:],
 		MasterIndex: int32(s.masterIndex),
 	})
 

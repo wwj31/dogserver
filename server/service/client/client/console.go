@@ -47,6 +47,13 @@ func reg(name string, fn func(arg ...string)) bool {
 }
 
 // 创建房间
+var _ = reg("help", func(arg ...string) {
+	for name, _ := range cmds {
+		fmt.Println(name)
+	}
+})
+
+// 创建房间
 var _ = reg("c", func(arg ...string) {
 	req := &outer.CreateRoomReq{
 		GameType: outer.GameType_Mahjong,
@@ -94,7 +101,7 @@ var _ = reg("j", func(arg ...string) {
 	if ok {
 		info := outer.MahjongBTEGameInfo{}
 		_ = proto.Unmarshal(joinRsp.GamblingData, &info)
-		log.Infof("joinRoomRsp gambling info:%v", info)
+		log.Infof("joinRoomRsp gambling info:%v", &info)
 	}
 })
 
@@ -114,4 +121,53 @@ var _ = reg("q", func(arg ...string) {
 	req := &outer.LeaveRoomReq{}
 
 	client.Req(outer.Msg_IdLeaveRoomReq, req)
+})
+
+// 出牌
+var _ = reg("out", func(arg ...string) {
+	log.Infof("out")
+	if len(arg) != 1 {
+		log.Warnw("out arg len err", len(arg))
+		return
+	}
+	req := &outer.MahjongBTEPlayCardReq{Index: cast.ToInt32(arg[0])}
+	client.Req(outer.Msg_IdMahjongBTEPlayCardReq, req)
+})
+
+// 碰
+var _ = reg("guo", func(arg ...string) {
+	req := &outer.MahjongBTEOperateReq{ActionType: outer.ActionType_ActionPass}
+	client.Req(outer.Msg_IdMahjongBTEOperateReq, req)
+})
+
+// 碰
+var _ = reg("peng", func(arg ...string) {
+	req := &outer.MahjongBTEOperateReq{ActionType: outer.ActionType_ActionPong}
+	client.Req(outer.Msg_IdMahjongBTEOperateReq, req)
+})
+
+// 杠
+var _ = reg("gang", func(arg ...string) {
+	if len(arg) != 1 {
+		return
+	}
+
+	req := &outer.MahjongBTEOperateReq{
+		ActionType: outer.ActionType_ActionGang,
+		Gang:       cast.ToInt32(arg[0]),
+	}
+	client.Req(outer.Msg_IdMahjongBTEOperateReq, req)
+})
+
+// hu
+var _ = reg("hu", func(arg ...string) {
+	if len(arg) != 1 {
+		return
+	}
+
+	req := &outer.MahjongBTEOperateReq{
+		ActionType: outer.ActionType_ActionHu,
+		Hu:         outer.HuType(cast.ToInt32(arg[0])),
+	}
+	client.Req(outer.Msg_IdMahjongBTEOperateReq, req)
 })

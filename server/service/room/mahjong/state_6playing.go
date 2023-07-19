@@ -83,7 +83,7 @@ func (s *StatePlaying) Handle(shortId int64, v any) (result any) {
 		return &outer.MahjongBTEPlayCardRsp{AllCards: player.allCardsToPB()}
 
 	case *outer.MahjongBTEOperateReq: // 碰、杠、胡、过
-		if ok, errCode := s.operate(player, seatIndex, msg.ActionType, Card(msg.Gang)); !ok {
+		if ok, errCode := s.operate(player, seatIndex, msg.ActionType, HuType(msg.Hu), Card(msg.Gang)); !ok {
 			return errCode
 		}
 		return &outer.MahjongBTEOperateRsp{AllCards: player.allCardsToPB()}
@@ -156,7 +156,12 @@ func (s *StatePlaying) actionTimer(expireAt time.Time, seat int) {
 			return
 		}
 
-		s.operate(player, seat, defaultOperaType, card)
+		var hu HuType
+		if len(act.currentHus) > 0 {
+			hu = HuType(act.currentHus[0])
+		}
+
+		s.operate(player, seat, defaultOperaType, hu, card)
 	})
 }
 

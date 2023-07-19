@@ -92,6 +92,7 @@ message RoomKickOutNtf{
 message GamblingMsgToRoomWrapper{
   string MsgType = 1;
   bytes  Data    = 2;
+  string RID     = 3;
 }
 
 message GamblingMsgToClientWrapper{

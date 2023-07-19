@@ -58,21 +58,21 @@ message LatestOperaCard {
 }
 ////////////////////////////////////////////// 游戏操作请求 //////////////////////////////////////////////
 // 换三张确定
-message MahjongBTEExchange3Req {
+message MahjongBTEExchange3Req {// tag:gambling
     repeated int32 Index = 1; // 13张牌下标 0~12
 }
 message MahjongBTEExchange3Rsp {
 }
 
 // 定缺确定
-message MahjongBTEDecideIgnoreReq {
+message MahjongBTEDecideIgnoreReq {// tag:gambling
     ColorType color = 1;
 }
 message MahjongBTEDecideIgnoreRsp {
 }
 
 // 出牌
-message MahjongBTEPlayCardReq {
+message MahjongBTEPlayCardReq {// tag:gambling
     int32 Index = 1;// 手牌下标 0开始
 }
 message MahjongBTEPlayCardRsp {
@@ -80,7 +80,7 @@ message MahjongBTEPlayCardRsp {
 }
 
 // 执行操作 过、碰、杠、胡
-message MahjongBTEOperateReq {
+message MahjongBTEOperateReq {// tag:gambling
     ActionType ActionType = 1;
     HuType     Hu         = 2; // 胡的牌型
     int32      Gang       = 3; // 杠的牌

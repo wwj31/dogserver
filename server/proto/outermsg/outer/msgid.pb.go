@@ -52,13 +52,13 @@ const (
 	Msg_IdLoginRsp                     Msg = 1275741587
 	Msg_IdEnterGameReq                 Msg = 117622385 // dispatch to player
 	Msg_IdEnterGameRsp                 Msg = 2097329717
-	Msg_IdMahjongBTEExchange3Req       Msg = 983022052
+	Msg_IdMahjongBTEExchange3Req       Msg = 983022052 // dispatch to gambling
 	Msg_IdMahjongBTEExchange3Rsp       Msg = 681024845
-	Msg_IdMahjongBTEDecideIgnoreReq    Msg = 1993774143
+	Msg_IdMahjongBTEDecideIgnoreReq    Msg = 1993774143 // dispatch to gambling
 	Msg_IdMahjongBTEDecideIgnoreRsp    Msg = 1758887476
-	Msg_IdMahjongBTEPlayCardReq        Msg = 2138714649
+	Msg_IdMahjongBTEPlayCardReq        Msg = 2138714649 // dispatch to gambling
 	Msg_IdMahjongBTEPlayCardRsp        Msg = 1970938586
-	Msg_IdMahjongBTEOperateReq         Msg = 1792910030
+	Msg_IdMahjongBTEOperateReq         Msg = 1792910030 // dispatch to gambling
 	Msg_IdMahjongBTEOperateRsp         Msg = 2094907235
 	Msg_IdMahjongBTEReadyNtf           Msg = 23903615
 	Msg_IdMahjongBTEDecideMasterNtf    Msg = 701290466

@@ -23,8 +23,8 @@ const (
 	Exchange3ShowDuration    = 1 * time.Second  // 换三张结束后的动画播放时间
 	DecideIgnoreExpiration   = 5 * time.Second  // 定缺持续时间
 	DecideIgnoreDuration     = 1 * time.Second  // 定缺结束后的动画播放时间
-	pongGangHuGuoExpiration  = 6 * time.Second  // 碰、杠、胡、过持续时间
-	playCardExpiration       = 3 * time.Second  // 摸牌后的行为持续时间(出牌，杠，胡)
+	pongGangHuGuoExpiration  = 30 * time.Second // 碰、杠、胡、过持续时间
+	playCardExpiration       = 30 * time.Second // 出牌行为持续时间
 	SettlementDuration       = 2 * time.Second  // 结算持续时间
 )
 
@@ -80,11 +80,11 @@ type (
 		currentStateEnterAt time.Time // 当前状态的进入时间
 		currentStateEndAt   time.Time // 当前状态的结束时间
 
-		dices          []int32 // 两颗骰子数
-		masterIndex    int     // 庄家位置 0,1,2,3
-		gameCount      int     // 游戏的连续局数
-		firstHuIndex   int     // 第一个胡牌的人
-		mutilHuByIndex int     // 一炮多响点炮的人
+		dices          [2]int32 // 两颗骰子数
+		masterIndex    int      // 庄家位置 0,1,2,3
+		gameCount      int      // 游戏的连续局数
+		huSeat         []int    // 胡牌的位置，依次按顺序加入
+		mutilHuByIndex int      // 一炮多响点炮的人
 
 		cards          Cards                  // 剩余牌组
 		cardsInDesktop Cards                  // 打出的牌
@@ -111,13 +111,13 @@ func (m *Mahjong) Data(shortId int64) proto.Message {
 	info := &outer.MahjongBTEGameInfo{
 		State:           outer.MahjongBTEState(m.fsm.State()),
 		StateEnterAt:    m.currentStateEnterAt.UnixMilli(),
-		StateEndAt:      0,
+		StateEndAt:      m.currentStateEndAt.UnixMilli(),
 		Players:         m.playersToPB(shortId),
-		Dices:           m.dices,
+		Dices:           m.dices[:],
 		MasterIndex:     int32(m.masterIndex),
 		Ex3Info:         m.ex3Info(shortId),
 		TotalCardsCount: int32(m.cards.Len()),
-		Cards:           m.cards.ToSlice(),
+		Cards:           m.cardsInDesktop.ToSlice(),
 		ActionEndAt:     m.currentActionEndAt.UnixMilli(),
 		ActionShortId:   0,
 		ActionType:      nil,
@@ -348,6 +348,18 @@ func (a *action) remove(actionType outer.ActionType) {
 			return
 		}
 	}
+}
+
+// 当前行为能否杠某张牌
+func (a *action) canGang(card Card) bool {
+	var valid bool
+	for _, c := range a.currentGang {
+		if c == card.Int32() {
+			valid = true
+			break
+		}
+	}
+	return valid
 }
 
 func (a *action) String() string {

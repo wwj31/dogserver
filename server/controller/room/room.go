@@ -1,7 +1,6 @@
 package room
 
 import (
-	"server/common/actortype"
 	"server/common/log"
 	"server/common/router"
 	"server/proto/innermsg/inner"
@@ -130,8 +129,7 @@ var _ = router.Reg(func(r *room.Room, msg *inner.RoomLogoutReq) any {
 
 // gambling 消息
 var _ = router.Reg(func(r *room.Room, msg *inner.GamblingMsgToRoomWrapper) any {
-	rid := actortype.RID(r.CurrentMsg.GetSourceId())
-	p := r.FindPlayerByRID(rid)
+	p := r.FindPlayerByRID(msg.RID)
 	if p == nil {
 		log.Warnw("room GamblingMsgToRoomWrapper cannot find player", "msg", msg.String())
 		return outer.ERROR_PLAYER_NOT_IN_ROOM

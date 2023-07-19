@@ -31,13 +31,13 @@ enum Msg {
     IdLoginRsp = 1275741587;
     IdEnterGameReq = 117622385;// dispatch to player
     IdEnterGameRsp = 2097329717;
-    IdMahjongBTEExchange3Req = 983022052;
+    IdMahjongBTEExchange3Req = 983022052;// dispatch to gambling
     IdMahjongBTEExchange3Rsp = 681024845;
-    IdMahjongBTEDecideIgnoreReq = 1993774143;
+    IdMahjongBTEDecideIgnoreReq = 1993774143;// dispatch to gambling
     IdMahjongBTEDecideIgnoreRsp = 1758887476;
-    IdMahjongBTEPlayCardReq = 2138714649;
+    IdMahjongBTEPlayCardReq = 2138714649;// dispatch to gambling
     IdMahjongBTEPlayCardRsp = 1970938586;
-    IdMahjongBTEOperateReq = 1792910030;
+    IdMahjongBTEOperateReq = 1792910030;// dispatch to gambling
     IdMahjongBTEOperateRsp = 2094907235;
     IdMahjongBTEReadyNtf = 23903615;
     IdMahjongBTEDecideMasterNtf = 701290466;

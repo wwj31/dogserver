@@ -1,9 +1,10 @@
 package gateway
 
 import (
+	"time"
+
 	"github.com/golang/protobuf/proto"
 	"github.com/wwj31/dogactor/expect"
-	"time"
 
 	"github.com/wwj31/dogactor/actor"
 
@@ -95,16 +96,17 @@ func (u *UserSession) OnRecv(data []byte) {
 		msgData  []byte
 	)
 	switch tag := outer.MsgIDTags[base.MsgId]; tag {
-	case actortype.LoginActor:
+	case MsgToLogin:
 		targetId = actortype.LoginActor
 		msgData = base.Data
-	case actortype.PlayerActor:
+	case MsgToPlayer:
 		targetId = u.PlayerId
 		msgData = base.Data
-	case actortype.GameActor:
+	case MsgToGambling:
 		gamblingWrapper := &inner.GamblingMsgToRoomWrapper{
 			MsgType: msgName,
 			Data:    base.Data,
+			RID:     actortype.RID(u.PlayerId),
 		}
 		msgData = common.ProtoMarshal(gamblingWrapper)
 		msgName = common.ProtoType(gamblingWrapper)

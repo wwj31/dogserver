@@ -1,9 +1,11 @@
 package mahjong
 
 import (
-	"github.com/wwj31/dogactor/tools"
-	"server/common/log"
 	"time"
+
+	"github.com/wwj31/dogactor/tools"
+
+	"server/common/log"
 )
 
 // 结算状态
@@ -49,8 +51,8 @@ func (s *StateSettlement) Handle(shortId int64, v any) (result any) {
 func (s *StateSettlement) nextMasterIndex() {
 	if s.mutilHuByIndex != -1 {
 		s.masterIndex = s.mutilHuByIndex
-	} else if s.firstHuIndex != -1 {
-		s.masterIndex = s.firstHuIndex
+	} else if len(s.huSeat) > 0 {
+		s.masterIndex = s.huSeat[0]
 	} else {
 		s.masterIndex = s.nextSeatIndexWithoutHu(s.masterIndex)
 	}
