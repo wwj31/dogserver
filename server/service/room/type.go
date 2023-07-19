@@ -2,6 +2,7 @@ package room
 
 import (
 	"github.com/golang/protobuf/proto"
+
 	"server/proto/innermsg/inner"
 )
 

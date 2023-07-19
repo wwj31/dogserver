@@ -12,7 +12,7 @@ import (
 	"server/common/log"
 )
 
-// 前端http接口签名流程：
+// http接口签名流程：
 // 1.获取当前系统UTC时间戳 timestamp (秒)
 // 2.将timestamp转换成字符串和secretKey拼接在一起获得sum    sum=timestamp+secretKey
 // 3.token=md5(sum)

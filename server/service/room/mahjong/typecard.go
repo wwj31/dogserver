@@ -1,6 +1,8 @@
 package mahjong
 
-import "github.com/spf13/cast"
+import (
+	"github.com/spf13/cast"
+)
 
 type (
 	Card     int32
@@ -91,6 +93,19 @@ func (m Card) Int32() int32 {
 
 func (m Card) Int() int {
 	return int(m)
+}
+
+func (c Cards) String() string {
+	var result string
+	result = "{"
+	for i, card := range c {
+		result += card.String()
+		if i < len(c)-1 {
+			result += ", "
+		}
+	}
+	result += "}"
+	return result
 }
 
 var cards108 = [108]Card{

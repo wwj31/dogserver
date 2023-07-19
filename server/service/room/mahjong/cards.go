@@ -13,14 +13,19 @@ import (
 const MaxCardNum = 41
 
 // RandomCards 获得洗好的一副新牌
-func RandomCards() Cards {
+func RandomCards(ignoreCard Cards) Cards {
 	cards := cards108
 	tail := len(cards)
 	for i := 0; i < len(cards); i++ {
 		idx := rand.Intn(len(cards[:tail]))
 		cards[idx], cards[tail-1] = cards[tail-1], cards[idx]
 	}
-	return cards[:]
+
+	result := Cards(cards[:])
+	if len(ignoreCard) > 0 {
+		result = result.Remove(ignoreCard...)
+	}
+	return result
 }
 
 func (c Cards) Sort() Cards {

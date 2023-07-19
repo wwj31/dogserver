@@ -10,7 +10,7 @@ import (
 )
 
 func TestRandomCards(t *testing.T) {
-	cards := mahjong.RandomCards()
+	cards := mahjong.RandomCards(nil)
 	cards.Sort()
 	fmt.Println(cards)
 }
@@ -103,6 +103,25 @@ func TestHighCard(t *testing.T) {
 	assert.False(t, cards.HighCard(cards.ConvertStruct()))
 }
 
+func TestCards(t *testing.T) {
+	cards := mahjong.Cards{
+		// 发给庄家的13张牌
+		11, 11, 11, 12, 12, 12, 13, 13, 13, 14, 14, 14, 15,
+		// 发给第二位玩家的13张牌
+		21, 22, 23, 24, 25, 26, 27, 21, 22, 23, 24, 25, 26,
+		// 发给第三位玩家的13张牌
+		27, 28, 29, 31, 32, 33, 34, 28, 29, 31, 32, 33, 34,
+		// 发给第四位玩家的13张牌
+		35, 36, 37, 38, 39, 21, 22, 23, 24, 25, 26, 27, 28,
+		// 给庄家的第14张牌
+		15,
+	}
+	randomCards := mahjong.RandomCards(cards)
+	randomCards = append(cards, randomCards...)
+
+	fmt.Println(randomCards)
+	fmt.Println(len(randomCards))
+}
 func TestRecurCheck(t *testing.T) {
 	tests := []struct {
 		name string
@@ -139,8 +158,8 @@ func TestRecurCheck(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tt.c.IsHu(nil, nil, nil)
-			assert.Equal(t, tt.want, tt.c.IsHu(nil, nil, nil))
+			tt.c.IsHu(nil, nil, nil, 11)
+			assert.Equal(t, tt.want, tt.c.IsHu(nil, nil, nil, 11))
 		})
 	}
 }
