@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/golang/protobuf/proto"
 	"github.com/spf13/cast"
 
 	"server/common/log"
@@ -88,7 +89,13 @@ var _ = reg("j", func(arg ...string) {
 		RoomId: roomId,
 	}
 
-	client.Req(outer.Msg_IdJoinRoomReq, req)
+	rsp := client.Req(outer.Msg_IdJoinRoomReq, req)
+	joinRsp, ok := rsp.(*outer.JoinRoomRsp)
+	if ok {
+		info := outer.MahjongBTEGameInfo{}
+		_ = proto.Unmarshal(joinRsp.GamblingData, &info)
+		log.Infof("joinRoomRsp gambling info:%v", info)
+	}
 })
 
 // 准备

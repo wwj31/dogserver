@@ -127,7 +127,7 @@ func (m *Mahjong) Data(shortId int64) proto.Message {
 	}
 
 	// 只有当行动者是出牌状态，才广播行动者
-	if m.currentAction.isValidAction(outer.ActionType_ActionPlayCard) {
+	if m.currentAction != nil && m.currentAction.isValidAction(outer.ActionType_ActionPlayCard) {
 		info.ActionShortId = m.mahjongPlayers[m.currentActionSeat].ShortId
 	}
 
