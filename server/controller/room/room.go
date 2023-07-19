@@ -142,5 +142,7 @@ var _ = router.Reg(func(r *room.Room, msg *inner.GamblingMsgToRoomWrapper) any {
 	}
 
 	outerMsg := r.System().ProtoIndex().UnmarshalPbMsg(msgId, msg.Data)
-	return r.GamblingHandle(p.ShortId, outerMsg)
+	rsp := r.GamblingHandle(p.ShortId, outerMsg)
+
+	return rsp
 })

@@ -62,12 +62,25 @@ func (r *Room) InjectGambling(gambling Gambling) {
 }
 
 func (r *Room) GamblingHandle(shortId int64, v any) (result any) {
-	return r.gambling.Handle(shortId, v)
+	rsp := r.gambling.Handle(shortId, v)
+	if rsp == nil {
+		return nil
+	}
+
+	_, ok := rsp.(outer.ERROR)
+	if ok {
+		return rsp
+	}
+
+	return &inner.GamblingMsgToClientWrapper{
+		MsgType: common.ProtoType(rsp.(proto.Message)),
+		Data:    common.ProtoMarshal(rsp.(proto.Message)),
+	}
 }
 
 func (r *Room) OnInit() {
-	r.GameParams.Mahjong.HuanSanZhang = 2 // TODO TEST
 	router.Result(r, r.responseHandle)
+	r.GameParams.Mahjong.HuanSanZhang = 2 // TODO TEST
 	log.Debugf("Room:[%v] OnInit", r.RoomId)
 }
 

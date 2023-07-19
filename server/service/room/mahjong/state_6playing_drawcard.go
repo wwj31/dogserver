@@ -27,7 +27,7 @@ func (s *StatePlaying) drawCard(seatIndex int) {
 
 	// 摸牌后必须出牌，所以先加入出牌操作
 	newAction := &action{}
-	newAction.currentActions = []outer.ActionType{outer.ActionType_ActionPlayCard}
+	newAction.acts = []outer.ActionType{outer.ActionType_ActionPlayCard}
 	newAction.newCard = newCard
 
 	// 判断能否杠
@@ -37,15 +37,15 @@ func (s *StatePlaying) drawCard(seatIndex int) {
 		gangs = gangs.Insert(newCard)
 	}
 
-	newAction.currentGang = gangs.ToSlice()
-	if len(newAction.currentGang) > 0 {
-		newAction.currentActions = append(newAction.currentActions, outer.ActionType_ActionGang)
+	newAction.gang = gangs.ToSlice()
+	if len(newAction.gang) > 0 {
+		newAction.acts = append(newAction.acts, outer.ActionType_ActionGang)
 	}
 
 	// 判断能否胡牌
 	hu := player.handCards.IsHu(player.lightGang, player.darkGang, player.pong, newCard)
 	if hu != HuInvalid {
-		newAction.currentActions = append(newAction.currentActions, outer.ActionType_ActionHu)
+		newAction.acts = append(newAction.acts, outer.ActionType_ActionHu)
 	}
 	s.actionMap[seatIndex] = newAction // 摸牌者加入行动组
 

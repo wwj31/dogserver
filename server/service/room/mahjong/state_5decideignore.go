@@ -1,7 +1,6 @@
 package mahjong
 
 import (
-	"math/rand"
 	"time"
 
 	"github.com/wwj31/dogactor/tools"
@@ -64,7 +63,7 @@ func (s *StateDecideIgnore) Handle(shortId int64, v any) (result any) {
 func (s *StateDecideIgnore) stateEnd() {
 	for _, player := range s.mahjongPlayers {
 		if player.ignoreColor == ColorUnknown {
-			player.ignoreColor = ColorType(rand.Int31n(3) + 1)
+			player.ignoreColor = Tong
 		}
 
 		s.colorMap[player.ShortId] = player.ignoreColor.PB()

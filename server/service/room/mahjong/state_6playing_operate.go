@@ -138,9 +138,9 @@ func (s *StatePlaying) operatePong(p *mahjongPlayer, seatIndex int) (bool, outer
 		return false, outer.ERROR_MSG_REQ_PARAM_INVALID
 	}
 
-	s.cardsInDesktop = s.cardsInDesktop[:tail]                                                            // 删除桌面牌
-	p.pong[peer.card.Int32()] = s.mahjongPlayers[peer.seat].ShortId                                       // 加入自己的碰牌组
-	s.actionMap[seatIndex] = &action{currentActions: []outer.ActionType{outer.ActionType_ActionPlayCard}} // 碰后新增出牌行为
+	s.cardsInDesktop = s.cardsInDesktop[:tail]                                                  // 删除桌面牌
+	p.pong[peer.card.Int32()] = s.mahjongPlayers[peer.seat].ShortId                             // 加入自己的碰牌组
+	s.actionMap[seatIndex] = &action{acts: []outer.ActionType{outer.ActionType_ActionPlayCard}} // 碰后新增出牌行为
 	return true, outer.ERROR_OK
 }
 
@@ -154,7 +154,7 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 
 	if !s.currentAction.canGang(card) {
 		log.Errorw("operate gang failed invalid gang card",
-			"room", s.room.RoomId, "player", p.ShortId, "currentGang", s.currentAction.currentGang, "card", card)
+			"room", s.room.RoomId, "player", p.ShortId, "currentGang", s.currentAction.gang, "card", card)
 		return false, outer.ERROR_MSG_REQ_PARAM_INVALID
 	}
 
@@ -167,8 +167,8 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 
 			if hu := other.handCards.Insert(card).IsHu(other.lightGang, other.darkGang, other.pong, card); hu != HuInvalid {
 				newAction := action{}
-				newAction.currentActions = append(newAction.currentActions, outer.ActionType_ActionHu, outer.ActionType_ActionPass)
-				newAction.currentHus = append(newAction.currentHus, hu.PB())
+				newAction.acts = append(newAction.acts, outer.ActionType_ActionHu, outer.ActionType_ActionPass)
+				newAction.hus = append(newAction.hus, hu.PB())
 				s.actionMap[seat] = &newAction // 抢杠胡操作
 				b = true
 			}
@@ -284,14 +284,14 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 	for seat, act := range s.actionMap {
 		act.remove(outer.ActionType_ActionGang)
 		act.remove(outer.ActionType_ActionPong)
-		act.currentGang = []int32{}
+		act.gang = []int32{}
 
 		// 只剩下[过]操作，删掉
-		if len(act.currentActions) == 1 && act.isValidAction(outer.ActionType_ActionPass) {
+		if len(act.acts) == 1 && act.isValidAction(outer.ActionType_ActionPass) {
 			act.remove(outer.ActionType_ActionPass)
 		}
 
-		if len(act.currentActions) == 0 {
+		if len(act.acts) == 0 {
 			delete(s.actionMap, seat)
 		}
 	}

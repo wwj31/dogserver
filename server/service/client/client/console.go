@@ -125,7 +125,6 @@ var _ = reg("q", func(arg ...string) {
 
 // 出牌
 var _ = reg("out", func(arg ...string) {
-	log.Infof("out")
 	if len(arg) != 1 {
 		log.Warnw("out arg len err", len(arg))
 		return

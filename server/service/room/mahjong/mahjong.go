@@ -68,10 +68,11 @@ type (
 	}
 
 	action struct {
-		currentActions []outer.ActionType // 当前行动者能执行的行为
-		currentHus     []outer.HuType     // 当前行动者能胡的牌
-		currentGang    []int32            // 当前行动者能杠的牌
-		newCard        Card               // 当前行动者摸到的新牌
+		acts    []outer.ActionType // 当前行动者能执行的行为
+		hus     []outer.HuType     // 当前行动者能胡的牌
+		qiang   bool               // 是否是抢杠胡
+		gang    []int32            // 当前行动者能杠的牌
+		newCard Card               // 当前行动者摸到的新牌
 	}
 
 	Mahjong struct {
@@ -135,9 +136,9 @@ func (m *Mahjong) Data(shortId int64) proto.Message {
 	if m.currentActionSeat > 0 {
 		p := m.mahjongPlayers[m.currentActionSeat]
 		if p.ShortId == shortId {
-			info.ActionType = m.currentAction.currentActions
-			info.HuType = m.currentAction.currentHus
-			info.GangCards = m.currentAction.currentGang
+			info.ActionType = m.currentAction.acts
+			info.HuType = m.currentAction.hus
+			info.GangCards = m.currentAction.gang
 			info.NewCard = m.currentAction.newCard.Int32()
 		}
 	}
@@ -327,7 +328,7 @@ func (m *mahjongPlayer) allCardsToPB() *outer.CardsOfBTE {
 
 // 检测该行为是否在当前可操作行为中
 func (a *action) isValidAction(actionType outer.ActionType) bool {
-	for _, act := range a.currentActions {
+	for _, act := range a.acts {
 		if act == actionType {
 			return true
 		}
@@ -337,14 +338,14 @@ func (a *action) isValidAction(actionType outer.ActionType) bool {
 
 // 判断当前action是否有效
 func (a *action) isActivated() bool {
-	return len(a.currentActions) > 0
+	return len(a.acts) > 0
 }
 
 // 删除一个行为
 func (a *action) remove(actionType outer.ActionType) {
-	for i, act := range a.currentActions {
+	for i, act := range a.acts {
 		if act == actionType {
-			a.currentActions = append(a.currentActions[:i], a.currentActions[i+1:]...)
+			a.acts = append(a.acts[:i], a.acts[i+1:]...)
 			return
 		}
 	}
@@ -353,7 +354,7 @@ func (a *action) remove(actionType outer.ActionType) {
 // 当前行为能否杠某张牌
 func (a *action) canGang(card Card) bool {
 	var valid bool
-	for _, c := range a.currentGang {
+	for _, c := range a.gang {
 		if c == card.Int32() {
 			valid = true
 			break
@@ -363,5 +364,5 @@ func (a *action) canGang(card Card) bool {
 }
 
 func (a *action) String() string {
-	return fmt.Sprintf("actions:%v,hus:%v,gang:%v", a.currentActions, a.currentHus, a.currentGang)
+	return fmt.Sprintf("actions:%v,hus:%v,gang:%v", a.acts, a.hus, a.gang)
 }

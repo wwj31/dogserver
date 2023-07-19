@@ -65,6 +65,12 @@ func (c Cards) IsHu(lightGang, darkGang, pong map[int32]int64, triggerCard Card)
 			// 将牌有幺九，并且碰杠也都有幺九，就带上幺九检测
 			has1or9 := jiangCards.Has1or9() && pongGangAllHas1or9(lightGang, darkGang, pong)
 
+			// 所有牌刚好全部是刻子，对对胡
+			allKezi := spareHandCards.Kezi()
+			if len(allKezi)*3 == spareHandCards.Len() {
+				return DuiDuiHu
+			}
+
 			// 判断剩余牌是否胡了
 			typ = RecurCheckHu(spareHandCards, has1or9)
 			if typ > HuInvalid {

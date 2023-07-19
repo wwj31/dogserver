@@ -22,26 +22,25 @@ func (s *StateDeal) State() int {
 func (s *StateDeal) Enter() {
 	s.cards = RandomCards(nil) // 总共108张
 	s.cards = Cards{
-		11, 11, 11, 12, 12, 12, 13, 13, 13, 14, 14, 14, 15,
-		21, 22, 23, 24, 25, 26, 27, 21, 22, 23, 24, 25, 26,
-		27, 28, 29, 31, 32, 33, 34, 28, 29, 31, 32, 33, 34,
-		35, 36, 37, 38, 39, 21, 22, 23, 24, 25, 26, 27, 28,
-		15, 16, 38, 14, 16, 16, 15, 17, 18, 18, 18, 19, 19,
-		19, 31, 32, 16, 33, 37, 18, 35, 36, 17, 34, 35, 38,
-		37, 38, 39, 39, 21, 17, 36, 17, 35, 23, 33, 31, 25,
-		36, 13, 26, 28, 12, 37, 32, 27, 24, 39, 19, 22, 34,
-		15, 29, 29, 11}
+		11, 28, 29, 21, 12, 12, 22, 13, 13, 23, 25, 15, 22,
+		11, 11, 11, 25, 26, 27, 21, 22, 34, 34, 34, 26, 32,
+		12, 13, 14, 14, 14, 24, 24, 24, 28, 28, 27, 28, 29,
+		35, 36, 37, 38, 39, 21, 23, 33, 25, 26, 27, 28, 31,
+		15, 16, 38, 14, 16, 16, 15, 17, 23, 18, 18, 18, 32,
+		19, 33, 19, 19, 31, 31, 32, 16, 33, 37, 18, 35, 36,
+		17, 35, 38, 37, 38, 39, 39, 21, 17, 36, 17, 35, 23,
+		33, 31, 25, 36, 13, 26, 12, 37, 32, 27, 24, 39, 19, 22, 34, 15, 29, 29}
+
 	log.Infow("[Mahjong] enter state deal", "room", s.room.RoomId, "cards", s.cards)
 
 	var i int
-	for seatIndex, player := range s.mahjongPlayers {
+	for _, player := range s.mahjongPlayers {
 		player.handCards = append(Cards{}, s.cards[i:i+13]...).Sort()
 		i += 13
 
 		s.room.SendToPlayer(player.ShortId, &outer.MahjongBTEDealNtf{
 			Cards: player.handCards.ToSlice(),
 		})
-		log.Infow("dealing", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId, "cards", player.handCards)
 	}
 
 	// 庄家多发一张
@@ -68,6 +67,9 @@ func (s *StateDeal) Enter() {
 }
 
 func (s *StateDeal) Leave() {
+	for seatIndex, player := range s.mahjongPlayers {
+		log.Infow("dealing", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId, "cards", player.handCards)
+	}
 	log.Infow("[Mahjong] leave state deal", "room", s.room.RoomId)
 }
 

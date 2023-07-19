@@ -47,7 +47,7 @@ func (s *StatePlaying) Enter() {
 	s.actionTimerId = ""
 	s.currentStateEnterAt = time.Time{}
 
-	s.currentAction = &action{currentActions: []outer.ActionType{outer.ActionType_ActionPlayCard}}
+	s.currentAction = &action{acts: []outer.ActionType{outer.ActionType_ActionPlayCard}}
 	s.currentActionSeat = s.masterIndex
 	s.actionMap[s.masterIndex] = s.currentAction
 	log.Infow("[Mahjong] enter state playing", "room", s.room.RoomId)
@@ -98,9 +98,6 @@ func (s *StatePlaying) getPlayerAndSeatE(shortId int64) (*mahjongPlayer, int, ou
 		return nil, -1, outer.ERROR_PLAYER_NOT_IN_ROOM
 	}
 
-	if _, ok := s.actionMap[seatIndex]; !ok {
-		return nil, -1, outer.ERROR_MAHJONG_ACTION_PLAYER_NOT_MATCH
-	}
 	return player, seatIndex, outer.ERROR_OK
 }
 
@@ -125,7 +122,7 @@ func (s *StatePlaying) actionTimer(expireAt time.Time, seat int) {
 			defaultOperaType = outer.ActionType_ActionHu
 		} else if act.isValidAction(outer.ActionType_ActionGang) {
 			defaultOperaType = outer.ActionType_ActionGang
-			card = Card(act.currentGang[0])
+			card = Card(act.gang[0])
 		} else if act.isValidAction(outer.ActionType_ActionPong) {
 			defaultOperaType = outer.ActionType_ActionPong
 			card = s.cards[s.cards.Len()-1]
@@ -157,8 +154,8 @@ func (s *StatePlaying) actionTimer(expireAt time.Time, seat int) {
 		}
 
 		var hu HuType
-		if len(act.currentHus) > 0 {
-			hu = HuType(act.currentHus[0])
+		if len(act.hus) > 0 {
+			hu = HuType(act.hus[0])
 		}
 
 		s.operate(player, seat, defaultOperaType, hu, card)
@@ -222,9 +219,9 @@ func (s *StatePlaying) nextAction() {
 		TotalCards:    int32(s.cards.Len()),
 		ActionShortId: nextPlayer.ShortId,
 		ActionEndAt:   actionEndAt.UnixMilli(),
-		ActionType:    nextAct.currentActions,
-		HuType:        nextAct.currentHus,
-		GangCards:     nextAct.currentGang,
+		ActionType:    nextAct.acts,
+		HuType:        nextAct.hus,
+		GangCards:     nextAct.gang,
 		NewCard:       nextAct.newCard.Int32(), // 客户端自己取桌面牌最后一张
 	})
 

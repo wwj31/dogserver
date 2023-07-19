@@ -43,6 +43,7 @@ enum ERROR {
    MAHJONG_ACTION_PLAYER_NOT_MATCH  = 37; // 当前未轮到该玩家行动
    MAHJONG_ACTION_PLAYER_NOT_OPERA  = 38; // 当前玩家可以行动，但是执行的行动无效
    MAHJONG_HU_INVALID               = 39; // 玩家当前牌型不能胡牌
+   MAHJONG_MUST_OUT_IGNORE_COLOR    = 40; // 还存在定缺的花色的牌,必须打该花色的牌
 }
 
 message FailRsp {

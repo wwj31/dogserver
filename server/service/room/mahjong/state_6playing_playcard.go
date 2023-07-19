@@ -14,6 +14,11 @@ func (s *StatePlaying) playCard(cardIndex, seatIndex int) (bool, outer.ERROR) {
 	// 把打的牌从手牌移除
 	player := s.mahjongPlayers[seatIndex]
 	outCard := player.handCards[cardIndex]
+
+	// 如果还有定缺花色，检查打出去的牌是否是定缺的花色
+	if player.handCards.HasColorCard(player.ignoreColor) && outCard.Color() != player.ignoreColor {
+		return false, outer.ERROR_MAHJONG_MUST_OUT_IGNORE_COLOR
+	}
 	player.handCards = player.handCards.Remove(outCard)
 
 	s.cardsInDesktop = append(s.cardsInDesktop, outCard) // 按照打牌顺序加入桌面牌
@@ -41,30 +46,35 @@ func (s *StatePlaying) playCard(cardIndex, seatIndex int) (bool, outer.ERROR) {
 			continue
 		}
 
+		// 定缺花色的牌，直接跳过
+		if outCard.Color() == other.ignoreColor {
+			continue
+		}
+
 		var (
 			newAction action
 			pass      bool
 		)
 
 		if other.handCards.CanGangTo(outCard) {
-			newAction.currentActions = append(newAction.currentActions, outer.ActionType_ActionGang)
-			newAction.currentGang = append(newAction.currentGang, outCard.Int32())
+			newAction.acts = append(newAction.acts, outer.ActionType_ActionGang)
+			newAction.gang = append(newAction.gang, outCard.Int32())
 			pass = true
 		}
 
 		if other.handCards.CanPongTo(outCard) {
-			newAction.currentActions = append(newAction.currentActions, outer.ActionType_ActionPong)
+			newAction.acts = append(newAction.acts, outer.ActionType_ActionPong)
 			pass = true
 		}
 
 		if hu := other.handCards.Insert(outCard).IsHu(other.lightGang, other.darkGang, other.pong, outCard); hu != HuInvalid {
-			newAction.currentActions = append(newAction.currentActions, outer.ActionType_ActionHu)
-			newAction.currentHus = append(newAction.currentHus, hu.PB())
+			newAction.acts = append(newAction.acts, outer.ActionType_ActionHu)
+			newAction.hus = append(newAction.hus, hu.PB())
 			pass = true
 		}
 
 		if pass {
-			newAction.currentActions = append(newAction.currentActions, outer.ActionType_ActionPass)
+			newAction.acts = append(newAction.acts, outer.ActionType_ActionPass)
 		}
 
 		if newAction.isActivated() {

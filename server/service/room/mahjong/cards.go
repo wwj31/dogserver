@@ -175,13 +175,8 @@ func RecurCheckHu(cards Cards, upCardsHas1or9 bool) HuType {
 		return HuInvalid
 	}
 
-	// 所有牌刚好全部是刻子,返回成功
-	allKezi := cards.Kezi()
-	if len(allKezi)*3 == cards.Len() {
-		return DuiDuiHu
-	}
-
 	allShunzi := cards.Shunzi()
+	allKezi := cards.Kezi()
 
 	// 所有砍
 	allKan := append(RemoveDuplicate(allShunzi), RemoveDuplicate(allKezi)...)
@@ -279,10 +274,21 @@ func (c Cards) ToSlice() (result []int32) {
 
 func (c Cards) RangeSplit(fn func(color ColorType, number int) bool) {
 	for _, card := range c {
-		if fn(ColorType(card%10), int(card/10)) {
+		if fn(ColorType(card/10), int(card%10)) {
 			break
 		}
 	}
+}
+
+func (c Cards) HasColorCard(color ColorType) (has bool) {
+	c.RangeSplit(func(c ColorType, n int) bool {
+		if color == c {
+			has = true
+			return true
+		}
+		return false
+	})
+	return has
 }
 
 func (c Cards) Range(fn func(card Card) bool) {

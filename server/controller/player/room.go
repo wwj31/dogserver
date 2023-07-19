@@ -1,6 +1,7 @@
 package player
 
 import (
+	"reflect"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -204,15 +205,27 @@ var _ = router.Reg(func(p *player.Player, msg *inner.GamblingMsgToRoomWrapper) a
 	}
 
 	roomActor := actortype.RoomName(p.Room().RoomId())
-	rsp, err := p.RequestWait(roomActor, msg)
-	if yes, code := common.IsErr(rsp, err); yes {
+	v, err := p.RequestWait(roomActor, msg)
+	if yes, code := common.IsErr(v, err); yes {
 		return code
 	}
+	toClientWrapper, ok := v.(*inner.GamblingMsgToClientWrapper)
+	if !ok {
+		log.Errorw("msg should be GamblingMsgToClientWrapper", "type", reflect.TypeOf(v).String())
+		return nil
+	}
+	rsp := handlerGamblingMsgToClientWrapper(p, toClientWrapper)
 	return rsp
 })
 
 // 转发所有房间游戏消息至client(主要用于处理Ntf类消息)
 var _ = router.Reg(func(p *player.Player, msg *inner.GamblingMsgToClientWrapper) any {
+	outerMsg := handlerGamblingMsgToClientWrapper(p, msg)
+	p.GateSession().SendToClient(p, outerMsg)
+	return nil
+})
+
+func handlerGamblingMsgToClientWrapper(p *player.Player, msg *inner.GamblingMsgToClientWrapper) proto.Message {
 	if p.GateSession().Invalid() {
 		return nil
 	}
@@ -222,7 +235,7 @@ var _ = router.Reg(func(p *player.Player, msg *inner.GamblingMsgToClientWrapper)
 		log.Warnw("MsgGamblingMsgToClientWrapper msg name to id failed", "msg", msg.String())
 		return nil
 	}
+
 	outerMsg := p.System().ProtoIndex().UnmarshalPbMsg(msgId, msg.Data)
-	p.GateSession().SendToClient(p, outerMsg)
-	return nil
-})
+	return outerMsg
+}
