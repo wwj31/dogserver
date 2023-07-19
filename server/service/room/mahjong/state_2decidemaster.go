@@ -2,6 +2,7 @@ package mahjong
 
 import (
 	"math/rand"
+	"reflect"
 	"time"
 
 	"github.com/wwj31/dogactor/tools"
@@ -48,5 +49,6 @@ func (s *StateDecideMaster) Leave() {
 }
 
 func (s *StateDecideMaster) Handle(shortId int64, v any) (result any) {
-	return nil
+	log.Warnw("decide master not handle any msg", "msg", reflect.TypeOf(v).String())
+	return outer.ERROR_MAHJONG_STATE_MSG_INVALID
 }

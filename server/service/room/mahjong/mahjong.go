@@ -25,7 +25,7 @@ const (
 	DecideIgnoreDuration     = 1 * time.Second  // 定缺结束后的动画播放时间
 	pongGangHuGuoExpiration  = 30 * time.Second // 碰、杠、胡、过持续时间
 	playCardExpiration       = 30 * time.Second // 出牌行为持续时间
-	SettlementDuration       = 2 * time.Second  // 结算持续时间
+	SettlementDuration       = 1 * time.Second  // 结算持续时间
 )
 
 func New(r *room.Room) *Mahjong {

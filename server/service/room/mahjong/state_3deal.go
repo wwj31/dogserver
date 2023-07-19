@@ -1,6 +1,7 @@
 package mahjong
 
 import (
+	"reflect"
 	"time"
 
 	"github.com/wwj31/dogactor/tools"
@@ -74,5 +75,6 @@ func (s *StateDeal) Leave() {
 }
 
 func (s *StateDeal) Handle(shortId int64, v any) (result any) {
-	return nil
+	log.Warnw("deal not handle any msg", "msg", reflect.TypeOf(v).String())
+	return outer.ERROR_MAHJONG_STATE_MSG_INVALID
 }

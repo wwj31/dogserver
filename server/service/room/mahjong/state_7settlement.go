@@ -1,6 +1,7 @@
 package mahjong
 
 import (
+	"server/proto/outermsg/outer"
 	"time"
 
 	"github.com/wwj31/dogactor/tools"
@@ -45,7 +46,7 @@ func (s *StateSettlement) Leave() {
 }
 
 func (s *StateSettlement) Handle(shortId int64, v any) (result any) {
-	return nil
+	return outer.ERROR_MAHJONG_STATE_MSG_INVALID
 }
 
 func (s *StateSettlement) nextMasterIndex() {

@@ -34,7 +34,7 @@ func (s *StateReady) Handle(shortId int64, v any) (result any) {
 	player, _ := s.findMahjongPlayer(shortId)
 	if player == nil {
 		log.Warnw("player not in room", "roomId", s.room.RoomId, "shortId", shortId)
-		return nil
+		return outer.ERROR_PLAYER_NOT_IN_ROOM
 	}
 
 	switch msg := v.(type) {
@@ -43,7 +43,6 @@ func (s *StateReady) Handle(shortId int64, v any) (result any) {
 
 		if msg.Ready {
 			s.room.CancelTimer(cast.ToString(shortId))
-
 			if s.checkAllReady() {
 				if s.gameCount == 0 {
 					s.SwitchTo(DecideMaster)
@@ -52,16 +51,16 @@ func (s *StateReady) Handle(shortId int64, v any) (result any) {
 				}
 			}
 		} else {
-
 			s.room.AddTimer(cast.ToString(shortId), time.Now().Add(ReadyExpiration), func(dt time.Duration) {
 				s.room.PlayerLeave(shortId, true)
 			})
 		}
+
 		return &outer.MahjongBTEReadyRsp{Ready: msg.Ready}
 	default:
-		log.Warnw("the current status has received an unknown message", "msg", reflect.TypeOf(msg).String())
+		log.Warnw("ready state has received an unknown message", "msg", reflect.TypeOf(msg).String())
 	}
-	return nil
+	return outer.ERROR_MAHJONG_STATE_MSG_INVALID
 }
 
 func (s *StateReady) checkAllReady() bool {

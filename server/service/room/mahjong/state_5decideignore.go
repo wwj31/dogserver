@@ -1,6 +1,7 @@
 package mahjong
 
 import (
+	"reflect"
 	"time"
 
 	"github.com/wwj31/dogactor/tools"
@@ -55,8 +56,10 @@ func (s *StateDecideIgnore) Handle(shortId int64, v any) (result any) {
 			s.stateEnd()
 		}
 		return &outer.MahjongBTEDecideIgnoreRsp{}
+	default:
+		log.Warnw("decide ignore status has received an unknown message", "msg", reflect.TypeOf(msg).String())
 	}
-	return nil
+	return outer.ERROR_MAHJONG_STATE_MSG_INVALID
 }
 
 // 定缺完成

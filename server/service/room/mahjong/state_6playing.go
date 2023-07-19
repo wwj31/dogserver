@@ -2,6 +2,7 @@ package mahjong
 
 import (
 	"math/rand"
+	"reflect"
 	"time"
 
 	"github.com/wwj31/dogactor/tools"
@@ -88,8 +89,10 @@ func (s *StatePlaying) Handle(shortId int64, v any) (result any) {
 		}
 		return &outer.MahjongBTEOperateRsp{AllCards: player.allCardsToPB()}
 
+	default:
+		log.Warnw("playing status has received an unknown message", "msg", reflect.TypeOf(msg).String())
 	}
-	return nil
+	return outer.ERROR_MAHJONG_STATE_MSG_INVALID
 }
 
 func (s *StatePlaying) getPlayerAndSeatE(shortId int64) (*mahjongPlayer, int, outer.ERROR) {
