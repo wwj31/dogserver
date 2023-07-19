@@ -78,11 +78,13 @@ type (
 		room                *room.Room
 		fsm                 *room.FSM
 		currentStateEnterAt time.Time // 当前状态的进入时间
+		currentStateEndAt   time.Time // 当前状态的结束时间
 
-		masterIndex    int // 庄家位置 0,1,2,3
-		gameCount      int // 游戏的连续局数
-		firstHuIndex   int // 第一个胡牌的人
-		mutilHuByIndex int // 一炮多响点炮的人
+		dices          []int32 // 两颗骰子数
+		masterIndex    int     // 庄家位置 0,1,2,3
+		gameCount      int     // 游戏的连续局数
+		firstHuIndex   int     // 第一个胡牌的人
+		mutilHuByIndex int     // 一炮多响点炮的人
 
 		cards          Cards                  // 剩余牌组
 		cardsInDesktop Cards                  // 打出的牌
@@ -105,8 +107,78 @@ func (m *Mahjong) SwitchTo(state int) {
 	m.currentStateEnterAt = tools.Now()
 }
 
-func (m *Mahjong) Data() proto.Message {
-	return &outer.MahjongBTEGameInfo{}
+func (m *Mahjong) Data(shortId int64) proto.Message {
+	info := &outer.MahjongBTEGameInfo{
+		State:           outer.MahjongBTEState(m.fsm.State()),
+		StateEnterAt:    m.currentStateEnterAt.UnixMilli(),
+		StateEndAt:      0,
+		Players:         m.playersToPB(shortId),
+		Dices:           m.dices,
+		MasterIndex:     int32(m.masterIndex),
+		Ex3Info:         m.ex3Info(shortId),
+		TotalCardsCount: int32(m.cards.Len()),
+		Cards:           m.cards.ToSlice(),
+		ActionEndAt:     m.currentActionEndAt.UnixMilli(),
+		ActionShortId:   0,
+		ActionType:      nil,
+		HuType:          nil,
+		GangCards:       nil,
+		NewCard:         0,
+	}
+
+	// 只有当行动者是出牌状态，才广播行动者
+	if m.currentAction.isValidAction(outer.ActionType_ActionPlayCard) {
+		info.ActionShortId = m.mahjongPlayers[m.currentActionSeat].ShortId
+	}
+
+	// 判断是当前行动者本人，就发行动数据
+	if m.currentActionSeat > 0 {
+		p := m.mahjongPlayers[m.currentActionSeat]
+		if p.ShortId == shortId {
+			info.ActionType = m.currentAction.currentActions
+			info.HuType = m.currentAction.currentHus
+			info.GangCards = m.currentAction.currentGang
+			info.NewCard = m.currentAction.newCard.Int32()
+		}
+	}
+
+	return info
+}
+
+func (m *Mahjong) ex3Info(shortId int64) (info *outer.Exchange3Info) {
+	p, _ := m.findMahjongPlayer(shortId)
+	if p == nil {
+		return nil
+	}
+	return p.exchange
+}
+
+func (m *Mahjong) playersToPB(shortId int64) (players []*outer.MahjongPlayerInfo) {
+	for _, player := range m.mahjongPlayers {
+		if player == nil {
+			players = append(players, nil)
+		} else {
+			var allCards []int32
+			if player.ShortId == shortId {
+				allCards = player.handCards.ToSlice()
+			} else {
+				handLen := player.handCards.Len()
+				allCards = make([]int32, handLen, handLen)
+			}
+
+			players = append(players, &outer.MahjongPlayerInfo{
+				ShortId:     player.ShortId,
+				DecideColor: outer.ColorType(player.ignoreColor),
+				AllCards: &outer.CardsOfBTE{
+					Cards:     allCards,
+					LightGang: player.lightGang,
+					DarkGang:  player.darkGang,
+					Pong:      player.pong,
+				},
+			})
+		}
+	}
+	return
 }
 
 func (m *Mahjong) SeatIndex(shortId int64) int {
@@ -238,6 +310,8 @@ func (m *Mahjong) clear() {
 
 	m.cards = nil
 	m.cardsInDesktop = nil
+	m.currentAction = nil
+	m.currentActionSeat = -1
 	m.actionMap = make(map[int]*action)
 	m.currentActionEndAt = time.Time{}
 }

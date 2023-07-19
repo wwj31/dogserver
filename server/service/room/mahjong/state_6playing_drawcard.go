@@ -13,6 +13,12 @@ func (s *StatePlaying) drawCard(seatIndex int) {
 		return
 	}
 
+	// 每次摸牌先判断是否结算
+	if s.gameOver() {
+		s.SwitchTo(Settlement)
+		return
+	}
+
 	newCard := s.cards[0]
 	s.cards = s.cards.Remove(newCard)
 	player := s.mahjongPlayers[seatIndex] // 当前摸牌者

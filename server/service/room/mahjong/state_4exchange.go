@@ -21,7 +21,8 @@ func (s *StateExchange3) State() int {
 
 func (s *StateExchange3) Enter() {
 	s.room.Broadcast(&outer.MahjongBTEExchange3Ntf{})
-	s.room.AddTimer(tools.XUID(), tools.Now().Add(Exchange3Expiration), func(time.Duration) {
+	s.currentStateEndAt = tools.Now().Add(Exchange3Expiration)
+	s.room.AddTimer(tools.XUID(), s.currentStateEndAt, func(time.Duration) {
 		s.stateEnd()
 	})
 	log.Infow("[Mahjong] enter state  exchange3", "room", s.room.RoomId)
@@ -100,7 +101,7 @@ func (s *StateExchange3) Handle(shortId int64, v any) (result any) {
 
 		var exchange3Cards Cards
 		for _, idx := range msg.Index {
-			if idx < 0 || idx > 12 {
+			if idx < 0 || idx >= int32(player.handCards.Len()) {
 				return outer.ERROR_MAHJONG_EXCHANGE3_INDEX_ERROR
 			}
 

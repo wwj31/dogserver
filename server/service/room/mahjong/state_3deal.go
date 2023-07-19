@@ -44,10 +44,16 @@ func (s *StateDeal) Enter() {
 		log.Infow("dealing", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId, "cards", player.handCards)
 	}
 
-	s.cards = s.cards[52:]
+	// 庄家多发一张
+	master := s.mahjongPlayers[s.masterIndex]
+	master.handCards = master.handCards.Insert(s.cards[52])
+
+	// 剩下的算本局牌组
+	s.cards = s.cards[53:]
 
 	// 发牌动画后，进入下个状态
-	s.room.AddTimer(tools.XUID(), tools.Now().Add(DealShowDuration), func(dt time.Duration) {
+	s.currentStateEndAt = tools.Now().Add(DealShowDuration)
+	s.room.AddTimer(tools.XUID(), s.currentStateEndAt, func(dt time.Duration) {
 		var nextState State
 		if s.room.GameParams.Mahjong.HuanSanZhang == 2 {
 			nextState = DecideIgnore // 不换牌，直接定缺
@@ -59,7 +65,6 @@ func (s *StateDeal) Enter() {
 	})
 
 	log.Infow("deal finished cards", "room", s.room.RoomId, "spare cards", s.cards)
-
 }
 
 func (s *StateDeal) Leave() {
