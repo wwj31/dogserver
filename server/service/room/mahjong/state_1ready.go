@@ -1,10 +1,11 @@
 package mahjong
 
 import (
+	"github.com/spf13/cast"
 	"reflect"
+	"time"
 
 	"server/common/log"
-	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
 )
 
@@ -30,17 +31,33 @@ func (s *StateReady) Leave() {
 }
 
 func (s *StateReady) Handle(shortId int64, v any) (result any) {
+	player, _ := s.findMahjongPlayer(shortId)
+	if player == nil {
+		log.Warnw("player not in room", "roomId", s.room.RoomId, "shortId", shortId)
+		return nil
+	}
+
 	switch msg := v.(type) {
-	case *inner.ReadyReq:
-		if msg.Ready && s.checkAllReady() {
-			// 所有人准备了，进入定庄
-			if s.gameCount == 0 {
-				s.SwitchTo(DecideMaster)
-			} else {
-				s.SwitchTo(Deal)
+	case *outer.MahjongBTEReadyReq:
+		s.room.Broadcast(&outer.MahjongBTEPlayerReadyNtf{ShortId: shortId, Ready: msg.Ready})
+
+		if msg.Ready {
+			s.room.CancelTimer(cast.ToString(shortId))
+
+			if s.checkAllReady() {
+				if s.gameCount == 0 {
+					s.SwitchTo(DecideMaster)
+				} else {
+					s.SwitchTo(Deal)
+				}
 			}
+		} else {
+
+			s.room.AddTimer(cast.ToString(shortId), time.Now().Add(ReadyExpiration), func(dt time.Duration) {
+				s.room.PlayerLeave(shortId, true)
+			})
 		}
-		return &inner.ReadyRsp{}
+		return &outer.MahjongBTEReadyRsp{Ready: msg.Ready}
 	default:
 		log.Warnw("the current status has received an unknown message", "msg", reflect.TypeOf(msg).String())
 	}
@@ -49,7 +66,7 @@ func (s *StateReady) Handle(shortId int64, v any) (result any) {
 
 func (s *StateReady) checkAllReady() bool {
 	for _, player := range s.mahjongPlayers {
-		if player == nil || !player.Ready {
+		if player == nil || !player.ready {
 			return false
 		}
 	}

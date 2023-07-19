@@ -6,8 +6,7 @@ import "base.proto";
 message RoomPlayerInfo{
   int32      SeatIndex = 1;
   PlayerInfo BaseInfo  = 2;
-  bool       Ready     = 3;
-  int64      EnterAt   = 4;
+  int64      EnterAt   = 3;
 }
 
 message RoomInfo{
@@ -58,14 +57,6 @@ message LeaveRoomReq{
   int64 ShortId = 1;
 }
 message LeaveRoomRsp{
-}
-
-// 准备状态
-message ReadyReq{
-  int64 ShortId = 1;
-  bool  Ready   = 2;
-}
-message ReadyRsp{
 }
 
 // 玩家上线，通知房间

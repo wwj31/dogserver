@@ -37,7 +37,6 @@ func New(info *rdsop.NewRoomInfo) *Room {
 type (
 	Player struct {
 		*inner.PlayerInfo
-		Ready   bool
 		EnterAt time.Time
 	}
 
@@ -175,7 +174,6 @@ func (r *Room) PlayerEnter(playerInfo *inner.PlayerInfo) *inner.Error {
 
 	newPlayer := &Player{
 		PlayerInfo: playerInfo,
-		Ready:      false,
 		EnterAt:    time.Now(),
 	}
 	r.Players = append(r.Players, newPlayer)
@@ -225,17 +223,6 @@ func (r *Room) PlayerReady(shortId int64, ready bool) (ok bool, err outer.ERROR)
 		return false, outer.ERROR_PLAYER_NOT_IN_ROOM
 	}
 
-	if p.Ready == ready {
-		return true, 0
-	}
-
-	p.Ready = ready
-	r.gambling.PlayerReady(p)
-
-	r.Broadcast(&outer.RoomPlayerReadyNtf{
-		ShortId: p.ShortId,
-		Ready:   ready,
-	})
 	return true, 0
 }
 
@@ -304,7 +291,6 @@ func (p *Player) InnerPB(seatIdx int32) *inner.RoomPlayerInfo {
 	return &inner.RoomPlayerInfo{
 		SeatIndex: seatIdx,
 		BaseInfo:  p.PlayerInfo,
-		Ready:     p.Ready,
 		EnterAt:   p.EnterAt.UnixMilli(),
 	}
 }
@@ -312,7 +298,6 @@ func (p *Player) OuterPB(seatIdx int32) *outer.RoomPlayerInfo {
 	return &outer.RoomPlayerInfo{
 		SeatIndex: seatIdx,
 		BaseInfo:  convert.PlayerInnerToOuter(p.PlayerInfo),
-		Ready:     p.Ready,
 		EnterAt:   p.EnterAt.UnixMilli(),
 	}
 }

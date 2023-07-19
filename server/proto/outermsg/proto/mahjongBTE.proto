@@ -29,8 +29,9 @@ message MahjongBTEGameInfo {
 // 血战到底 参与游戏的玩家数据
 message MahjongPlayerInfo {
     int64      ShortId       = 1; // 参与者短ID
-    ColorType  DecideColor   = 2; // 定缺花色
-    CardsOfBTE AllCards      = 3; // 玩家的所有牌，手牌、碰、杠
+    bool       Ready         = 2; // true.准备、false.未准备
+    ColorType  DecideColor   = 3; // 定缺花色
+    CardsOfBTE AllCards      = 4; // 玩家的所有牌，手牌、碰、杠
 }
 
 // 血战到底 换三张数据
@@ -57,6 +58,14 @@ message LatestOperaCard {
     int32 Typ      = 3; // 1.摸牌、2.出牌、3.杠
 }
 ////////////////////////////////////////////// 游戏操作请求 //////////////////////////////////////////////
+// 准备\取消
+message MahjongBTEReadyReq {// tag:gambling
+    bool Ready = 1; // true.准备、false.取消准备
+}
+message MahjongBTEReadyRsp {
+    bool Ready = 1;
+}
+
 // 换三张确定
 message MahjongBTEExchange3Req {// tag:gambling
     repeated int32 Index = 1; // 13张牌下标 0~12
@@ -91,7 +100,12 @@ message MahjongBTEOperateRsp {
 
 
 ////////////////////////////////////////////// 游戏通知 //////////////////////////////////////////////
-// 进入准备中，（结算结束后会通知）
+message MahjongBTEPlayerReadyNtf {// 房间内玩家准备、取消准备通知
+    int64 ShortId = 1;
+    bool  Ready   = 2; // true.准备、false.未准备
+}
+
+// 进入准备中，（房间初始状态， 结算结束后会通知）
 message MahjongBTEReadyNtf {
 }
 

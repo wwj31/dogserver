@@ -111,9 +111,9 @@ var _ = reg("r", func(arg ...string) {
 	if len(arg) > 0 {
 		ready = cast.ToBool(arg[0])
 	}
-	req := &outer.ReadyReq{Ready: ready}
+	req := &outer.MahjongBTEReadyReq{Ready: ready}
 
-	client.Req(outer.Msg_IdReadyReq, req)
+	client.Req(outer.Msg_IdMahjongBTEReadyReq, req)
 })
 
 // 退出房间

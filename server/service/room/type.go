@@ -25,6 +25,5 @@ type Gambling interface {
 	CanReady(p *inner.PlayerInfo) bool
 	PlayerEnter(player *Player)
 	PlayerLeave(player *Player)
-	PlayerReady(player *Player)
 	Handle(shortId int64, v any) any
 }

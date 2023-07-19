@@ -52,6 +52,7 @@ type (
 	// 麻将-血战到底 参与游戏的玩家数据
 	mahjongPlayer struct {
 		*room.Player
+		ready bool
 
 		ignoreColor ColorType            // 定缺花色
 		exchange    *outer.Exchange3Info // 换三张信息
@@ -169,6 +170,7 @@ func (m *Mahjong) playersToPB(shortId int64) (players []*outer.MahjongPlayerInfo
 
 			players = append(players, &outer.MahjongPlayerInfo{
 				ShortId:     player.ShortId,
+				Ready:       player.ready,
 				DecideColor: outer.ColorType(player.ignoreColor),
 				AllCards: &outer.CardsOfBTE{
 					Cards:     allCards,
@@ -243,16 +245,6 @@ func (m *Mahjong) PlayerLeave(p *room.Player) {
 	}
 }
 
-func (m *Mahjong) PlayerReady(p *room.Player) {
-	if p.Ready {
-		m.room.CancelTimer(p.RID)
-	} else {
-		m.room.AddTimer(p.RID, time.Now().Add(ReadyExpiration), func(dt time.Duration) {
-			m.room.PlayerLeave(p.ShortId, true)
-		})
-	}
-}
-
 // Handle 麻将游戏消息，全部交由当前状态处理
 func (m *Mahjong) Handle(shortId int64, v any) any {
 	return m.fsm.CurrentStateHandler().Handle(shortId, v)
@@ -306,7 +298,6 @@ func (m *Mahjong) clear() {
 	// 重置玩家数据
 	for i, p := range m.mahjongPlayers {
 		m.mahjongPlayers[i] = m.newMahjongPlayer(p.Player)
-		m.mahjongPlayers[i].Ready = false
 	}
 
 	m.cards = nil

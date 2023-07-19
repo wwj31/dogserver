@@ -144,6 +144,7 @@ var _ = router.Reg(func(p *player.Player, msg *outer.JoinRoomReq) any {
 	p.Room().SetRoomInfo(joinRoomRsp.RoomInfo)
 	roomInfo := convert.RoomInfoInnerToOuter(joinRoomRsp.RoomInfo)
 	p.UpdateInfoToRedis()
+
 	return &outer.JoinRoomRsp{
 		Room:         roomInfo,
 		GamblingData: joinRoomRsp.GamblingData,
@@ -169,24 +170,6 @@ var _ = router.Reg(func(p *player.Player, msg *outer.LeaveRoomReq) any {
 	return &outer.LeaveRoomRsp{}
 })
 
-// 准备、取消准备
-var _ = router.Reg(func(p *player.Player, msg *outer.ReadyReq) any {
-	if p.Room().RoomId() == 0 {
-		return outer.ERROR_PLAYER_NOT_IN_ROOM
-	}
-
-	roomActor := actortype.RoomName(p.Room().RoomId())
-	v, err := p.RequestWait(roomActor, &inner.ReadyReq{
-		ShortId: p.Role().ShortId(),
-		Ready:   msg.Ready,
-	})
-	if yes, code := common.IsErr(v, err); yes {
-		return code
-	}
-
-	return &outer.ReadyRsp{Ready: msg.Ready}
-})
-
 // 被房间主动踢出
 var _ = router.Reg(func(p *player.Player, msg *inner.RoomKickOutNtf) any {
 	if p.Room().RoomId() != msg.RoomId {
@@ -209,11 +192,13 @@ var _ = router.Reg(func(p *player.Player, msg *inner.GamblingMsgToRoomWrapper) a
 	if yes, code := common.IsErr(v, err); yes {
 		return code
 	}
+
 	toClientWrapper, ok := v.(*inner.GamblingMsgToClientWrapper)
 	if !ok {
 		log.Errorw("msg should be GamblingMsgToClientWrapper", "type", reflect.TypeOf(v).String())
 		return nil
 	}
+
 	rsp := handlerGamblingMsgToClientWrapper(p, toClientWrapper)
 	return rsp
 })

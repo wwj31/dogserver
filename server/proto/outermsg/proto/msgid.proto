@@ -31,6 +31,8 @@ enum Msg {
     IdLoginRsp = 1275741587;
     IdEnterGameReq = 117622385;// dispatch to player
     IdEnterGameRsp = 2097329717;
+    IdMahjongBTEReadyReq = 39989867;// dispatch to gambling
+    IdMahjongBTEReadyRsp = 207765930;
     IdMahjongBTEExchange3Req = 983022052;// dispatch to gambling
     IdMahjongBTEExchange3Rsp = 681024845;
     IdMahjongBTEDecideIgnoreReq = 1993774143;// dispatch to gambling
@@ -39,6 +41,7 @@ enum Msg {
     IdMahjongBTEPlayCardRsp = 1970938586;
     IdMahjongBTEOperateReq = 1792910030;// dispatch to gambling
     IdMahjongBTEOperateRsp = 2094907235;
+    IdMahjongBTEPlayerReadyNtf = 176653714;
     IdMahjongBTEReadyNtf = 23903615;
     IdMahjongBTEDecideMasterNtf = 701290466;
     IdMahjongBTEDealNtf = 881890379;
@@ -67,10 +70,7 @@ enum Msg {
     IdJoinRoomRsp = 1899741298;
     IdLeaveRoomReq = 1875949722;// dispatch to player
     IdLeaveRoomRsp = 97573884;
-    IdReadyReq = 1672240365;// dispatch to player
-    IdReadyRsp = 1370243126;
     IdRoomPlayerEnterNtf = 867132366;
     IdRoomPlayerLeaveNtf = 721409295;
     IdRoomPlayerOnlineNtf = 1386944282;
-    IdRoomPlayerReadyNtf = 2052257350;
 }

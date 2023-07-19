@@ -9,7 +9,6 @@ import "type.proto";
 message RoomPlayerInfo {
     int32      SeatIndex = 1; // 座位 0，1，2，3...
     PlayerInfo BaseInfo  = 2; // 玩家基础信息
-    bool       Ready     = 3; // true.准备、false.未准备
     int64      EnterAt   = 4; // 进入房间的时间(毫秒)
 }
 
@@ -60,15 +59,6 @@ message LeaveRoomReq {// tag:player
 message LeaveRoomRsp {
 }
 
-// 准备\取消
-message ReadyReq {// tag:player
-    bool Ready = 1; // true.准备、false.取消准备
-}
-message ReadyRsp {
-    bool Ready = 1;
-}
-
-
 
 // 通知类消息
 message RoomPlayerEnterNtf {// 房间进入新玩家通知
@@ -80,8 +70,4 @@ message RoomPlayerLeaveNtf {// 房间内玩家离开通知
 message RoomPlayerOnlineNtf {// 房间内玩家上、下线通知
     int64 ShortId = 1;
     bool  Online  = 2; // true在线、false离线
-}
-message RoomPlayerReadyNtf {// 房间内玩家准备、取消准备通知
-    int64 ShortId = 1;
-    bool  Ready   = 2; // true.准备、false.未准备
 }

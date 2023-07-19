@@ -11,8 +11,9 @@ import (
 
 func RoomPlayerInfoInnerToOuter(roomPlayer *inner.RoomPlayerInfo) *outer.RoomPlayerInfo {
 	return &outer.RoomPlayerInfo{
-		BaseInfo: PlayerInnerToOuter(roomPlayer.BaseInfo),
-		Ready:    roomPlayer.Ready,
+		SeatIndex: roomPlayer.SeatIndex,
+		BaseInfo:  PlayerInnerToOuter(roomPlayer.BaseInfo),
+		EnterAt:   roomPlayer.EnterAt,
 	}
 }
 

@@ -27,8 +27,6 @@ var spawner = map[string]factory{
 	"inner.RoomInfoReq":                func() interface{} { return &RoomInfoReq{} },
 	"inner.RoomInfo":                   func() interface{} { return &RoomInfo{} },
 	"inner.RoleInfo":                   func() interface{} { return &RoleInfo{} },
-	"inner.ReadyRsp":                   func() interface{} { return &ReadyRsp{} },
-	"inner.ReadyReq":                   func() interface{} { return &ReadyReq{} },
 	"inner.PullPlayer":                 func() interface{} { return &PullPlayer{} },
 	"inner.PlayerInfo":                 func() interface{} { return &PlayerInfo{} },
 	"inner.Ok":                         func() interface{} { return &Ok{} },
