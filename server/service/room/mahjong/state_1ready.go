@@ -24,10 +24,10 @@ func (s *StateReady) Enter() {
 	s.mutilHuByIndex = -1
 	readyExpireAt := time.Now().Add(ReadyExpiration)
 	for _, player := range s.mahjongPlayers {
-		player.readyExpireAt = readyExpireAt
-		s.room.AddTimer(player.RID, readyExpireAt, func(dt time.Duration) {
-			s.room.PlayerLeave(player.ShortId, true)
-		})
+		if player != nil {
+			player.readyExpireAt = readyExpireAt
+			s.readyTimeout(player.RID, player.ShortId, player.readyExpireAt)
+		}
 	}
 
 	s.room.Broadcast(&outer.MahjongBTEReadyNtf{ReadyExpireAt: readyExpireAt.UnixMilli()})
