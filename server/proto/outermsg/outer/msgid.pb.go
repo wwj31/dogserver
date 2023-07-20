@@ -25,75 +25,77 @@ const (
 type Msg int32
 
 const (
-	Msg_IdUnknown                      Msg = 0
-	Msg_IdAgentMembersReq              Msg = 1894584925 // dispatch to player
-	Msg_IdAgentMembersRsp              Msg = 1592587688
-	Msg_IdAllianceInfoNtf              Msg = 672428706
-	Msg_IdDisbandAllianceReq           Msg = 650636160 // dispatch to player
-	Msg_IdDisbandAllianceRsp           Msg = 952633399
-	Msg_IdSearchPlayerInfoReq          Msg = 688893070 // dispatch to player
-	Msg_IdSearchPlayerInfoRsp          Msg = 990890275
-	Msg_IdInviteAllianceReq            Msg = 710800074 // dispatch to player
-	Msg_IdInviteAllianceRsp            Msg = 543023757
-	Msg_IdSetMemberPositionReq         Msg = 1891047110 // dispatch to player
-	Msg_IdSetMemberPositionRsp         Msg = 1656160475
-	Msg_IdKickOutMemberReq             Msg = 1475199389 // dispatch to player
-	Msg_IdKickOutMemberRsp             Msg = 1173202408
-	Msg_IdFailRsp                      Msg = 160109657
-	Msg_IdSetRoleInfoReq               Msg = 58140470 // dispatch to player
-	Msg_IdSetRoleInfoRsp               Msg = 1903626880
-	Msg_IdBindPhoneReq                 Msg = 403639403 // dispatch to player
-	Msg_IdBindPhoneRsp                 Msg = 34531592
-	Msg_IdModifyPasswordReq            Msg = 655389589 // dispatch to player
-	Msg_IdModifyPasswordRsp            Msg = 890276254
-	Msg_IdHeartReq                     Msg = 31040569
-	Msg_IdHeartRsp                     Msg = 400148124
-	Msg_IdLoginReq                     Msg = 1510628254 // dispatch to login
-	Msg_IdLoginRsp                     Msg = 1275741587
-	Msg_IdEnterGameReq                 Msg = 117622385 // dispatch to player
-	Msg_IdEnterGameRsp                 Msg = 2097329717
-	Msg_IdMahjongBTEReadyReq           Msg = 39989867 // dispatch to gambling
-	Msg_IdMahjongBTEReadyRsp           Msg = 207765930
-	Msg_IdMahjongBTEExchange3Req       Msg = 983022052 // dispatch to gambling
-	Msg_IdMahjongBTEExchange3Rsp       Msg = 681024845
-	Msg_IdMahjongBTEDecideIgnoreReq    Msg = 1993774143 // dispatch to gambling
-	Msg_IdMahjongBTEDecideIgnoreRsp    Msg = 1758887476
-	Msg_IdMahjongBTEPlayCardReq        Msg = 2138714649 // dispatch to gambling
-	Msg_IdMahjongBTEPlayCardRsp        Msg = 1970938586
-	Msg_IdMahjongBTEOperateReq         Msg = 1792910030 // dispatch to gambling
-	Msg_IdMahjongBTEOperateRsp         Msg = 2094907235
-	Msg_IdMahjongBTEPlayerReadyNtf     Msg = 176653714
-	Msg_IdMahjongBTEReadyNtf           Msg = 23903615
-	Msg_IdMahjongBTEDecideMasterNtf    Msg = 701290466
-	Msg_IdMahjongBTEDealNtf            Msg = 881890379
-	Msg_IdMahjongBTEExchange3Ntf       Msg = 735992092
-	Msg_IdMahjongBTEExchange3EndNtf    Msg = 595136049
-	Msg_IdMahjongBTEDecideIgnoreNtf    Msg = 1745361179
-	Msg_IdMahjongBTEDecideIgnoreEndNtf Msg = 1299626231
-	Msg_IdMahjongBTEPlayingNtf         Msg = 116867344
-	Msg_IdMahjongBTETurnNtf            Msg = 1486690182
-	Msg_IdMahjongBTEOperaNtf           Msg = 1682707103
-	Msg_IdMahjongBTESettlementNtf      Msg = 1808167222
-	Msg_IdMailListReq                  Msg = 1443645576 // dispatch to player
-	Msg_IdMailListRsp                  Msg = 1812753385
-	Msg_IdReadMailReq                  Msg = 1963047789 // dispatch to player
-	Msg_IdReadMailRsp                  Msg = 1661050550
-	Msg_IdReceiveMailItemReq           Msg = 1679531254 // dispatch to player
-	Msg_IdReceiveMailItemRsp           Msg = 1981528235
-	Msg_IdDeleteMailReq                Msg = 1054436458 // dispatch to player
-	Msg_IdCreateRoomReq                Msg = 2001014089 // dispatch to player
-	Msg_IdCreateRoomRsp                Msg = 222637993
-	Msg_IdDisbandRoomReq               Msg = 1782747149 // dispatch to player
-	Msg_IdDisbandRoomRsp               Msg = 2017634040
-	Msg_IdRoomListReq                  Msg = 21167689 // dispatch to player
-	Msg_IdRoomListRsp                  Msg = 390275242
-	Msg_IdJoinRoomReq                  Msg = 1530633489 // dispatch to player
-	Msg_IdJoinRoomRsp                  Msg = 1899741298
-	Msg_IdLeaveRoomReq                 Msg = 1875949722 // dispatch to player
-	Msg_IdLeaveRoomRsp                 Msg = 97573884
-	Msg_IdRoomPlayerEnterNtf           Msg = 867132366
-	Msg_IdRoomPlayerLeaveNtf           Msg = 721409295
-	Msg_IdRoomPlayerOnlineNtf          Msg = 1386944282
+	Msg_IdUnknown                           Msg = 0
+	Msg_IdAgentMembersReq                   Msg = 1894584925 // dispatch to player
+	Msg_IdAgentMembersRsp                   Msg = 1592587688
+	Msg_IdAllianceInfoNtf                   Msg = 672428706
+	Msg_IdDisbandAllianceReq                Msg = 650636160 // dispatch to player
+	Msg_IdDisbandAllianceRsp                Msg = 952633399
+	Msg_IdSearchPlayerInfoReq               Msg = 688893070 // dispatch to player
+	Msg_IdSearchPlayerInfoRsp               Msg = 990890275
+	Msg_IdInviteAllianceReq                 Msg = 710800074 // dispatch to player
+	Msg_IdInviteAllianceRsp                 Msg = 543023757
+	Msg_IdSetMemberPositionReq              Msg = 1891047110 // dispatch to player
+	Msg_IdSetMemberPositionRsp              Msg = 1656160475
+	Msg_IdKickOutMemberReq                  Msg = 1475199389 // dispatch to player
+	Msg_IdKickOutMemberRsp                  Msg = 1173202408
+	Msg_IdFailRsp                           Msg = 160109657
+	Msg_IdSetRoleInfoReq                    Msg = 58140470 // dispatch to player
+	Msg_IdSetRoleInfoRsp                    Msg = 1903626880
+	Msg_IdBindPhoneReq                      Msg = 403639403 // dispatch to player
+	Msg_IdBindPhoneRsp                      Msg = 34531592
+	Msg_IdModifyPasswordReq                 Msg = 655389589 // dispatch to player
+	Msg_IdModifyPasswordRsp                 Msg = 890276254
+	Msg_IdHeartReq                          Msg = 31040569
+	Msg_IdHeartRsp                          Msg = 400148124
+	Msg_IdLoginReq                          Msg = 1510628254 // dispatch to login
+	Msg_IdLoginRsp                          Msg = 1275741587
+	Msg_IdEnterGameReq                      Msg = 117622385 // dispatch to player
+	Msg_IdEnterGameRsp                      Msg = 2097329717
+	Msg_IdMahjongBTEReadyReq                Msg = 39989867 // dispatch to gambling
+	Msg_IdMahjongBTEReadyRsp                Msg = 207765930
+	Msg_IdMahjongBTEExchange3Req            Msg = 983022052 // dispatch to gambling
+	Msg_IdMahjongBTEExchange3Rsp            Msg = 681024845
+	Msg_IdMahjongBTEDecideIgnoreReq         Msg = 1993774143 // dispatch to gambling
+	Msg_IdMahjongBTEDecideIgnoreRsp         Msg = 1758887476
+	Msg_IdMahjongBTEPlayCardReq             Msg = 2138714649 // dispatch to gambling
+	Msg_IdMahjongBTEPlayCardRsp             Msg = 1970938586
+	Msg_IdMahjongBTEOperateReq              Msg = 1792910030 // dispatch to gambling
+	Msg_IdMahjongBTEOperateRsp              Msg = 2094907235
+	Msg_IdMahjongBTEPlayerReadyNtf          Msg = 176653714
+	Msg_IdMahjongBTEReadyNtf                Msg = 23903615
+	Msg_IdMahjongBTEDecideMasterNtf         Msg = 701290466
+	Msg_IdMahjongBTEDealNtf                 Msg = 881890379
+	Msg_IdMahjongBTEExchange3Ntf            Msg = 735992092
+	Msg_IdMahjongBTEExchange3PlayerReadyNtf Msg = 1195110391
+	Msg_IdMahjongBTEExchange3EndNtf         Msg = 595136049
+	Msg_IdMahjongBTEDecideIgnoreNtf         Msg = 1745361179
+	Msg_IdMahjongBTEDecideIgnoreEndNtf      Msg = 1299626231
+	Msg_IdMahjongBTEPlayingNtf              Msg = 116867344
+	Msg_IdMahjongBTETurnNtf                 Msg = 1486690182
+	Msg_IdMahjongBTEOperaNtf                Msg = 1682707103
+	Msg_IdMahjongBTEGangResultNtf           Msg = 411392799
+	Msg_IdMahjongBTESettlementNtf           Msg = 1808167222
+	Msg_IdMailListReq                       Msg = 1443645576 // dispatch to player
+	Msg_IdMailListRsp                       Msg = 1812753385
+	Msg_IdReadMailReq                       Msg = 1963047789 // dispatch to player
+	Msg_IdReadMailRsp                       Msg = 1661050550
+	Msg_IdReceiveMailItemReq                Msg = 1679531254 // dispatch to player
+	Msg_IdReceiveMailItemRsp                Msg = 1981528235
+	Msg_IdDeleteMailReq                     Msg = 1054436458 // dispatch to player
+	Msg_IdCreateRoomReq                     Msg = 2001014089 // dispatch to player
+	Msg_IdCreateRoomRsp                     Msg = 222637993
+	Msg_IdDisbandRoomReq                    Msg = 1782747149 // dispatch to player
+	Msg_IdDisbandRoomRsp                    Msg = 2017634040
+	Msg_IdRoomListReq                       Msg = 21167689 // dispatch to player
+	Msg_IdRoomListRsp                       Msg = 390275242
+	Msg_IdJoinRoomReq                       Msg = 1530633489 // dispatch to player
+	Msg_IdJoinRoomRsp                       Msg = 1899741298
+	Msg_IdLeaveRoomReq                      Msg = 1875949722 // dispatch to player
+	Msg_IdLeaveRoomRsp                      Msg = 97573884
+	Msg_IdRoomPlayerEnterNtf                Msg = 867132366
+	Msg_IdRoomPlayerLeaveNtf                Msg = 721409295
+	Msg_IdRoomPlayerOnlineNtf               Msg = 1386944282
 )
 
 // Enum value maps for Msg.
@@ -141,12 +143,14 @@ var (
 		701290466:  "IdMahjongBTEDecideMasterNtf",
 		881890379:  "IdMahjongBTEDealNtf",
 		735992092:  "IdMahjongBTEExchange3Ntf",
+		1195110391: "IdMahjongBTEExchange3PlayerReadyNtf",
 		595136049:  "IdMahjongBTEExchange3EndNtf",
 		1745361179: "IdMahjongBTEDecideIgnoreNtf",
 		1299626231: "IdMahjongBTEDecideIgnoreEndNtf",
 		116867344:  "IdMahjongBTEPlayingNtf",
 		1486690182: "IdMahjongBTETurnNtf",
 		1682707103: "IdMahjongBTEOperaNtf",
+		411392799:  "IdMahjongBTEGangResultNtf",
 		1808167222: "IdMahjongBTESettlementNtf",
 		1443645576: "IdMailListReq",
 		1812753385: "IdMailListRsp",
@@ -170,75 +174,77 @@ var (
 		1386944282: "IdRoomPlayerOnlineNtf",
 	}
 	Msg_value = map[string]int32{
-		"IdUnknown":                      0,
-		"IdAgentMembersReq":              1894584925,
-		"IdAgentMembersRsp":              1592587688,
-		"IdAllianceInfoNtf":              672428706,
-		"IdDisbandAllianceReq":           650636160,
-		"IdDisbandAllianceRsp":           952633399,
-		"IdSearchPlayerInfoReq":          688893070,
-		"IdSearchPlayerInfoRsp":          990890275,
-		"IdInviteAllianceReq":            710800074,
-		"IdInviteAllianceRsp":            543023757,
-		"IdSetMemberPositionReq":         1891047110,
-		"IdSetMemberPositionRsp":         1656160475,
-		"IdKickOutMemberReq":             1475199389,
-		"IdKickOutMemberRsp":             1173202408,
-		"IdFailRsp":                      160109657,
-		"IdSetRoleInfoReq":               58140470,
-		"IdSetRoleInfoRsp":               1903626880,
-		"IdBindPhoneReq":                 403639403,
-		"IdBindPhoneRsp":                 34531592,
-		"IdModifyPasswordReq":            655389589,
-		"IdModifyPasswordRsp":            890276254,
-		"IdHeartReq":                     31040569,
-		"IdHeartRsp":                     400148124,
-		"IdLoginReq":                     1510628254,
-		"IdLoginRsp":                     1275741587,
-		"IdEnterGameReq":                 117622385,
-		"IdEnterGameRsp":                 2097329717,
-		"IdMahjongBTEReadyReq":           39989867,
-		"IdMahjongBTEReadyRsp":           207765930,
-		"IdMahjongBTEExchange3Req":       983022052,
-		"IdMahjongBTEExchange3Rsp":       681024845,
-		"IdMahjongBTEDecideIgnoreReq":    1993774143,
-		"IdMahjongBTEDecideIgnoreRsp":    1758887476,
-		"IdMahjongBTEPlayCardReq":        2138714649,
-		"IdMahjongBTEPlayCardRsp":        1970938586,
-		"IdMahjongBTEOperateReq":         1792910030,
-		"IdMahjongBTEOperateRsp":         2094907235,
-		"IdMahjongBTEPlayerReadyNtf":     176653714,
-		"IdMahjongBTEReadyNtf":           23903615,
-		"IdMahjongBTEDecideMasterNtf":    701290466,
-		"IdMahjongBTEDealNtf":            881890379,
-		"IdMahjongBTEExchange3Ntf":       735992092,
-		"IdMahjongBTEExchange3EndNtf":    595136049,
-		"IdMahjongBTEDecideIgnoreNtf":    1745361179,
-		"IdMahjongBTEDecideIgnoreEndNtf": 1299626231,
-		"IdMahjongBTEPlayingNtf":         116867344,
-		"IdMahjongBTETurnNtf":            1486690182,
-		"IdMahjongBTEOperaNtf":           1682707103,
-		"IdMahjongBTESettlementNtf":      1808167222,
-		"IdMailListReq":                  1443645576,
-		"IdMailListRsp":                  1812753385,
-		"IdReadMailReq":                  1963047789,
-		"IdReadMailRsp":                  1661050550,
-		"IdReceiveMailItemReq":           1679531254,
-		"IdReceiveMailItemRsp":           1981528235,
-		"IdDeleteMailReq":                1054436458,
-		"IdCreateRoomReq":                2001014089,
-		"IdCreateRoomRsp":                222637993,
-		"IdDisbandRoomReq":               1782747149,
-		"IdDisbandRoomRsp":               2017634040,
-		"IdRoomListReq":                  21167689,
-		"IdRoomListRsp":                  390275242,
-		"IdJoinRoomReq":                  1530633489,
-		"IdJoinRoomRsp":                  1899741298,
-		"IdLeaveRoomReq":                 1875949722,
-		"IdLeaveRoomRsp":                 97573884,
-		"IdRoomPlayerEnterNtf":           867132366,
-		"IdRoomPlayerLeaveNtf":           721409295,
-		"IdRoomPlayerOnlineNtf":          1386944282,
+		"IdUnknown":                           0,
+		"IdAgentMembersReq":                   1894584925,
+		"IdAgentMembersRsp":                   1592587688,
+		"IdAllianceInfoNtf":                   672428706,
+		"IdDisbandAllianceReq":                650636160,
+		"IdDisbandAllianceRsp":                952633399,
+		"IdSearchPlayerInfoReq":               688893070,
+		"IdSearchPlayerInfoRsp":               990890275,
+		"IdInviteAllianceReq":                 710800074,
+		"IdInviteAllianceRsp":                 543023757,
+		"IdSetMemberPositionReq":              1891047110,
+		"IdSetMemberPositionRsp":              1656160475,
+		"IdKickOutMemberReq":                  1475199389,
+		"IdKickOutMemberRsp":                  1173202408,
+		"IdFailRsp":                           160109657,
+		"IdSetRoleInfoReq":                    58140470,
+		"IdSetRoleInfoRsp":                    1903626880,
+		"IdBindPhoneReq":                      403639403,
+		"IdBindPhoneRsp":                      34531592,
+		"IdModifyPasswordReq":                 655389589,
+		"IdModifyPasswordRsp":                 890276254,
+		"IdHeartReq":                          31040569,
+		"IdHeartRsp":                          400148124,
+		"IdLoginReq":                          1510628254,
+		"IdLoginRsp":                          1275741587,
+		"IdEnterGameReq":                      117622385,
+		"IdEnterGameRsp":                      2097329717,
+		"IdMahjongBTEReadyReq":                39989867,
+		"IdMahjongBTEReadyRsp":                207765930,
+		"IdMahjongBTEExchange3Req":            983022052,
+		"IdMahjongBTEExchange3Rsp":            681024845,
+		"IdMahjongBTEDecideIgnoreReq":         1993774143,
+		"IdMahjongBTEDecideIgnoreRsp":         1758887476,
+		"IdMahjongBTEPlayCardReq":             2138714649,
+		"IdMahjongBTEPlayCardRsp":             1970938586,
+		"IdMahjongBTEOperateReq":              1792910030,
+		"IdMahjongBTEOperateRsp":              2094907235,
+		"IdMahjongBTEPlayerReadyNtf":          176653714,
+		"IdMahjongBTEReadyNtf":                23903615,
+		"IdMahjongBTEDecideMasterNtf":         701290466,
+		"IdMahjongBTEDealNtf":                 881890379,
+		"IdMahjongBTEExchange3Ntf":            735992092,
+		"IdMahjongBTEExchange3PlayerReadyNtf": 1195110391,
+		"IdMahjongBTEExchange3EndNtf":         595136049,
+		"IdMahjongBTEDecideIgnoreNtf":         1745361179,
+		"IdMahjongBTEDecideIgnoreEndNtf":      1299626231,
+		"IdMahjongBTEPlayingNtf":              116867344,
+		"IdMahjongBTETurnNtf":                 1486690182,
+		"IdMahjongBTEOperaNtf":                1682707103,
+		"IdMahjongBTEGangResultNtf":           411392799,
+		"IdMahjongBTESettlementNtf":           1808167222,
+		"IdMailListReq":                       1443645576,
+		"IdMailListRsp":                       1812753385,
+		"IdReadMailReq":                       1963047789,
+		"IdReadMailRsp":                       1661050550,
+		"IdReceiveMailItemReq":                1679531254,
+		"IdReceiveMailItemRsp":                1981528235,
+		"IdDeleteMailReq":                     1054436458,
+		"IdCreateRoomReq":                     2001014089,
+		"IdCreateRoomRsp":                     222637993,
+		"IdDisbandRoomReq":                    1782747149,
+		"IdDisbandRoomRsp":                    2017634040,
+		"IdRoomListReq":                       21167689,
+		"IdRoomListRsp":                       390275242,
+		"IdJoinRoomReq":                       1530633489,
+		"IdJoinRoomRsp":                       1899741298,
+		"IdLeaveRoomReq":                      1875949722,
+		"IdLeaveRoomRsp":                      97573884,
+		"IdRoomPlayerEnterNtf":                867132366,
+		"IdRoomPlayerLeaveNtf":                721409295,
+		"IdRoomPlayerOnlineNtf":               1386944282,
 	}
 )
 
@@ -273,7 +279,7 @@ var File_msgid_proto protoreflect.FileDescriptor
 
 var file_msgid_proto_rawDesc = []byte{
 	0x0a, 0x0b, 0x6d, 0x73, 0x67, 0x69, 0x64, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x05, 0x6f,
-	0x75, 0x74, 0x65, 0x72, 0x2a, 0x95, 0x0f, 0x0a, 0x03, 0x4d, 0x73, 0x67, 0x12, 0x0d, 0x0a, 0x09,
+	0x75, 0x74, 0x65, 0x72, 0x2a, 0xe5, 0x0f, 0x0a, 0x03, 0x4d, 0x73, 0x67, 0x12, 0x0d, 0x0a, 0x09,
 	0x49, 0x64, 0x55, 0x6e, 0x6b, 0x6e, 0x6f, 0x77, 0x6e, 0x10, 0x00, 0x12, 0x19, 0x0a, 0x11, 0x49,
 	0x64, 0x41, 0x67, 0x65, 0x6e, 0x74, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x52, 0x65, 0x71,
 	0x10, 0xdd, 0xa4, 0xb4, 0x87, 0x07, 0x12, 0x19, 0x0a, 0x11, 0x49, 0x64, 0x41, 0x67, 0x65, 0x6e,
@@ -348,19 +354,24 @@ var file_msgid_proto_rawDesc = []byte{
 	0x42, 0x54, 0x45, 0x44, 0x65, 0x61, 0x6c, 0x4e, 0x74, 0x66, 0x10, 0xcb, 0xa8, 0xc2, 0xa4, 0x03,
 	0x12, 0x20, 0x0a, 0x18, 0x49, 0x64, 0x4d, 0x61, 0x68, 0x6a, 0x6f, 0x6e, 0x67, 0x42, 0x54, 0x45,
 	0x45, 0x78, 0x63, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x33, 0x4e, 0x74, 0x66, 0x10, 0x9c, 0xb2, 0xf9,
-	0xde, 0x02, 0x12, 0x23, 0x0a, 0x1b, 0x49, 0x64, 0x4d, 0x61, 0x68, 0x6a, 0x6f, 0x6e, 0x67, 0x42,
-	0x54, 0x45, 0x45, 0x78, 0x63, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x33, 0x45, 0x6e, 0x64, 0x4e, 0x74,
-	0x66, 0x10, 0xb1, 0x9c, 0xe4, 0x9b, 0x02, 0x12, 0x23, 0x0a, 0x1b, 0x49, 0x64, 0x4d, 0x61, 0x68,
-	0x6a, 0x6f, 0x6e, 0x67, 0x42, 0x54, 0x45, 0x44, 0x65, 0x63, 0x69, 0x64, 0x65, 0x49, 0x67, 0x6e,
-	0x6f, 0x72, 0x65, 0x4e, 0x74, 0x66, 0x10, 0x9b, 0xb2, 0xa0, 0xc0, 0x06, 0x12, 0x26, 0x0a, 0x1e,
-	0x49, 0x64, 0x4d, 0x61, 0x68, 0x6a, 0x6f, 0x6e, 0x67, 0x42, 0x54, 0x45, 0x44, 0x65, 0x63, 0x69,
-	0x64, 0x65, 0x49, 0x67, 0x6e, 0x6f, 0x72, 0x65, 0x45, 0x6e, 0x64, 0x4e, 0x74, 0x66, 0x10, 0xf7,
-	0xf1, 0xda, 0xeb, 0x04, 0x12, 0x1d, 0x0a, 0x16, 0x49, 0x64, 0x4d, 0x61, 0x68, 0x6a, 0x6f, 0x6e,
-	0x67, 0x42, 0x54, 0x45, 0x50, 0x6c, 0x61, 0x79, 0x69, 0x6e, 0x67, 0x4e, 0x74, 0x66, 0x10, 0x90,
-	0x82, 0xdd, 0x37, 0x12, 0x1b, 0x0a, 0x13, 0x49, 0x64, 0x4d, 0x61, 0x68, 0x6a, 0x6f, 0x6e, 0x67,
-	0x42, 0x54, 0x45, 0x54, 0x75, 0x72, 0x6e, 0x4e, 0x74, 0x66, 0x10, 0x86, 0xaf, 0xf4, 0xc4, 0x05,
-	0x12, 0x1c, 0x0a, 0x14, 0x49, 0x64, 0x4d, 0x61, 0x68, 0x6a, 0x6f, 0x6e, 0x67, 0x42, 0x54, 0x45,
-	0x4f, 0x70, 0x65, 0x72, 0x61, 0x4e, 0x74, 0x66, 0x10, 0x9f, 0xa5, 0xb0, 0xa2, 0x06, 0x12, 0x21,
+	0xde, 0x02, 0x12, 0x2b, 0x0a, 0x23, 0x49, 0x64, 0x4d, 0x61, 0x68, 0x6a, 0x6f, 0x6e, 0x67, 0x42,
+	0x54, 0x45, 0x45, 0x78, 0x63, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x33, 0x50, 0x6c, 0x61, 0x79, 0x65,
+	0x72, 0x52, 0x65, 0x61, 0x64, 0x79, 0x4e, 0x74, 0x66, 0x10, 0xf7, 0xdf, 0xef, 0xb9, 0x04, 0x12,
+	0x23, 0x0a, 0x1b, 0x49, 0x64, 0x4d, 0x61, 0x68, 0x6a, 0x6f, 0x6e, 0x67, 0x42, 0x54, 0x45, 0x45,
+	0x78, 0x63, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x33, 0x45, 0x6e, 0x64, 0x4e, 0x74, 0x66, 0x10, 0xb1,
+	0x9c, 0xe4, 0x9b, 0x02, 0x12, 0x23, 0x0a, 0x1b, 0x49, 0x64, 0x4d, 0x61, 0x68, 0x6a, 0x6f, 0x6e,
+	0x67, 0x42, 0x54, 0x45, 0x44, 0x65, 0x63, 0x69, 0x64, 0x65, 0x49, 0x67, 0x6e, 0x6f, 0x72, 0x65,
+	0x4e, 0x74, 0x66, 0x10, 0x9b, 0xb2, 0xa0, 0xc0, 0x06, 0x12, 0x26, 0x0a, 0x1e, 0x49, 0x64, 0x4d,
+	0x61, 0x68, 0x6a, 0x6f, 0x6e, 0x67, 0x42, 0x54, 0x45, 0x44, 0x65, 0x63, 0x69, 0x64, 0x65, 0x49,
+	0x67, 0x6e, 0x6f, 0x72, 0x65, 0x45, 0x6e, 0x64, 0x4e, 0x74, 0x66, 0x10, 0xf7, 0xf1, 0xda, 0xeb,
+	0x04, 0x12, 0x1d, 0x0a, 0x16, 0x49, 0x64, 0x4d, 0x61, 0x68, 0x6a, 0x6f, 0x6e, 0x67, 0x42, 0x54,
+	0x45, 0x50, 0x6c, 0x61, 0x79, 0x69, 0x6e, 0x67, 0x4e, 0x74, 0x66, 0x10, 0x90, 0x82, 0xdd, 0x37,
+	0x12, 0x1b, 0x0a, 0x13, 0x49, 0x64, 0x4d, 0x61, 0x68, 0x6a, 0x6f, 0x6e, 0x67, 0x42, 0x54, 0x45,
+	0x54, 0x75, 0x72, 0x6e, 0x4e, 0x74, 0x66, 0x10, 0x86, 0xaf, 0xf4, 0xc4, 0x05, 0x12, 0x1c, 0x0a,
+	0x14, 0x49, 0x64, 0x4d, 0x61, 0x68, 0x6a, 0x6f, 0x6e, 0x67, 0x42, 0x54, 0x45, 0x4f, 0x70, 0x65,
+	0x72, 0x61, 0x4e, 0x74, 0x66, 0x10, 0x9f, 0xa5, 0xb0, 0xa2, 0x06, 0x12, 0x21, 0x0a, 0x19, 0x49,
+	0x64, 0x4d, 0x61, 0x68, 0x6a, 0x6f, 0x6e, 0x67, 0x42, 0x54, 0x45, 0x47, 0x61, 0x6e, 0x67, 0x52,
+	0x65, 0x73, 0x75, 0x6c, 0x74, 0x4e, 0x74, 0x66, 0x10, 0x9f, 0xb6, 0x95, 0xc4, 0x01, 0x12, 0x21,
 	0x0a, 0x19, 0x49, 0x64, 0x4d, 0x61, 0x68, 0x6a, 0x6f, 0x6e, 0x67, 0x42, 0x54, 0x45, 0x53, 0x65,
 	0x74, 0x74, 0x6c, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x4e, 0x74, 0x66, 0x10, 0xb6, 0xe2, 0x99, 0xde,
 	0x06, 0x12, 0x15, 0x0a, 0x0d, 0x49, 0x64, 0x4d, 0x61, 0x69, 0x6c, 0x4c, 0x69, 0x73, 0x74, 0x52,

@@ -61,7 +61,14 @@ func (r *Room) InjectGambling(gambling Gambling) {
 }
 
 func (r *Room) GamblingHandle(shortId int64, v any) (result any) {
-	rsp := r.gambling.Handle(shortId, v)
+	var rsp any
+
+	log.Infow("gambling req msg", "room", r.RoomId, "shortId", shortId, "req", reflect.TypeOf(v), "data", v)
+	defer func() {
+		log.Infow("gambling rsp msg", "room", r.RoomId, "shortId", shortId, "rsp", reflect.TypeOf(rsp), "data", rsp)
+	}()
+
+	rsp = r.gambling.Handle(shortId, v)
 	if rsp == nil {
 		return nil
 	}

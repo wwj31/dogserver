@@ -28,7 +28,8 @@ type (
 		seat int
 
 		// 以下操作用于杠
-		afterQiangPass func() // 主要用于抢杠胡 不抢的情况下，继续执行杠的行为
+		afterQiangPass func()          // 主要用于抢杠胡 不抢的情况下，继续执行杠的行为
+		loseScores     map[int64]int64 // 杠的赔分
 	}
 )
 
@@ -217,6 +218,9 @@ func (s *StatePlaying) nextAction() {
 	s.actionTimer(actionEndAt, nextSeat) // 碰,杠,胡,过,行动倒计时
 	delete(s.actionMap, nextSeat)        // 从行动者组中删除
 
+	log.Infow("next action", "room", s.room.RoomId, "act player", nextPlayer.ShortId, "seat", nextSeat,
+		"current action", s.currentAction, "action map", s.actionMap)
+
 	// 通知行动者
 	s.room.SendToPlayer(nextPlayer.ShortId, &outer.MahjongBTETurnNtf{
 		TotalCards:    int32(s.cards.Len()),
@@ -231,12 +235,13 @@ func (s *StatePlaying) nextAction() {
 	s.room.Broadcast(notifyPlayerMsg, nextPlayer.ShortId)
 }
 
-func (s *StatePlaying) appendPeerCard(typ checkCardType, card Card, seat int, gangFn func()) {
+func (s *StatePlaying) appendPeerCard(typ checkCardType, card Card, seat int, gangFn func(), loseScore map[int64]int64) {
 	s.peerCards = append(s.peerCards, peerCard{
 		typ:            typ,
 		card:           card,
 		seat:           seat,
 		afterQiangPass: gangFn,
+		loseScores:     loseScore,
 	})
 }
 
@@ -251,4 +256,20 @@ func (s *StatePlaying) checkMutilHu(huPeerIndex int) bool {
 		}
 	}
 	return false
+}
+
+// 获得排除了某些座位后，剩余的座位
+func (s *StatePlaying) allSeat(ignoreSeat ...int) (result []int) {
+	seatMap := map[int]struct{}{}
+	for _, seat := range ignoreSeat {
+		seatMap[seat] = struct{}{}
+	}
+
+	for seatIndex := 0; seatIndex < 4; seatIndex++ {
+		if _, ignore := seatMap[seatIndex]; !ignore {
+			result = append(result, seatIndex)
+		}
+	}
+
+	return result
 }

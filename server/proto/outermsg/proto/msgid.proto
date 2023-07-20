@@ -46,12 +46,14 @@ enum Msg {
     IdMahjongBTEDecideMasterNtf = 701290466;
     IdMahjongBTEDealNtf = 881890379;
     IdMahjongBTEExchange3Ntf = 735992092;
+    IdMahjongBTEExchange3PlayerReadyNtf = 1195110391;
     IdMahjongBTEExchange3EndNtf = 595136049;
     IdMahjongBTEDecideIgnoreNtf = 1745361179;
     IdMahjongBTEDecideIgnoreEndNtf = 1299626231;
     IdMahjongBTEPlayingNtf = 116867344;
     IdMahjongBTETurnNtf = 1486690182;
     IdMahjongBTEOperaNtf = 1682707103;
+    IdMahjongBTEGangResultNtf = 411392799;
     IdMahjongBTESettlementNtf = 1808167222;
     IdMailListReq = 1443645576;// dispatch to player
     IdMailListRsp = 1812753385;

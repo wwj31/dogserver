@@ -118,8 +118,8 @@ func (s *Client) OnHandle(m actor.Message) {
 		log.Infow("RoomPlayerEnterNtf room player enter!", "msg", msg.String())
 	case *outer.RoomPlayerLeaveNtf:
 		log.Infow("RoomPlayerLeaveNtf room player leave!", "msg", msg.String())
-	case *outer.RoomPlayerReadyNtf:
-		log.Infow("RoomPlayerReadyNtf room player ready!", "msg", msg.String())
+	case *outer.MahjongBTEPlayerReadyNtf:
+		log.Infow("MahjongBTEPlayerReadyNtf room player ready!", "msg", msg.String())
 	default:
 		pb := msg.(proto.Message)
 		log.Infow("msg", "type", reflect.TypeOf(pb), "data", pb.String())

@@ -1,7 +1,6 @@
 package mahjong
 
 import (
-	"github.com/spf13/cast"
 	"reflect"
 	"time"
 
@@ -42,7 +41,7 @@ func (s *StateReady) Handle(shortId int64, v any) (result any) {
 		s.room.Broadcast(&outer.MahjongBTEPlayerReadyNtf{ShortId: shortId, Ready: msg.Ready})
 
 		if msg.Ready {
-			s.room.CancelTimer(cast.ToString(shortId))
+			s.room.CancelTimer(player.RID)
 			if s.checkAllReady() {
 				if s.gameCount == 0 {
 					s.SwitchTo(DecideMaster)
@@ -51,11 +50,10 @@ func (s *StateReady) Handle(shortId int64, v any) (result any) {
 				}
 			}
 		} else {
-			s.room.AddTimer(cast.ToString(shortId), time.Now().Add(ReadyExpiration), func(dt time.Duration) {
+			s.room.AddTimer(player.RID, time.Now().Add(ReadyExpiration), func(dt time.Duration) {
 				s.room.PlayerLeave(shortId, true)
 			})
 		}
-
 		return &outer.MahjongBTEReadyRsp{Ready: msg.Ready}
 	default:
 		log.Warnw("ready state has received an unknown message", "msg", reflect.TypeOf(msg).String())

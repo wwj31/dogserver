@@ -119,10 +119,10 @@ func (s *StateExchange3) Handle(shortId int64, v any) (result any) {
 		}
 
 		log.Infow("MahjongBTEExchange3Req ", "room", s.room.RoomId, "playerID", player.ShortId,
-			"cards", exchange3Cards,
-			"seatIndex", seatIndex,
-			"nextSeatIndex", nextSeatIndex,
-		)
+			"cards", exchange3Cards, "seatIndex", seatIndex, "nextSeatIndex", nextSeatIndex)
+
+		// 广播玩家确认换三张
+		s.room.Broadcast(&outer.MahjongBTEExchange3PlayerReadyNtf{ShortId: shortId})
 
 		// 所有人都准备好了，结束换三张
 		if s.isAllReady() {

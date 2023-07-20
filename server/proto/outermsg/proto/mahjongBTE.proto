@@ -28,10 +28,11 @@ message MahjongBTEGameInfo {
 
 // 血战到底 参与游戏的玩家数据
 message MahjongPlayerInfo {
-    int64      ShortId       = 1; // 参与者短ID
-    bool       Ready         = 2; // true.准备、false.未准备
-    ColorType  DecideColor   = 3; // 定缺花色
-    CardsOfBTE AllCards      = 4; // 玩家的所有牌，手牌、碰、杠
+    int64      ShortId        = 1; // 参与者短ID
+    bool       Ready          = 2; // true.准备、false.未准备
+    bool       Exchange3Ready = 3; // 换三张玩家 确认状态 true.确认、false.未确认
+    ColorType  DecideColor    = 4; // 定缺花色
+    CardsOfBTE AllCards       = 5; // 玩家的所有牌，手牌、碰、杠
 }
 
 // 血战到底 换三张数据
@@ -124,6 +125,10 @@ message MahjongBTEDealNtf {
 message MahjongBTEExchange3Ntf {
 }
 
+// 换三张 玩家确认通知
+message MahjongBTEExchange3PlayerReadyNtf {
+    int64 ShortId = 1;
+}
 // 换三张结束
 message MahjongBTEExchange3EndNtf {
     Exchange3Info  Ex3Info      = 1; // 换牌信息
@@ -164,6 +169,14 @@ message MahjongBTEOperaNtf {
     int32  QiangGangHuCard  = 6; // 抢杠胡的牌
     int32  GangType         = 7; // 1.明杠、2.暗杠
     int32  Card             = 8; // 碰、杠、出牌的牌
+}
+
+// 杠的结果通知
+message MahjongBTEGangResultNtf {
+    int64 OpShortId             = 1; // 杠的操作者
+    int64 QiangGangShortId      = 2; // 抢杠的人，0表示杠成功，否则表示被抢杠
+    int32 Card                  = 3; // 杠的牌
+    map<int64,int64> LoseScores = 4; // 赔分的人，map<shortId,赔的分>
 }
 
 // 结算通知

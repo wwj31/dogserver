@@ -71,7 +71,6 @@ type (
 	action struct {
 		acts    []outer.ActionType // 当前行动者能执行的行为
 		hus     []outer.HuType     // 当前行动者能胡的牌
-		qiang   bool               // 是否是抢杠胡
 		gang    []int32            // 当前行动者能杠的牌
 		newCard Card               // 当前行动者摸到的新牌
 	}
@@ -169,9 +168,10 @@ func (m *Mahjong) playersToPB(shortId int64) (players []*outer.MahjongPlayerInfo
 			}
 
 			players = append(players, &outer.MahjongPlayerInfo{
-				ShortId:     player.ShortId,
-				Ready:       player.ready,
-				DecideColor: outer.ColorType(player.ignoreColor),
+				ShortId:        player.ShortId,
+				Ready:          player.ready,
+				Exchange3Ready: player.exchange != nil,
+				DecideColor:    outer.ColorType(player.ignoreColor),
 				AllCards: &outer.CardsOfBTE{
 					Cards:     allCards,
 					LightGang: player.lightGang,

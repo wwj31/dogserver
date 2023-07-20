@@ -49,7 +49,7 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 		nextDrawShortIndex = seatIndex // 杠的人自己摸一张
 
 		log.Infow("gang!", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId,
-			"peer", &peer, "hand", player.handCards, "lightGang cards", player.lightGang, "darkGang cards", player.darkGang)
+			"peer", s.peerCards[len(s.peerCards)-1], "action map", s.actionMap, "hand", player.handCards, "lightGang cards", player.lightGang, "darkGang cards", player.darkGang)
 
 	case outer.ActionType_ActionHu:
 		ok, err = s.operateHu(player, seatIndex, ntf)
@@ -158,6 +158,7 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 		return false, outer.ERROR_MSG_REQ_PARAM_INVALID
 	}
 
+	// 检查能否被抢杠胡
 	hasQiangGang := func() bool {
 		b := false
 		for seat, other := range s.mahjongPlayers {
@@ -176,7 +177,31 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 		return b
 	}
 
-	qiangGang := false
+	// 统一计算赔付分
+	loseScoreAnalyze := func(seat ...int) map[int64]int64 {
+		log.Infow("gang ok")
+		// TODO 杠计算得分
+		return nil
+	}
+
+	// 杠成功后的扣分(真正算分的位置)
+	execScore := func(loseScores map[int64]int64) {
+		// TODO 挨个执行赔付扣分行为
+
+		// 杠成功后的广播消息
+		s.room.Broadcast(&outer.MahjongBTEGangResultNtf{
+			OpShortId:        p.ShortId,
+			QiangGangShortId: 0,
+			Card:             card.Int32(),
+			LoseScores:       loseScores,
+		})
+	}
+
+	var (
+		qiangGang  bool
+		loseScores map[int64]int64
+	)
+
 	// 获得最后一次操作的牌
 	peer := s.peerCards[len(s.peerCards)-1]
 	var (
@@ -185,6 +210,8 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 	)
 	switch peer.typ {
 	case drawCardType: // 摸牌
+		loseScores = loseScoreAnalyze(s.allSeat(seatIndex)...) // 其余三家输分
+
 		if _, ok := p.pong[card.Int32()]; ok {
 			ntf.GangType = 1 // 面下杠（刮风）
 			gangType = GangType1
@@ -192,6 +219,7 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 			gangFunc = func() {
 				delete(p.pong, card.Int32())
 				p.darkGang[card.Int32()] = p.ShortId
+				execScore(loseScores)
 			}
 
 			qiangGang = hasQiangGang()
@@ -201,22 +229,21 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 
 			// 暗杠（下雨）
 			gangFunc = func() {
-				for _, gang := range p.handCards.HasGang() {
-					if gang == card {
-						p.handCards = p.handCards.Remove(card, card, card, card)
-						break
-					}
-				}
+				p.handCards = p.handCards.Remove(card, card, card, card)
 				p.darkGang[card.Int32()] = p.ShortId
+				execScore(loseScores)
 			}
 		}
 
 	case playCardType:
+		loseScores = loseScoreAnalyze(peer.seat) // 打牌的那个人，是输分者
+
 		ntf.GangType = 1 // 直杠（刮风）
 		gangType = GangType3
 		gangFunc = func() {
 			p.handCards, _, _ = p.handCards.Gang(card)
 			p.lightGang[card.Int32()] = s.mahjongPlayers[peer.seat].ShortId
+			execScore(loseScores)
 		}
 
 		qiangGang = hasQiangGang()
@@ -228,7 +255,7 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 		gangFunc = nil
 	}
 
-	s.appendPeerCard(gangType, card, seatIndex, gangFunc)
+	s.appendPeerCard(gangType, card, seatIndex, gangFunc, loseScores)
 	return true, outer.ERROR_OK
 }
 
@@ -260,7 +287,7 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 		return false, outer.ERROR_MAHJONG_HU_INVALID
 	}
 
-	// 一炮多响,如果还有人胡了这个peer，那么就算一炮多响
+	// 一炮多响检查，如果还有人胡了相同的peer，就算一炮多响
 	if s.checkMutilHu(lastPeerIndex) {
 		s.mutilHuByIndex = peer.seat
 	}
@@ -272,6 +299,15 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 	if peer.typ == GangType1 || peer.typ == GangType3 {
 		peer.afterQiangPass = nil // 抢杠成功，杠的人，杠失败
 		ntf.QiangGangHuCard = peer.card.Int32()
+
+		// TODO 转移杠分给抢杠胡的人
+		s.room.Broadcast(&outer.MahjongBTEGangResultNtf{
+			OpShortId:        s.mahjongPlayers[peer.seat].ShortId,
+			QiangGangShortId: p.ShortId,
+			Card:             peer.card.Int32(),
+			LoseScores:       peer.loseScores,
+		})
+		log.Infow("qiang gang success", "room", s.room.RoomId, "seat", seatIndex, "gang seat", peer.seat)
 	}
 
 	// 计算额外加番
