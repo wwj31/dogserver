@@ -179,13 +179,13 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 
 	// 统一计算赔付分
 	loseScoreAnalyze := func(seat ...int) map[int64]int64 {
-		log.Infow("gang ok")
 		// TODO 杠计算得分
 		return nil
 	}
 
 	// 杠成功后的扣分(真正算分的位置)
 	execScore := func(loseScores map[int64]int64) {
+		log.Infow("gang ok")
 		// TODO 挨个执行赔付扣分行为
 
 		// 杠成功后的广播消息
@@ -277,7 +277,7 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 			paySeat = append(paySeat, seat)
 		}
 
-	case playCardType, GangType1: // 点炮,抢杠
+	case playCardType, GangType1, GangType3: // 点炮,抢杠
 		hu = p.handCards.Insert(peer.card).IsHu(p.lightGang, p.darkGang, p.pong, peer.card)
 		paySeat = append(paySeat, peer.seat) // 点炮的人陪钱
 	}
@@ -301,6 +301,7 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 		ntf.QiangGangHuCard = peer.card.Int32()
 
 		// TODO 转移杠分给抢杠胡的人
+
 		s.room.Broadcast(&outer.MahjongBTEGangResultNtf{
 			OpShortId:        s.mahjongPlayers[peer.seat].ShortId,
 			QiangGangShortId: p.ShortId,
@@ -342,11 +343,11 @@ func (s *StatePlaying) huExtra(seatIndex int) ExtFanType {
 	var extraFans []ExtFanType
 
 	// 根据番数大到小，优先计算大番型
-	if len(s.peerCards) == 1 {
+	if len(s.peerCards) == 0 {
 		return TianHu
 	}
 
-	if len(s.peerCards) == 2 {
+	if len(s.peerCards) == 1 {
 		return Dihu
 	}
 

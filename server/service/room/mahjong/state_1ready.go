@@ -40,6 +40,7 @@ func (s *StateReady) Handle(shortId int64, v any) (result any) {
 	case *outer.MahjongBTEReadyReq:
 		s.room.Broadcast(&outer.MahjongBTEPlayerReadyNtf{ShortId: shortId, Ready: msg.Ready})
 
+		player.ready = msg.Ready
 		if msg.Ready {
 			s.room.CancelTimer(player.RID)
 			if s.checkAllReady() {

@@ -49,7 +49,15 @@ func (s *StatePlaying) Enter() {
 	s.actionTimerId = ""
 	s.currentStateEnterAt = time.Time{}
 
-	s.currentAction = &action{acts: []outer.ActionType{outer.ActionType_ActionPlayCard}}
+	// 判断能否胡牌
+	newAct := &action{acts: []outer.ActionType{outer.ActionType_ActionPlayCard}}
+	master := s.mahjongPlayers[s.masterIndex]
+	hu := master.handCards.IsHu(master.lightGang, master.darkGang, master.pong, master.handCards[master.handCards.Len()-1])
+	if hu != HuInvalid {
+		newAct.hus = append(newAct.hus, outer.HuType(hu))
+		newAct.acts = append(newAct.acts, outer.ActionType_ActionHu)
+	}
+	s.currentAction = newAct
 	s.currentActionSeat = s.masterIndex
 	s.actionMap[s.masterIndex] = s.currentAction
 	log.Infow("[Mahjong] enter state playing", "room", s.room.RoomId)
