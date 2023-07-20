@@ -162,16 +162,18 @@ message MahjongBTETurnNtf {
 
 // 玩家操作结果通知
 message MahjongBTEOperaNtf {
-    int64  OpShortId        = 1; // 操作者
-    ActionType OpType       = 3; // 操作类型，1.碰、2.杠、3.胡、4.出牌
-    HuType HuType           = 4; // 胡牌类型
-    ExtraType HuExtraType   = 5; // 胡牌额外加番
-    int32  QiangGangHuCard  = 6; // 抢杠胡的牌
-    int32  GangType         = 7; // 1.明杠、2.暗杠
-    int32  Card             = 8; // 碰、杠、出牌的牌
+    int64  OpShortId                   = 1; // 操作者
+    ActionType OpType                  = 3; // 操作类型，1.碰、2.杠、3.胡、4.出牌
+    HuType HuType                      = 4; // 胡牌类型
+    ExtraType HuExtraType              = 5; // 胡牌额外加番
+    MahjongBTEGangResultNtf  QiangGang = 6; // 杠结果，触发可抢杠，该字段未null
+    int32  GangType                    = 7; // 1.明杠、2.暗杠
+    int32  Card                        = 8; // 碰、杠、出牌的牌
 }
 
 // 杠的结果通知
+// 1.如果没触发可抢杠胡,随着MahjongBTEOperaNtf通知下发，MahjongBTEOperaNtf的QiangGang字段有效
+// 2.如果触发可抢杠胡,会随着可抢人的操作下发该通知
 message MahjongBTEGangResultNtf {
     int64 OpShortId             = 1; // 杠的操作者
     int64 QiangGangShortId      = 2; // 抢杠的人，0表示杠成功，否则表示被抢杠

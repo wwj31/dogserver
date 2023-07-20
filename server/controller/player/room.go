@@ -157,8 +157,6 @@ var _ = router.Reg(func(p *player.Player, msg *outer.LeaveRoomReq) any {
 		return outer.ERROR_PLAYER_NOT_IN_ROOM
 	}
 
-	// TODO ...
-
 	roomActor := actortype.RoomName(p.Room().RoomId())
 	v, err := p.RequestWait(roomActor, &inner.LeaveRoomReq{ShortId: p.Role().ShortId()})
 	if yes, code := common.IsErr(v, err); yes {

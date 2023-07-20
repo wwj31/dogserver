@@ -63,10 +63,10 @@ func (r *Room) InjectGambling(gambling Gambling) {
 func (r *Room) GamblingHandle(shortId int64, v any) (result any) {
 	var rsp any
 
-	log.Infow("gambling req msg", "room", r.RoomId, "shortId", shortId, "req", reflect.TypeOf(v), "data", v)
-	defer func() {
-		log.Infow("gambling rsp msg", "room", r.RoomId, "shortId", shortId, "rsp", reflect.TypeOf(rsp), "data", rsp)
-	}()
+	//log.Infow("gambling req msg", "room", r.RoomId, "shortId", shortId, "req", reflect.TypeOf(v), "data", v)
+	//defer func() {
+	//	log.Infow("gambling rsp msg", "room", r.RoomId, "shortId", shortId, "rsp", reflect.TypeOf(v), "data", rsp)
+	//}()
 
 	rsp = r.gambling.Handle(shortId, v)
 	if rsp == nil {
@@ -86,7 +86,7 @@ func (r *Room) GamblingHandle(shortId int64, v any) (result any) {
 
 func (r *Room) OnInit() {
 	router.Result(r, r.responseHandle)
-	r.GameParams.Mahjong.HuanSanZhang = 2 // TODO TEST
+	r.GameParams.Mahjong.HuanSanZhang = 2 // TODO 固定换三张测试
 	log.Debugf("Room:[%v] OnInit", r.RoomId)
 }
 

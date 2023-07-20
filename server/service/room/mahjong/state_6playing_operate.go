@@ -186,15 +186,9 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 	// 杠成功后的扣分(真正算分的位置)
 	execScore := func(loseScores map[int64]int64) {
 		log.Infow("gang ok")
+
 		// TODO 挨个执行赔付扣分行为
 
-		// 杠成功后的广播消息
-		s.room.Broadcast(&outer.MahjongBTEGangResultNtf{
-			OpShortId:        p.ShortId,
-			QiangGangShortId: 0,
-			Card:             card.Int32(),
-			LoseScores:       loseScores,
-		})
 	}
 
 	var (
@@ -253,6 +247,13 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 	if !qiangGang {
 		gangFunc()
 		gangFunc = nil
+		// 杠成功后的广播消息
+		ntf.QiangGang = &outer.MahjongBTEGangResultNtf{
+			OpShortId:        p.ShortId,
+			QiangGangShortId: 0,
+			Card:             card.Int32(),
+			LoseScores:       loseScores,
+		}
 	}
 
 	s.appendPeerCard(gangType, card, seatIndex, gangFunc, loseScores)
@@ -298,9 +299,6 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 	ntf.HuType = hu.PB()
 	if peer.typ == GangType1 || peer.typ == GangType3 {
 		peer.afterQiangPass = nil // 抢杠成功，杠的人，杠失败
-		ntf.QiangGangHuCard = peer.card.Int32()
-
-		// TODO 转移杠分给抢杠胡的人
 
 		s.room.Broadcast(&outer.MahjongBTEGangResultNtf{
 			OpShortId:        s.mahjongPlayers[peer.seat].ShortId,
@@ -334,6 +332,17 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 	}
 
 	// TODO 算番算分
+	if len(s.peerCards) > 3 {
+		last1 := s.peerCards[len(s.peerCards)-1]
+		last2 := s.peerCards[len(s.peerCards)-2]
+		last3 := s.peerCards[len(s.peerCards)-3]
+
+		// 判断是否是杠上炮
+		if (last3.typ == GangType1 || last3.typ == GangType3 || last3.typ == GangType4) &&
+			last1.seat == last2.seat && last1.seat == last3.seat {
+			// TODO 杠上炮
+		}
+	}
 
 	return true, outer.ERROR_OK
 }
