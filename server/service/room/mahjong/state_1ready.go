@@ -62,10 +62,7 @@ func (s *StateReady) Handle(shortId int64, v any) (result any) {
 			}
 		} else {
 			player.readyExpireAt = time.Now().Add(ReadyExpiration)
-
-			s.room.AddTimer(player.RID, player.readyExpireAt, func(dt time.Duration) {
-				s.room.PlayerLeave(shortId, true)
-			})
+			s.readyTimeout(player.RID, player.ShortId, player.readyExpireAt)
 		}
 		return &outer.MahjongBTEReadyRsp{Ready: msg.Ready}
 	default:

@@ -223,15 +223,18 @@ func (m *Mahjong) PlayerEnter(p *room.Player) {
 		if player == nil {
 			m.mahjongPlayers[i] = m.newMahjongPlayer(p)
 			m.mahjongPlayers[i].readyExpireAt = time.Now().Add(ReadyExpiration)
-			m.room.AddTimer(p.RID, m.mahjongPlayers[i].readyExpireAt, func(dt time.Duration) {
-				log.Infow("the player was kicked out of the room due to a timeout in the ready period",
-					"room", m.room.RoomId, "player", p.ShortId)
-				m.room.PlayerLeave(p.ShortId, true)
-			})
+			m.readyTimeout(p.RID, p.ShortId, m.mahjongPlayers[i].readyExpireAt)
 			break
 		}
 	}
+}
 
+func (m *Mahjong) readyTimeout(rid string, shortId int64, expireAt time.Time) {
+	m.room.AddTimer(rid, expireAt, func(dt time.Duration) {
+		log.Infow("the player was kicked out of the room due to a timeout in the ready period",
+			"room", m.room.RoomId, "player", shortId)
+		m.room.PlayerLeave(shortId, true)
+	})
 }
 
 func (m *Mahjong) PlayerLeave(p *room.Player) {
