@@ -22,7 +22,15 @@ func (s *StateReady) Enter() {
 	log.Infow("[Mahjong] enter state ready ", "room", s.room.RoomId)
 	s.huSeat = nil
 	s.mutilHuByIndex = -1
-	s.room.Broadcast(&outer.MahjongBTEReadyNtf{})
+	readyExpireAt := time.Now().Add(ReadyExpiration)
+	for _, player := range s.mahjongPlayers {
+		player.readyExpireAt = readyExpireAt
+		s.room.AddTimer(player.RID, readyExpireAt, func(dt time.Duration) {
+			s.room.PlayerLeave(player.ShortId, true)
+		})
+	}
+
+	s.room.Broadcast(&outer.MahjongBTEReadyNtf{ReadyExpireAt: readyExpireAt.UnixMilli()})
 }
 
 func (s *StateReady) Leave() {
@@ -42,6 +50,8 @@ func (s *StateReady) Handle(shortId int64, v any) (result any) {
 
 		player.ready = msg.Ready
 		if msg.Ready {
+			player.readyExpireAt = time.Time{}
+
 			s.room.CancelTimer(player.RID)
 			if s.checkAllReady() {
 				if s.gameCount == 0 {
@@ -51,7 +61,9 @@ func (s *StateReady) Handle(shortId int64, v any) (result any) {
 				}
 			}
 		} else {
-			s.room.AddTimer(player.RID, time.Now().Add(ReadyExpiration), func(dt time.Duration) {
+			player.readyExpireAt = time.Now().Add(ReadyExpiration)
+
+			s.room.AddTimer(player.RID, player.readyExpireAt, func(dt time.Duration) {
 				s.room.PlayerLeave(shortId, true)
 			})
 		}

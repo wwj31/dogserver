@@ -52,7 +52,8 @@ type (
 	// 麻将-血战到底 参与游戏的玩家数据
 	mahjongPlayer struct {
 		*room.Player
-		ready bool
+		ready         bool
+		readyExpireAt time.Time
 
 		ignoreColor ColorType            // 定缺花色
 		exchange    *outer.Exchange3Info // 换三张信息
@@ -170,6 +171,7 @@ func (m *Mahjong) playersToPB(shortId int64) (players []*outer.MahjongPlayerInfo
 			players = append(players, &outer.MahjongPlayerInfo{
 				ShortId:        player.ShortId,
 				Ready:          player.ready,
+				ReadyExpireAt:  player.readyExpireAt.UnixMilli(),
 				Exchange3Ready: player.exchange != nil,
 				DecideColor:    outer.ColorType(player.ignoreColor),
 				AllCards: &outer.CardsOfBTE{
@@ -217,22 +219,19 @@ func (m *Mahjong) CanReady(p *inner.PlayerInfo) bool {
 }
 
 func (m *Mahjong) PlayerEnter(p *room.Player) {
-	var seatIdx = -1
 	for i, player := range m.mahjongPlayers {
 		if player == nil {
-			seatIdx = i
 			m.mahjongPlayers[i] = m.newMahjongPlayer(p)
+			m.mahjongPlayers[i].readyExpireAt = time.Now().Add(ReadyExpiration)
+			m.room.AddTimer(p.RID, m.mahjongPlayers[i].readyExpireAt, func(dt time.Duration) {
+				log.Infow("the player was kicked out of the room due to a timeout in the ready period",
+					"room", m.room.RoomId, "player", p.ShortId)
+				m.room.PlayerLeave(p.ShortId, true)
+			})
 			break
 		}
 	}
 
-	if seatIdx >= 0 {
-		m.room.AddTimer(p.RID, time.Now().Add(ReadyExpiration), func(dt time.Duration) {
-			log.Infow("the player was kicked out of the room due to a timeout in the ready period",
-				"room", m.room.RoomId, "player", p.ShortId)
-			m.room.PlayerLeave(p.ShortId, true)
-		})
-	}
 }
 
 func (m *Mahjong) PlayerLeave(p *room.Player) {

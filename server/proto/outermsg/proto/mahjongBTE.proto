@@ -10,7 +10,7 @@ import "mahjongtype.proto";
 message MahjongBTEGameInfo {
     MahjongBTEState            State            = 1; // 当前状态
     int64                      StateEnterAt     = 2; // 当前状态的进入时间(毫秒)
-    int64                      StateEndAt       = 3; // 当前状态的结算时间(毫秒)
+    int64                      StateEndAt       = 3; // 当前状态的结束时间(毫秒)
     repeated MahjongPlayerInfo Players          = 4; // 东南西北 四方玩家信息
     repeated int32             Dices            = 5; // 定庄的2颗骰子数
     int32                      MasterIndex      = 6; // 庄家位置 东南西北(0-3)
@@ -30,9 +30,10 @@ message MahjongBTEGameInfo {
 message MahjongPlayerInfo {
     int64      ShortId        = 1; // 参与者短ID
     bool       Ready          = 2; // true.准备、false.未准备
-    bool       Exchange3Ready = 3; // 换三张玩家 确认状态 true.确认、false.未确认
-    ColorType  DecideColor    = 4; // 定缺花色
-    CardsOfBTE AllCards       = 5; // 玩家的所有牌，手牌、碰、杠
+    int64      ReadyExpireAt  = 3; // 准备超时时间(毫秒)
+    bool       Exchange3Ready = 4; // 换三张玩家 确认状态 true.确认、false.未确认
+    ColorType  DecideColor    = 5; // 定缺花色
+    CardsOfBTE AllCards       = 6; // 玩家的所有牌，手牌、碰、杠
 }
 
 // 血战到底 换三张数据
@@ -108,6 +109,7 @@ message MahjongBTEPlayerReadyNtf {// 房间内玩家准备、取消准备通知
 
 // 进入准备中，（房间初始状态， 结算结束后会通知）
 message MahjongBTEReadyNtf {
+    int64 ReadyExpireAt = 1;// 结算后重新进入准备状态，所有玩家统一准备超时时间(毫秒)
 }
 
 // 开始定庄

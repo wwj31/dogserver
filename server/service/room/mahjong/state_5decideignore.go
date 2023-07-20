@@ -15,6 +15,7 @@ import (
 type StateDecideIgnore struct {
 	*Mahjong
 	colorMap map[int64]outer.ColorType
+	timerId  string
 }
 
 func (s *StateDecideIgnore) State() int {
@@ -25,7 +26,7 @@ func (s *StateDecideIgnore) Enter() {
 	s.colorMap = make(map[int64]outer.ColorType)
 	s.room.Broadcast(&outer.MahjongBTEDecideIgnoreNtf{})
 	s.currentStateEndAt = tools.Now().Add(DecideIgnoreExpiration)
-	s.room.AddTimer(tools.XUID(), s.currentStateEndAt, func(time.Duration) {
+	s.timerId = s.room.AddTimer(tools.XUID(), s.currentStateEndAt, func(time.Duration) {
 		s.stateEnd()
 	})
 	log.Infow("[Mahjong] enter state decide ignore", "room", s.room.RoomId)
@@ -64,6 +65,7 @@ func (s *StateDecideIgnore) Handle(shortId int64, v any) (result any) {
 
 // 定缺完成
 func (s *StateDecideIgnore) stateEnd() {
+	s.room.CancelTimer(s.timerId)
 	for _, player := range s.mahjongPlayers {
 		if player.ignoreColor == ColorUnknown {
 			player.ignoreColor = Tong

@@ -14,6 +14,7 @@ import (
 
 type StateExchange3 struct {
 	*Mahjong
+	timerId string
 }
 
 func (s *StateExchange3) State() int {
@@ -23,7 +24,7 @@ func (s *StateExchange3) State() int {
 func (s *StateExchange3) Enter() {
 	s.room.Broadcast(&outer.MahjongBTEExchange3Ntf{})
 	s.currentStateEndAt = tools.Now().Add(Exchange3Expiration)
-	s.room.AddTimer(tools.XUID(), s.currentStateEndAt, func(time.Duration) {
+	s.timerId = s.room.AddTimer(tools.XUID(), s.currentStateEndAt, func(time.Duration) {
 		s.stateEnd()
 	})
 	log.Infow("[Mahjong] enter state  exchange3", "room", s.room.RoomId)
@@ -38,6 +39,7 @@ func (s *StateExchange3) Leave() {
 
 // 换三张结束
 func (s *StateExchange3) stateEnd() {
+	s.room.CancelTimer(s.timerId)
 	for idx, player := range s.mahjongPlayers {
 		s.checkAndInit(player)
 		rival := s.mahjongPlayers[player.exchange.ToSeatIndex]
