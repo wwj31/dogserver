@@ -1,8 +1,11 @@
 package room
 
 import (
+	"fmt"
 	"reflect"
 	"time"
+
+	"github.com/wwj31/dogactor/logger"
 
 	"server/common/actortype"
 	"server/rdsop"
@@ -30,6 +33,16 @@ func New(info *rdsop.NewRoomInfo) *Room {
 		GameParams:     info.Params,
 		CreatorShortId: info.CreatorShortId,
 		AllianceId:     info.AllianceId,
+		log: logger.New(logger.Option{
+			Level:          logger.DebugLevel,
+			LogPath:        "./log/room",
+			FileName:       fmt.Sprintf("room%v", info.RoomId),
+			FileMaxAge:     5,
+			FileMaxSize:    512,
+			FileMaxBackups: 10,
+			DisplayConsole: true,
+			Skip:           2,
+		}),
 	}
 	return r
 }
@@ -53,6 +66,7 @@ type (
 		Players []*Player
 
 		gambling Gambling
+		log      *logger.Logger
 	}
 )
 
@@ -62,11 +76,6 @@ func (r *Room) InjectGambling(gambling Gambling) {
 
 func (r *Room) GamblingHandle(shortId int64, v any) (result any) {
 	var rsp any
-
-	//log.Infow("gambling req msg", "room", r.RoomId, "shortId", shortId, "req", reflect.TypeOf(v), "data", v)
-	//defer func() {
-	//	log.Infow("gambling rsp msg", "room", r.RoomId, "shortId", shortId, "rsp", reflect.TypeOf(v), "data", rsp)
-	//}()
 
 	rsp = r.gambling.Handle(shortId, v)
 	if rsp == nil {
@@ -188,7 +197,7 @@ func (r *Room) PlayerEnter(playerInfo *inner.PlayerInfo) *inner.Error {
 
 	seatIndex := r.gambling.SeatIndex(playerInfo.ShortId)
 	r.Broadcast(&outer.RoomPlayerEnterNtf{Player: newPlayer.OuterPB(int32(seatIndex))})
-	log.Infow("room add player", "room", r.RoomId, "gameType", r.GameType, "player", playerInfo.ShortId, "seat", seatIndex)
+	r.Log().Infow("room add player", "room", r.RoomId, "gameType", r.GameType, "player", playerInfo.ShortId, "seat", seatIndex)
 	return nil
 }
 
@@ -203,7 +212,7 @@ func (r *Room) PlayerLeave(shortId int64, kickOut bool) {
 			rid = player.RID
 			r.gambling.PlayerLeave(player)
 			delIdx = seatIdx
-			log.Infow("room del player", "room", r.RoomId, "shortId", shortId, "seat", delIdx)
+			r.Log().Infow("room del player", "room", r.RoomId, "shortId", shortId)
 			break
 		}
 	}
@@ -226,7 +235,7 @@ func (r *Room) PlayerReady(shortId int64, ready bool) (ok bool, err outer.ERROR)
 	p := r.FindPlayer(shortId)
 	if p == nil {
 		// 玩家不在房间内
-		log.Warnw("leave the room cannot find player", "room", r.RoomId, "msg", shortId)
+		r.Log().Warnw("leave the room cannot find player", "room", r.RoomId, "msg", shortId)
 		return false, outer.ERROR_PLAYER_NOT_IN_ROOM
 	}
 
@@ -241,13 +250,13 @@ func (r *Room) SendToPlayer(shortId int64, msg proto.Message) {
 
 	player := r.FindPlayer(shortId)
 	if player == nil {
-		log.Errorw("cannot find player", "room", r.RoomId, "shortId", shortId, "msg", common.ProtoType(msg))
+		r.Log().Errorw("cannot find player", "room", r.RoomId, "shortId", shortId, "msg", common.ProtoType(msg))
 		return
 	}
 
 	playerActor := actortype.PlayerId(player.RID)
 	if err := r.Send(playerActor, wrapper); err != nil {
-		log.Errorw("send msg to player failed", "room", r.RoomId, "shortId", shortId, "player actor", playerActor)
+		r.Log().Errorw("send msg to player failed", "room", r.RoomId, "shortId", shortId, "player actor", playerActor)
 		return
 	}
 }
@@ -288,7 +297,7 @@ func (r *Room) Info() *inner.RoomInfo {
 func (r *Room) GamblingData(shortId int64) []byte {
 	data, err := proto.Marshal(r.gambling.Data(shortId))
 	if err != nil {
-		log.Errorw("gambling data marshal failed", "room", r.RoomId, "param", r.GameParams.String())
+		r.Log().Errorw("gambling data marshal failed", "room", r.RoomId, "param", r.GameParams.String())
 	}
 
 	return data
@@ -309,10 +318,6 @@ func (p *Player) OuterPB(seatIdx int32) *outer.RoomPlayerInfo {
 	}
 }
 
-func (r *Room) LogInfo() []any {
-	return []any{
-		"room", r.RoomId,
-		"gameType", r.GameType,
-		"currentMsg", r.CurrentMsg,
-	}
+func (r *Room) Log() *logger.Logger {
+	return r.log
 }

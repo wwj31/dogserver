@@ -1,7 +1,6 @@
 package mahjong
 
 import (
-	"server/common/log"
 	"server/proto/outermsg/outer"
 )
 
@@ -31,7 +30,7 @@ func (s *StatePlaying) playCard(cardIndex, seatIndex int) (bool, outer.ERROR) {
 		HuType:    outer.HuType_HuTypeUnknown,
 		Card:      outCard.Int32(),
 	})
-	log.Infow("play a card",
+	s.Log().Infow("play a card",
 		"room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId, "play", outCard, "hand", player.handCards)
 
 	// 其余三家对这张牌依次做分析
@@ -80,7 +79,7 @@ func (s *StatePlaying) playCard(cardIndex, seatIndex int) (bool, outer.ERROR) {
 		if newAction.isActivated() {
 			s.actionMap[idx] = &newAction // 碰杠胡的玩家加入行动组
 
-			log.Infow("a new action",
+			s.Log().Infow("a new action",
 				"room", s.room.RoomId, "seat", idx, "other", other.ShortId,
 				"play", outCard, "hand", other.handCards, "action", &newAction)
 		}

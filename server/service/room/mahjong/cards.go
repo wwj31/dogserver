@@ -74,10 +74,6 @@ func (c Cards) Remove(cards ...Card) Cards {
 		}
 	}
 
-	if len(cardMap) != 0 {
-		log.Errorw("cards remove error handCards:%v cards:%v", c, cards)
-	}
-
 	return dst
 }
 

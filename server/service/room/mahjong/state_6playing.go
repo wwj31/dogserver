@@ -7,7 +7,6 @@ import (
 
 	"github.com/wwj31/dogactor/tools"
 
-	"server/common/log"
 	"server/proto/outermsg/outer"
 )
 
@@ -60,13 +59,13 @@ func (s *StatePlaying) Enter() {
 	s.currentAction = newAct
 	s.currentActionSeat = s.masterIndex
 	s.actionMap[s.masterIndex] = s.currentAction
-	log.Infow("[Mahjong] enter state playing", "room", s.room.RoomId)
+	s.Log().Infow("[Mahjong] enter state playing", "room", s.room.RoomId)
 	s.nextAction() // 庄家出牌
 }
 
 func (s *StatePlaying) Leave() {
 	s.cancelActionTimer()
-	log.Infow("[Mahjong] leave state playing", "room", s.room.RoomId)
+	s.Log().Infow("[Mahjong] leave state playing", "room", s.room.RoomId)
 }
 
 func (s *StatePlaying) Handle(shortId int64, v any) (result any) {
@@ -76,7 +75,7 @@ func (s *StatePlaying) Handle(shortId int64, v any) (result any) {
 	}
 
 	if s.currentActionSeat != seatIndex {
-		log.Warnw("illegal operation", "current seat", s.currentAction, "seat", seatIndex, "player", player.ShortId)
+		s.Log().Warnw("illegal operation", "current seat", s.currentAction, "seat", seatIndex, "player", player.ShortId)
 		return outer.ERROR_MAHJONG_ACTION_PLAYER_NOT_MATCH
 	}
 
@@ -99,7 +98,7 @@ func (s *StatePlaying) Handle(shortId int64, v any) (result any) {
 		return &outer.MahjongBTEOperateRsp{AllCards: player.allCardsToPB()}
 
 	default:
-		log.Warnw("playing status has received an unknown message", "msg", reflect.TypeOf(msg).String())
+		s.Log().Warnw("playing status has received an unknown message", "msg", reflect.TypeOf(msg).String())
 	}
 	return outer.ERROR_MAHJONG_STATE_MSG_INVALID
 }
@@ -137,7 +136,7 @@ func (s *StatePlaying) actionTimer(expireAt time.Time, seat int) {
 			card = Card(act.gang[0])
 		} else if act.isValidAction(outer.ActionType_ActionPong) {
 			defaultOperaType = outer.ActionType_ActionPong
-			card = s.cards[s.cards.Len()-1]
+			card = s.cardsInDesktop[s.cardsInDesktop.Len()-1]
 		} else if act.isValidAction(outer.ActionType_ActionPlayCard) {
 			var defaultPlayCard Card
 
@@ -152,7 +151,7 @@ func (s *StatePlaying) actionTimer(expireAt time.Time, seat int) {
 			// 把超时后随机选的牌打出去
 			playIndex := player.handCards.CardIndex(defaultPlayCard)
 			if playIndex == -1 {
-				log.Errorw("action timeout, playIndex == -1",
+				s.Log().Errorw("action timeout, playIndex == -1",
 					"room", s.room.RoomId, "player", player.ShortId, "act", act,
 					"hand", player.handCards, "play", defaultPlayCard)
 				return
@@ -160,7 +159,7 @@ func (s *StatePlaying) actionTimer(expireAt time.Time, seat int) {
 			s.playCard(playIndex, seat)
 			return
 		} else {
-			log.Warnw("action exception",
+			s.Log().Warnw("action exception",
 				"room", s.room.RoomId, "seat", seat, "player", player.ShortId, "act", act)
 			return
 		}
@@ -226,7 +225,7 @@ func (s *StatePlaying) nextAction() {
 	s.actionTimer(actionEndAt, nextSeat) // 碰,杠,胡,过,行动倒计时
 	delete(s.actionMap, nextSeat)        // 从行动者组中删除
 
-	log.Infow("next action", "room", s.room.RoomId, "act player", nextPlayer.ShortId, "seat", nextSeat,
+	s.Log().Infow("next action", "room", s.room.RoomId, "act player", nextPlayer.ShortId, "seat", nextSeat,
 		"current action", s.currentAction, "action map", s.actionMap)
 
 	// 通知行动者

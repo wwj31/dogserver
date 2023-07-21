@@ -5,12 +5,12 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/proto"
+	"github.com/wwj31/dogactor/logger"
 
 	"server/proto/outermsg/outer"
 
 	"github.com/wwj31/dogactor/tools"
 
-	"server/common/log"
 	"server/proto/innermsg/inner"
 	"server/service/room"
 )
@@ -23,8 +23,8 @@ const (
 	Exchange3ShowDuration    = 1 * time.Second  // 换三张结束后的动画播放时间
 	DecideIgnoreExpiration   = 5 * time.Second  // 定缺持续时间
 	DecideIgnoreDuration     = 1 * time.Second  // 定缺结束后的动画播放时间
-	pongGangHuGuoExpiration  = 30 * time.Second // 碰、杠、胡、过持续时间
-	playCardExpiration       = 30 * time.Second // 出牌行为持续时间
+	pongGangHuGuoExpiration  = 2 * time.Second  // 碰、杠、胡、过持续时间
+	playCardExpiration       = 2 * time.Second  // 出牌行为持续时间
 	SettlementDuration       = 1 * time.Second  // 结算持续时间
 )
 
@@ -102,8 +102,7 @@ type (
 func (m *Mahjong) SwitchTo(state int) {
 	if err := m.fsm.SwitchTo(state); err != nil {
 		current := m.fsm.CurrentStateHandler().State()
-		log.Errorw("Mahjong switch to next state failed",
-			append([]any{"current", current, "next", state}, m.room.LogInfo())...)
+		m.Log().Errorw("Mahjong switch to next state failed", "room", m.room.RoomId, "current", current)
 		return
 	}
 	m.currentStateEnterAt = tools.Now()
@@ -231,17 +230,18 @@ func (m *Mahjong) PlayerEnter(p *room.Player) {
 
 func (m *Mahjong) readyTimeout(rid string, shortId int64, expireAt time.Time) {
 	m.room.AddTimer(rid, expireAt, func(dt time.Duration) {
-		log.Infow("the player was kicked out of the room due to a timeout in the ready period",
+		m.Log().Infow("the player was kicked out of the room due to a timeout in the ready period",
 			"room", m.room.RoomId, "player", shortId)
 		m.room.PlayerLeave(shortId, true)
 	})
 }
 
-func (m *Mahjong) PlayerLeave(p *room.Player) {
+func (m *Mahjong) PlayerLeave(quitPlayer *room.Player) {
 	for idx, player := range m.mahjongPlayers {
-		if player != nil && player.ShortId == player.ShortId {
-			m.room.CancelTimer(p.RID)
+		if player != nil && player.ShortId == quitPlayer.ShortId {
+			m.room.CancelTimer(quitPlayer.RID)
 			m.mahjongPlayers[idx] = nil
+			m.Log().Infow("player leave mahjong", "shortId", player.ShortId, "seat", idx)
 			return
 		}
 	}
@@ -250,6 +250,10 @@ func (m *Mahjong) PlayerLeave(p *room.Player) {
 // Handle 麻将游戏消息，全部交由当前状态处理
 func (m *Mahjong) Handle(shortId int64, v any) any {
 	return m.fsm.CurrentStateHandler().Handle(shortId, v)
+}
+
+func (m *Mahjong) Log() *logger.Logger {
+	return m.room.Log()
 }
 
 func (m *Mahjong) findMahjongPlayer(shortId int64) (*mahjongPlayer, int) {

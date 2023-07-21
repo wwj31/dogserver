@@ -6,7 +6,6 @@ import (
 
 	"github.com/wwj31/dogactor/tools"
 
-	"server/common/log"
 	"server/proto/outermsg/outer"
 )
 
@@ -29,11 +28,11 @@ func (s *StateDecideIgnore) Enter() {
 	s.timerId = s.room.AddTimer(tools.XUID(), s.currentStateEndAt, func(time.Duration) {
 		s.stateEnd()
 	})
-	log.Infow("[Mahjong] enter state decide ignore", "room", s.room.RoomId)
+	s.Log().Infow("[Mahjong] enter state decide ignore", "room", s.room.RoomId)
 }
 
 func (s *StateDecideIgnore) Leave() {
-	log.Infow("[Mahjong] leave state decide ignore", "room", s.room.RoomId, "colors", s.colorMap)
+	s.Log().Infow("[Mahjong] leave state decide ignore", "room", s.room.RoomId, "colors", s.colorMap)
 }
 
 func (s *StateDecideIgnore) Handle(shortId int64, v any) (result any) {
@@ -49,7 +48,7 @@ func (s *StateDecideIgnore) Handle(shortId int64, v any) (result any) {
 		}
 
 		player.ignoreColor = ColorType(msg.Color)
-		log.Infow("MahjongBTEDecideIgnoreReq", "room", s.room.RoomId,
+		s.Log().Infow("MahjongBTEDecideIgnoreReq", "room", s.room.RoomId,
 			"player", player.ShortId, "ignore color", player.ignoreColor)
 
 		// 所有人都定缺完成，就进入游戏状态
@@ -58,7 +57,7 @@ func (s *StateDecideIgnore) Handle(shortId int64, v any) (result any) {
 		}
 		return &outer.MahjongBTEDecideIgnoreRsp{}
 	default:
-		log.Warnw("decide ignore status has received an unknown message", "msg", reflect.TypeOf(msg).String())
+		s.Log().Warnw("decide ignore status has received an unknown message", "msg", reflect.TypeOf(msg).String())
 	}
 	return outer.ERROR_MAHJONG_STATE_MSG_INVALID
 }

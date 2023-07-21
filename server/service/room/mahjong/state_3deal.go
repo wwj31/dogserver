@@ -6,7 +6,6 @@ import (
 
 	"github.com/wwj31/dogactor/tools"
 
-	"server/common/log"
 	"server/proto/outermsg/outer"
 )
 
@@ -22,17 +21,17 @@ func (s *StateDeal) State() int {
 
 func (s *StateDeal) Enter() {
 	s.cards = RandomCards(nil) // 总共108张
-	s.cards = Cards{
-		11, 28, 29, 21, 12, 12, 22, 13, 13, 23, 25, 15, 22,
-		11, 11, 11, 25, 26, 27, 21, 22, 34, 34, 34, 26, 32,
-		12, 13, 14, 14, 14, 24, 24, 24, 28, 28, 27, 28, 29,
-		35, 36, 37, 38, 39, 21, 23, 33, 25, 26, 27, 28, 31,
-		15, 16, 38, 14, 16, 16, 15, 17, 23, 18, 18, 18, 32,
-		19, 33, 19, 19, 31, 31, 32, 16, 33, 37, 18, 35, 36,
-		17, 35, 38, 37, 38, 39, 39, 21, 17, 36, 17, 35, 23,
-		33, 31, 25, 36, 13, 26, 12, 37, 32, 27, 24, 39, 19, 22, 34, 15, 29, 29}
+	//s.cards = Cards{
+	//	11, 28, 29, 21, 12, 12, 22, 13, 13, 23, 25, 15, 22,
+	//	11, 11, 11, 25, 26, 27, 21, 22, 34, 34, 34, 26, 32,
+	//	12, 13, 14, 14, 14, 24, 24, 24, 28, 28, 27, 28, 29,
+	//	35, 36, 37, 38, 39, 21, 23, 33, 25, 26, 27, 28, 31,
+	//	15, 16, 38, 14, 16, 16, 15, 17, 23, 18, 18, 18, 32,
+	//	19, 33, 19, 19, 31, 31, 32, 16, 33, 37, 18, 35, 36,
+	//	17, 35, 38, 37, 38, 39, 39, 21, 17, 36, 17, 35, 23,
+	//	33, 31, 25, 36, 13, 26, 12, 37, 32, 27, 24, 39, 19, 22, 34, 15, 29, 29}
 
-	log.Infow("[Mahjong] enter state deal", "room", s.room.RoomId, "cards", s.cards)
+	s.Log().Infow("[Mahjong] enter state deal", "room", s.room.RoomId, "cards", s.cards)
 
 	var i int
 	for _, player := range s.mahjongPlayers {
@@ -64,17 +63,17 @@ func (s *StateDeal) Enter() {
 		s.SwitchTo(nextState)
 	})
 
-	log.Infow("deal finished cards", "room", s.room.RoomId, "spare cards", s.cards)
+	s.Log().Infow("deal finished cards", "room", s.room.RoomId, "spare cards", s.cards)
 }
 
 func (s *StateDeal) Leave() {
 	for seatIndex, player := range s.mahjongPlayers {
-		log.Infow("dealing", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId, "cards", player.handCards)
+		s.Log().Infow("dealing", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId, "cards", player.handCards)
 	}
-	log.Infow("[Mahjong] leave state deal", "room", s.room.RoomId)
+	s.Log().Infow("[Mahjong] leave state deal", "room", s.room.RoomId)
 }
 
 func (s *StateDeal) Handle(shortId int64, v any) (result any) {
-	log.Warnw("deal not handle any msg", "msg", reflect.TypeOf(v).String())
+	s.Log().Warnw("deal not handle any msg", "msg", reflect.TypeOf(v).String())
 	return outer.ERROR_MAHJONG_STATE_MSG_INVALID
 }

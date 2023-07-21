@@ -1,9 +1,11 @@
 package mahjong
 
-import "server/common/log"
+import (
+	"fmt"
+)
 
 // 返回所有能听牌的单牌以及对应的胡牌类型
-func (c Cards) ting(ignore ColorType, lightGang, darkGang, pong map[int32]int64) (tingCards map[Card]HuType) {
+func (c Cards) ting(ignore ColorType, lightGang, darkGang, pong map[int32]int64) (tingCards map[Card]HuType, err error) {
 	tingCards = make(map[Card]HuType)
 	if len(c.colors()) == 3 {
 		return
@@ -11,7 +13,7 @@ func (c Cards) ting(ignore ColorType, lightGang, darkGang, pong map[int32]int64)
 
 	allSingleCards, ok := cardsWithoutIgnore[ignore]
 	if !ok {
-		log.Errorw("ting ignore error", "ignore", ignore)
+		err = fmt.Errorf("ting ignore error %v", ignore)
 		return
 	}
 

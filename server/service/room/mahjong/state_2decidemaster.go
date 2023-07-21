@@ -7,7 +7,6 @@ import (
 
 	"github.com/wwj31/dogactor/tools"
 
-	"server/common/log"
 	"server/proto/outermsg/outer"
 )
 
@@ -40,15 +39,15 @@ func (s *StateDecideMaster) Enter() {
 		s.SwitchTo(Deal)
 	})
 
-	log.Infow("[Mahjong] enter state  decide master",
+	s.Log().Infow("[Mahjong] enter state  decide master",
 		"room", s.room.RoomId, "dices", s.dices, "master", s.masterIndex)
 }
 
 func (s *StateDecideMaster) Leave() {
-	log.Infow("[Mahjong] leave state decide master", "room", s.room.RoomId)
+	s.Log().Infow("[Mahjong] leave state decide master", "room", s.room.RoomId)
 }
 
 func (s *StateDecideMaster) Handle(shortId int64, v any) (result any) {
-	log.Warnw("decide master not handle any msg", "msg", reflect.TypeOf(v).String())
+	s.Log().Warnw("decide master not handle any msg", "msg", reflect.TypeOf(v).String())
 	return outer.ERROR_MAHJONG_STATE_MSG_INVALID
 }

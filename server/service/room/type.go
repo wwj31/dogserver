@@ -2,6 +2,7 @@ package room
 
 import (
 	"github.com/golang/protobuf/proto"
+	"github.com/wwj31/dogactor/logger"
 
 	"server/proto/innermsg/inner"
 )
@@ -26,4 +27,5 @@ type Gambling interface {
 	PlayerEnter(player *Player)
 	PlayerLeave(player *Player)
 	Handle(shortId int64, v any) any
+	Log() *logger.Logger
 }

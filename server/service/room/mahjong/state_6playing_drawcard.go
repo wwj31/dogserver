@@ -1,7 +1,6 @@
 package mahjong
 
 import (
-	"server/common/log"
 	"server/proto/outermsg/outer"
 )
 
@@ -9,7 +8,7 @@ import (
 func (s *StatePlaying) drawCard(seatIndex int) {
 	// 摸牌的时候，行动者必须是nil
 	if len(s.actionMap) > 0 {
-		log.Errorw("draw a card exception", "room", s.room.RoomId, s.actionMap)
+		s.Log().Errorw("draw a card exception", "room", s.room.RoomId, s.actionMap)
 		return
 	}
 
@@ -49,6 +48,6 @@ func (s *StatePlaying) drawCard(seatIndex int) {
 	}
 	s.actionMap[seatIndex] = newAction // 摸牌者加入行动组
 
-	log.Infow("draw a card", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId,
+	s.Log().Infow("draw a card", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId,
 		"newCard", newCard, "action", newAction, "totalCards", s.cards.Len(), "hand", player.handCards)
 }

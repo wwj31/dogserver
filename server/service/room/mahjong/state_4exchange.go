@@ -6,7 +6,6 @@ import (
 
 	"github.com/wwj31/dogactor/tools"
 
-	"server/common/log"
 	"server/proto/outermsg/outer"
 )
 
@@ -27,13 +26,13 @@ func (s *StateExchange3) Enter() {
 	s.timerId = s.room.AddTimer(tools.XUID(), s.currentStateEndAt, func(time.Duration) {
 		s.stateEnd()
 	})
-	log.Infow("[Mahjong] enter state  exchange3", "room", s.room.RoomId)
+	s.Log().Infow("[Mahjong] enter state  exchange3", "room", s.room.RoomId)
 }
 
 func (s *StateExchange3) Leave() {
-	log.Infow("[Mahjong] leave state exchange3", "room", s.room.RoomId)
+	s.Log().Infow("[Mahjong] leave state exchange3", "room", s.room.RoomId)
 	for seatIndex, player := range s.mahjongPlayers {
-		log.Infow("hand cards", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId, "cards", player.handCards)
+		s.Log().Infow("hand cards", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId, "cards", player.handCards)
 	}
 }
 
@@ -54,7 +53,7 @@ func (s *StateExchange3) stateEnd() {
 			Insert(Card(rival.exchange.CardsFrom[1])).
 			Insert(Card(rival.exchange.CardsFrom[2]))
 
-		log.Infow("exchanging ", "room", s.room.RoomId, "seat", idx, "player", player.ShortId,
+		s.Log().Infow("exchanging ", "room", s.room.RoomId, "seat", idx, "player", player.ShortId,
 			"to seat", player.exchange.ToSeatIndex, "to player", rival.ShortId, "to cards", player.exchange.CardsTo,
 		)
 	}
@@ -120,7 +119,7 @@ func (s *StateExchange3) Handle(shortId int64, v any) (result any) {
 			ToSeatIndex:   int32(s.nextSeatIndex(s.SeatIndex(player.ShortId))),
 		}
 
-		log.Infow("MahjongBTEExchange3Req ", "room", s.room.RoomId, "playerID", player.ShortId,
+		s.Log().Infow("MahjongBTEExchange3Req ", "room", s.room.RoomId, "playerID", player.ShortId,
 			"cards", exchange3Cards, "seatIndex", seatIndex, "nextSeatIndex", nextSeatIndex)
 
 		// 广播玩家确认换三张
@@ -132,7 +131,7 @@ func (s *StateExchange3) Handle(shortId int64, v any) (result any) {
 		}
 		return &outer.MahjongBTEExchange3Rsp{}
 	default:
-		log.Warnw("exchange 3 status has received an unknown message", "msg", reflect.TypeOf(msg).String())
+		s.Log().Warnw("exchange 3 status has received an unknown message", "msg", reflect.TypeOf(msg).String())
 	}
 	return outer.ERROR_MAHJONG_STATE_MSG_INVALID
 }

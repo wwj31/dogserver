@@ -1,12 +1,11 @@
 package mahjong
 
 import (
-	"server/proto/outermsg/outer"
 	"time"
 
-	"github.com/wwj31/dogactor/tools"
+	"server/proto/outermsg/outer"
 
-	"server/common/log"
+	"github.com/wwj31/dogactor/tools"
 )
 
 // 结算状态
@@ -37,12 +36,12 @@ func (s *StateSettlement) Enter() {
 		s.SwitchTo(Ready)
 	})
 
-	log.Infow("[Mahjong] enter state settlement",
+	s.Log().Infow("[Mahjong] enter state settlement",
 		"room", s.room.RoomId, "master", s.masterIndex)
 }
 
 func (s *StateSettlement) Leave() {
-	log.Infow("[Mahjong] leave state settlement", "room", s.room.RoomId)
+	s.Log().Infow("[Mahjong] leave state settlement", "room", s.room.RoomId)
 }
 
 func (s *StateSettlement) Handle(shortId int64, v any) (result any) {
