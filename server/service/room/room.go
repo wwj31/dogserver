@@ -95,7 +95,6 @@ func (r *Room) GamblingHandle(shortId int64, v any) (result any) {
 
 func (r *Room) OnInit() {
 	router.Result(r, r.responseHandle)
-	r.GameParams.Mahjong.HuanSanZhang = 2 // TODO 固定换三张测试
 	log.Debugf("Room:[%v] OnInit", r.RoomId)
 }
 
