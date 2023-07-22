@@ -42,7 +42,7 @@ func (s *StatePlaying) drawCard(seatIndex int) {
 	}
 
 	// 判断能否胡牌
-	hu := player.handCards.IsHu(player.lightGang, player.darkGang, player.pong, newCard)
+	hu := player.handCards.IsHu(player.lightGang, player.darkGang, player.pong, newCard, s.gameParams())
 	if hu != HuInvalid {
 		newAction.acts = append(newAction.acts, outer.ActionType_ActionHu)
 	}

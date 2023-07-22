@@ -2,10 +2,11 @@ package mahjong
 
 import (
 	"fmt"
+	"server/proto/outermsg/outer"
 )
 
 // 返回所有能听牌的单牌以及对应的胡牌类型
-func (c Cards) ting(ignore ColorType, lightGang, darkGang, pong map[int32]int64) (tingCards map[Card]HuType, err error) {
+func (c Cards) ting(ignore ColorType, lightGang, darkGang, pong map[int32]int64, params *outer.MahjongParams) (tingCards map[Card]HuType, err error) {
 	tingCards = make(map[Card]HuType)
 	if len(c.colors()) == 3 {
 		return
@@ -19,7 +20,7 @@ func (c Cards) ting(ignore ColorType, lightGang, darkGang, pong map[int32]int64)
 
 	// 检查每一张牌的组合
 	for _, card := range allSingleCards {
-		if huType := c.Insert(card).IsHu(lightGang, darkGang, pong, card); huType != HuInvalid {
+		if huType := c.Insert(card).IsHu(lightGang, darkGang, pong, card, params); huType != HuInvalid {
 			tingCards[card] = huType
 		}
 	}
@@ -27,7 +28,7 @@ func (c Cards) ting(ignore ColorType, lightGang, darkGang, pong map[int32]int64)
 }
 
 // IsHu 牌组能否胡牌
-func (c Cards) IsHu(lightGang, darkGang, pong map[int32]int64, triggerCard Card) (typ HuType) {
+func (c Cards) IsHu(lightGang, darkGang, pong map[int32]int64, triggerCard Card, params *outer.MahjongParams) (typ HuType) {
 	colors := c.colors()
 	if len(colors) == 3 {
 		return HuInvalid
@@ -65,7 +66,8 @@ func (c Cards) IsHu(lightGang, darkGang, pong map[int32]int64, triggerCard Card)
 			}
 
 			// 将牌有幺九，并且碰杠也都有幺九，就带上幺九检测
-			has1or9 := jiangCards.Has1or9() && pongGangAllHas1or9(lightGang, darkGang, pong)
+
+			has1or9 := params.YaoJiuDui && jiangCards.Has1or9() && pongGangAllHas1or9(lightGang, darkGang, pong)
 
 			// 所有牌刚好全部是刻子，对对胡
 			allKezi := spareHandCards.Kezi()
@@ -85,7 +87,7 @@ func (c Cards) IsHu(lightGang, darkGang, pong map[int32]int64, triggerCard Card)
 		return
 	}
 
-	return c.upgrade(colors, lightGang, darkGang, pong, typ, triggerCard)
+	return c.upgrade(colors, lightGang, darkGang, pong, typ, triggerCard, params)
 }
 
 func (c Cards) qingYiSeUpgrade(colors map[int]struct{}, typ HuType) HuType {
@@ -108,7 +110,7 @@ func (c Cards) qingYiSeUpgrade(colors map[int]struct{}, typ HuType) HuType {
 }
 
 // 传入花色，传入明杠
-func (c Cards) upgrade(colors map[int]struct{}, lightGang, darkGang, pong map[int32]int64, typ HuType, triggerCard Card) HuType {
+func (c Cards) upgrade(colors map[int]struct{}, lightGang, darkGang, pong map[int32]int64, typ HuType, triggerCard Card, params *outer.MahjongParams) HuType {
 	// 判断清一色升级牌型
 	typ = c.qingYiSeUpgrade(colors, typ)
 
@@ -125,7 +127,9 @@ func (c Cards) upgrade(colors map[int]struct{}, lightGang, darkGang, pong map[in
 		if upgrade {
 			switch typ {
 			case DuiDuiHu:
-				typ = JiangDui // 将对
+				if params.YaoJiuDui {
+					typ = JiangDui // 将对
+				}
 			case QiDui, LongQiDui:
 				typ = JiangQiDui // 将七对
 			}
@@ -133,17 +137,17 @@ func (c Cards) upgrade(colors map[int]struct{}, lightGang, darkGang, pong map[in
 
 	case Hu:
 		// 夹心五
-		if c.HasJiaXinWu(triggerCard) {
+		if params.JiaXinWu && c.HasJiaXinWu(triggerCard) {
 			return JiaXinWu
 		}
 
 		// 判断平胡升中张 碰杠有幺九不算中张
-		if !c.Has1or9() && pongGangAllHasNo1or9(lightGang, darkGang, pong) {
+		if params.MenQingZhongZhang && !c.Has1or9() && pongGangAllHasNo1or9(lightGang, darkGang, pong) {
 			return ZhongZhang
 		}
 
 		// 不能碰、不能有明杠,就能进阶成门清
-		if len(pong) == 0 && len(lightGang) == 0 {
+		if params.MenQingZhongZhang && len(pong) == 0 && len(lightGang) == 0 {
 			return MenQing
 		}
 

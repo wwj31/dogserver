@@ -40,6 +40,7 @@ message MahjongParams{
     bool  MenQingZhongZhang  = 7; // 门清中张
     bool  TianDiHu           = 8; // 天地胡
     bool  DianPaoPingHu      = 9; // 点炮可平胡
+    bool  JiaXinWu           = 10; // 夹心五
 }
 
 // 斗地主
