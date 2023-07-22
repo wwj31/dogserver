@@ -52,7 +52,7 @@ func (s *StatePlaying) Enter() {
 	// 判断能否胡牌
 	newAct := &action{acts: []outer.ActionType{outer.ActionType_ActionPlayCard}}
 	master := s.mahjongPlayers[s.masterIndex]
-	hu := master.handCards.IsHu(master.lightGang, master.darkGang, master.pong, master.handCards[master.handCards.Len()-1])
+	hu := master.handCards.IsHu(master.lightGang, master.darkGang, master.pong, master.handCards[master.handCards.Len()-1], s.gameParams())
 	if hu != HuInvalid {
 		newAct.hus = append(newAct.hus, outer.HuType(hu))
 		newAct.acts = append(newAct.acts, outer.ActionType_ActionHu)

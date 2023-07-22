@@ -166,7 +166,7 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 				continue
 			}
 
-			if hu := other.handCards.Insert(card).IsHu(other.lightGang, other.darkGang, other.pong, card); hu != HuInvalid {
+			if hu := other.handCards.Insert(card).IsHu(other.lightGang, other.darkGang, other.pong, card, s.gameParams()); hu != HuInvalid {
 				newAction := action{}
 				newAction.acts = append(newAction.acts, outer.ActionType_ActionHu, outer.ActionType_ActionPass)
 				newAction.hus = append(newAction.hus, hu.PB())
@@ -269,7 +269,7 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 	var hu HuType
 	switch peer.typ {
 	case drawCardType: // 自摸
-		hu = p.handCards.IsHu(p.lightGang, p.darkGang, p.pong, peer.card)
+		hu = p.handCards.IsHu(p.lightGang, p.darkGang, p.pong, peer.card, s.gameParams())
 		// 其余没胡的都要赔钱
 		for seat, other := range s.mahjongPlayers {
 			if other.hu != HuInvalid || other.ShortId == p.ShortId {
@@ -279,7 +279,7 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 		}
 
 	case playCardType, GangType1, GangType3: // 点炮,抢杠
-		hu = p.handCards.Insert(peer.card).IsHu(p.lightGang, p.darkGang, p.pong, peer.card)
+		hu = p.handCards.Insert(peer.card).IsHu(p.lightGang, p.darkGang, p.pong, peer.card, s.gameParams())
 		paySeat = append(paySeat, peer.seat) // 点炮的人陪钱
 	}
 
@@ -352,11 +352,11 @@ func (s *StatePlaying) huExtra(seatIndex int) ExtFanType {
 	var extraFans []ExtFanType
 
 	// 根据番数大到小，优先计算大番型
-	if len(s.peerCards) == 0 {
+	if len(s.peerCards) == 0 && s.gameParams().TianDiHu {
 		return TianHu
 	}
 
-	if len(s.peerCards) == 1 {
+	if len(s.peerCards) == 1 && s.gameParams().TianDiHu {
 		return Dihu
 	}
 

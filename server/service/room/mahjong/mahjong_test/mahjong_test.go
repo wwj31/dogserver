@@ -2,6 +2,7 @@ package mahjong_test
 
 import (
 	"fmt"
+	"server/proto/outermsg/outer"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -161,10 +162,17 @@ func TestRecurCheck(t *testing.T) {
 		// Add more test cases for different Hu types...
 	}
 
+	params := &outer.MahjongParams{
+		YaoJiuDui:         true,
+		MenQingZhongZhang: true,
+		TianDiHu:          true,
+		DianPaoPingHu:     true,
+		JiaXinWu:          true,
+	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tt.c.IsHu(nil, nil, nil, 11)
-			assert.Equal(t, tt.want, tt.c.IsHu(nil, nil, nil, 11))
+			tt.c.IsHu(nil, nil, nil, 11, params)
+			assert.Equal(t, tt.want, tt.c.IsHu(nil, nil, nil, 11, params))
 		})
 	}
 }

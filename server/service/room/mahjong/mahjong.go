@@ -296,6 +296,10 @@ func (m *Mahjong) newMahjongPlayer(p *room.Player) *mahjongPlayer {
 	}
 }
 
+func (m *Mahjong) gameParams() *outer.MahjongParams {
+	return m.room.GameParams.Mahjong
+}
+
 func (m *Mahjong) clear() {
 	// 重置玩家数据
 	for i, p := range m.mahjongPlayers {
