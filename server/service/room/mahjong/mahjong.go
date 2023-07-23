@@ -183,6 +183,7 @@ func (m *Mahjong) playersToPB(shortId int64, settlement bool) (players []*outer.
 				HuType:      player.hu.PB(),
 				HuExtraType: player.huExtra.PB(),
 				HuCard:      m.peerCards[player.huPeerIndex].card.Int32(),
+				HuGen:       player.huGen,
 			})
 		}
 	}

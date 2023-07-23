@@ -37,6 +37,7 @@ message MahjongPlayerInfo {
     HuType     HuType         = 7; // 胡牌类型
     ExtraType  HuExtraType    = 8; // 胡牌额外加番
     int32      HuCard         = 9; // 胡的那张牌
+    int32      HuGen          = 10;// 胡牌的根数
 }
 
 // 血战到底 换三张数据
