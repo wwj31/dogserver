@@ -85,12 +85,13 @@ type (
 		dices          [2]int32 // 两颗骰子数
 		masterIndex    int      // 庄家位置 0,1,2,3
 		gameCount      int      // 游戏的连续局数
-		huSeat         []int    // 胡牌的位置，依次按顺序加入
+		huSeat         []int32  // 胡牌的位置，依次按顺序加入
 		mutilHuByIndex int      // 一炮多响点炮的人
 
 		cards          Cards                  // 剩余牌组
 		cardsInDesktop Cards                  // 打出的牌
 		mahjongPlayers [maxNum]*mahjongPlayer // 参与游戏的玩家
+		peerCards      []peerCard             // 每次操作追加操作记录
 		actionMap      map[int]*action        // 行动者们
 
 		currentAction      *action   // 当前行动者
@@ -113,7 +114,7 @@ func (m *Mahjong) Data(shortId int64) proto.Message {
 		State:           outer.MahjongBTEState(m.fsm.State()),
 		StateEnterAt:    m.currentStateEnterAt.UnixMilli(),
 		StateEndAt:      m.currentStateEndAt.UnixMilli(),
-		Players:         m.playersToPB(shortId),
+		Players:         m.playersToPB(shortId, false),
 		Dices:           m.dices[:],
 		MasterIndex:     int32(m.masterIndex),
 		Ex3Info:         m.ex3Info(shortId),
@@ -154,13 +155,13 @@ func (m *Mahjong) ex3Info(shortId int64) (info *outer.Exchange3Info) {
 	return p.exchange
 }
 
-func (m *Mahjong) playersToPB(shortId int64) (players []*outer.MahjongPlayerInfo) {
+func (m *Mahjong) playersToPB(shortId int64, settlement bool) (players []*outer.MahjongPlayerInfo) {
 	for _, player := range m.mahjongPlayers {
 		if player == nil {
 			players = append(players, nil)
 		} else {
 			var allCards []int32
-			if player.ShortId == shortId {
+			if player.ShortId == shortId || settlement {
 				allCards = player.handCards.ToSlice()
 			} else {
 				handLen := player.handCards.Len()
@@ -179,6 +180,9 @@ func (m *Mahjong) playersToPB(shortId int64) (players []*outer.MahjongPlayerInfo
 					DarkGang:  player.darkGang,
 					Pong:      player.pong,
 				},
+				HuType:      player.hu.PB(),
+				HuExtraType: player.huExtra.PB(),
+				HuCard:      m.peerCards[player.huPeerIndex].card.Int32(),
 			})
 		}
 	}
@@ -293,10 +297,11 @@ func (m *Mahjong) nextSeatIndexWithoutHu(index int) int {
 
 func (m *Mahjong) newMahjongPlayer(p *room.Player) *mahjongPlayer {
 	return &mahjongPlayer{
-		Player:    p,
-		lightGang: map[int32]int64{},
-		darkGang:  map[int32]int64{},
-		pong:      map[int32]int64{},
+		Player:      p,
+		lightGang:   map[int32]int64{},
+		darkGang:    map[int32]int64{},
+		pong:        map[int32]int64{},
+		huPeerIndex: -1,
 	}
 }
 

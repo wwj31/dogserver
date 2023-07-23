@@ -35,7 +35,6 @@ type (
 type StatePlaying struct {
 	*Mahjong
 	actionTimerId string
-	peerCards     []peerCard // 每次操作追加操作记录
 }
 
 func (s *StatePlaying) State() int {

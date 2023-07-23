@@ -20,14 +20,39 @@ func (s *StateSettlement) State() int {
 
 func (s *StateSettlement) Enter() {
 	s.gameCount++
+	notHu := s.isNoHu()
 	if s.isNoHu() {
 		// TODO 流局，查大叫
 	} else {
 
 	}
 
-	// 分都算完了，就可以清理数据了
-	s.clear()
+	settlementMsg := &outer.MahjongBTESettlementNtf{
+		NotHu:            notHu,
+		GameCount:        int32(s.gameCount),
+		GameSettlementAt: tools.Now().UnixMilli(),
+		HuSeatIndex:      s.huSeat,
+	}
+
+	allPlayerInfo := s.playersToPB(0, true)
+	for seat, player := range s.mahjongPlayers {
+		var peer peerCard
+		if player.huPeerIndex != -1 {
+			peer = s.peerCards[player.huPeerIndex]
+		}
+
+		settlementMsg.PlayerData = append(settlementMsg.PlayerData, &outer.MahjongBTESettlementPlayerData{
+			Player:               allPlayerInfo[seat],
+			DianPaoSeatIndex:     int32(peer.seat),
+			ByDarkGangSeatIndex:  nil,
+			ByLightGangSeatIndex: nil,
+			TotalFan:             0,
+			TotalScore:           0,
+		})
+	}
+	s.room.Broadcast(settlementMsg)
+
+	s.clear()           // 分算完清理数据
 	s.nextMasterIndex() // 计算下一局庄家
 
 	// 结算给个短暂的时间
@@ -52,7 +77,7 @@ func (s *StateSettlement) nextMasterIndex() {
 	if s.mutilHuByIndex != -1 {
 		s.masterIndex = s.mutilHuByIndex
 	} else if len(s.huSeat) > 0 {
-		s.masterIndex = s.huSeat[0]
+		s.masterIndex = int(s.huSeat[0])
 	} else {
 		s.masterIndex = s.nextSeatIndexWithoutHu(s.masterIndex)
 	}

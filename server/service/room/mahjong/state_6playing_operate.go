@@ -292,7 +292,7 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 		s.mutilHuByIndex = peer.seat
 	}
 
-	s.huSeat = append(s.huSeat, seatIndex)
+	s.huSeat = append(s.huSeat, int32(seatIndex))
 	p.hu = hu
 	p.huPeerIndex = len(s.peerCards) - 1
 	ntf.HuType = hu.PB()
