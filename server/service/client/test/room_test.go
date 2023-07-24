@@ -50,11 +50,3 @@ func TestLeaveRoom(t *testing.T) {
 	_, ok := cli.Req(outer.Msg_IdLeaveRoomReq, &outer.LeaveRoomReq{}).(*outer.LeaveRoomRsp)
 	assert.True(t, ok)
 }
-
-func TestReadyRoom(t *testing.T) {
-	cli := &client.Client{Addr: *Addr, DeviceID: "test2"}
-	Init(cli)
-	rsp, ok := cli.Req(outer.Msg_IdReadyReq, &outer.ReadyReq{Ready: false}).(*outer.ReadyRsp)
-	assert.True(t, ok)
-	log.Infof("leave room rsp [%v]\n", rsp)
-}

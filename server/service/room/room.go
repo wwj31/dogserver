@@ -41,7 +41,7 @@ func New(info *rdsop.NewRoomInfo) *Room {
 			FileMaxSize:    512,
 			FileMaxBackups: 10,
 			DisplayConsole: true,
-			Skip:           2,
+			Skip:           3,
 		}),
 	}
 	return r

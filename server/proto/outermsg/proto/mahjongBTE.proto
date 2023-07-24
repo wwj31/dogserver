@@ -16,14 +16,15 @@ message MahjongBTEGameInfo {
     int32                      MasterIndex      = 6; // 庄家位置 东南西北(0-3)
     Exchange3Info              Ex3Info          = 7; // 换三张数据
     int32                      TotalCardsCount  = 8; // 剩余总牌数
-    repeated int32             Cards            = 9; // 打出去的所有牌
-    int64                      ActionShortId    = 10; // 当前操作者
-    int64                      ActionEndAt      = 11; // 操作结束时间(毫秒)
+    repeated int32             CardsPlayHistory = 9; // 出牌历史记录
+    repeated int32             CardsPlayOrder   = 10; // 出牌顺序
+    int64                      ActionShortId    = 11; // 当前操作者
+    int64                      ActionEndAt      = 12; // 操作结束时间(毫秒)
     // 以下数据只发操作者本人
-    repeated ActionType ActionType              = 12; // 可操作类型，1.碰、2.杠、3.胡、4.出牌
-    repeated HuType     HuType                  = 13; // 可胡牌的类型
-    repeated int32      GangCards               = 14; // 可杠的牌 出牌时，手牌中可能已经存在多副杠牌
-    int32               NewCard                 = 15; // 摸得的牌
+    repeated ActionType ActionType              = 13; // 可操作类型，1.碰、2.杠、3.胡、4.出牌
+    repeated HuType     HuType                  = 14; // 可胡牌的类型
+    repeated int32      GangCards               = 15; // 可杠的牌 出牌时，手牌中可能已经存在多副杠牌
+    int32               NewCard                 = 16; // 摸得的牌
 }
 
 // 血战到底 参与游戏的玩家数据

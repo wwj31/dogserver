@@ -137,7 +137,6 @@ func (s *StatePlaying) operatePong(p *mahjongPlayer, seatIndex int) (bool, outer
 		return false, outer.ERROR_MSG_REQ_PARAM_INVALID
 	}
 
-	s.cardsInDesktop = s.cardsInDesktop[:tail]                                                  // 删除桌面牌
 	p.pong[peer.card.Int32()] = s.mahjongPlayers[peer.seat].ShortId                             // 加入自己的碰牌组
 	s.actionMap[seatIndex] = &action{acts: []outer.ActionType{outer.ActionType_ActionPlayCard}} // 碰后新增出牌行为
 	return true, outer.ERROR_OK
@@ -381,7 +380,7 @@ func (s *StatePlaying) huExtra(seatIndex int) ExtFanType {
 		extraFans = append(extraFans, QiangGangHu) // 抢杠胡
 	}
 
-	// 如果上上次是杠，那么上次一定是摸牌，判断是否杠上花
+	// 如果上次是杠，这次一定是摸牌，判断是否杠上花
 	if len(s.peerCards) >= 2 {
 		beforeLastPeerCard := s.peerCards[len(s.peerCards)-2]
 		if beforeLastPeerCard.typ >= GangType1 {
@@ -389,7 +388,7 @@ func (s *StatePlaying) huExtra(seatIndex int) ExtFanType {
 		}
 	}
 
-	// 如果上上上次是杠，那么上次一定是出牌，判断是否杠上炮
+	// 如果上上次是杠，这次一定是出牌，判断是否杠上炮
 	if len(s.peerCards) >= 3 {
 		beforeBeforeLastPeerCard := s.peerCards[len(s.peerCards)-3]
 		if beforeBeforeLastPeerCard.typ >= GangType1 {

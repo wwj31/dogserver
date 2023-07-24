@@ -21,17 +21,45 @@ func (s *StateSettlement) State() int {
 func (s *StateSettlement) Enter() {
 	s.gameCount++
 	notHu := s.isNoHu()
-	if s.isNoHu() {
-		// TODO 流局，查大叫
-	} else {
-
-	}
-
 	settlementMsg := &outer.MahjongBTESettlementNtf{
 		NotHu:            notHu,
 		GameCount:        int32(s.gameCount),
 		GameSettlementAt: tools.Now().UnixMilli(),
 		HuSeatIndex:      s.huSeat,
+	}
+
+	if notHu {
+		// 流局，筛选出有叫、没叫、花猪的玩家
+		var (
+			hasTingSeat, hasNotTingSeat []int
+			pig                         = make(map[int]struct{})
+		)
+
+		for seat, player := range s.mahjongPlayers {
+			tingCards, err := player.handCards.ting(player.ignoreColor,
+				player.lightGang,
+				player.darkGang,
+				player.pong,
+				s.gameParams(),
+			)
+
+			if err != nil {
+				s.Log().Errorw("player ting error",
+					"room", s.room.RoomId, "player", player.ShortId, "seat", seat, "hand", player.handCards, "err", err)
+				continue
+			}
+
+			if len(tingCards) > 0 {
+				hasTingSeat = append(hasTingSeat, seat)
+			} else {
+				hasNotTingSeat = append(hasNotTingSeat, seat)
+				if player.handCards.HasColorCard(player.ignoreColor) {
+					pig[seat] = struct{}{} // 花猪
+				}
+			}
+		}
+	} else {
+
 	}
 
 	allPlayerInfo := s.playersToPB(0, true)
@@ -44,10 +72,10 @@ func (s *StateSettlement) Enter() {
 		settlementMsg.PlayerData = append(settlementMsg.PlayerData, &outer.MahjongBTESettlementPlayerData{
 			Player:               allPlayerInfo[seat],
 			DianPaoSeatIndex:     int32(peer.seat),
-			ByDarkGangSeatIndex:  nil,
-			ByLightGangSeatIndex: nil,
-			TotalFan:             0,
-			TotalScore:           0,
+			ByDarkGangSeatIndex:  nil, // TODO
+			ByLightGangSeatIndex: nil, // TODO
+			TotalFan:             0,   // TODO
+			TotalScore:           0,   // TODO
 		})
 	}
 	s.room.Broadcast(settlementMsg)

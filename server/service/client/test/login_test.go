@@ -20,7 +20,7 @@ func TestLogin2(t *testing.T) {
 }
 
 func TestLogin3(t *testing.T) {
-	cli := &client.Client{Addr: *Addr, DeviceID: "test2", Test: true}
+	cli := &client.Client{Addr: *Addr, DeviceID: "test4", Test: true}
 	Init(cli)
 	time.Sleep(1 * time.Second)
 }

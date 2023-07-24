@@ -20,7 +20,8 @@ func (s *StatePlaying) playCard(cardIndex, seatIndex int) (bool, outer.ERROR) {
 	}
 	player.handCards = player.handCards.Remove(outCard)
 
-	s.cardsInDesktop = append(s.cardsInDesktop, outCard) // 按照打牌顺序加入桌面牌
+	s.cardsInDesktop = append(s.cardsInDesktop, outCard)          // 按照打牌顺序加入桌面牌
+	s.cardsPlayOrder = append(s.cardsPlayOrder, int32(seatIndex)) // 出牌座位
 	s.appendPeerCard(playCardType, outCard, seatIndex, nil, nil)
 
 	// 先把打牌消息广播出去

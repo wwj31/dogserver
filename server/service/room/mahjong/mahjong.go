@@ -90,6 +90,7 @@ type (
 
 		cards          Cards                  // 剩余牌组
 		cardsInDesktop Cards                  // 打出的牌
+		cardsPlayOrder []int32                // 出牌座位顺序
 		mahjongPlayers [maxNum]*mahjongPlayer // 参与游戏的玩家
 		peerCards      []peerCard             // 每次操作追加操作记录
 		actionMap      map[int]*action        // 行动者们
@@ -111,21 +112,22 @@ func (m *Mahjong) SwitchTo(state int) {
 
 func (m *Mahjong) Data(shortId int64) proto.Message {
 	info := &outer.MahjongBTEGameInfo{
-		State:           outer.MahjongBTEState(m.fsm.State()),
-		StateEnterAt:    m.currentStateEnterAt.UnixMilli(),
-		StateEndAt:      m.currentStateEndAt.UnixMilli(),
-		Players:         m.playersToPB(shortId, false),
-		Dices:           m.dices[:],
-		MasterIndex:     int32(m.masterIndex),
-		Ex3Info:         m.ex3Info(shortId),
-		TotalCardsCount: int32(m.cards.Len()),
-		Cards:           m.cardsInDesktop.ToSlice(),
-		ActionEndAt:     m.currentActionEndAt.UnixMilli(),
-		ActionShortId:   0,
-		ActionType:      nil,
-		HuType:          nil,
-		GangCards:       nil,
-		NewCard:         0,
+		State:            outer.MahjongBTEState(m.fsm.State()),
+		StateEnterAt:     m.currentStateEnterAt.UnixMilli(),
+		StateEndAt:       m.currentStateEndAt.UnixMilli(),
+		Players:          m.playersToPB(shortId, false),
+		Dices:            m.dices[:],
+		MasterIndex:      int32(m.masterIndex),
+		Ex3Info:          m.ex3Info(shortId),
+		TotalCardsCount:  int32(m.cards.Len()),
+		CardsPlayHistory: m.cardsInDesktop.ToSlice(),
+		CardsPlayOrder:   m.cardsPlayOrder,
+		ActionEndAt:      m.currentActionEndAt.UnixMilli(),
+		ActionShortId:    0,
+		ActionType:       nil,
+		HuType:           nil,
+		GangCards:        nil,
+		NewCard:          0,
 	}
 
 	// 只有当行动者是出牌状态，才广播行动者
@@ -317,7 +319,8 @@ func (m *Mahjong) clear() {
 	}
 
 	m.cards = nil
-	m.cardsInDesktop = nil
+	m.cardsInDesktop = make(Cards, 0, 8)
+	m.cardsPlayOrder = make([]int32, 0, 8)
 	m.currentAction = nil
 	m.currentActionSeat = -1
 	m.actionMap = make(map[int]*action)
