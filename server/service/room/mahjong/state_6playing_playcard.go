@@ -28,7 +28,6 @@ func (s *StatePlaying) playCard(cardIndex, seatIndex int) (bool, outer.ERROR) {
 	s.room.Broadcast(&outer.MahjongBTEOperaNtf{
 		OpShortId: player.ShortId,
 		OpType:    outer.ActionType_ActionPlayCard,
-		HuType:    outer.HuType_HuTypeUnknown,
 		Card:      outCard.Int32(),
 	})
 	s.Log().Infow("play a card",
