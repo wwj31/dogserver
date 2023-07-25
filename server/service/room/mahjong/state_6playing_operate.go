@@ -222,7 +222,7 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 
 		// 不等于nil, 说明没有抢杠, 将通知带入操作中一并发出
 		if opNtf != nil {
-			opNtf.QiangGang = gangResultNtf
+			opNtf.GangResult = gangResultNtf
 		} else {
 			// 如果有抢杠，单独广播此通知
 			s.room.Broadcast(gangResultNtf)
