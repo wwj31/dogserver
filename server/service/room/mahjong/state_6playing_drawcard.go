@@ -22,7 +22,7 @@ func (s *StatePlaying) drawCard(seatIndex int) {
 	s.cards = s.cards.Remove(newCard)
 	player := s.mahjongPlayers[seatIndex] // 当前摸牌者
 	player.handCards = player.handCards.Insert(newCard)
-	s.appendPeerCard(drawCardType, newCard, seatIndex, nil, nil)
+	s.appendPeerCard(drawCardType, newCard, seatIndex, nil)
 
 	// 摸牌后必须出牌，所以先加入出牌操作
 	newAction := &action{}

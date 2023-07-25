@@ -52,6 +52,7 @@ type (
 	// 麻将-血战到底 参与游戏的玩家数据
 	mahjongPlayer struct {
 		*room.Player
+		score         int64
 		ready         bool
 		readyExpireAt time.Time
 
@@ -61,12 +62,15 @@ type (
 		handCards Cards           // 手牌
 		lightGang map[int32]int64 // map[杠牌]ShortId 明杠
 		darkGang  map[int32]int64 // map[杠牌]ShortId 暗杠
+		gangScore map[int][]int32 // map[peerIndex]seats，杠需要赔付的位置
 		pong      map[int32]int64 // map[碰牌]ShortId
 
 		hu          HuType     // 胡牌
+		huCard      Card       // 胡的那张牌
 		huExtra     ExtFanType // 胡牌额外加番
 		huGen       int32      // 胡牌有几根
 		huPeerIndex int        // 胡的那次peer下标
+
 	}
 
 	action struct {
@@ -186,6 +190,7 @@ func (m *Mahjong) playersToPB(shortId int64, settlement bool) (players []*outer.
 				HuExtraType: player.huExtra.PB(),
 				HuCard:      m.peerCards[player.huPeerIndex].card.Int32(),
 				HuGen:       player.huGen,
+				Score:       player.score,
 			})
 		}
 	}
@@ -301,9 +306,11 @@ func (m *Mahjong) nextSeatIndexWithoutHu(index int) int {
 func (m *Mahjong) newMahjongPlayer(p *room.Player) *mahjongPlayer {
 	return &mahjongPlayer{
 		Player:      p,
+		score:       p.Gold,
 		lightGang:   map[int32]int64{},
 		darkGang:    map[int32]int64{},
 		pong:        map[int32]int64{},
+		gangScore:   map[int][]int32{},
 		huPeerIndex: -1,
 	}
 }

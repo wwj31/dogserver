@@ -27,8 +27,7 @@ type (
 		seat int
 
 		// 以下操作用于杠
-		afterQiangPass func()          // 主要用于抢杠胡 不抢的情况下，继续执行杠的行为
-		loseScores     map[int64]int64 // 杠的赔分
+		afterQiangPass func(ntf *outer.MahjongBTEOperaNtf) // 主要用于抢杠胡 不抢的情况下，继续执行杠的行为
 	}
 )
 
@@ -241,13 +240,12 @@ func (s *StatePlaying) nextAction() {
 	s.room.Broadcast(notifyPlayerMsg, nextPlayer.ShortId)
 }
 
-func (s *StatePlaying) appendPeerCard(typ checkCardType, card Card, seat int, gangFn func(), loseScore map[int64]int64) {
+func (s *StatePlaying) appendPeerCard(typ checkCardType, card Card, seat int, gangFn func(ntf *outer.MahjongBTEOperaNtf)) {
 	s.peerCards = append(s.peerCards, peerCard{
 		typ:            typ,
 		card:           card,
 		seat:           seat,
 		afterQiangPass: gangFn,
-		loseScores:     loseScore,
 	})
 }
 
