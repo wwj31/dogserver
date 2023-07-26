@@ -21,7 +21,7 @@ const (
 )
 
 type (
-	peerCard struct {
+	peerRecords struct {
 		typ  checkCardType
 		card Card
 		seat int
@@ -41,7 +41,7 @@ func (s *StatePlaying) State() int {
 }
 
 func (s *StatePlaying) Enter() {
-	s.peerCards = make([]peerCard, 0)
+	s.peerCards = make([]peerRecords, 0)
 	s.actionMap = make(map[int]*action)
 	s.actionTimerId = ""
 	s.currentStateEnterAt = time.Time{}
@@ -126,19 +126,10 @@ func (s *StatePlaying) actionTimer(expireAt time.Time, seat int) {
 			card             Card
 		)
 
-		// (碰杠胡过)行动者，优先打胡->杠->碰->打牌
-		if act.isValidAction(outer.ActionType_ActionHu) {
-			defaultOperaType = outer.ActionType_ActionHu
-		} else if act.isValidAction(outer.ActionType_ActionGang) {
-			defaultOperaType = outer.ActionType_ActionGang
-			card = Card(act.gang[0])
-		} else if act.isValidAction(outer.ActionType_ActionPong) {
-			defaultOperaType = outer.ActionType_ActionPong
-			card = s.cardsInDesktop[s.cardsInDesktop.Len()-1]
-		} else if act.isValidAction(outer.ActionType_ActionPlayCard) {
+		// 超时就随机打一张牌
+		if act.isValidAction(outer.ActionType_ActionPlayCard) {
 			var defaultPlayCard Card
-
-			// 优先打定缺花色,没有定缺花色的牌，就选手牌
+			// 检查是否有定缺的牌，优先打定缺的牌,没有定缺的牌，就选手牌
 			ignoreCards := player.handCards.colorCards(player.ignoreColor)
 			if ignoreCards.Len() != 0 {
 				defaultPlayCard = ignoreCards.Random()
@@ -154,8 +145,20 @@ func (s *StatePlaying) actionTimer(expireAt time.Time, seat int) {
 					"hand", player.handCards, "play", defaultPlayCard)
 				return
 			}
+
 			s.playCard(playIndex, seat)
 			return
+		}
+
+		// (碰杠胡过)行动者，优先打胡->杠->碰->打牌
+		if act.isValidAction(outer.ActionType_ActionHu) {
+			defaultOperaType = outer.ActionType_ActionHu
+		} else if act.isValidAction(outer.ActionType_ActionGang) {
+			defaultOperaType = outer.ActionType_ActionGang
+			card = Card(act.gang[0])
+		} else if act.isValidAction(outer.ActionType_ActionPong) {
+			defaultOperaType = outer.ActionType_ActionPong
+			card = s.cardsInDesktop[s.cardsInDesktop.Len()-1]
 		} else {
 			s.Log().Warnw("action exception",
 				"room", s.room.RoomId, "seat", seat, "player", player.ShortId, "act", act)
@@ -258,7 +261,7 @@ func (s *StatePlaying) nextAction() {
 }
 
 func (s *StatePlaying) appendPeerCard(typ checkCardType, card Card, seat int, gangFn func(ntf *outer.MahjongBTEOperaNtf)) {
-	s.peerCards = append(s.peerCards, peerCard{
+	s.peerCards = append(s.peerCards, peerRecords{
 		typ:            typ,
 		card:           card,
 		seat:           seat,

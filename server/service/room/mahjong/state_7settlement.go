@@ -64,7 +64,7 @@ func (s *StateSettlement) Enter() {
 
 	allPlayerInfo := s.playersToPB(0, true)
 	for seat, player := range s.mahjongPlayers {
-		var peer peerCard
+		var peer peerRecords
 		if player.huPeerIndex != -1 {
 			peer = s.peerCards[player.huPeerIndex]
 		}
