@@ -20,14 +20,14 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 		OpType:    op,
 	}
 
-	nextDrawShortIndex := s.nextSeatIndex(s.peerCards[len(s.peerCards)-1].seat) //提前计算下家摸牌的座位
+	nextDrawShortIndex := s.nextSeatIndex(s.peerRecords[len(s.peerRecords)-1].seat) //提前计算下家摸牌的座位
 
-	peer := s.peerCards[len(s.peerCards)-1]
+	peer := s.peerRecords[len(s.peerRecords)-1]
 	switch op {
 	case outer.ActionType_ActionPass:
 		// 检查抢杠胡的情况，所有人都过了，需要执行杠的行为
-		if len(s.actionMap) == 0 && len(s.peerCards) > 0 {
-			lastPeer := s.peerCards[len(s.peerCards)-1]
+		if len(s.actionMap) == 0 && len(s.peerRecords) > 0 {
+			lastPeer := s.peerRecords[len(s.peerRecords)-1]
 			if lastPeer.typ >= GangType1 && lastPeer.afterQiangPass != nil {
 				lastPeer.afterQiangPass(nil)
 				lastPeer.afterQiangPass = nil
@@ -49,7 +49,7 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 		nextDrawShortIndex = seatIndex // 杠的人自己摸一张
 
 		s.Log().Infow("gang!", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId,
-			"peer", s.peerCards[len(s.peerCards)-1], "action map", s.actionMap, "hand", player.handCards, "lightGang cards", player.lightGang, "darkGang cards", player.darkGang)
+			"peer", s.peerRecords[len(s.peerRecords)-1], "action map", s.actionMap, "hand", player.handCards, "lightGang cards", player.lightGang, "darkGang cards", player.darkGang)
 
 	case outer.ActionType_ActionHu:
 		ok, err = s.operateHu(player, seatIndex, ntf)

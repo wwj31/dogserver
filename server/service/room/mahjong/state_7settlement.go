@@ -66,7 +66,7 @@ func (s *StateSettlement) Enter() {
 	for seat, player := range s.mahjongPlayers {
 		var peer peerRecords
 		if player.huPeerIndex != -1 {
-			peer = s.peerCards[player.huPeerIndex]
+			peer = s.peerRecords[player.huPeerIndex]
 		}
 
 		settlementMsg.PlayerData = append(settlementMsg.PlayerData, &outer.MahjongBTESettlementPlayerData{

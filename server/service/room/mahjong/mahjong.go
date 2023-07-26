@@ -96,7 +96,7 @@ type (
 		cardsInDesktop Cards                  // 打出的牌
 		cardsPlayOrder []int32                // 出牌座位顺序
 		mahjongPlayers [maxNum]*mahjongPlayer // 参与游戏的玩家
-		peerCards      []peerRecords          // 需要关注的操作记录(出牌、摸牌、杠)按触发顺序添加
+		peerRecords    []peerRecords          // 需要关注的操作记录(出牌、摸牌、杠)按触发顺序添加
 		actionMap      map[int]*action        // 行动者们
 
 		currentAction      *action   // 当前行动者
@@ -188,7 +188,7 @@ func (m *Mahjong) playersToPB(shortId int64, settlement bool) (players []*outer.
 				},
 				HuType:      player.hu.PB(),
 				HuExtraType: player.huExtra.PB(),
-				HuCard:      m.peerCards[player.huPeerIndex].card.Int32(),
+				HuCard:      m.peerRecords[player.huPeerIndex].card.Int32(),
 				HuGen:       player.huGen,
 				Score:       player.score,
 			})

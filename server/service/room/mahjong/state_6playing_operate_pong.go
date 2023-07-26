@@ -6,16 +6,16 @@ import (
 
 // 碰牌操作
 func (s *StatePlaying) operatePong(p *mahjongPlayer, seatIndex int) (bool, outer.ERROR) {
-	if len(s.peerCards) == 0 {
-		s.Log().Errorw("operate pong failed peerCards len = 0",
+	if len(s.peerRecords) == 0 {
+		s.Log().Errorw("operate pong failed peerRecords len = 0",
 			"room", s.room.RoomId, "player", p.ShortId)
 		return false, outer.ERROR_MSG_REQ_PARAM_INVALID
 	}
 	// 获得打出的那张牌
-	peer := s.peerCards[len(s.peerCards)-1]
+	peer := s.peerRecords[len(s.peerRecords)-1]
 	if peer.typ != playCardType {
 		s.Log().Errorw("operate pong failed peer is drawCard",
-			"room", s.room.RoomId, "player", p.ShortId, "peerCards", s.peerCards)
+			"room", s.room.RoomId, "player", p.ShortId, "peerRecords", s.peerRecords)
 		return false, outer.ERROR_MSG_REQ_PARAM_INVALID
 	}
 
@@ -24,7 +24,7 @@ func (s *StatePlaying) operatePong(p *mahjongPlayer, seatIndex int) (bool, outer
 	desktopCard := s.cardsInDesktop[tail]
 	if desktopCard != peer.card {
 		s.Log().Errorw("operate pong logic error",
-			"room", s.room.RoomId, "player", p.ShortId, "peerCards", s.peerCards, "desktopCard", desktopCard)
+			"room", s.room.RoomId, "player", p.ShortId, "peerRecords", s.peerRecords, "desktopCard", desktopCard)
 		return false, outer.ERROR_MSG_REQ_PARAM_INVALID
 	}
 

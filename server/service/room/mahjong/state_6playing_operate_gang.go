@@ -6,8 +6,8 @@ import (
 
 // 杠牌操作
 func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, ntf *outer.MahjongBTEOperaNtf) (ok bool, err outer.ERROR) {
-	if len(s.peerCards) == 0 {
-		s.Log().Errorw("operate gang failed peerCards len = 0",
+	if len(s.peerRecords) == 0 {
+		s.Log().Errorw("operate gang failed peerRecords len = 0",
 			"room", s.room.RoomId, "player", p.ShortId)
 		return false, outer.ERROR_MSG_REQ_PARAM_INVALID
 	}
@@ -19,8 +19,8 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 	}
 
 	// 获得最后一次操作的牌
-	lastPeerIndex := len(s.peerCards) - 1
-	peer := s.peerCards[lastPeerIndex]
+	lastPeerIndex := len(s.peerRecords) - 1
+	peer := s.peerRecords[lastPeerIndex]
 
 	var (
 		qiangGang  bool

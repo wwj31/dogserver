@@ -8,8 +8,8 @@ import (
 func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.MahjongBTEOperaNtf) (bool, outer.ERROR) {
 	var paySeat []int // 需要赔钱的座位
 	// 获得最后一次操作的牌
-	lastPeerIndex := len(s.peerCards) - 1
-	peer := s.peerCards[lastPeerIndex]
+	lastPeerIndex := len(s.peerRecords) - 1
+	peer := s.peerRecords[lastPeerIndex]
 	var hu HuType
 	switch peer.typ {
 	case drawCardType: // 自摸
@@ -40,7 +40,7 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 
 	s.huSeat = append(s.huSeat, int32(seatIndex))
 	p.hu = hu
-	p.huPeerIndex = len(s.peerCards) - 1
+	p.huPeerIndex = len(s.peerRecords) - 1
 	ntf.HuType = hu.PB()
 	if peer.typ == GangType1 || peer.typ == GangType3 {
 		peer.afterQiangPass = nil // 抢杠成功，杠的人，杠失败
@@ -78,10 +78,10 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 	}
 
 	// TODO 算番算分
-	if len(s.peerCards) > 3 {
-		last1 := s.peerCards[len(s.peerCards)-1]
-		last2 := s.peerCards[len(s.peerCards)-2]
-		last3 := s.peerCards[len(s.peerCards)-3]
+	if len(s.peerRecords) > 3 {
+		last1 := s.peerRecords[len(s.peerRecords)-1]
+		last2 := s.peerRecords[len(s.peerRecords)-2]
+		last3 := s.peerRecords[len(s.peerRecords)-3]
 
 		// 判断是否是杠上炮
 		if (last3.typ == GangType1 || last3.typ == GangType3 || last3.typ == GangType4) &&
@@ -98,15 +98,15 @@ func (s *StatePlaying) huExtra(seatIndex int) ExtFanType {
 	var extraFans []ExtFanType
 
 	// 根据番数大到小，优先计算大番型
-	if len(s.peerCards) == 0 && s.gameParams().TianDiHu {
+	if len(s.peerRecords) == 0 && s.gameParams().TianDiHu {
 		return TianHu
 	}
 
-	if len(s.peerCards) == 1 && s.gameParams().TianDiHu {
+	if len(s.peerRecords) == 1 && s.gameParams().TianDiHu {
 		return Dihu
 	}
 
-	lastPeerCard := s.peerCards[len(s.peerCards)-1]
+	lastPeerCard := s.peerRecords[len(s.peerRecords)-1]
 
 	// 没牌了，执行[扫底胡]和[海底炮]检测
 	if s.cards.Len() == 0 {
@@ -129,16 +129,16 @@ func (s *StatePlaying) huExtra(seatIndex int) ExtFanType {
 	}
 
 	// 如果上次是杠，这次一定是摸牌，判断是否杠上花
-	if len(s.peerCards) >= 2 {
-		beforeLastPeerCard := s.peerCards[len(s.peerCards)-2]
+	if len(s.peerRecords) >= 2 {
+		beforeLastPeerCard := s.peerRecords[len(s.peerRecords)-2]
 		if beforeLastPeerCard.typ >= GangType1 {
 			extraFans = append(extraFans, GangShangHua) // 刚上花
 		}
 	}
 
 	// 如果上上次是杠，这次一定是出牌，判断是否杠上炮
-	if len(s.peerCards) >= 3 {
-		beforeBeforeLastPeerCard := s.peerCards[len(s.peerCards)-3]
+	if len(s.peerRecords) >= 3 {
+		beforeBeforeLastPeerCard := s.peerRecords[len(s.peerRecords)-3]
 		if beforeBeforeLastPeerCard.typ >= GangType1 {
 			extraFans = append(extraFans, GangShangPao) // 杠上炮
 		}

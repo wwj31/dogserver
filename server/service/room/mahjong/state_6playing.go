@@ -41,7 +41,7 @@ func (s *StatePlaying) State() int {
 }
 
 func (s *StatePlaying) Enter() {
-	s.peerCards = make([]peerRecords, 0)
+	s.peerRecords = make([]peerRecords, 0)
 	s.actionMap = make(map[int]*action)
 	s.actionTimerId = ""
 	s.currentStateEnterAt = time.Time{}
@@ -261,7 +261,7 @@ func (s *StatePlaying) nextAction() {
 }
 
 func (s *StatePlaying) appendPeerCard(typ checkCardType, card Card, seat int, gangFn func(ntf *outer.MahjongBTEOperaNtf)) {
-	s.peerCards = append(s.peerCards, peerRecords{
+	s.peerRecords = append(s.peerRecords, peerRecords{
 		typ:            typ,
 		card:           card,
 		seat:           seat,
