@@ -48,8 +48,12 @@ func (s *StateDecideIgnore) Handle(shortId int64, v any) (result any) {
 		}
 
 		player.ignoreColor = ColorType(msg.Color)
-		s.Log().Infow("MahjongBTEDecideIgnoreReq", "room", s.room.RoomId,
-			"player", player.ShortId, "ignore color", player.ignoreColor)
+
+		s.Log().Infow("MahjongBTEDecideIgnoreReq",
+			"room", s.room.RoomId, "player", player.ShortId, "ignore color", player.ignoreColor)
+
+		// 广播定缺确认通知
+		s.room.Broadcast(&outer.MahjongBTEDecideIgnoreReadyNtf{ShortId: player.ShortId})
 
 		// 所有人都定缺完成，就进入游戏状态
 		if s.isAllDecide() {

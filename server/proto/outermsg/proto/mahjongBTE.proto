@@ -148,6 +148,10 @@ message MahjongBTEExchange3EndNtf {
 message MahjongBTEDecideIgnoreNtf {
 }
 
+// 玩家定缺确认通知
+message MahjongBTEDecideIgnoreReadyNtf {
+    int64 ShortId = 1;
+}
 // 定缺结束
 message MahjongBTEDecideIgnoreEndNtf {
     map<int64, ColorType> Colors = 1; // 每位玩家的定缺花色 map<短ID，定缺花色>

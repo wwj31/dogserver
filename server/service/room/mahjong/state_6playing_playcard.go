@@ -40,7 +40,7 @@ func (s *StatePlaying) playCard(cardIndex, seatIndex int) (bool, outer.ERROR) {
 			continue
 		}
 
-		// 提过胡牌的玩家
+		// 跳过胡牌的玩家
 		if other.hu != HuInvalid {
 			continue
 		}

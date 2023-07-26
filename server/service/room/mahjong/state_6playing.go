@@ -171,6 +171,23 @@ func (s *StatePlaying) actionTimer(expireAt time.Time, seat int) {
 	})
 }
 
+func (s *StatePlaying) gameOver() bool {
+	huCount := 0
+	for _, p := range s.mahjongPlayers {
+		if p.hu != HuInvalid {
+			huCount++
+			if huCount >= 3 {
+				return true
+			}
+		}
+	}
+
+	if s.cards.Len() == 0 {
+		return true
+	}
+	return false
+}
+
 // 行动组有人，优先让能操作的人行动, 通知剩下不能操作的人，展示"有人正在操作中..."
 func (s *StatePlaying) nextAction() {
 	if len(s.actionMap) == 0 {

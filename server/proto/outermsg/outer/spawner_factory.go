@@ -66,6 +66,7 @@ var spawner = map[string]factory{
 	"outer.MahjongBTEDecideMasterNtf":         func() interface{} { return &MahjongBTEDecideMasterNtf{} },
 	"outer.MahjongBTEDecideIgnoreRsp":         func() interface{} { return &MahjongBTEDecideIgnoreRsp{} },
 	"outer.MahjongBTEDecideIgnoreReq":         func() interface{} { return &MahjongBTEDecideIgnoreReq{} },
+	"outer.MahjongBTEDecideIgnoreReadyNtf":    func() interface{} { return &MahjongBTEDecideIgnoreReadyNtf{} },
 	"outer.MahjongBTEDecideIgnoreNtf":         func() interface{} { return &MahjongBTEDecideIgnoreNtf{} },
 	"outer.MahjongBTEDecideIgnoreEndNtf":      func() interface{} { return &MahjongBTEDecideIgnoreEndNtf{} },
 	"outer.MahjongBTEDealNtf":                 func() interface{} { return &MahjongBTEDealNtf{} },
