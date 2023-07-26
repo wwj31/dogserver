@@ -166,7 +166,7 @@ func (m *Mahjong) playersToPB(shortId int64, settlement bool) (players []*outer.
 		if player == nil {
 			players = append(players, nil)
 		} else {
-			var allCards *outer.CardsOfBTE
+			allCards := &outer.CardsOfBTE{}
 
 			// 如果是自己或者结算了，就亮出所有牌, 否则只亮明杠
 			if player.ShortId == shortId || settlement {
