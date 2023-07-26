@@ -166,12 +166,20 @@ func (m *Mahjong) playersToPB(shortId int64, settlement bool) (players []*outer.
 		if player == nil {
 			players = append(players, nil)
 		} else {
-			var allCards []int32
+			var allCards *outer.CardsOfBTE
+
+			// 如果是自己或者结算了，就亮出所有牌, 否则只亮明杠
 			if player.ShortId == shortId || settlement {
-				allCards = player.handCards.ToSlice()
+				allCards.Cards = player.handCards.ToSlice()
+				allCards.LightGang = player.lightGang
+				for card, _ := range player.darkGang {
+					allCards.DarkGang = append(allCards.DarkGang, card)
+				}
 			} else {
 				handLen := player.handCards.Len()
-				allCards = make([]int32, handLen, handLen)
+				allCards.Cards = make([]int32, handLen, handLen)
+				allCards.LightGang = player.lightGang
+				allCards.DarkGang = make([]int32, len(allCards.DarkGang), len(allCards.DarkGang))
 			}
 
 			var huPeer peerRecords
@@ -185,17 +193,12 @@ func (m *Mahjong) playersToPB(shortId int64, settlement bool) (players []*outer.
 				ReadyExpireAt:  player.readyExpireAt.UnixMilli(),
 				Exchange3Ready: player.exchange != nil,
 				DecideColor:    outer.ColorType(player.ignoreColor),
-				AllCards: &outer.CardsOfBTE{
-					Cards:     allCards,
-					LightGang: player.lightGang,
-					DarkGang:  player.darkGang,
-					Pong:      player.pong,
-				},
-				HuType:      player.hu.PB(),
-				HuExtraType: player.huExtra.PB(),
-				HuCard:      huPeer.card.Int32(),
-				HuGen:       player.huGen,
-				Score:       player.score,
+				AllCards:       allCards,
+				HuType:         player.hu.PB(),
+				HuExtraType:    player.huExtra.PB(),
+				HuCard:         huPeer.card.Int32(),
+				HuGen:          player.huGen,
+				Score:          player.score,
 			})
 		}
 	}
@@ -340,10 +343,15 @@ func (m *Mahjong) clear() {
 }
 
 func (m *mahjongPlayer) allCardsToPB() *outer.CardsOfBTE {
+	var darkGang []int32
+	for card, _ := range m.darkGang {
+		darkGang = append(darkGang, card)
+	}
+
 	return &outer.CardsOfBTE{
 		Cards:     m.handCards.ToSlice(),
 		LightGang: m.lightGang,
-		DarkGang:  m.darkGang,
+		DarkGang:  darkGang,
 		Pong:      m.pong,
 	}
 }

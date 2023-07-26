@@ -55,8 +55,8 @@ message Exchange3Info {
 // 血战到底 牌数据
 message CardsOfBTE {
     repeated int32 Cards           = 1; // 手牌 (萬11-19 条21-29 筒31-39)
-    map<int32,int64> LightGang     = 2; // 明杠
-    map<int32,int64> DarkGang      = 3; // 暗杠
+    map<int32,int64> LightGang     = 2; // 明杠 map<牌, 点杠的人>
+    repeated int32 DarkGang        = 3; // 暗杠 牌
     map<int32,int64> Pong          = 4; // 碰
 }
 
@@ -198,9 +198,9 @@ message MahjongBTEGangResultNtf {
 // 结算玩家数据
 message MahjongBTESettlementPlayerData{
     MahjongPlayerInfo Player            = 1; //
-    int32 DianPaoSeatIndex              = 2; // 点炮的人，如果是自己，表示自摸
-    repeated int32 ByDarkGangSeatIndex  = 3; // 被暗杠，杠的玩家位置
-    repeated int32 ByLightGangSeatIndex = 4; // 被点杠，杠的玩家位置
+    int32 DianPaoSeatIndex              = 2; // 点炮的人位置，如果是自己，表示自摸
+    repeated int32 ByDarkGangSeatIndex  = 3; // 被哪些人暗杠，杠的玩家位置
+    repeated int32 ByLightGangSeatIndex = 4; // 被哪些人明杠，杠的玩家位置
     int32 TotalFan                      = 5; // 总番数
     int64 TotalScore                    = 6; // 总输赢 负数为输
 }
