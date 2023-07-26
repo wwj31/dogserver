@@ -37,7 +37,7 @@ func (s *StateReady) Leave() {
 }
 
 func (s *StateReady) Handle(shortId int64, v any) (result any) {
-	player, _ := s.findMahjongPlayer(shortId)
+	player, seat := s.findMahjongPlayer(shortId)
 	if player == nil {
 		s.Log().Warnw("player not in room", "roomId", s.room.RoomId, "shortId", shortId)
 		return outer.ERROR_PLAYER_NOT_IN_ROOM
@@ -46,6 +46,9 @@ func (s *StateReady) Handle(shortId int64, v any) (result any) {
 	switch msg := v.(type) {
 	case *outer.MahjongBTEReadyReq:
 		s.room.Broadcast(&outer.MahjongBTEPlayerReadyNtf{ShortId: shortId, Ready: msg.Ready})
+
+		s.Log().Infow("the player request ready ",
+			"room", s.room.RoomId, "player", shortId, "seat", seat, "ready", msg.Ready)
 
 		player.ready = msg.Ready
 		if msg.Ready {

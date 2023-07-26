@@ -2,6 +2,7 @@ package mahjong
 
 import (
 	"fmt"
+
 	"server/proto/outermsg/outer"
 )
 

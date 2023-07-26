@@ -174,6 +174,11 @@ func (m *Mahjong) playersToPB(shortId int64, settlement bool) (players []*outer.
 				allCards = make([]int32, handLen, handLen)
 			}
 
+			var huPeer peerRecords
+			if player.huPeerIndex != -1 {
+				huPeer = m.peerRecords[player.huPeerIndex]
+			}
+
 			players = append(players, &outer.MahjongPlayerInfo{
 				ShortId:        player.ShortId,
 				Ready:          player.ready,
@@ -188,7 +193,7 @@ func (m *Mahjong) playersToPB(shortId int64, settlement bool) (players []*outer.
 				},
 				HuType:      player.hu.PB(),
 				HuExtraType: player.huExtra.PB(),
-				HuCard:      m.peerRecords[player.huPeerIndex].card.Int32(),
+				HuCard:      huPeer.card.Int32(),
 				HuGen:       player.huGen,
 				Score:       player.score,
 			})

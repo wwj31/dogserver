@@ -100,10 +100,11 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 			gangFunc = func(opNtf *outer.MahjongBTEOperaNtf) {
 				s.Log().Infow("gang ok by draw card with pong")
 				delete(p.pong, card.Int32())
-				p.darkGang[card.Int32()] = p.ShortId
+				p.lightGang[card.Int32()] = p.ShortId
 				execScoreFunc(opNtf, loseScores)
 			}
 			qiangGang = hasQiangGang()
+			ntf.Card = card.Int32() // 杠的牌
 		} else {
 			ntf.GangType = 2
 			gangType = GangType4
@@ -131,6 +132,7 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 		}
 
 		qiangGang = hasQiangGang()
+		ntf.Card = card.Int32() // 杠的牌
 	}
 
 	// 没有人能抢杠，直接执行杠

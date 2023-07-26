@@ -45,7 +45,6 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 
 	case outer.ActionType_ActionGang:
 		ok, err = s.operateGang(player, seatIndex, card, ntf)
-		ntf.Card = card.Int32()        // 杠的牌
 		nextDrawShortIndex = seatIndex // 杠的人自己摸一张
 
 		s.Log().Infow("gang!", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId,

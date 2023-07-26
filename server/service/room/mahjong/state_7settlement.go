@@ -64,14 +64,14 @@ func (s *StateSettlement) Enter() {
 
 	allPlayerInfo := s.playersToPB(0, true)
 	for seat, player := range s.mahjongPlayers {
-		var peer peerRecords
+		var huPeer peerRecords
 		if player.huPeerIndex != -1 {
-			peer = s.peerRecords[player.huPeerIndex]
+			huPeer = s.peerRecords[player.huPeerIndex]
 		}
 
 		settlementMsg.PlayerData = append(settlementMsg.PlayerData, &outer.MahjongBTESettlementPlayerData{
 			Player:               allPlayerInfo[seat],
-			DianPaoSeatIndex:     int32(peer.seat),
+			DianPaoSeatIndex:     int32(huPeer.seat),
 			ByDarkGangSeatIndex:  nil, // TODO
 			ByLightGangSeatIndex: nil, // TODO
 			TotalFan:             0,   // TODO

@@ -26,8 +26,8 @@ type (
 		card Card
 		seat int
 
-		// 以下操作用于杠
-		afterQiangPass func(ntf *outer.MahjongBTEOperaNtf) // 主要用于抢杠胡 不抢的情况下，继续执行杠的行为
+		// 以下操作用于可抢杠胡，并且不抢的情况下，延续执行杠操作
+		afterQiangPass func(ntf *outer.MahjongBTEOperaNtf)
 	}
 )
 
