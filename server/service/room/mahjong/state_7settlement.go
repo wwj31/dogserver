@@ -31,6 +31,11 @@ func (s *StateSettlement) Enter() {
 		GameCount:        int32(s.gameCount),
 		GameSettlementAt: tools.Now().UnixMilli(),
 		HuSeatIndex:      s.huSeat,
+		PlayerData:       make([]*outer.MahjongBTESettlementPlayerData, maxNum, maxNum),
+	}
+
+	for seat := 0; seat < maxNum; seat++ {
+		settlementMsg.PlayerData[seat] = &outer.MahjongBTESettlementPlayerData{}
 	}
 
 	if notHu {
@@ -92,23 +97,18 @@ func (s *StateSettlement) settlementBroadcast(ntf *outer.MahjongBTESettlementNtf
 	// 组装结算消息
 	allPlayerInfo := s.playersToPB(0, true)
 
+	darkGangMap := map[int32][]int32{}  // 表示每个人被哪些位置暗杠过
+	lightGangMap := map[int32][]int32{} // 表示每个人被哪些位置明杠过
+
 	// 根据每个人的杠牌，先分析出每个人扣的杠分
-	darkGangMap := map[int32][]int32{}
-	lightGangMap := map[int32][]int32{}
 	for seat, player := range s.mahjongPlayers {
 		var huPeer peerRecords
 		if player.huPeerIndex != -1 {
 			huPeer = s.peerRecords[player.huPeerIndex]
 		}
 
-		ntf.PlayerData = append(ntf.PlayerData, &outer.MahjongBTESettlementPlayerData{
-			Player:               allPlayerInfo[seat],
-			DianPaoSeatIndex:     int32(huPeer.seat),
-			ByDarkGangSeatIndex:  nil,
-			ByLightGangSeatIndex: nil,
-			TotalFan:             0, // TODO
-			TotalScore:           0, // TODO
-		})
+		ntf.PlayerData[seat].Player = allPlayerInfo[seat]
+		ntf.PlayerData[seat].DianPaoSeatIndex = int32(huPeer.seat)
 
 		// 本局该玩家所有的杠牌,以及每次杠成功后赔钱的位置
 		for peerIndex, loserSeats := range player.gangScore {
@@ -122,9 +122,14 @@ func (s *StateSettlement) settlementBroadcast(ntf *outer.MahjongBTESettlementNtf
 		}
 	}
 
-	for seat, playerData := range ntf.PlayerData {
-		playerData.ByDarkGangSeatIndex = darkGangMap[int32(seat)]
-		playerData.ByLightGangSeatIndex = lightGangMap[int32(seat)]
+	// 组装暗杠数据
+	for seat, gangSeat := range darkGangMap {
+		ntf.PlayerData[seat].ByDarkGangSeatIndex = gangSeat
+	}
+
+	// 组装明杠数据
+	for seat, gangSeat := range lightGangMap {
+		ntf.PlayerData[seat].ByLightGangSeatIndex = gangSeat
 	}
 
 	s.room.Broadcast(ntf)
