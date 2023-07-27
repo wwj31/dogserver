@@ -31,6 +31,8 @@ var spawner = map[string]factory{
 	"inner.PlayerInfo":                 func() interface{} { return &PlayerInfo{} },
 	"inner.Ok":                         func() interface{} { return &Ok{} },
 	"inner.NewPlayerInfo":              func() interface{} { return &NewPlayerInfo{} },
+	"inner.ModifyGoldRsp":              func() interface{} { return &ModifyGoldRsp{} },
+	"inner.ModifyGoldReq":              func() interface{} { return &ModifyGoldReq{} },
 	"inner.MemberInfoOnLogoutRsp":      func() interface{} { return &MemberInfoOnLogoutRsp{} },
 	"inner.MemberInfoOnLogoutReq":      func() interface{} { return &MemberInfoOnLogoutReq{} },
 	"inner.MemberInfoOnLoginRsp":       func() interface{} { return &MemberInfoOnLoginRsp{} },

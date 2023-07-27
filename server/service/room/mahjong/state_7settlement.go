@@ -3,6 +3,9 @@ package mahjong
 import (
 	"time"
 
+	"server/common"
+	"server/common/actortype"
+	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
 
 	"github.com/wwj31/dogactor/tools"
@@ -19,7 +22,9 @@ func (s *StateSettlement) State() int {
 }
 
 func (s *StateSettlement) Enter() {
+	s.Log().Infow("[Mahjong] enter state settlement", "room", s.room.RoomId, "master", s.masterIndex)
 	s.gameCount++
+
 	notHu := s.isNoHu()
 	settlementMsg := &outer.MahjongBTESettlementNtf{
 		NotHu:            notHu,
@@ -62,23 +67,67 @@ func (s *StateSettlement) Enter() {
 
 	}
 
+	modifyRspCount := make(map[string]struct{}) // 必须等待所有玩家金币修改成功后，才能发送结算
+	// 结算分数为最终金币
+	for seat, player := range s.mahjongPlayers {
+		rid := player.RID
+		finalScore := common.Max(0, player.score)
+		s.room.Request(actortype.PlayerId(rid), &inner.ModifyGoldReq{Gold: finalScore}).Handle(func(resp any, err error) {
+			modifyRspCount[rid] = struct{}{}
+			if err != nil {
+				s.Log().Errorw("modify gold failed kick-out player",
+					"room", s.room.RoomId, "player", player.ShortId, "seat", seat, "err", err)
+			} else {
+				modifyRsp := resp.(*inner.ModifyGoldRsp)
+				player.PlayerInfo = modifyRsp.Info
+			}
+			s.Log().Infow("modify gold success", "room", s.room.RoomId, "player", player.ShortId, "seat", seat, "player info", *player.PlayerInfo)
+			if len(modifyRspCount) == maxNum {
+				s.settlementBroadcast(settlementMsg)
+			}
+		})
+	}
+}
+func (s *StateSettlement) settlementBroadcast(ntf *outer.MahjongBTESettlementNtf) {
+	// 组装结算消息
 	allPlayerInfo := s.playersToPB(0, true)
+
+	// 根据每个人的杠牌，先分析出每个人扣的杠分
+	darkGangMap := map[int32][]int32{}
+	lightGangMap := map[int32][]int32{}
 	for seat, player := range s.mahjongPlayers {
 		var huPeer peerRecords
 		if player.huPeerIndex != -1 {
 			huPeer = s.peerRecords[player.huPeerIndex]
 		}
 
-		settlementMsg.PlayerData = append(settlementMsg.PlayerData, &outer.MahjongBTESettlementPlayerData{
+		ntf.PlayerData = append(ntf.PlayerData, &outer.MahjongBTESettlementPlayerData{
 			Player:               allPlayerInfo[seat],
 			DianPaoSeatIndex:     int32(huPeer.seat),
-			ByDarkGangSeatIndex:  nil, // TODO
-			ByLightGangSeatIndex: nil, // TODO
-			TotalFan:             0,   // TODO
-			TotalScore:           0,   // TODO
+			ByDarkGangSeatIndex:  nil,
+			ByLightGangSeatIndex: nil,
+			TotalFan:             0, // TODO
+			TotalScore:           0, // TODO
 		})
+
+		// 本局该玩家所有的杠牌,以及每次杠成功后赔钱的位置
+		for peerIndex, loserSeats := range player.gangScore {
+			for _, loserSeat := range loserSeats {
+				if s.peerRecords[peerIndex].typ == GangType4 {
+					darkGangMap[loserSeat] = append(darkGangMap[loserSeat], int32(seat))
+				} else {
+					lightGangMap[loserSeat] = append(lightGangMap[loserSeat], int32(seat))
+				}
+			}
+		}
 	}
-	s.room.Broadcast(settlementMsg)
+
+	for seat, playerData := range ntf.PlayerData {
+		playerData.ByDarkGangSeatIndex = darkGangMap[int32(seat)]
+		playerData.ByLightGangSeatIndex = lightGangMap[int32(seat)]
+	}
+
+	s.room.Broadcast(ntf)
 
 	s.clear()           // 分算完清理数据
 	s.nextMasterIndex() // 计算下一局庄家
@@ -89,8 +138,6 @@ func (s *StateSettlement) Enter() {
 		s.SwitchTo(Ready)
 	})
 
-	s.Log().Infow("[Mahjong] enter state settlement",
-		"room", s.room.RoomId, "master", s.masterIndex)
 }
 
 func (s *StateSettlement) Leave() {

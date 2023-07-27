@@ -15,8 +15,8 @@ type checkCardType int32
 const (
 	drawCardType checkCardType = 1 // 摸牌
 	playCardType checkCardType = 2 // 打牌
-	GangType1    checkCardType = 3 // 明杠,自己摸牌，杠碰的牌(可抢杠胡)
-	GangType3    checkCardType = 4 // 明杠,直杠，别人打牌出我手牌里有三张
+	GangType1    checkCardType = 3 // 明杠(弯杠),自己摸牌，杠碰的牌(可抢杠胡)
+	GangType3    checkCardType = 4 // 明杠(直杠)，别人打牌出我手牌里有三张
 	GangType4    checkCardType = 5 // 暗杠,自己摸牌，自己手牌有三张
 )
 
@@ -26,7 +26,7 @@ type (
 		card Card
 		seat int
 
-		// 以下操作用于可抢杠胡，并且不抢的情况下，延续执行杠操作
+		// 以下操作用于可抢杠胡并且不抢的情况下，延续执行杠操作
 		afterQiangPass func(ntf *outer.MahjongBTEOperaNtf)
 	}
 )
@@ -280,20 +280,4 @@ func (s *StatePlaying) checkMutilHu(huPeerIndex int) bool {
 		}
 	}
 	return false
-}
-
-// 获得排除了某些座位后，剩余的座位
-func (s *StatePlaying) allSeat(ignoreSeat ...int) (result []int) {
-	seatMap := map[int]struct{}{}
-	for _, seat := range ignoreSeat {
-		seatMap[seat] = struct{}{}
-	}
-
-	for seatIndex := 0; seatIndex < 4; seatIndex++ {
-		if _, ignore := seatMap[seatIndex]; !ignore {
-			result = append(result, seatIndex)
-		}
-	}
-
-	return result
 }

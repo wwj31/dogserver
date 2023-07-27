@@ -152,7 +152,6 @@ func (m *Mahjong) Data(shortId int64) proto.Message {
 
 	return info
 }
-
 func (m *Mahjong) ex3Info(shortId int64) (info *outer.Exchange3Info) {
 	p, _ := m.findMahjongPlayer(shortId)
 	if p == nil {
@@ -187,6 +186,14 @@ func (m *Mahjong) playersToPB(shortId int64, settlement bool) (players []*outer.
 				huPeer = m.peerRecords[player.huPeerIndex]
 			}
 
+			// 如果要实时结算，就把本局最新分数发给玩家，是否发玩家身上的金币
+			var score int64
+			if m.gameParams().GangImmediatelyScore {
+				score = player.score
+			} else {
+				score = player.Gold
+			}
+
 			players = append(players, &outer.MahjongPlayerInfo{
 				ShortId:        player.ShortId,
 				Ready:          player.ready,
@@ -198,7 +205,7 @@ func (m *Mahjong) playersToPB(shortId int64, settlement bool) (players []*outer.
 				HuExtraType:    player.huExtra.PB(),
 				HuCard:         huPeer.card.Int32(),
 				HuGen:          player.huGen,
-				Score:          player.score,
+				Score:          score,
 			})
 		}
 	}
@@ -325,6 +332,10 @@ func (m *Mahjong) newMahjongPlayer(p *room.Player) *mahjongPlayer {
 
 func (m *Mahjong) gameParams() *outer.MahjongParams {
 	return m.room.GameParams.Mahjong
+}
+
+func (m *Mahjong) baseScore() int64 {
+	return int64(float32(m.gameParams().BaseScore) * m.gameParams().BaseScoreTimes)
 }
 
 func (m *Mahjong) clear() {

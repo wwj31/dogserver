@@ -179,6 +179,12 @@ var _ = router.Reg(func(p *player.Player, msg *inner.RoomKickOutNtf) any {
 	return nil
 })
 
+// 房间通知结算后修改金币
+var _ = router.Reg(func(p *player.Player, msg *inner.ModifyGoldReq) any {
+	p.Role().SetGold(msg.Gold)
+	return &inner.ModifyGoldRsp{Info: p.PlayerInfo()}
+})
+
 // 转发所有Client游戏消息至房间
 var _ = router.Reg(func(p *player.Player, msg *inner.GamblingMsgToRoomWrapper) any {
 	if p.Room().RoomId() == 0 {

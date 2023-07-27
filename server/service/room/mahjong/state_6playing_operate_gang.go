@@ -4,6 +4,12 @@ import (
 	"server/proto/outermsg/outer"
 )
 
+var gangScoreRatio = map[checkCardType]float32{
+	GangType1: 1, // 弯杠1分
+	GangType3: 2, // 弯杠2分
+	GangType4: 2, // 暗杠2分
+}
+
 // 杠牌操作
 func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, ntf *outer.MahjongBTEOperaNtf) (ok bool, err outer.ERROR) {
 	if len(s.peerRecords) == 0 {
@@ -24,7 +30,7 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 
 	var (
 		qiangGang  bool
-		loseScores map[int64]int64
+		loseScores map[int32]int64
 		gangFunc   func(opNtf *outer.MahjongBTEOperaNtf)
 		gangType   checkCardType
 	)
@@ -49,20 +55,22 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 	}
 
 	// 统一计算赔付分
-	loseScoreAnalyze := func(seat ...int) map[int64]int64 {
-		result := make(map[int64]int64)
-
-		// TODO 杠计算得分
+	loseScoreAnalyze := func(seats ...int) map[int32]int64 {
+		result := make(map[int32]int64)
+		loseScore := int64(float32(s.baseScore()) * gangScoreRatio[gangType])
+		for _, seatIdx := range seats {
+			result[int32(seatIdx)] = loseScore
+		}
 		return result
 	}
 
 	// 杠成功后实时算分
-	execScoreFunc := func(opNtf *outer.MahjongBTEOperaNtf, loseScores map[int64]int64) {
-		for loserShortId, score := range loseScores {
-			rival, seat := s.findMahjongPlayer(loserShortId)
+	execScoreFunc := func(opNtf *outer.MahjongBTEOperaNtf, loseScores map[int32]int64) {
+		for loserSeat, score := range loseScores {
+			rival := s.mahjongPlayers[loserSeat]
 			rival.score -= score
 			p.score += score
-			p.gangScore[lastPeerIndex] = append(p.gangScore[lastPeerIndex], int32(seat))
+			p.gangScore[lastPeerIndex] = append(p.gangScore[lastPeerIndex], loserSeat)
 		}
 
 		// 先组装杠成功得通知消息
@@ -96,7 +104,7 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 			ntf.GangType = 1 // 面下杠（刮风）
 			gangType = GangType1
 
-			loseScores = loseScoreAnalyze(s.allSeat(seatIndex)...) // 其余三家输分
+			loseScores = loseScoreAnalyze(s.allSeatsWithoutHu(seatIndex)...) // 其余三家输分
 			gangFunc = func(opNtf *outer.MahjongBTEOperaNtf) {
 				s.Log().Infow("gang ok by draw card with pong")
 				delete(p.pong, card.Int32())
@@ -109,7 +117,7 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 			ntf.GangType = 2
 			gangType = GangType4
 
-			loseScores = loseScoreAnalyze(s.allSeat(seatIndex)...) // 其余三家输分
+			loseScores = loseScoreAnalyze(s.allSeatsWithoutHu(seatIndex)...) // 其余三家输分
 			// 暗杠（下雨）
 			gangFunc = func(opNtf *outer.MahjongBTEOperaNtf) {
 				s.Log().Infow("gang ok by draw card")
@@ -143,4 +151,20 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 
 	s.appendPeerCard(gangType, card, seatIndex, gangFunc)
 	return true, outer.ERROR_OK
+}
+
+// 获得排除了某些座位后，剩余的没胡座位
+func (s *StatePlaying) allSeatsWithoutHu(ignoreSeat ...int) (result []int) {
+	seatMap := map[int]struct{}{}
+	for _, seat := range ignoreSeat {
+		seatMap[seat] = struct{}{}
+	}
+
+	for seatIndex := 0; seatIndex < maxNum; seatIndex++ {
+		if _, ignore := seatMap[seatIndex]; !ignore {
+			result = append(result, seatIndex)
+		}
+	}
+
+	return result
 }

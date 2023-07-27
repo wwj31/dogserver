@@ -43,3 +43,11 @@ message NewPlayerInfo {
     int64   ShortId     = 2;
 }
 
+// 通知玩家修改最新新币
+message ModifyGoldReq {
+    int64 Gold = 1;
+}
+
+message ModifyGoldRsp {
+    PlayerInfo Info = 1;
+}
