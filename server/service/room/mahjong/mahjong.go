@@ -165,28 +165,13 @@ func (m *Mahjong) playersToPB(shortId int64, settlement bool) (players []*outer.
 		if player == nil {
 			players = append(players, nil)
 		} else {
-			allCards := &outer.CardsOfBTE{}
-
-			// 如果是自己或者结算了，就亮出所有牌, 否则只亮明杠
-			if player.ShortId == shortId || settlement {
-				allCards.Cards = player.handCards.ToSlice()
-				allCards.LightGang = player.lightGang
-				for card, _ := range player.darkGang {
-					allCards.DarkGang = append(allCards.DarkGang, card)
-				}
-			} else {
-				handLen := player.handCards.Len()
-				allCards.Cards = make([]int32, handLen, handLen)
-				allCards.LightGang = player.lightGang
-				allCards.DarkGang = make([]int32, len(allCards.DarkGang), len(allCards.DarkGang))
-			}
 
 			var huPeer peerRecords
 			if player.huPeerIndex != -1 {
 				huPeer = m.peerRecords[player.huPeerIndex]
 			}
 
-			// 如果要实时结算，就把本局最新分数发给玩家，是否发玩家身上的金币
+			// 如果要实时结算，就把本局最新分数发给玩家
 			var score int64
 			if m.gameParams().GangImmediatelyScore {
 				score = player.score
@@ -194,6 +179,7 @@ func (m *Mahjong) playersToPB(shortId int64, settlement bool) (players []*outer.
 				score = player.Gold
 			}
 
+			allCards := player.allCardsToPB(m.gameParams(), shortId, settlement)
 			players = append(players, &outer.MahjongPlayerInfo{
 				ShortId:        player.ShortId,
 				Ready:          player.ready,
@@ -238,6 +224,13 @@ func (m *Mahjong) CanLeave(p *inner.PlayerInfo) bool {
 }
 
 func (m *Mahjong) CanReady(p *inner.PlayerInfo) bool {
+	if m.fsm.State() == Ready {
+		return true
+	}
+	return false
+}
+
+func (m *Mahjong) CanSetGold(p *inner.PlayerInfo) bool {
 	if m.fsm.State() == Ready {
 		return true
 	}
@@ -353,18 +346,27 @@ func (m *Mahjong) clear() {
 	m.currentActionEndAt = time.Time{}
 }
 
-func (m *mahjongPlayer) allCardsToPB() *outer.CardsOfBTE {
-	var darkGang []int32
-	for card, _ := range m.darkGang {
-		darkGang = append(darkGang, card)
+// 满足条件就亮出所有牌, 否则只亮明杠
+// 明确显示手牌的情况:
+//
+//	1.玩家是自己
+//	2.游戏结算
+//	3.参数选胡牌实时算分并且胡了
+func (m *mahjongPlayer) allCardsToPB(params *outer.MahjongParams, shortId int64, settlement bool) *outer.CardsOfBTE {
+	allCards := &outer.CardsOfBTE{}
+	if m.ShortId == shortId || settlement || (params.HuImmediatelyScore && m.hu != HuInvalid) {
+		allCards.Cards = m.handCards.ToSlice()
+		allCards.LightGang = m.lightGang
+		for card, _ := range m.darkGang {
+			allCards.DarkGang = append(allCards.DarkGang, card)
+		}
+	} else {
+		handLen := m.handCards.Len()
+		allCards.Cards = make([]int32, handLen, handLen)
+		allCards.LightGang = m.lightGang
+		allCards.DarkGang = make([]int32, len(allCards.DarkGang), len(allCards.DarkGang))
 	}
-
-	return &outer.CardsOfBTE{
-		Cards:     m.handCards.ToSlice(),
-		LightGang: m.lightGang,
-		DarkGang:  darkGang,
-		Pong:      m.pong,
-	}
+	return allCards
 }
 
 // 检测该行为是否在当前可操作行为中

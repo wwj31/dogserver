@@ -22,10 +22,10 @@ func (s *StateSettlement) State() int {
 }
 
 func (s *StateSettlement) Enter() {
-	s.Log().Infow("[Mahjong] enter state settlement", "room", s.room.RoomId, "master", s.masterIndex)
-	s.gameCount++
-
 	notHu := s.isNoHu()
+	s.gameCount++
+	s.Log().Infow("[Mahjong] enter state settlement", "room", s.room.RoomId, "master", s.masterIndex, "notHu", notHu, "game count", s.gameCount)
+
 	settlementMsg := &outer.MahjongBTESettlementNtf{
 		NotHu:            notHu,
 		GameCount:        int32(s.gameCount),
@@ -62,6 +62,16 @@ func (s *StateSettlement) Enter() {
 			if len(tingCards) > 0 {
 				hasTingSeat = append(hasTingSeat, seat)
 			} else {
+				// 没有叫，需要退杠分
+				for peerIdx, losers := range player.gangScore {
+					peer := s.peerRecords[peerIdx]
+					loseScore := int64(float32(s.baseScore()) * gangScoreRatio[peer.typ])
+					for _, loserSeatIndex := range losers {
+						s.mahjongPlayers[loserSeatIndex].score += loseScore
+						player.score -= loseScore
+					}
+				}
+
 				hasNotTingSeat = append(hasNotTingSeat, seat)
 				if player.handCards.HasColorCard(player.ignoreColor) {
 					pig[seat] = struct{}{} // 花猪
@@ -109,6 +119,8 @@ func (s *StateSettlement) settlementBroadcast(ntf *outer.MahjongBTESettlementNtf
 
 		ntf.PlayerData[seat].Player = allPlayerInfo[seat]
 		ntf.PlayerData[seat].DianPaoSeatIndex = int32(huPeer.seat)
+		ntf.PlayerData[seat].TotalFan = int32(huFan[player.hu]+extraFan[player.huExtra]) + player.huGen
+		ntf.PlayerData[seat].TotalScore = player.score
 
 		// 本局该玩家所有的杠牌,以及每次杠成功后赔钱的位置
 		for peerIndex, loserSeats := range player.gangScore {
@@ -132,6 +144,7 @@ func (s *StateSettlement) settlementBroadcast(ntf *outer.MahjongBTESettlementNtf
 		ntf.PlayerData[seat].ByLightGangSeatIndex = gangSeat
 	}
 
+	s.Log().Infow(" settlement broadcast", "room", s.room.RoomId, "master", s.masterIndex, "ntf", ntf.String())
 	s.room.Broadcast(ntf)
 
 	s.clear()           // 分算完清理数据
@@ -142,7 +155,6 @@ func (s *StateSettlement) settlementBroadcast(ntf *outer.MahjongBTESettlementNtf
 	s.room.AddTimer(tools.XUID(), s.currentStateEndAt, func(dt time.Duration) {
 		s.SwitchTo(Ready)
 	})
-
 }
 
 func (s *StateSettlement) Leave() {

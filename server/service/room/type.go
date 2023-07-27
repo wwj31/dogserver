@@ -24,6 +24,7 @@ type Gambling interface {
 	CanEnter(p *inner.PlayerInfo) bool
 	CanLeave(p *inner.PlayerInfo) bool
 	CanReady(p *inner.PlayerInfo) bool
+	CanSetGold(p *inner.PlayerInfo) bool
 	PlayerEnter(player *Player)
 	PlayerLeave(player *Player)
 	Handle(shortId int64, v any) any

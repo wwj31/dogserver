@@ -87,13 +87,13 @@ func (s *StatePlaying) Handle(shortId int64, v any) (result any) {
 		if ok, errCode := s.playCard(int(msg.Index), seatIndex); !ok {
 			return errCode
 		}
-		return &outer.MahjongBTEPlayCardRsp{AllCards: player.allCardsToPB()}
+		return &outer.MahjongBTEPlayCardRsp{AllCards: player.allCardsToPB(s.gameParams(), player.ShortId, false)}
 
 	case *outer.MahjongBTEOperateReq: // 碰、杠、胡、过
 		if ok, errCode := s.operate(player, seatIndex, msg.ActionType, HuType(msg.Hu), Card(msg.Gang)); !ok {
 			return errCode
 		}
-		return &outer.MahjongBTEOperateRsp{AllCards: player.allCardsToPB()}
+		return &outer.MahjongBTEOperateRsp{AllCards: player.allCardsToPB(s.gameParams(), player.ShortId, false)}
 
 	default:
 		s.Log().Warnw("playing status has received an unknown message", "msg", reflect.TypeOf(msg).String())
