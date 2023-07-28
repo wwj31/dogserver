@@ -40,10 +40,9 @@ func (s *StateSettlement) Enter() {
 		settlementMsg.PlayerData[seat] = &outer.MahjongBTESettlementPlayerData{}
 	}
 
+	// 流局
 	if notHu {
 		s.notHu(settlementMsg)
-	} else {
-
 	}
 
 	// 结算分数为最终金币
@@ -80,7 +79,7 @@ func (s *StateSettlement) Handle(shortId int64, v any) (result any) {
 func (s *StateSettlement) notHu(ntf *outer.MahjongBTESettlementNtf) {
 	// 筛选出有叫、没叫、花猪的玩家
 	var (
-		hasTingSeat, hasNotTingSeat, pig []int
+		hasTingSeat, hasNotTingSeat, pigSeats []int
 	)
 
 	allTingCards := make(map[int]map[Card]HuType)
@@ -98,6 +97,7 @@ func (s *StateSettlement) notHu(ntf *outer.MahjongBTESettlementNtf) {
 				"room", s.room.RoomId, "player", player.ShortId, "seat", seat, "hand", player.handCards, "err", err)
 			continue
 		}
+
 		allTingCards[seat] = tingCards
 
 		if len(tingCards) > 0 {
@@ -115,7 +115,7 @@ func (s *StateSettlement) notHu(ntf *outer.MahjongBTESettlementNtf) {
 
 			// 花猪单独赔钱，不计入查大叫
 			if player.handCards.HasColorCard(player.ignoreColor) {
-				pig = append(pig, seat) // 花猪
+				pigSeats = append(pigSeats, seat) // 花猪
 			} else {
 				hasNotTingSeat = append(hasNotTingSeat, seat) // 没叫的人
 			}
@@ -123,9 +123,9 @@ func (s *StateSettlement) notHu(ntf *outer.MahjongBTESettlementNtf) {
 	}
 
 	// 先把猪儿的钱赔了
-	if len(pig) > 0 {
-		winPigSeats := s.allSeats(pig...) // 非花猪的位置
-		var winPigScore int64             // 非花猪的赢分
+	if len(pigSeats) > 0 {
+		winPigSeats := s.allSeats(pigSeats...) // 非花猪的位置
+		var winPigScore int64                  // 非花猪的赢分
 		for _, pigSeat := range winPigSeats {
 			// 先算这个猪儿需要赔多少分
 			playerPig := s.mahjongPlayers[pigSeat]
@@ -190,6 +190,14 @@ func (s *StateSettlement) notHu(ntf *outer.MahjongBTESettlementNtf) {
 		}
 	}
 
+	for _, seat := range hasNotTingSeat {
+		ntf.NotTingSeat = append(ntf.NotTingSeat, int32(seat))
+	}
+
+	for _, seat := range pigSeats {
+		ntf.PigSeat = append(ntf.PigSeat, int32(seat))
+	}
+
 }
 
 // 从听牌能胡的牌型中，选出最大番
@@ -205,8 +213,7 @@ func (s *StateSettlement) maxFanTingCard(tingCards map[Card]HuType) int32 {
 }
 
 func (s *StateSettlement) settlementBroadcast(ntf *outer.MahjongBTESettlementNtf) {
-	// 组装结算消息
-	allPlayerInfo := s.playersToPB(0, true)
+	allPlayerInfo := s.playersToPB(0, true) // 组装结算消息
 
 	darkGangMap := map[int32][]int32{}  // 表示每个人被哪些位置暗杠过
 	lightGangMap := map[int32][]int32{} // 表示每个人被哪些位置明杠过
