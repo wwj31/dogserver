@@ -46,8 +46,8 @@ func (s *StateSettlement) Enter() {
 
 	}
 
-	modifyRspCount := make(map[string]struct{}) // 必须等待所有玩家金币修改成功后，才能发送结算
 	// 结算分数为最终金币
+	modifyRspCount := make(map[string]struct{}) // 必须等待所有玩家金币修改成功后，才能发送结算
 	for seat, player := range s.mahjongPlayers {
 		rid := player.RID
 		finalScore := common.Max(0, player.score)
@@ -152,18 +152,43 @@ func (s *StateSettlement) notHu(ntf *outer.MahjongBTESettlementNtf) {
 		}
 	}
 
-	// 没叫的人，赔钱
-	//if len(hasNotTingSeat) > 0 {
-	//	for _, tingSeat := range hasTingSeat {
-	//		// 算出听牌可胡牌的最大番
-	//		tingCards := allTingCards[tingSeat]
-	//		maxFan := s.maxFanTingCard(tingCards)
-	//		maxFan = common.Min(maxFan, s.fanUpLimit())
-	//		winScore := int64(math.Pow(float64(s.baseScore()), float64(s.fanUpLimit())))
-	//
-	//		// 分析没叫的人，够不够赔钱
-	//	}
-	//}
+	// 查大叫
+	if len(hasNotTingSeat) > 0 {
+		allWinner := make(map[int]int64) // 赢钱的位置和需要赢的分
+		var totalWinScore int64          // 总赔付
+		for _, tingSeat := range hasTingSeat {
+			// 算出听牌可胡牌的最大番
+			tingCards := allTingCards[tingSeat]
+			maxFan := s.maxFanTingCard(tingCards)
+			maxFan = common.Min(maxFan, s.fanUpLimit())
+			winScore := int64(math.Pow(float64(s.baseScore()), float64(s.fanUpLimit())))
+			allWinner[tingSeat] = winScore
+			totalWinScore += winScore
+		}
+
+		// 没叫的挨个赔钱
+		for _, notTingSeat := range hasNotTingSeat {
+			notTingPlayer := s.mahjongPlayers[notTingSeat]
+			if notTingPlayer.score <= 0 {
+				continue // 没钱赔个屁
+			}
+
+			// 如果不够赔,就按照赔付比例赔付给有叫的人
+			if notTingPlayer.score < totalWinScore {
+				for winSeat, _ := range allWinner {
+					divScore := float64(notTingPlayer.score) * (float64(allWinner[winSeat]) / float64(totalWinScore))
+					s.mahjongPlayers[winSeat].score += int64(divScore)
+				}
+				notTingPlayer.score = 0
+			} else {
+				// 够赔就直接赔
+				for seat, winScore := range allWinner {
+					s.mahjongPlayers[seat].score += winScore
+				}
+				notTingPlayer.score -= totalWinScore
+			}
+		}
+	}
 
 }
 
