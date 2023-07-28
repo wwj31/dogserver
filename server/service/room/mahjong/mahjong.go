@@ -152,12 +152,21 @@ func (m *Mahjong) Data(shortId int64) proto.Message {
 
 	return info
 }
+
 func (m *Mahjong) ex3Info(shortId int64) (info *outer.Exchange3Info) {
 	p, _ := m.findMahjongPlayer(shortId)
 	if p == nil {
 		return nil
 	}
 	return p.exchange
+}
+
+// 封顶番数
+func (m *Mahjong) fanUpLimit() int32 {
+	if m.gameParams().FanUpLimit < 2 || m.gameParams().FanUpLimit > 5 {
+		return 6
+	}
+	return m.gameParams().FanUpLimit
 }
 
 func (m *Mahjong) playersToPB(shortId int64, settlement bool) (players []*outer.MahjongPlayerInfo) {

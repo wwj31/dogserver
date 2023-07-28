@@ -45,6 +45,7 @@ enum ERROR {
    MAHJONG_HU_INVALID               = 39; // 玩家当前牌型不能胡牌
    MAHJONG_MUST_OUT_IGNORE_COLOR    = 40; // 还存在定缺的花色的牌,必须打该花色的牌
    MAHJONG_STATE_MSG_INVALID        = 41; // 当前状态不受理此消息
+   MAHJONG_SPARE_CARDS_WAS_EMPTY    = 42; // 牌堆没牌了
 }
 
 message FailRsp {

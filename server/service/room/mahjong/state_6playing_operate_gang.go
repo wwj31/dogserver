@@ -12,6 +12,11 @@ var gangScoreRatio = map[checkCardType]float32{
 
 // 杠牌操作
 func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, ntf *outer.MahjongBTEOperaNtf) (ok bool, err outer.ERROR) {
+	// 如果牌堆数量为0，不能杠
+	if len(s.cards) == 0 {
+		return false, outer.ERROR_MAHJONG_SPARE_CARDS_WAS_EMPTY
+	}
+
 	if len(s.peerRecords) == 0 {
 		s.Log().Errorw("operate gang failed peerRecords len = 0",
 			"room", s.room.RoomId, "player", p.ShortId)

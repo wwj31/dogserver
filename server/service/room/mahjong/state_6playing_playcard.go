@@ -55,7 +55,7 @@ func (s *StatePlaying) playCard(cardIndex, seatIndex int) (bool, outer.ERROR) {
 			pass      bool
 		)
 
-		if other.handCards.CanGangTo(outCard) {
+		if other.handCards.CanGangTo(outCard) && s.cards.Len() > 0 {
 			newAction.acts = append(newAction.acts, outer.ActionType_ActionGang)
 			newAction.gang = append(newAction.gang, outCard.Int32())
 			pass = true

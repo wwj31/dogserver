@@ -39,45 +39,7 @@ func (s *StateSettlement) Enter() {
 	}
 
 	if notHu {
-		// 流局，筛选出有叫、没叫、花猪的玩家
-		var (
-			hasTingSeat, hasNotTingSeat []int
-			pig                         = make(map[int]struct{})
-		)
-
-		for seat, player := range s.mahjongPlayers {
-			tingCards, err := player.handCards.ting(player.ignoreColor,
-				player.lightGang,
-				player.darkGang,
-				player.pong,
-				s.gameParams(),
-			)
-
-			if err != nil {
-				s.Log().Errorw("player ting error",
-					"room", s.room.RoomId, "player", player.ShortId, "seat", seat, "hand", player.handCards, "err", err)
-				continue
-			}
-
-			if len(tingCards) > 0 {
-				hasTingSeat = append(hasTingSeat, seat)
-			} else {
-				// 没有叫，需要退杠分
-				for peerIdx, losers := range player.gangScore {
-					peer := s.peerRecords[peerIdx]
-					loseScore := int64(float32(s.baseScore()) * gangScoreRatio[peer.typ])
-					for _, loserSeatIndex := range losers {
-						s.mahjongPlayers[loserSeatIndex].score += loseScore
-						player.score -= loseScore
-					}
-				}
-
-				hasNotTingSeat = append(hasNotTingSeat, seat)
-				if player.handCards.HasColorCard(player.ignoreColor) {
-					pig[seat] = struct{}{} // 花猪
-				}
-			}
-		}
+		s.notHu(settlementMsg)
 	} else {
 
 	}
@@ -103,6 +65,59 @@ func (s *StateSettlement) Enter() {
 		})
 	}
 }
+
+func (s *StateSettlement) Leave() {
+	s.Log().Infow("[Mahjong] leave state settlement", "room", s.room.RoomId)
+}
+
+func (s *StateSettlement) Handle(shortId int64, v any) (result any) {
+	return outer.ERROR_MAHJONG_STATE_MSG_INVALID
+}
+
+func (s *StateSettlement) notHu(ntf *outer.MahjongBTESettlementNtf) {
+	// 流局，筛选出有叫、没叫、花猪的玩家
+	var (
+		hasTingSeat, hasNotTingSeat []int
+		pig                         = make(map[int]struct{})
+	)
+
+	for seat, player := range s.mahjongPlayers {
+		tingCards, err := player.handCards.ting(player.ignoreColor,
+			player.lightGang,
+			player.darkGang,
+			player.pong,
+			s.gameParams(),
+		)
+
+		if err != nil {
+			s.Log().Errorw("player ting error",
+				"room", s.room.RoomId, "player", player.ShortId, "seat", seat, "hand", player.handCards, "err", err)
+			continue
+		}
+
+		if len(tingCards) > 0 {
+			hasTingSeat = append(hasTingSeat, seat)
+		} else {
+			// 没有叫，需要退杠分
+			for peerIdx, losers := range player.gangScore {
+				peer := s.peerRecords[peerIdx]
+				loseScore := int64(float32(s.baseScore()) * gangScoreRatio[peer.typ])
+				for _, loserSeatIndex := range losers {
+					s.mahjongPlayers[loserSeatIndex].score += loseScore
+					player.score -= loseScore
+				}
+			}
+
+			hasNotTingSeat = append(hasNotTingSeat, seat)
+			if player.handCards.HasColorCard(player.ignoreColor) {
+				pig[seat] = struct{}{} // 花猪
+			}
+		}
+	}
+	//
+
+}
+
 func (s *StateSettlement) settlementBroadcast(ntf *outer.MahjongBTESettlementNtf) {
 	// 组装结算消息
 	allPlayerInfo := s.playersToPB(0, true)
@@ -156,15 +171,6 @@ func (s *StateSettlement) settlementBroadcast(ntf *outer.MahjongBTESettlementNtf
 		s.SwitchTo(Ready)
 	})
 }
-
-func (s *StateSettlement) Leave() {
-	s.Log().Infow("[Mahjong] leave state settlement", "room", s.room.RoomId)
-}
-
-func (s *StateSettlement) Handle(shortId int64, v any) (result any) {
-	return outer.ERROR_MAHJONG_STATE_MSG_INVALID
-}
-
 func (s *StateSettlement) nextMasterIndex() {
 	if s.mutilHuByIndex != -1 {
 		s.masterIndex = s.mutilHuByIndex
