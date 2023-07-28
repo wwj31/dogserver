@@ -21,8 +21,8 @@ func (s *StateExchange3) State() int {
 }
 
 func (s *StateExchange3) Enter() {
-	s.room.Broadcast(&outer.MahjongBTEExchange3Ntf{})
 	s.currentStateEndAt = tools.Now().Add(Exchange3Expiration)
+	s.room.Broadcast(&outer.MahjongBTEExchange3Ntf{EndAt: s.currentStateEndAt.UnixMilli()})
 	s.timerId = s.room.AddTimer(tools.XUID(), s.currentStateEndAt, func(time.Duration) {
 		s.stateEnd()
 	})

@@ -132,6 +132,7 @@ message MahjongBTEDealNtf {
 
 // 开始换三张
 message MahjongBTEExchange3Ntf {
+    int64          EndAt    = 1; // 换三张倒计时结束时间 (毫秒)
 }
 
 // 换三张 玩家确认通知
@@ -146,6 +147,7 @@ message MahjongBTEExchange3EndNtf {
 
 // 开始定缺通知
 message MahjongBTEDecideIgnoreNtf {
+    int64          EndAt    = 1; // 定缺倒计时结束时间 (毫秒)
 }
 
 // 玩家定缺确认通知

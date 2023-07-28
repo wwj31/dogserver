@@ -23,8 +23,8 @@ func (s *StateDecideIgnore) State() int {
 
 func (s *StateDecideIgnore) Enter() {
 	s.colorMap = make(map[int64]outer.ColorType)
-	s.room.Broadcast(&outer.MahjongBTEDecideIgnoreNtf{})
 	s.currentStateEndAt = tools.Now().Add(DecideIgnoreExpiration)
+	s.room.Broadcast(&outer.MahjongBTEDecideIgnoreNtf{EndAt: s.currentStateEndAt.UnixMilli()})
 	s.timerId = s.room.AddTimer(tools.XUID(), s.currentStateEndAt, func(time.Duration) {
 		s.stateEnd()
 	})
