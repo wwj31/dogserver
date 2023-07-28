@@ -355,6 +355,21 @@ func (m *Mahjong) clear() {
 	m.currentActionEndAt = time.Time{}
 }
 
+func (m *Mahjong) allSeats(ignoreSeat ...int) (result []int) {
+	seatMap := map[int]struct{}{}
+	for _, seat := range ignoreSeat {
+		seatMap[seat] = struct{}{}
+	}
+
+	for seatIndex := 0; seatIndex < maxNum; seatIndex++ {
+		if _, ignore := seatMap[seatIndex]; !ignore {
+			result = append(result, seatIndex)
+		}
+	}
+
+	return result
+}
+
 // 满足条件就亮出所有牌, 否则只亮明杠
 // 明确显示手牌的情况:
 //
