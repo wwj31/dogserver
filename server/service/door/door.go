@@ -47,6 +47,7 @@ func (s *Door) OnInit() {
 	alliance := s.ginEngine.Group("/alliance")
 	alliance.Use(checkToken)
 	alliance.POST("/setmaster", setMaster)
+	alliance.POST("/setgold", setGold)
 
 	go func() {
 		log.Infow("gin startup ", "port", 9999)

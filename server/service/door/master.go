@@ -3,6 +3,7 @@ package door
 import (
 	"fmt"
 	"net/http"
+	"server/common"
 	"server/common/actortype"
 	"server/proto/innermsg/inner"
 	"server/rdsop"
@@ -63,4 +64,65 @@ func setMaster(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"info": "联盟创建成功"})
+}
+
+// 玩家上下分操作
+func setGold(ctx *gin.Context) {
+	req := gin.H{}
+	_ = ctx.BindJSON(&req)
+	shortId := cast.ToInt64(req["shortId"])
+	if shortId == 0 {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "shortId is empty"})
+		return
+	}
+
+	gold := cast.ToInt64(req["gold"])
+	if gold == 0 {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "the gold is zero"})
+		return
+	}
+
+	playerInfo := rdsop.PlayerInfo(shortId)
+	if playerInfo.RID == "" {
+		ctx.JSON(http.StatusBadRequest,
+			gin.H{"error": fmt.Errorf("找不到玩家:[%v]", shortId).Error()})
+		return
+	}
+
+	if door == nil {
+		ctx.JSON(http.StatusInternalServerError,
+			gin.H{"error": fmt.Errorf("door is not nil").Error()})
+		return
+	}
+
+	if playerInfo.RoomId != 0 {
+		v, err := door.RequestWait(actortype.RoomName(playerInfo.RoomId), &inner.RoomCanSetGoldReq{ShortId: playerInfo.ShortId})
+		if yes, _ := common.IsErr(v, err); yes {
+			ctx.JSON(http.StatusBadRequest,
+				gin.H{"error": fmt.Errorf("request room failed playerInfo:%v", playerInfo.String()).Error()})
+			return
+		}
+		rsp := v.(*inner.RoomCanSetGoldRsp)
+		if !rsp.Ok {
+			ctx.JSON(http.StatusBadRequest,
+				gin.H{"error": fmt.Errorf("the player's room does not allow to set gold:%v", playerInfo.String()).Error()})
+			return
+		}
+	}
+
+	result, err := door.RequestWait(actortype.PlayerId(playerInfo.RID), &inner.ModifyGoldReq{Gold: gold})
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError,
+			gin.H{"error": err.Error()})
+		return
+	}
+
+	rsp, ok := result.(*inner.ModifyGoldRsp)
+	if !ok {
+		ctx.JSON(http.StatusInternalServerError,
+			gin.H{"error": "设置分失败"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"info": fmt.Sprintf("设置分数成功，玩家[%v]当前分数:[%v]", rsp.Info.ShortId, rsp.Info.Gold)})
 }

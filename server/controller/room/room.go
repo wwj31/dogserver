@@ -107,6 +107,18 @@ var _ = router.Reg(func(r *room.Room, msg *inner.RoomLogoutReq) any {
 	return nil
 })
 
+// 房间当前状态是否允许上下分
+var _ = router.Reg(func(r *room.Room, msg *inner.RoomCanSetGoldReq) any {
+	// 玩家不在房间内
+	p := r.FindPlayer(msg.ShortId)
+	if p == nil {
+		log.Warnw("leave the room cannot find player", "room", r.RoomId, "msg", msg.ShortId)
+		return &inner.RoomCanSetGoldRsp{Ok: true}
+	}
+
+	return &inner.RoomCanSetGoldRsp{Ok: r.CanSetGold(p.PlayerInfo)}
+})
+
 // gambling 消息
 var _ = router.Reg(func(r *room.Room, msg *inner.GamblingMsgToRoomWrapper) any {
 	p := r.FindPlayerByRID(msg.RID)

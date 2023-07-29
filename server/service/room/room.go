@@ -165,6 +165,10 @@ func (r *Room) CanReadyInRoom(p *inner.PlayerInfo) bool {
 	return r.gambling.CanReady(p)
 }
 
+func (r *Room) CanSetGold(p *inner.PlayerInfo) bool {
+	return r.gambling.CanSetGold(p)
+}
+
 func (r *Room) FindPlayer(shortId int64) *Player {
 	for _, v := range r.Players {
 		if v.ShortId == shortId {

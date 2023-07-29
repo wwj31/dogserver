@@ -75,6 +75,14 @@ message RoomLogoutReq{
 message RoomLogoutRsp{
 }
 
+// 房间当前状态是否允许上下分
+message RoomCanSetGoldReq{
+  int64 ShortId = 1;
+}
+message RoomCanSetGoldRsp{
+  bool ok = 1;
+}
+
 // 玩家被踢出房间
 message RoomKickOutNtf{
   int64 RoomId = 1;
