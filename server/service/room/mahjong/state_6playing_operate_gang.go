@@ -69,14 +69,31 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 		return result
 	}
 
-	// 杠成功后实时算分
-	execScoreFunc := func(opNtf *outer.MahjongBTEOperaNtf, loseScores map[int32]int64) {
+	// 杠成功后算分
+	gangSuccess := func(opNtf *outer.MahjongBTEOperaNtf, loseScores map[int32]int64) {
+		var (
+			winScore   int64   // 本次杠总赢分
+			loserSeats []int32 // 本次杠所有需要赔付的位置
+		)
+
+		// 先算输分的人
 		for loserSeat, score := range loseScores {
 			rival := s.mahjongPlayers[loserSeat]
+			rival.gangTotalScore -= score // 被杠,丢分
 			rival.score -= score
-			p.score += score
-			p.gangScore[lastPeerIndex] = append(p.gangScore[lastPeerIndex], loserSeat)
+
+			winScore += score
+			loserSeats = append(loserSeats, loserSeat)
 		}
+
+		// 杠分统计数据
+		p.gangTotalScore += winScore // 杠,得分
+		p.score += winScore          // 总分，实时计算杠分
+
+		// 记录本次杠获得的总分，以及每个赔付的位置
+		p.gangInfos[lastPeerIndex] = &gangInfo{}
+		p.gangInfos[lastPeerIndex].loserSeats = loserSeats
+		p.gangInfos[lastPeerIndex].totalWinScore += winScore // 本次杠获得总分
 
 		// 先组装杠成功得通知消息
 		gangResultNtf := &outer.MahjongBTEGangResultNtf{
@@ -89,9 +106,9 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 		if s.gameParams().GangImmediatelyScore {
 			// 所有人最新得分数
 			for _, player := range s.mahjongPlayers {
-				gangResultNtf.CurrentScores = append(gangResultNtf.CurrentScores, player.score)
+				gangResultNtf.CurrentScores = append(gangResultNtf.CurrentScores, s.immScore(player.ShortId))
 			}
-			gangResultNtf.LoseScores = loseScores // 每个赔分得人
+			gangResultNtf.LoseScores = loseScores // 每个赔分的人
 		}
 
 		// 不等于nil, 说明没有抢杠, 将通知带入操作中一并发出
@@ -114,7 +131,7 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 				s.Log().Infow("gang ok by draw card with pong")
 				delete(p.pong, card.Int32())
 				p.lightGang[card.Int32()] = p.ShortId
-				execScoreFunc(opNtf, loseScores)
+				gangSuccess(opNtf, loseScores)
 			}
 			qiangGang = hasQiangGang()
 			ntf.Card = card.Int32() // 杠的牌
@@ -128,7 +145,7 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 				s.Log().Infow("gang ok by draw card")
 				p.handCards = p.handCards.Remove(card, card, card, card)
 				p.darkGang[card.Int32()] = p.ShortId
-				execScoreFunc(opNtf, loseScores)
+				gangSuccess(opNtf, loseScores)
 			}
 		}
 
@@ -141,7 +158,7 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 			s.Log().Infow("gang ok by play card")
 			p.handCards, _, _ = p.handCards.Gang(card)
 			p.lightGang[card.Int32()] = s.mahjongPlayers[peer.seat].ShortId
-			execScoreFunc(opNtf, loseScores)
+			gangSuccess(opNtf, loseScores)
 		}
 
 		qiangGang = hasQiangGang()

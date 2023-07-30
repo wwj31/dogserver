@@ -41,7 +41,6 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 	s.huSeat = append(s.huSeat, int32(seatIndex))
 	p.hu = hu
 	p.huPeerIndex = len(s.peerRecords) - 1
-	ntf.HuType = hu.PB()
 	if peer.typ == GangType1 || peer.typ == GangType3 {
 		peer.afterQiangPass = nil // 抢杠成功，杠的人，杠失败
 
@@ -59,8 +58,6 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 	p.huExtra = s.huExtra(seatIndex)
 	p.huGen = int32(s.huGen(seatIndex))
 
-	ntf.HuExtraType = p.huExtra.PB()
-
 	// 胡成功后，删除Gang和Pong(可以一炮多响,但是有人胡了就不能再碰、杠)
 	for seat, act := range s.actionMap {
 		act.remove(outer.ActionType_ActionGang)
@@ -77,19 +74,25 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 		}
 	}
 
-	// TODO 算番算分
-	if len(s.peerRecords) > 3 {
-		last1 := s.peerRecords[len(s.peerRecords)-1]
-		last2 := s.peerRecords[len(s.peerRecords)-2]
-		last3 := s.peerRecords[len(s.peerRecords)-3]
+	// 呼叫转移
+	if p.huExtra == GangShangPao {
+		gangPeerIndex := len(s.peerRecords) - 3
+		peerRecord := s.peerRecords[gangPeerIndex]
+		rivalGang := s.mahjongPlayers[peerRecord.seat]
+		rivalGangInfo := rivalGang.gangInfos[gangPeerIndex]
+		totalScore := rivalGangInfo.totalWinScore
+		rivalGang.score -= totalScore
+		rivalGang.gangTotalScore -= totalScore
 
-		// 判断是否是杠上炮
-		if (last3.typ == GangType1 || last3.typ == GangType3 || last3.typ == GangType4) &&
-			last1.seat == last2.seat && last1.seat == last3.seat {
-			// TODO 杠上炮
-		}
+		p.score += totalScore
+		p.gangTotalScore += totalScore
+		s.Log().Infow("gangshangpao,exchange gang score",
+			"room", s.room.RoomId, "hu", p.hu, "hu shortId", p.ShortId, "gang shortId", rivalGang.ShortId,
+			"score", totalScore, "seats", rivalGangInfo.loserSeats)
 	}
 
+	ntf.HuType = hu.PB()
+	ntf.HuExtraType = p.huExtra.PB()
 	return true, outer.ERROR_OK
 }
 

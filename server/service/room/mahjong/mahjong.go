@@ -48,6 +48,10 @@ func New(r *room.Room) *Mahjong {
 
 const maxNum = 4
 
+type gangInfo struct {
+	loserSeats    []int32 // 赔付的位置
+	totalWinScore int64   // 本次杠总分
+}
 type (
 	// 麻将-血战到底 参与游戏的玩家数据
 	mahjongPlayer struct {
@@ -59,18 +63,22 @@ type (
 		ignoreColor ColorType            // 定缺花色
 		exchange    *outer.Exchange3Info // 换三张信息
 
-		handCards Cards           // 手牌
-		lightGang map[int32]int64 // map[杠牌]ShortId 明杠
-		darkGang  map[int32]int64 // map[杠牌]ShortId 暗杠
-		gangScore map[int][]int32 // map[peerIndex]seats，杠需要赔付的位置
-		pong      map[int32]int64 // map[碰牌]ShortId
+		handCards Cards // 手牌
 
-		hu          HuType     // 胡牌
-		huCard      Card       // 胡的那张牌
-		huExtra     ExtFanType // 胡牌额外加番
-		huGen       int32      // 胡牌有几根
-		huPeerIndex int        // 胡的那次peer下标
+		// 碰杠数据
+		pong           map[int32]int64   // map[碰牌]ShortId
+		lightGang      map[int32]int64   // map[杠牌]ShortId 明杠
+		darkGang       map[int32]int64   // map[杠牌]ShortId 暗杠
+		gangInfos      map[int]*gangInfo // map[peerIndex]杠信息
+		gangTotalScore int64             // 杠总共赢的分数
 
+		// 胡牌数据
+		hu           HuType     // 胡牌
+		huCard       Card       // 胡的那张牌
+		huExtra      ExtFanType // 胡牌额外加番
+		huGen        int32      // 胡牌有几根
+		huPeerIndex  int        // 胡的那次peer下标
+		huTotalScore int64      // 胡牌赢的总分
 	}
 
 	action struct {
@@ -180,14 +188,6 @@ func (m *Mahjong) playersToPB(shortId int64, settlement bool) (players []*outer.
 				huPeer = m.peerRecords[player.huPeerIndex]
 			}
 
-			// 如果要实时结算，就把本局最新分数发给玩家
-			var score int64
-			if m.gameParams().GangImmediatelyScore {
-				score = player.score
-			} else {
-				score = player.Gold
-			}
-
 			allCards := player.allCardsToPB(m.gameParams(), shortId, settlement)
 			players = append(players, &outer.MahjongPlayerInfo{
 				ShortId:        player.ShortId,
@@ -200,7 +200,7 @@ func (m *Mahjong) playersToPB(shortId int64, settlement bool) (players []*outer.
 				HuExtraType:    player.huExtra.PB(),
 				HuCard:         huPeer.card.Int32(),
 				HuGen:          player.huGen,
-				Score:          score,
+				Score:          m.immScore(shortId),
 			})
 		}
 	}
@@ -322,12 +322,12 @@ func (m *Mahjong) nextSeatIndexWithoutHu(index int) int {
 
 func (m *Mahjong) newMahjongPlayer(p *room.Player) *mahjongPlayer {
 	return &mahjongPlayer{
-		Player:      p,
 		score:       p.Gold,
+		Player:      p,
 		lightGang:   map[int32]int64{},
 		darkGang:    map[int32]int64{},
 		pong:        map[int32]int64{},
-		gangScore:   map[int][]int32{},
+		gangInfos:   map[int]*gangInfo{},
 		huPeerIndex: -1,
 	}
 }
@@ -368,6 +368,28 @@ func (m *Mahjong) allSeats(ignoreSeat ...int) (result []int) {
 	}
 
 	return result
+}
+
+func (m *Mahjong) immScore(shortId int64) int64 {
+	roomPlayer := m.room.FindPlayer(shortId)
+	if roomPlayer == nil {
+		return 0
+	}
+
+	mahPlayer, _ := m.findMahjongPlayer(shortId)
+	if mahPlayer == nil {
+		return 0
+	}
+
+	totalScore := roomPlayer.Gold
+	if m.gameParams().GangImmediatelyScore {
+		totalScore += mahPlayer.gangTotalScore
+	}
+
+	if m.gameParams().HuImmediatelyScore {
+		totalScore += mahPlayer.huTotalScore
+	}
+	return totalScore
 }
 
 // 满足条件就亮出所有牌, 否则只亮明杠

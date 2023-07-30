@@ -104,11 +104,14 @@ func (s *StateSettlement) notHu(ntf *outer.MahjongBTESettlementNtf) {
 			hasTingSeat = append(hasTingSeat, seat)
 		} else {
 			// 没有叫，需要退杠分
-			for peerIdx, losers := range player.gangScore {
+			for peerIdx, info := range player.gangInfos {
 				peer := s.peerRecords[peerIdx]
 				loseScore := int64(float32(s.baseScore()) * gangScoreRatio[peer.typ])
-				for _, loserSeatIndex := range losers {
-					s.mahjongPlayers[loserSeatIndex].score += loseScore
+				for _, loseSeat := range info.loserSeats {
+					s.mahjongPlayers[loseSeat].gangTotalScore += loseScore // 退杠得分
+					s.mahjongPlayers[loseSeat].score += loseScore
+
+					player.gangTotalScore -= loseScore // 没叫，退杠分
 					player.score -= loseScore
 				}
 			}
@@ -124,9 +127,8 @@ func (s *StateSettlement) notHu(ntf *outer.MahjongBTESettlementNtf) {
 
 	// 先把猪儿的钱赔了
 	if len(pigSeats) > 0 {
-		winPigSeats := s.allSeats(pigSeats...) // 非花猪的位置
-		var winPigScore int64                  // 非花猪的赢分
-		for _, pigSeat := range winPigSeats {
+		winSeats := s.allSeats(pigSeats...) // 非花猪的位置
+		for _, pigSeat := range winSeats {
 			// 先算这个猪儿需要赔多少分
 			playerPig := s.mahjongPlayers[pigSeat]
 			needSubBaseScore := int64(math.Pow(float64(s.baseScore()), float64(s.fanUpLimit())))
@@ -136,18 +138,20 @@ func (s *StateSettlement) notHu(ntf *outer.MahjongBTESettlementNtf) {
 				continue
 			}
 
-			// 如果猪儿有钱不够赔，那么有多少就赔多少，赢的人均分
-			if playerPig.score < needSubBaseScore*int64(len(winPigSeats)) {
-				winPigScore = playerPig.score / int64(len(winPigSeats))
+			// 如果猪儿有钱不够赔，
+			// 那么有多少就赔多少，赢的人均分
+			var winScore int64
+			if playerPig.score < needSubBaseScore*int64(len(winSeats)) {
+				winScore = playerPig.score / int64(len(winSeats))
 			} else {
-				winPigScore = needSubBaseScore
+				winScore = needSubBaseScore
 			}
-			playerPig.score -= winPigScore * int64(len(winPigSeats))
+			playerPig.score -= winScore * int64(len(winSeats))
 
 			// 赢钱的人加分
-			for _, seat := range winPigSeats {
+			for _, seat := range winSeats {
 				player := s.mahjongPlayers[seat]
-				player.score += winPigScore
+				player.score += winScore
 			}
 		}
 	}
@@ -231,8 +235,8 @@ func (s *StateSettlement) settlementBroadcast(ntf *outer.MahjongBTESettlementNtf
 		ntf.PlayerData[seat].TotalScore = player.score
 
 		// 本局该玩家所有的杠牌,以及每次杠成功后赔钱的位置
-		for peerIndex, loserSeats := range player.gangScore {
-			for _, loserSeat := range loserSeats {
+		for peerIndex, info := range player.gangInfos {
+			for _, loserSeat := range info.loserSeats {
 				if s.peerRecords[peerIndex].typ == GangType4 {
 					darkGangMap[loserSeat] = append(darkGangMap[loserSeat], int32(seat))
 				} else {
@@ -264,6 +268,7 @@ func (s *StateSettlement) settlementBroadcast(ntf *outer.MahjongBTESettlementNtf
 		s.SwitchTo(Ready)
 	})
 }
+
 func (s *StateSettlement) nextMasterIndex() {
 	if s.mutilHuByIndex != -1 {
 		s.masterIndex = s.mutilHuByIndex
