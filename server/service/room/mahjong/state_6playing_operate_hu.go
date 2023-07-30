@@ -1,6 +1,7 @@
 package mahjong
 
 import (
+	"math"
 	"server/proto/outermsg/outer"
 )
 
@@ -77,19 +78,37 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 	// 呼叫转移
 	if p.huExtra == GangShangPao {
 		gangPeerIndex := len(s.peerRecords) - 3
-		peerRecord := s.peerRecords[gangPeerIndex]
-		rivalGang := s.mahjongPlayers[peerRecord.seat]
-		rivalGangInfo := rivalGang.gangInfos[gangPeerIndex]
-		totalScore := rivalGangInfo.totalWinScore
+		peerRecord := s.peerRecords[gangPeerIndex]          // 杠的那次记录
+		rivalGang := s.mahjongPlayers[peerRecord.seat]      // 杠的人
+		rivalGangInfo := rivalGang.gangInfos[gangPeerIndex] // 杠信息
+		totalScore := rivalGangInfo.totalWinScore           // 本次转移的总分
+
 		rivalGang.score -= totalScore
 		rivalGang.gangTotalScore -= totalScore
 
 		p.score += totalScore
 		p.gangTotalScore += totalScore
-		s.Log().Infow("gangshangpao,exchange gang score",
+
+		s.Log().Infow("gangShangPao,exchange gang score",
 			"room", s.room.RoomId, "hu", p.hu, "hu shortId", p.ShortId, "gang shortId", rivalGang.ShortId,
 			"score", totalScore, "seats", rivalGangInfo.loserSeats)
 	}
+
+	// 算分
+	fan := huFan[p.hu] + extraFan[p.huExtra] + int(p.huGen)
+	ratio := math.Pow(float64(2), float64(fan))
+	winScore := s.baseScore() * int64(ratio)
+	for _, seat := range paySeat {
+		rival := s.mahjongPlayers[seat]
+		rival.score -= winScore
+		rival.huTotalScore -= winScore
+
+		p.score += winScore
+		p.huTotalScore += winScore
+	}
+
+	s.Log().Infow("hu win score",
+		"room", s.room.RoomId, "winner", p.ShortId, "hu", p.hu, "extra", p.huExtra, "gen", p.huGen, "score", winScore, "pay seats", paySeat)
 
 	ntf.HuType = hu.PB()
 	ntf.HuExtraType = p.huExtra.PB()
