@@ -93,6 +93,7 @@ type (
 		fsm                 *room.FSM
 		currentStateEnterAt time.Time // 当前状态的进入时间
 		currentStateEndAt   time.Time // 当前状态的结束时间
+		playerAutoReady     func(p *mahjongPlayer, ready bool)
 
 		dices          [2]int32 // 两颗骰子数
 		masterIndex    int      // 庄家位置 0,1,2,3
@@ -246,22 +247,24 @@ func (m *Mahjong) CanSetGold(p *inner.PlayerInfo) bool {
 	return false
 }
 
-func (m *Mahjong) PlayerEnter(p *room.Player) {
+func (m *Mahjong) PlayerEnter(roomPlayer *room.Player) {
 	for i, player := range m.mahjongPlayers {
 		if player == nil {
-			m.mahjongPlayers[i] = m.newMahjongPlayer(p)
-			m.mahjongPlayers[i].readyExpireAt = time.Now().Add(ReadyExpiration)
-			m.readyTimeout(p.RID, p.ShortId, m.mahjongPlayers[i].readyExpireAt)
+			player = m.newMahjongPlayer(roomPlayer)
+			m.mahjongPlayers[i] = player
+			if m.playerAutoReady != nil {
+				m.playerAutoReady(player, false)
+			}
 			break
 		}
 	}
 }
 
-func (m *Mahjong) readyTimeout(rid string, shortId int64, expireAt time.Time) {
-	m.room.AddTimer(rid, expireAt, func(dt time.Duration) {
+func (m *Mahjong) readyAfterTimeout(player *mahjongPlayer, expireAt time.Time) {
+	m.room.AddTimer(player.RID, expireAt, func(dt time.Duration) {
 		m.Log().Infow("the player was kicked out of the room due to a timeout in the ready period",
-			"room", m.room.RoomId, "player", shortId)
-		m.room.PlayerLeave(shortId, true)
+			"room", m.room.RoomId, "player", player.ShortId)
+		m.room.PlayerLeave(player.ShortId, true)
 	})
 }
 

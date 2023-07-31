@@ -24,7 +24,6 @@ func (s *StateSettlement) State() int {
 
 func (s *StateSettlement) Enter() {
 	notHu := s.isNoHu()
-	s.gameCount++
 	s.Log().Infow("[Mahjong] enter state settlement",
 		"room", s.room.RoomId, "master", s.masterIndex, "notHu", notHu, "game count", s.gameCount)
 

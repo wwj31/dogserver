@@ -31,19 +31,20 @@ message GameParams {
 
 // 麻将
 message MahjongParams{
-    int32 BaseScore            = 1; // 底分
-    float BaseScoreTimes       = 2; // 倍数 0.1、0.5、1、2
-    int32 ZiMoJia              = 3; // 自摸 0.自摸加番、1.自摸加底
-    int32 FanUpLimit           = 4; // 翻数封顶 1、2、3、4、5
-    int32 DianGangHua          = 5; // 点杠花 0.点炮、1.自摸
-    int32 HuanSanZhang         = 6; // 换三张 0.同花色换三张、1.任意换三张、2.无换三张
-    bool  YaoJiuDui            = 7; // 幺九将对
-    bool  MenQingZhongZhang    = 8; // 门清中张
-    bool  TianDiHu             = 9; // 天地胡
-    bool  DianPaoPingHu        = 10; // 点炮可平胡
-    bool  JiaXinWu             = 11; // 夹心五
-    bool  GangImmediatelyScore = 12; // 杠分实时结算
-    bool  HuImmediatelyScore   = 13; // 胡牌实时结算
+    int32 playCountLimit       = 1; // 必须打满多少局才能退出
+    int32 BaseScore            = 2; // 底分
+    float BaseScoreTimes       = 3; // 倍数 0.1、0.5、1、2
+    int32 ZiMoJia              = 4; // 自摸 0.自摸加番、1.自摸加底
+    int32 FanUpLimit           = 5; // 翻数封顶 1、2、3、4、5
+    int32 DianGangHua          = 6; // 点杠花 0.点炮、1.自摸
+    int32 HuanSanZhang         = 7; // 换三张 0.同花色换三张、1.任意换三张、2.无换三张
+    bool  YaoJiuDui            = 8; // 幺九将对
+    bool  MenQingZhongZhang    = 9; // 门清中张
+    bool  TianDiHu             = 10; // 天地胡
+    bool  DianPaoPingHu        = 11; // 点炮可平胡
+    bool  JiaXinWu             = 12; // 夹心五
+    bool  GangImmediatelyScore = 13; // 杠分实时结算
+    bool  HuImmediatelyScore   = 14; // 胡牌实时结算
 }
 
 // 斗地主

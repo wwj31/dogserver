@@ -21,11 +21,13 @@ func (s *StateReady) Enter() {
 	s.Log().Infow("[Mahjong] enter state ready ", "room", s.room.RoomId)
 	s.huSeat = nil
 	s.mutilHuByIndex = -1
+	s.playerAutoReady = s.ready
+
 	readyExpireAt := time.Now().Add(ReadyExpiration)
-	for _, player := range s.mahjongPlayers {
+	for i := 0; i < len(s.mahjongPlayers); i++ {
+		player := s.mahjongPlayers[i]
 		if player != nil {
-			player.readyExpireAt = readyExpireAt
-			s.readyTimeout(player.RID, player.ShortId, player.readyExpireAt)
+			s.ready(player, false)
 		}
 	}
 
@@ -33,11 +35,12 @@ func (s *StateReady) Enter() {
 }
 
 func (s *StateReady) Leave() {
+	s.gameCount++
 	s.Log().Infow("[Mahjong] leave state ready", "room", s.room.RoomId)
 }
 
 func (s *StateReady) Handle(shortId int64, v any) (result any) {
-	player, seat := s.findMahjongPlayer(shortId)
+	player, _ := s.findMahjongPlayer(shortId)
 	if player == nil {
 		s.Log().Warnw("player not in room", "roomId", s.room.RoomId, "shortId", shortId)
 		return outer.ERROR_PLAYER_NOT_IN_ROOM
@@ -45,27 +48,7 @@ func (s *StateReady) Handle(shortId int64, v any) (result any) {
 
 	switch msg := v.(type) {
 	case *outer.MahjongBTEReadyReq:
-		s.room.Broadcast(&outer.MahjongBTEPlayerReadyNtf{ShortId: shortId, Ready: msg.Ready})
-
-		s.Log().Infow("the player request ready ",
-			"room", s.room.RoomId, "player", shortId, "seat", seat, "ready", msg.Ready)
-
-		player.ready = msg.Ready
-		if msg.Ready {
-			player.readyExpireAt = time.Time{}
-
-			s.room.CancelTimer(player.RID)
-			if s.checkAllReady() {
-				if s.gameCount == 0 {
-					s.SwitchTo(DecideMaster)
-				} else {
-					s.SwitchTo(Deal)
-				}
-			}
-		} else {
-			player.readyExpireAt = time.Now().Add(ReadyExpiration)
-			s.readyTimeout(player.RID, player.ShortId, player.readyExpireAt)
-		}
+		s.ready(player, msg.Ready)
 		return &outer.MahjongBTEReadyRsp{Ready: msg.Ready}
 	default:
 		s.Log().Warnw("ready state has received an unknown message", "msg", reflect.TypeOf(msg).String())
@@ -80,4 +63,32 @@ func (s *StateReady) checkAllReady() bool {
 		}
 	}
 	return true
+}
+
+// 玩家准备操作，选择false到期自动准备，选择true检查是否开局
+func (s *StateReady) ready(player *mahjongPlayer, r bool) {
+	s.room.Broadcast(&outer.MahjongBTEPlayerReadyNtf{ShortId: player.ShortId, Ready: r})
+
+	s.Log().Infow("the player request ready ",
+		"room", s.room.RoomId, "player", player.ShortId, "ready", r)
+
+	player.ready = r
+
+	if r {
+		player.readyExpireAt = time.Time{}
+
+		s.room.CancelTimer(player.RID)
+		if s.checkAllReady() {
+			if s.gameCount == 0 {
+				s.SwitchTo(DecideMaster)
+			} else {
+				s.SwitchTo(Deal)
+			}
+		}
+	} else {
+		player.readyExpireAt = time.Now().Add(ReadyExpiration)
+		s.room.AddTimer(player.RID, player.readyExpireAt, func(dt time.Duration) {
+			s.ready(player, true)
+		})
+	}
 }
