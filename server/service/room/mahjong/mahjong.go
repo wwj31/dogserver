@@ -406,15 +406,15 @@ func (m *mahjongPlayer) allCardsToPB(params *outer.MahjongParams, shortId int64,
 	allCards := &outer.CardsOfBTE{}
 	if m.ShortId == shortId || settlement || (params.HuImmediatelyScore && m.hu != HuInvalid) {
 		allCards.Cards = m.handCards.ToSlice()
-		allCards.LightGang = m.lightGang
-		for card, _ := range m.darkGang {
-			allCards.DarkGang = append(allCards.DarkGang, card)
-		}
 	} else {
 		handLen := m.handCards.Len()
 		allCards.Cards = make([]int32, handLen, handLen)
-		allCards.LightGang = m.lightGang
-		allCards.DarkGang = make([]int32, len(allCards.DarkGang), len(allCards.DarkGang))
+	}
+
+	// 明杠暗杠，随时显示
+	allCards.LightGang = m.lightGang
+	for card, _ := range m.darkGang {
+		allCards.DarkGang = append(allCards.DarkGang, card)
 	}
 	return allCards
 }

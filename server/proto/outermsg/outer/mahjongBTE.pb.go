@@ -38,7 +38,7 @@ type MahjongBTEGameInfo struct {
 	CardsPlayOrder   []int32              `protobuf:"varint,10,rep,packed,name=CardsPlayOrder,proto3" json:"CardsPlayOrder,omitempty"`    // 出牌顺序
 	ActionShortId    int64                `protobuf:"varint,11,opt,name=ActionShortId,proto3" json:"ActionShortId,omitempty"`             // 当前操作者
 	ActionEndAt      int64                `protobuf:"varint,12,opt,name=ActionEndAt,proto3" json:"ActionEndAt,omitempty"`                 // 操作结束时间(毫秒)
-	HuSeats          []int32              `protobuf:"varint,13,rep,packed,name=HuSeats,proto3" json:"HuSeats,omitempty"`                  // 当前胡牌的座位
+	HuSeats          []int32              `protobuf:"varint,13,rep,packed,name=HuSeats,proto3" json:"HuSeats,omitempty"`                  // 当前胡牌的座位,按先后顺序加入
 	// 以下数据只发操作者本人
 	ActionType []ActionType `protobuf:"varint,14,rep,packed,name=ActionType,proto3,enum=outer.ActionType" json:"ActionType,omitempty"` // 可操作类型，1.碰、2.杠、3.胡、4.出牌
 	HuType     []HuType     `protobuf:"varint,15,rep,packed,name=HuType,proto3,enum=outer.HuType" json:"HuType,omitempty"`             // 可胡牌的类型

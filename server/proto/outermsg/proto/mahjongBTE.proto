@@ -20,7 +20,7 @@ message MahjongBTEGameInfo {
     repeated int32             CardsPlayOrder   = 10; // 出牌顺序
     int64                      ActionShortId    = 11; // 当前操作者
     int64                      ActionEndAt      = 12; // 操作结束时间(毫秒)
-    repeated int32             HuSeats          = 13; // 当前胡牌的座位
+    repeated int32             HuSeats          = 13; // 当前胡牌的座位,按先后顺序加入
 
     // 以下数据只发操作者本人
     repeated ActionType ActionType              = 14; // 可操作类型，1.碰、2.杠、3.胡、4.出牌
