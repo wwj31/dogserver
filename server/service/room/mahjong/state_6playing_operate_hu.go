@@ -40,6 +40,7 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 	}
 
 	s.huSeat = append(s.huSeat, int32(seatIndex))
+	ntf.HuOrder = int32(len(s.huSeat))
 	p.hu = hu
 	p.huPeerIndex = len(s.peerRecords) - 1
 	if peer.typ == GangType1 || peer.typ == GangType3 {
