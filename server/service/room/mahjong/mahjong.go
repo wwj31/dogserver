@@ -136,6 +136,7 @@ func (m *Mahjong) Data(shortId int64) proto.Message {
 		CardsPlayHistory: m.cardsInDesktop.ToSlice(),
 		CardsPlayOrder:   m.cardsPlayOrder,
 		ActionEndAt:      m.currentActionEndAt.UnixMilli(),
+		HuSeats:          m.huSeat,
 		ActionShortId:    0,
 		ActionType:       nil,
 		HuType:           nil,
