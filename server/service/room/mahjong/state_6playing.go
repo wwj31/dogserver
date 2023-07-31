@@ -57,7 +57,7 @@ func (s *StatePlaying) Enter() {
 	s.currentAction = newAct
 	s.currentActionSeat = s.masterIndex
 	s.actionMap[s.masterIndex] = s.currentAction
-	s.Log().Infow("[Mahjong] enter state playing", "room", s.room.RoomId)
+	s.Log().Infow("[Mahjong] enter state playing", "room", s.room.RoomId, "params", *s.gameParams())
 	s.nextAction() // 庄家出牌
 }
 

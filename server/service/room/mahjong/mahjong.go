@@ -171,7 +171,7 @@ func (m *Mahjong) ex3Info(shortId int64) (info *outer.Exchange3Info) {
 
 // 封顶番数
 func (m *Mahjong) fanUpLimit() int32 {
-	if m.gameParams().FanUpLimit < 2 || m.gameParams().FanUpLimit > 5 {
+	if m.gameParams().FanUpLimit < 1 || m.gameParams().FanUpLimit > 5 {
 		return 6
 	}
 	return m.gameParams().FanUpLimit

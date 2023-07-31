@@ -34,7 +34,7 @@ message MahjongParams{
     int32 BaseScore            = 1; // 底分
     float BaseScoreTimes       = 2; // 倍数 0.1、0.5、1、2
     int32 ZiMoJia              = 3; // 自摸 0.自摸加番、1.自摸加底
-    int32 FanUpLimit           = 4; // 翻数封顶 2、3、4、5
+    int32 FanUpLimit           = 4; // 翻数封顶 1、2、3、4、5
     int32 DianGangHua          = 5; // 点杠花 0.点炮、1.自摸
     int32 HuanSanZhang         = 6; // 换三张 0.同花色换三张、1.任意换三张、2.无换三张
     bool  YaoJiuDui            = 7; // 幺九将对

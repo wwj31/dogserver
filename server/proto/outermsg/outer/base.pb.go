@@ -267,7 +267,7 @@ type MahjongParams struct {
 	BaseScore            int32   `protobuf:"varint,1,opt,name=BaseScore,proto3" json:"BaseScore,omitempty"`                        // 底分
 	BaseScoreTimes       float32 `protobuf:"fixed32,2,opt,name=BaseScoreTimes,proto3" json:"BaseScoreTimes,omitempty"`             // 倍数 0.1、0.5、1、2
 	ZiMoJia              int32   `protobuf:"varint,3,opt,name=ZiMoJia,proto3" json:"ZiMoJia,omitempty"`                            // 自摸 0.自摸加番、1.自摸加底
-	FanUpLimit           int32   `protobuf:"varint,4,opt,name=FanUpLimit,proto3" json:"FanUpLimit,omitempty"`                      // 翻数封顶 2、3、4、5
+	FanUpLimit           int32   `protobuf:"varint,4,opt,name=FanUpLimit,proto3" json:"FanUpLimit,omitempty"`                      // 翻数封顶 1、2、3、4、5
 	DianGangHua          int32   `protobuf:"varint,5,opt,name=DianGangHua,proto3" json:"DianGangHua,omitempty"`                    // 点杠花 0.点炮、1.自摸
 	HuanSanZhang         int32   `protobuf:"varint,6,opt,name=HuanSanZhang,proto3" json:"HuanSanZhang,omitempty"`                  // 换三张 0.同花色换三张、1.任意换三张、2.无换三张
 	YaoJiuDui            bool    `protobuf:"varint,7,opt,name=YaoJiuDui,proto3" json:"YaoJiuDui,omitempty"`                        // 幺九将对

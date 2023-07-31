@@ -2,6 +2,8 @@ package mahjong
 
 import (
 	"math"
+
+	"server/common"
 	"server/proto/outermsg/outer"
 )
 
@@ -96,6 +98,15 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 
 	// 算分
 	fan := huFan[p.hu] + extraFan[p.huExtra] + int(p.huGen)
+	baseScore := s.baseScore()
+	if peer.typ == drawCardType {
+		if s.gameParams().ZiMoJia == 0 { // 自摸加番
+			fan += 1
+		} else if s.gameParams().ZiMoJia == 1 { // 自摸加底
+			baseScore *= 2
+		}
+	}
+	fan = common.Min(int(s.fanUpLimit()), fan)
 	ratio := math.Pow(float64(2), float64(fan))
 	winScore := s.baseScore() * int64(ratio)
 	for _, seat := range paySeat {
@@ -107,8 +118,9 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 		p.huTotalScore += winScore
 	}
 
-	s.Log().Infow("hu win score",
-		"room", s.room.RoomId, "winner", p.ShortId, "hu", p.hu, "extra", p.huExtra, "gen", p.huGen, "score", winScore, "pay seats", paySeat)
+	s.Log().Infow("hu win score", "room", s.room.RoomId,
+		"winner", p.ShortId, "hu", p.hu, "extra", p.huExtra, "gen", p.huGen, "fan", fan, "base score", baseScore,
+		"score", winScore, "pay seats", paySeat)
 
 	ntf.HuType = hu.PB()
 	ntf.HuExtraType = p.huExtra.PB()
