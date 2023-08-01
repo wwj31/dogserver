@@ -255,6 +255,7 @@ func (s *StatePlaying) nextAction() {
 		HuType:        nextAct.hus,
 		GangCards:     nextAct.gang,
 		NewCard:       nextAct.newCard.Int32(), // 客户端自己取桌面牌最后一张
+		HandCards:     nextPlayer.handCards.ToSlice(),
 	})
 
 	s.room.Broadcast(notifyPlayerMsg, nextPlayer.ShortId)
