@@ -46,11 +46,11 @@ func (s *StateSettlement) Enter() {
 
 	// 结算分数为最终金币
 	modifyRspCount := make(map[string]struct{}) // 必须等待所有玩家金币修改成功后，才能发送结算
-	for seat, player := range s.mahjongPlayers {
-		rid := player.RID
+	for seat := 0; seat < maxNum; seat++ {
+		player := s.mahjongPlayers[seat]
 		finalScore := common.Max(0, player.score)
-		s.room.Request(actortype.PlayerId(rid), &inner.ModifyGoldReq{Gold: finalScore}).Handle(func(resp any, err error) {
-			modifyRspCount[rid] = struct{}{}
+		s.room.Request(actortype.PlayerId(player.RID), &inner.ModifyGoldReq{Gold: finalScore}).Handle(func(resp any, err error) {
+			modifyRspCount[player.RID] = struct{}{}
 			if err != nil {
 				s.Log().Errorw("modify gold failed kick-out player",
 					"room", s.room.RoomId, "player", player.ShortId, "seat", seat, "err", err)

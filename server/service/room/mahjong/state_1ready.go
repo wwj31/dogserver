@@ -24,8 +24,8 @@ func (s *StateReady) Enter() {
 	s.playerAutoReady = s.ready
 
 	readyExpireAt := time.Now().Add(ReadyExpiration)
-	for i := 0; i < len(s.mahjongPlayers); i++ {
-		player := s.mahjongPlayers[i]
+	for seat := 0; seat < maxNum; seat++ {
+		player := s.mahjongPlayers[seat]
 		if player != nil {
 			s.ready(player, false)
 		}

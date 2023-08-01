@@ -346,8 +346,11 @@ func (m *Mahjong) baseScore() int64 {
 
 func (m *Mahjong) clear() {
 	// 重置玩家数据
-	for i, p := range m.mahjongPlayers {
-		m.mahjongPlayers[i] = m.newMahjongPlayer(p.Player)
+	for i := 0; i < maxNum; i++ {
+		gamer := m.mahjongPlayers[i]
+		if gamer != nil {
+			m.mahjongPlayers[i] = m.newMahjongPlayer(gamer.Player)
+		}
 	}
 
 	m.cards = nil
