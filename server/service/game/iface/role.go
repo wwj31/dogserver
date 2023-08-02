@@ -17,7 +17,7 @@ type Role interface {
 	ShortId() int64
 
 	Gold() int64
-	SetGold(v int64)
+	AddGold(v int64)
 
 	Name() string
 	Icon() string

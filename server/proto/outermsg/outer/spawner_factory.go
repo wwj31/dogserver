@@ -15,6 +15,7 @@ func Spawner(name string, newPool ...bool) (interface{}, bool) {
 func Put(name string, x interface{}) {}
 
 var spawner = map[string]factory{
+	"outer.UpdateGoldNtf":                     func() interface{} { return &UpdateGoldNtf{} },
 	"outer.Unknown":                           func() interface{} { return &Unknown{} },
 	"outer.SetRoleInfoRsp":                    func() interface{} { return &SetRoleInfoRsp{} },
 	"outer.SetRoleInfoReq":                    func() interface{} { return &SetRoleInfoReq{} },

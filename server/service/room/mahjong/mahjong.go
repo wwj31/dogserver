@@ -228,7 +228,14 @@ func (m *Mahjong) CanEnter(p *inner.PlayerInfo) bool {
 func (m *Mahjong) CanLeave(p *inner.PlayerInfo) bool {
 	// 只有准备和结算时可以离开
 	switch m.fsm.State() {
-	case Ready, Settlement:
+	case Ready:
+		if p.Gold <= 0 {
+			return true
+		}
+
+		if int32(m.gameCount) < m.gameParams().PlayCountLimit {
+			return false
+		}
 		return true
 	}
 	return false

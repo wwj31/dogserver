@@ -1,8 +1,10 @@
 package role
 
 import (
-	"server/common"
 	"time"
+
+	"server/common"
+	"server/proto/outermsg/outer"
 
 	"github.com/wwj31/dogactor/tools"
 )
@@ -18,8 +20,11 @@ func (s *Role) Phone() string     { return s.data.Phone }
 func (s *Role) SetShortId(v int64) { s.data.ShortId = v }
 func (s *Role) ShortId() int64     { return s.data.ShortId }
 
-func (s *Role) Gold() int64     { return s.data.Gold }
-func (s *Role) SetGold(v int64) { s.data.Gold = common.Max(s.data.Gold+v, 0) }
+func (s *Role) Gold() int64 { return s.data.Gold }
+func (s *Role) AddGold(v int64) {
+	s.data.Gold = common.Max(s.data.Gold+v, 0)
+	s.Player.SendToClient(&outer.UpdateGoldNtf{Gold: s.data.Gold})
+}
 
 func (s *Role) Name() string        { return s.data.Name }
 func (s *Role) Icon() string        { return s.data.Icon }

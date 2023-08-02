@@ -3,6 +3,7 @@ package door
 import (
 	"fmt"
 	"net/http"
+
 	"server/common"
 	"server/common/actortype"
 	"server/proto/innermsg/inner"
@@ -67,7 +68,7 @@ func setMaster(ctx *gin.Context) {
 }
 
 // 玩家上下分操作
-func setGold(ctx *gin.Context) {
+func addGold(ctx *gin.Context) {
 	req := gin.H{}
 	_ = ctx.BindJSON(&req)
 	shortId := cast.ToInt64(req["shortId"])

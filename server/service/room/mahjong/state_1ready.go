@@ -88,7 +88,12 @@ func (s *StateReady) ready(player *mahjongPlayer, r bool) {
 	} else {
 		player.readyExpireAt = time.Now().Add(ReadyExpiration)
 		s.room.AddTimer(player.RID, player.readyExpireAt, func(dt time.Duration) {
-			s.ready(player, true)
+			if player.Gold < 999 {
+				s.room.PlayerLeave(player.ShortId, true)
+			} else {
+				s.ready(player, true)
+			}
+
 		})
 	}
 }

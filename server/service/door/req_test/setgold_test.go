@@ -11,11 +11,11 @@ import (
 
 func TestSetGold(t *testing.T) {
 	b, _ := json.Marshal(map[string]interface{}{
-		"shortId": 1744602,
-		"gold":    10000,
+		"shortId": 1639901,
+		"gold":    1000,
 	})
 
-	req, err := http.NewRequest(http.MethodPost, "http://localhost:9999/alliance/setgold", bytes.NewReader(b))
+	req, err := http.NewRequest(http.MethodPost, "http://localhost:9999/alliance/addgold", bytes.NewReader(b))
 	addSign(req)
 	assert.Nil(t, err)
 

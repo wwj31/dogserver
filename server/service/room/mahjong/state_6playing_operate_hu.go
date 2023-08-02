@@ -91,7 +91,9 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 
 		p.score += totalScore
 		p.gangTotalScore += totalScore
-		ntf.ShiftGangScore = totalScore
+		if s.gameParams().HuImmediatelyScore {
+			ntf.ShiftGangScore = totalScore
+		}
 
 		s.Log().Infow("gangShangPao,exchange gang score",
 			"room", s.room.RoomId, "hu", p.hu, "hu shortId", p.ShortId, "gang shortId", rivalGang.ShortId,
@@ -109,6 +111,7 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 			baseScore *= 2
 		}
 	}
+
 	fan = common.Min(int(s.fanUpLimit()), fan)
 	ratio := math.Pow(float64(2), float64(fan))
 	winScore := s.baseScore() * int64(ratio)
@@ -119,7 +122,9 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 
 		p.score += winScore
 		p.huTotalScore += winScore
-		ntf.HuLoseScores[int32(seat)] = winScore
+		if s.gameParams().HuImmediatelyScore {
+			ntf.HuLoseScores[int32(seat)] = winScore
+		}
 	}
 
 	s.Log().Infow("hu win score", "room", s.room.RoomId,

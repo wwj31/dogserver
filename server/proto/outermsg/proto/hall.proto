@@ -30,3 +30,7 @@ message ModifyPasswordReq {// tag:player
 }
 message ModifyPasswordRsp {
 }
+
+message UpdateGoldNtf {
+    int64 gold = 1; // 最新金币
+}

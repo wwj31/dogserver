@@ -2,12 +2,14 @@ package door
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/wwj31/dogactor/actor"
 	"io"
 	"net/http"
-	"server/common/log"
 	"strings"
+
+	"github.com/gin-gonic/gin"
+	"github.com/wwj31/dogactor/actor"
+
+	"server/common/log"
 )
 
 type Door struct {
@@ -47,7 +49,7 @@ func (s *Door) OnInit() {
 	alliance := s.ginEngine.Group("/alliance")
 	alliance.Use(checkToken)
 	alliance.POST("/setmaster", setMaster)
-	alliance.POST("/setgold", setGold)
+	alliance.POST("/addgold", addGold)
 
 	go func() {
 		log.Infow("gin startup ", "port", 9999)
