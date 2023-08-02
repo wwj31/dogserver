@@ -48,7 +48,7 @@ func (s *StateSettlement) Enter() {
 	modifyRspCount := make(map[string]struct{}) // 必须等待所有玩家金币修改成功后，才能发送结算
 	for seat := 0; seat < maxNum; seat++ {
 		player := s.mahjongPlayers[seat]
-		finalScore := common.Max(0, player.score)
+		finalScore := player.score
 		s.room.Request(actortype.PlayerId(player.RID), &inner.ModifyGoldReq{Gold: finalScore}).Handle(func(resp any, err error) {
 			modifyRspCount[player.RID] = struct{}{}
 			if err != nil {
@@ -140,11 +140,11 @@ func (s *StateSettlement) notHu(ntf *outer.MahjongBTESettlementNtf) {
 			// 如果猪儿有钱不够赔，
 			// 那么有多少就赔多少，赢的人均分
 			var winScore int64
-			if playerPig.score < needSubBaseScore*int64(len(winSeats)) {
-				winScore = playerPig.score / int64(len(winSeats))
-			} else {
-				winScore = needSubBaseScore
-			}
+			//if playerPig.score < needSubBaseScore*int64(len(winSeats)) {
+			//	winScore = playerPig.score / int64(len(winSeats))
+			//} else {
+			winScore = needSubBaseScore
+			//}
 			playerPig.score -= winScore * int64(len(winSeats))
 
 			// 赢钱的人加分
@@ -172,24 +172,24 @@ func (s *StateSettlement) notHu(ntf *outer.MahjongBTESettlementNtf) {
 		// 没叫的挨个赔钱
 		for _, notTingSeat := range hasNotTingSeat {
 			notTingPlayer := s.mahjongPlayers[notTingSeat]
-			if notTingPlayer.score <= 0 {
-				continue // 没钱赔个屁
-			}
+			//if notTingPlayer.score <= 0 {
+			//	continue // 没钱赔个屁
+			//}
 
 			// 如果不够赔,就按照赔付比例赔付给有叫的人
-			if notTingPlayer.score < totalWinScore {
-				for winSeat, _ := range allWinner {
-					divScore := float64(notTingPlayer.score) * (float64(allWinner[winSeat]) / float64(totalWinScore))
-					s.mahjongPlayers[winSeat].score += int64(divScore)
-				}
-				notTingPlayer.score = 0
-			} else {
-				// 够赔就直接赔
-				for seat, winScore := range allWinner {
-					s.mahjongPlayers[seat].score += winScore
-				}
-				notTingPlayer.score -= totalWinScore
+			//if notTingPlayer.score < totalWinScore {
+			//	for winSeat, _ := range allWinner {
+			//		divScore := float64(notTingPlayer.score) * (float64(allWinner[winSeat]) / float64(totalWinScore))
+			//		s.mahjongPlayers[winSeat].score += int64(divScore)
+			//	}
+			//	notTingPlayer.score = 0
+			//} else {
+			// 够赔就直接赔
+			for seat, winScore := range allWinner {
+				s.mahjongPlayers[seat].score += winScore
 			}
+			notTingPlayer.score -= totalWinScore
+			//}
 		}
 	}
 

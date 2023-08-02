@@ -3,7 +3,6 @@ package role
 import (
 	"time"
 
-	"server/common"
 	"server/proto/outermsg/outer"
 
 	"github.com/wwj31/dogactor/tools"
@@ -22,7 +21,7 @@ func (s *Role) ShortId() int64     { return s.data.ShortId }
 
 func (s *Role) Gold() int64 { return s.data.Gold }
 func (s *Role) AddGold(v int64) {
-	s.data.Gold = common.Max(s.data.Gold+v, 0)
+	s.data.Gold = s.data.Gold + v
 	s.Player.SendToClient(&outer.UpdateGoldNtf{Gold: s.data.Gold})
 }
 
