@@ -91,12 +91,14 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 
 		p.score += totalScore
 		p.gangTotalScore += totalScore
+		ntf.ShiftGangScore = totalScore
 
 		s.Log().Infow("gangShangPao,exchange gang score",
 			"room", s.room.RoomId, "hu", p.hu, "hu shortId", p.ShortId, "gang shortId", rivalGang.ShortId,
 			"score", totalScore, "seats", rivalGangInfo.loserSeats)
 	}
 
+	ntf.HuLoseScores = make(map[int32]int64)
 	// 算分
 	fan := huFan[p.hu] + extraFan[p.huExtra] + int(p.huGen)
 	baseScore := s.baseScore()
@@ -117,6 +119,7 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 
 		p.score += winScore
 		p.huTotalScore += winScore
+		ntf.HuLoseScores[int32(seat)] = winScore
 	}
 
 	s.Log().Infow("hu win score", "room", s.room.RoomId,
