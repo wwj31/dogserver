@@ -182,16 +182,33 @@ message MahjongBTEOperaNtf {
     int64  OpShortId                   = 1; // 操作者
     ActionType OpType                  = 2; // 操作类型，1.碰、2.杠、3.胡、4.出牌
 
-    // 胡牌操作数据
-    HuType            HuType           = 3; // 胡牌类型
-    ExtraType         HuExtraType      = 4; // 胡牌额外加番
-    int32             HuOrder          = 5; // 当前是第几个胡牌的
-    MahjongBTEHuResultNtf HuResult     = 6; // 胡结果，触发一炮多响，该字段为null
+    // 胡操作结果数据
+    MahjongBTEHuResultNtf HuResult     = 3; // 胡结果，触发一炮多响，该字段为null
 
-    // 杠操作数据
-    MahjongBTEGangResultNtf GangResult = 7; // 杠结果，触发可抢杠，该字段为null
-    int32                   GangType   = 8; // 1.明杠、2.暗杠
-    int32                   Card       = 9; // 碰、杠、出牌的牌
+    // 杠操作结果数据
+    MahjongBTEGangResultNtf GangResult = 4; // 杠结果，触发可抢杠，该字段为null
+    int32                   GangType   = 5; // 1.明杠、2.暗杠
+    int32                   Card       = 6; // 碰、杠、出牌的牌
+}
+
+// 胡牌信息
+message MahjongBTEHuInfo {
+    int32             Seat             = 1; // 座位
+    HuType            HuType           = 2; // 胡牌类型
+    ExtraType         HuExtraType      = 3; // 胡牌额外加番
+    int32             HuOrder          = 4; // 当前是第几个胡牌的
+}
+
+// 胡牌算分结果通知
+// 触发一炮多响，该数据跟随最后一个胡牌的人下发,如果最后一个可胡牌的人选择过,会单独通知此消息
+message MahjongBTEHuResultNtf {
+    repeated MahjongBTEHuInfo Winner    = 1; // 胡牌的人
+    int32            Card               = 2; // 胡的牌
+    bool             ZiMo               = 3; // 是否是自摸
+    map<int32,int64> LoseScores         = 4; // 赔分的人，map<位置,赔的分>(实时胡牌)
+    repeated int64   CurrentScores      = 5; // 东南西北 四个方位最新的分数(实时胡牌)
+    int64            ShiftGangScore     = 6; // 杠上炮，呼叫转移的分
+    int32            ShiftGangScoreSeat = 7; // 杠上炮，呼叫转移的分分转移给谁
 }
 
 // 杠的结果通知
@@ -205,15 +222,6 @@ message MahjongBTEGangResultNtf {
     repeated int64 CurrentScores = 5; // 东南西北 四个方位最新得分数
 }
 
-// 胡牌算分结果通知
-// 触发一炮多响，该数据跟随最后一个胡牌的人下发
-message MahjongBTEHuResultNtf {
-    map<int32,int64> WinScores       = 1; // map<胡牌的人,赢得的分>
-    int32            Card            = 2; // 胡的牌
-    map<int32,int64> LoseScores      = 3; // 赔分的人，map<位置,赔的分>
-    repeated int64   CurrentScores   = 4; // 东南西北 四个方位最新的分数
-    map<int32,int64> ShiftGangScore  = 5; // 杠上炮，呼叫转移的分,map<分转移给谁,转了多少分>
-}
 
 // 结算玩家数据
 message MahjongBTESettlementPlayerData{

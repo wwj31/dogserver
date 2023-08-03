@@ -45,6 +45,7 @@ message MahjongParams{
     bool  JiaXinWu             = 12; // 夹心五
     bool  GangImmediatelyScore = 13; // 杠分实时结算
     bool  HuImmediatelyScore   = 14; // 胡牌实时结算
+    bool  AllowScoreSmallZero  = 15; // 是否允许负分
 }
 
 // 斗地主

@@ -31,7 +31,8 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 	}
 
 	if hu == HuInvalid {
-		s.Log().Errorw("operate hu invalid", "room", s.room.RoomId, "seat", seatIndex, "player", p.ShortId, "hand", p.handCards)
+		s.Log().Errorw("operate hu invalid",
+			"room", s.room.RoomId, "seat", seatIndex, "player", p.ShortId, "hand", p.handCards)
 		return false, outer.ERROR_MAHJONG_HU_INVALID
 	}
 
@@ -79,11 +80,17 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 	if s.husWasAllDo() {
 		s.huSettlement(ntf)
 	}
-
-	ntf.HuType = hu.PB()
-	ntf.HuExtraType = p.huExtra.PB()
-	ntf.HuOrder = int32(len(s.huSeat))
 	return true, outer.ERROR_OK
+}
+
+// 是否所有能胡的人都胡了
+func (s *StatePlaying) huIndex(seat int) int32 {
+	for idx, huSeat := range s.huSeat {
+		if seat == int(huSeat) {
+			return int32(idx + 1)
+		}
+	}
+	return -1
 }
 
 // 是否所有能胡的人都胡了
@@ -112,33 +119,143 @@ func (s *StatePlaying) husWasAllPass() bool {
 
 // 胡牌小结算，等能胡的所有人都胡了，才执行结算操作
 func (s *StatePlaying) huSettlement(ntf *outer.MahjongBTEOperaNtf) {
-	// 呼叫转移
-	if gangShangPao {
-		gangPeerIndex := len(s.peerRecords) - 3
-		peerRecord := s.peerRecords[gangPeerIndex]          // 杠的那次记录
-		rivalGang := s.mahjongPlayers[peerRecord.seat]      // 杠的人
-		rivalGangInfo := rivalGang.gangInfos[gangPeerIndex] // 杠信息
-		totalScore := rivalGangInfo.totalWinScore           // 本次转移的总分
+	huResultNtf := &outer.MahjongBTEHuResultNtf{
+		LoseScores: make(map[int32]int64),
+		Card:       s.peerRecords[len(s.peerRecords)-1].card.Int32(),
+	}
+	ntf.HuResult = huResultNtf
 
-		rivalGang.score -= totalScore
-		rivalGang.gangTotalScore -= totalScore
-
-		p.score += totalScore
-		p.gangTotalScore += totalScore
-		if s.gameParams().HuImmediatelyScore {
-			ntf.ShiftGangScore = totalScore
+	loseScores := map[int32]int64{}
+	defer func() {
+		for _, p := range s.mahjongPlayers {
+			huResultNtf.CurrentScores = append(huResultNtf.CurrentScores, s.immScore(p.ShortId))
 		}
 
-		s.Log().Infow("gangShangPao,exchange gang score",
-			"room", s.room.RoomId, "hu", p.hu, "hu shortId", p.ShortId, "gang shortId", rivalGang.ShortId,
-			"score", totalScore, "seats", rivalGangInfo.loserSeats)
+		if s.gameParams().HuImmediatelyScore {
+			huResultNtf.LoseScores = loseScores
+		}
+	}()
+
+	// 呼叫转移,只在1对1的时候才生效,一炮多响，不会触发呼叫转移
+	if len(s.Hus) == 1 {
+		var huSeat int
+		for seat, _ := range s.Hus {
+			huSeat = seat
+		}
+
+		p := s.mahjongPlayers[huSeat]
+		if p.huExtra == GangShangPao {
+			gangPeerIndex := len(s.peerRecords) - 3
+			peerRecord := s.peerRecords[gangPeerIndex]          // 杠的那次记录
+			rivalGang := s.mahjongPlayers[peerRecord.seat]      // 杠的人
+			rivalGangInfo := rivalGang.gangInfos[gangPeerIndex] // 杠信息
+			totalGangScore := rivalGangInfo.totalWinScore       // 本次转移的总分
+
+			rivalGang.score -= totalGangScore
+			rivalGang.gangTotalScore -= totalGangScore
+
+			p.score += totalGangScore
+			p.gangTotalScore += totalGangScore
+
+			// 如果需要实时结算，就把结算分放入通知
+			if s.gameParams().HuImmediatelyScore {
+				huResultNtf.ShiftGangScore = totalGangScore
+				huResultNtf.ShiftGangScoreSeat = int32(peerRecord.seat)
+			}
+
+			s.Log().Infow("gangShangPao,exchange gang score",
+				"room", s.room.RoomId, "hu", p.hu, "hu shortId", p.ShortId, "gang shortId", rivalGang.ShortId,
+				"score", totalGangScore, "rival gang loser seats", rivalGangInfo.loserSeats)
+		}
+
+		huPeer := s.peerRecords[p.huPeerIndex]
+		if huPeer.typ == drawCardType {
+			winScore := s.huScore(p, true)
+
+			// 其余没胡的都要赔钱
+			for seat, other := range s.mahjongPlayers {
+				if other.hu != HuInvalid || other.ShortId == p.ShortId {
+					continue
+				}
+				s.AWinB(huSeat, seat, winScore)
+				loseScores[int32(seat)] = winScore
+			}
+
+			// 组装通知消息数据
+			huResultNtf.ZiMo = true
+			huResultNtf.Winner = append(huResultNtf.Winner, &outer.MahjongBTEHuInfo{
+				Seat:        int32(huSeat),
+				HuType:      p.hu.PB(),
+				HuExtraType: p.huExtra.PB(),
+				HuOrder:     s.huIndex(huSeat),
+			})
+
+			return
+		}
 	}
 
-	ntf.HuLoseScores = make(map[int32]int64)
-	// 算分
+	lastPeerIndex := len(s.peerRecords) - 1
+	peer := s.peerRecords[lastPeerIndex]
+	loserSeat := peer.seat
+	loser := s.mahjongPlayers[loserSeat]
+	// 一炮多响，记录点炮的人
+	if len(s.Hus) > 1 {
+		s.mutilHuByIndex = loserSeat
+	}
+
+	var (
+		winnerScore   = map[int]int64{}
+		totalWinScore int64
+	)
+
+	// 先统计胡牌的所有人，总共要赢多少分
+	for huSeat, isHu := range s.Hus {
+		if !isHu {
+			continue // 可以胡，但是选择过操作，会走到这里
+		}
+
+		huPlayer := s.mahjongPlayers[huSeat]
+		winScore := s.huScore(huPlayer, false)
+		winnerScore[huSeat] = winScore
+		totalWinScore += winScore
+	}
+
+	// 结算每个胡牌玩家
+	for huSeat, winScore := range winnerScore {
+		// 不允许负分，并且玩家身上的钱不够赔付总额，就把玩家身上的总分，按赔付比例分别赔付给每个胡牌人
+		// 如果允许负分,或者玩家身上的分足够赔付每个胡牌的人,就直接扣
+		if !s.gameParams().AllowScoreSmallZero && loser.score < totalWinScore {
+			ratio := float64(winScore) / float64(totalWinScore)
+			winScore = int64(float64(loser.score) * ratio)
+		}
+
+		s.AWinB(huSeat, loserSeat, winScore)
+		loseScores[int32(loserSeat)] += winScore
+
+		huResultNtf.Winner = append(huResultNtf.Winner, &outer.MahjongBTEHuInfo{
+			Seat:        int32(huSeat),
+			HuType:      s.mahjongPlayers[huSeat].hu.PB(),
+			HuExtraType: s.mahjongPlayers[huSeat].huExtra.PB(),
+			HuOrder:     s.huIndex(huSeat),
+		})
+	}
+
+	//s.Log().Infow("hu win score", "room", s.room.RoomId,
+	//	"winner", p.ShortId, "hu", p.hu, "extra", p.huExtra, "gen", p.huGen, "fan", fan, "base score", baseScore,
+	//	"score", winScore, "pay seats", paySeat)
+}
+
+func (s *StatePlaying) AWinB(winnerSeat, loserSeat int, score int64) {
+	winner := s.mahjongPlayers[winnerSeat]
+	loser := s.mahjongPlayers[loserSeat]
+	winner.score += score
+	loser.score -= score
+}
+
+func (s *StatePlaying) huScore(p *mahjongPlayer, ziMo bool) int64 {
 	fan := huFan[p.hu] + extraFan[p.huExtra] + int(p.huGen)
 	baseScore := s.baseScore()
-	if peer.typ == drawCardType {
+	if ziMo {
 		if s.gameParams().ZiMoJia == 0 { // 自摸加番
 			fan += 1
 		} else if s.gameParams().ZiMoJia == 1 { // 自摸加底
@@ -149,21 +266,7 @@ func (s *StatePlaying) huSettlement(ntf *outer.MahjongBTEOperaNtf) {
 	fan = common.Min(int(s.fanUpLimit()), fan)
 	ratio := math.Pow(float64(2), float64(fan))
 	winScore := s.baseScore() * int64(ratio)
-	for _, seat := range paySeat {
-		rival := s.mahjongPlayers[seat]
-		rival.score -= winScore
-		rival.huTotalScore -= winScore
-
-		p.score += winScore
-		p.huTotalScore += winScore
-		if s.gameParams().HuImmediatelyScore {
-			ntf.HuLoseScores[int32(seat)] = winScore
-		}
-	}
-
-	s.Log().Infow("hu win score", "room", s.room.RoomId,
-		"winner", p.ShortId, "hu", p.hu, "extra", p.huExtra, "gen", p.huGen, "fan", fan, "base score", baseScore,
-		"score", winScore, "pay seats", paySeat)
+	return winScore
 }
 
 // 分析是否有额外加番

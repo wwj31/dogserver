@@ -26,6 +26,8 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 	peer := s.peerRecords[len(s.peerRecords)-1]
 	switch op {
 	case outer.ActionType_ActionPass:
+		s.Log().Infow("pass", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId, "hand", player.handCards)
+
 		// 检查抢杠胡的情况，所有人都过了，需要执行杠的行为
 		if s.husWasAllPass() {
 			lastPeer := s.peerRecords[len(s.peerRecords)-1]
@@ -39,8 +41,6 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 		if s.husWasAllDo() {
 			s.huSettlement(nil) // 传nil，表示ntf单独推送
 		}
-
-		s.Log().Infow("pass", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId, "hand", player.handCards)
 
 	case outer.ActionType_ActionPong:
 		ok, err = s.operatePong(player, seatIndex)
