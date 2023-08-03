@@ -50,7 +50,7 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 			}
 
 			if hu := other.handCards.Insert(card).IsHu(other.lightGang, other.darkGang, other.pong, card, s.gameParams()); hu != HuInvalid {
-				newAction := action{}
+				newAction := action{seat: seat}
 				newAction.acts = append(newAction.acts, outer.ActionType_ActionHu, outer.ActionType_ActionPass)
 				newAction.hus = append(newAction.hus, hu.PB())
 				s.actionMap[seat] = &newAction // 抢杠胡操作

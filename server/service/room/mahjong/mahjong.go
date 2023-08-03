@@ -19,9 +19,9 @@ const (
 	ReadyExpiration          = 20 * time.Second // 准备超时时间
 	DecideMasterShowDuration = 3 * time.Second  // 定庄广播后的动画播放时间
 	DealShowDuration         = 2 * time.Second  // 发牌广播后的动画播放时间
-	Exchange3Expiration      = 5 * time.Second  // 换三张持续时间
+	Exchange3Expiration      = 2 * time.Second  // 换三张持续时间
 	Exchange3ShowDuration    = 1 * time.Second  // 换三张结束后的动画播放时间
-	DecideIgnoreExpiration   = 5 * time.Second  // 定缺持续时间
+	DecideIgnoreExpiration   = 2 * time.Second  // 定缺持续时间
 	DecideIgnoreDuration     = 1 * time.Second  // 定缺结束后的动画播放时间
 	pongGangHuGuoExpiration  = 2 * time.Second  // 碰、杠、胡、过持续时间
 	playCardExpiration       = 2 * time.Second  // 出牌行为持续时间
@@ -107,7 +107,7 @@ type (
 		cardsPlayOrder []int32                // 出牌座位顺序
 		mahjongPlayers [maxNum]*mahjongPlayer // 参与游戏的玩家
 		peerRecords    []peerRecords          // 需要关注的操作记录(出牌、摸牌、杠)按触发顺序添加
-		actionMap      map[int]*action        // 行动者们
+		actionMap      map[int]*action        // 有行为的人
 
 		currentAction      []*action // 当前行动者
 		currentActionEndAt time.Time // 当前行动者结束时间
@@ -144,15 +144,16 @@ func (m *Mahjong) Data(shortId int64) proto.Message {
 		NewCard:          0,
 	}
 
-	var (
-		currentAction *action
-	)
-
+	var currentAction *action
 	for _, a := range m.currentAction {
 		if m.mahjongPlayers[a.seat].ShortId == shortId {
 			currentAction = a
 			break
 		}
+	}
+
+	if currentAction == nil {
+		return info
 	}
 
 	// 只有当行动者是出牌状态，才广播行动者

@@ -43,7 +43,7 @@ func (s *StatePlaying) operatePong(p *mahjongPlayer, seatIndex int) (bool, outer
 		return false, outer.ERROR_MSG_REQ_PARAM_INVALID
 	}
 
-	p.pong[peer.card.Int32()] = s.mahjongPlayers[peer.seat].ShortId                             // 加入自己的碰牌组
-	s.actionMap[seatIndex] = &action{acts: []outer.ActionType{outer.ActionType_ActionPlayCard}} // 碰后新增出牌行为
+	p.pong[peer.card.Int32()] = s.mahjongPlayers[peer.seat].ShortId                                              // 加入自己的碰牌组
+	s.actionMap[seatIndex] = &action{seat: seatIndex, acts: []outer.ActionType{outer.ActionType_ActionPlayCard}} // 碰后新增出牌行为
 	return true, outer.ERROR_OK
 }

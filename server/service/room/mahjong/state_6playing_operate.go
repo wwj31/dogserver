@@ -73,6 +73,10 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 		return
 	}
 
+	// 操作成功，删除行为
+	delete(s.actionMap, seatIndex)
+	s.removeCurrentAction(seatIndex)
+
 	// 除了过以外的操作都需要广播通知
 	if op != outer.ActionType_ActionPass {
 		s.room.Broadcast(ntf)

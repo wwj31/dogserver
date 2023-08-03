@@ -25,7 +25,7 @@ func (s *StatePlaying) drawCard(seatIndex int) {
 	s.appendPeerCard(drawCardType, newCard, seatIndex, nil)
 
 	// 摸牌后必须出牌，所以先加入出牌操作
-	newAction := &action{}
+	newAction := &action{seat: seatIndex}
 	newAction.acts = []outer.ActionType{outer.ActionType_ActionPlayCard}
 	newAction.newCard = newCard
 
