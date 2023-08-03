@@ -11,7 +11,8 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 		return false, outer.ERROR_MSG_REQ_PARAM_INVALID
 	}
 
-	if !s.currentAction.isValidAction(op) {
+	currentAction := s.getCurrentAction(seatIndex)
+	if currentAction == nil || !currentAction.isValidAction(op) {
 		return false, outer.ERROR_MAHJONG_ACTION_PLAYER_NOT_OPERA
 	}
 
@@ -26,7 +27,7 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 	switch op {
 	case outer.ActionType_ActionPass:
 		// 检查抢杠胡的情况，所有人都过了，需要执行杠的行为
-		if len(s.actionMap) == 0 && len(s.peerRecords) > 0 {
+		if s.husWasAllPass() {
 			lastPeer := s.peerRecords[len(s.peerRecords)-1]
 			if lastPeer.typ >= GangType1 && lastPeer.afterQiangPass != nil {
 				lastPeer.afterQiangPass(nil)
@@ -34,6 +35,11 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 			}
 		}
 		ok = true
+		delete(s.Hus, seatIndex)
+		if s.husWasAllDo() {
+			s.huSettlement(nil) // 传nil，表示ntf单独推送
+		}
+
 		s.Log().Infow("pass", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId, "hand", player.handCards)
 
 	case outer.ActionType_ActionPong:
@@ -74,6 +80,7 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 
 	// 没有可行动的人，就摸牌
 	if len(s.actionMap) == 0 {
+		s.Hus = make(map[int]bool) // 每次摸牌清一次胡牌状态数据
 		s.drawCard(nextDrawShortIndex)
 	}
 	s.nextAction() // 碰、杠、胡、过 后的下个行为

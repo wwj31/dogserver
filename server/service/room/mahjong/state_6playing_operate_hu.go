@@ -28,7 +28,6 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 	case playCardType, GangType1, GangType3: // 点炮,抢杠
 		hu = p.handCards.Insert(peer.card).IsHu(p.lightGang, p.darkGang, p.pong, peer.card, s.gameParams())
 		paySeat = append(paySeat, peer.seat) // 点炮的人陪钱
-
 	}
 
 	if hu == HuInvalid {
@@ -42,7 +41,6 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 	}
 
 	s.huSeat = append(s.huSeat, int32(seatIndex))
-	ntf.HuOrder = int32(len(s.huSeat))
 	p.hu = hu
 	p.huPeerIndex = len(s.peerRecords) - 1
 	if peer.typ == GangType1 || peer.typ == GangType3 {
@@ -78,8 +76,44 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 		}
 	}
 
+	if s.husWasAllDo() {
+		s.huSettlement(ntf)
+	}
+
+	ntf.HuType = hu.PB()
+	ntf.HuExtraType = p.huExtra.PB()
+	ntf.HuOrder = int32(len(s.huSeat))
+	return true, outer.ERROR_OK
+}
+
+// 是否所有能胡的人都胡了
+func (s *StatePlaying) husWasAllDo() bool {
+	if len(s.Hus) == 0 {
+		return false
+	}
+
+	for _, isHu := range s.Hus {
+		if !isHu {
+			return false
+		}
+	}
+	return true
+}
+
+// 是否所有能胡的人都过了
+func (s *StatePlaying) husWasAllPass() bool {
+	for _, isHu := range s.Hus {
+		if isHu {
+			return false
+		}
+	}
+	return true
+}
+
+// 胡牌小结算，等能胡的所有人都胡了，才执行结算操作
+func (s *StatePlaying) huSettlement(ntf *outer.MahjongBTEOperaNtf) {
 	// 呼叫转移
-	if p.huExtra == GangShangPao {
+	if gangShangPao {
 		gangPeerIndex := len(s.peerRecords) - 3
 		peerRecord := s.peerRecords[gangPeerIndex]          // 杠的那次记录
 		rivalGang := s.mahjongPlayers[peerRecord.seat]      // 杠的人
@@ -130,10 +164,6 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 	s.Log().Infow("hu win score", "room", s.room.RoomId,
 		"winner", p.ShortId, "hu", p.hu, "extra", p.huExtra, "gen", p.huGen, "fan", fan, "base score", baseScore,
 		"score", winScore, "pay seats", paySeat)
-
-	ntf.HuType = hu.PB()
-	ntf.HuExtraType = p.huExtra.PB()
-	return true, outer.ERROR_OK
 }
 
 // 分析是否有额外加番

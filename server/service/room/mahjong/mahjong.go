@@ -82,6 +82,7 @@ type (
 	}
 
 	action struct {
+		seat    int
 		acts    []outer.ActionType // 当前行动者能执行的行为
 		hus     []outer.HuType     // 当前行动者能胡的牌
 		gang    []int32            // 当前行动者能杠的牌
@@ -108,8 +109,7 @@ type (
 		peerRecords    []peerRecords          // 需要关注的操作记录(出牌、摸牌、杠)按触发顺序添加
 		actionMap      map[int]*action        // 行动者们
 
-		currentAction      *action   // 当前行动者
-		currentActionSeat  int       // 当前行动者座位
+		currentAction      []*action // 当前行动者
 		currentActionEndAt time.Time // 当前行动者结束时间
 	}
 )
@@ -144,19 +144,30 @@ func (m *Mahjong) Data(shortId int64) proto.Message {
 		NewCard:          0,
 	}
 
+	var (
+		currentAction *action
+	)
+
+	for _, a := range m.currentAction {
+		if m.mahjongPlayers[a.seat].ShortId == shortId {
+			currentAction = a
+			break
+		}
+	}
+
 	// 只有当行动者是出牌状态，才广播行动者
-	if m.currentAction != nil && m.currentAction.isValidAction(outer.ActionType_ActionPlayCard) {
-		info.ActionShortId = m.mahjongPlayers[m.currentActionSeat].ShortId
+	if currentAction != nil && currentAction.isValidAction(outer.ActionType_ActionPlayCard) {
+		info.ActionShortId = m.mahjongPlayers[currentAction.seat].ShortId
 	}
 
 	// 判断是当前行动者本人，就发行动数据
-	if m.currentActionSeat > 0 {
-		p := m.mahjongPlayers[m.currentActionSeat]
+	if currentAction.seat > 0 {
+		p := m.mahjongPlayers[currentAction.seat]
 		if p.ShortId == shortId {
-			info.ActionType = m.currentAction.acts
-			info.HuType = m.currentAction.hus
-			info.GangCards = m.currentAction.gang
-			info.NewCard = m.currentAction.newCard.Int32()
+			info.ActionType = currentAction.acts
+			info.HuType = currentAction.hus
+			info.GangCards = currentAction.gang
+			info.NewCard = currentAction.newCard.Int32()
 		}
 	}
 
@@ -364,7 +375,6 @@ func (m *Mahjong) clear() {
 	m.cardsInDesktop = make(Cards, 0, 8)
 	m.cardsPlayOrder = make([]int32, 0, 8)
 	m.currentAction = nil
-	m.currentActionSeat = -1
 	m.actionMap = make(map[int]*action)
 	m.currentActionEndAt = time.Time{}
 }

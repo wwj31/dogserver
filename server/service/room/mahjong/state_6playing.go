@@ -1,7 +1,6 @@
 package mahjong
 
 import (
-	"math/rand"
 	"reflect"
 	"time"
 
@@ -34,6 +33,7 @@ type (
 type StatePlaying struct {
 	*Mahjong
 	actionTimerId string
+	Hus           map[int]bool // 表示可胡，但还没胡的玩家,过操作会从中删除
 }
 
 func (s *StatePlaying) State() int {
@@ -45,6 +45,7 @@ func (s *StatePlaying) Enter() {
 	s.actionMap = make(map[int]*action)
 	s.actionTimerId = ""
 	s.currentStateEnterAt = time.Time{}
+	s.Hus = make(map[int]bool)
 
 	// 判断能否胡牌
 	newAct := &action{acts: []outer.ActionType{outer.ActionType_ActionPlayCard}}
@@ -54,9 +55,8 @@ func (s *StatePlaying) Enter() {
 		newAct.hus = append(newAct.hus, outer.HuType(hu))
 		newAct.acts = append(newAct.acts, outer.ActionType_ActionHu)
 	}
-	s.currentAction = newAct
-	s.currentActionSeat = s.masterIndex
-	s.actionMap[s.masterIndex] = s.currentAction
+	s.currentAction = append(s.currentAction, newAct)
+	s.actionMap[s.masterIndex] = newAct
 	s.Log().Infow("[Mahjong] enter state playing", "room", s.room.RoomId, "params", *s.gameParams())
 	s.nextAction() // 庄家出牌
 }
@@ -66,13 +66,23 @@ func (s *StatePlaying) Leave() {
 	s.Log().Infow("[Mahjong] leave state playing", "room", s.room.RoomId)
 }
 
+func (s *StatePlaying) getCurrentAction(seat int) *action {
+	for _, a := range s.currentAction {
+		if a.seat == seat {
+			return a
+		}
+	}
+	return nil
+}
+
 func (s *StatePlaying) Handle(shortId int64, v any) (result any) {
 	player, seatIndex, err := s.getPlayerAndSeatE(shortId)
 	if err != outer.ERROR_OK {
 		return err
 	}
 
-	if s.currentActionSeat != seatIndex {
+	currentAction := s.getCurrentAction(seatIndex)
+	if currentAction == nil {
 		s.Log().Warnw("illegal operation", "current seat", s.currentAction, "seat", seatIndex, "player", player.ShortId)
 		return outer.ERROR_MAHJONG_ACTION_PLAYER_NOT_MATCH
 	}
@@ -116,61 +126,64 @@ func (s *StatePlaying) cancelActionTimer() {
 }
 
 // 行动倒计时
-func (s *StatePlaying) actionTimer(expireAt time.Time, seat int) {
+func (s *StatePlaying) actionTimer(expireAt time.Time, seats ...int) {
 	s.cancelActionTimer()
-	player := s.mahjongPlayers[seat]
-	act := s.actionMap[seat]
 	s.actionTimerId = s.room.AddTimer(tools.XUID(), expireAt, func(dt time.Duration) {
 		var (
 			defaultOperaType outer.ActionType
 			card             Card
 		)
 
-		// 超时就随机打一张牌
-		if act.isValidAction(outer.ActionType_ActionPlayCard) {
-			var defaultPlayCard Card
-			// 检查是否有定缺的牌，优先打定缺的牌,没有定缺的牌，就选手牌
-			ignoreCards := player.handCards.colorCards(player.ignoreColor)
-			if ignoreCards.Len() != 0 {
-				defaultPlayCard = ignoreCards.Random()
-			} else {
-				defaultPlayCard = player.handCards.Random()
-			}
+		for _, seat := range seats {
+			player := s.mahjongPlayers[seat]
+			act := s.actionMap[seat]
 
-			// 把超时后随机选的牌打出去
-			playIndex := player.handCards.CardIndex(defaultPlayCard)
-			if playIndex == -1 {
-				s.Log().Errorw("action timeout, playIndex == -1",
-					"room", s.room.RoomId, "player", player.ShortId, "act", act,
-					"hand", player.handCards, "play", defaultPlayCard)
+			// 超时就随机打一张牌
+			if act.isValidAction(outer.ActionType_ActionPlayCard) {
+				var defaultPlayCard Card
+				// 检查是否有定缺的牌，优先打定缺的牌,没有定缺的牌，就选手牌
+				ignoreCards := player.handCards.colorCards(player.ignoreColor)
+				if ignoreCards.Len() != 0 {
+					defaultPlayCard = ignoreCards.Random()
+				} else {
+					defaultPlayCard = player.handCards.Random()
+				}
+
+				// 把超时后随机选的牌打出去
+				playIndex := player.handCards.CardIndex(defaultPlayCard)
+				if playIndex == -1 {
+					s.Log().Errorw("action timeout, playIndex == -1",
+						"room", s.room.RoomId, "player", player.ShortId, "act", act,
+						"hand", player.handCards, "play", defaultPlayCard)
+					return
+				}
+
+				s.playCard(playIndex, seat)
 				return
 			}
 
-			s.playCard(playIndex, seat)
-			return
-		}
+			// (碰杠胡过)行动者，优先打胡->杠->碰->打牌
+			if act.isValidAction(outer.ActionType_ActionHu) {
+				defaultOperaType = outer.ActionType_ActionHu
+			} else if act.isValidAction(outer.ActionType_ActionGang) {
+				defaultOperaType = outer.ActionType_ActionGang
+				card = Card(act.gang[0])
+			} else if act.isValidAction(outer.ActionType_ActionPong) {
+				defaultOperaType = outer.ActionType_ActionPong
+				card = s.cardsInDesktop[s.cardsInDesktop.Len()-1]
+			} else {
+				s.Log().Warnw("action exception",
+					"room", s.room.RoomId, "seat", seat, "player", player.ShortId, "act", act)
+				return
+			}
 
-		// (碰杠胡过)行动者，优先打胡->杠->碰->打牌
-		if act.isValidAction(outer.ActionType_ActionHu) {
-			defaultOperaType = outer.ActionType_ActionHu
-		} else if act.isValidAction(outer.ActionType_ActionGang) {
-			defaultOperaType = outer.ActionType_ActionGang
-			card = Card(act.gang[0])
-		} else if act.isValidAction(outer.ActionType_ActionPong) {
-			defaultOperaType = outer.ActionType_ActionPong
-			card = s.cardsInDesktop[s.cardsInDesktop.Len()-1]
-		} else {
-			s.Log().Warnw("action exception",
-				"room", s.room.RoomId, "seat", seat, "player", player.ShortId, "act", act)
-			return
-		}
+			var hu HuType
+			if len(act.hus) > 0 {
+				hu = HuType(act.hus[0])
+			}
 
-		var hu HuType
-		if len(act.hus) > 0 {
-			hu = HuType(act.hus[0])
+			s.operate(player, seat, defaultOperaType, hu, card)
 		}
-
-		s.operate(player, seat, defaultOperaType, hu, card)
 	})
 }
 
@@ -198,67 +211,73 @@ func (s *StatePlaying) nextAction() {
 	}
 
 	var (
-		nextSeat    int
-		canHu       []int
-		actionEndAt time.Time
+		nextActionSeats    []int
+		nextActionShortIds []int64
+		canHu              []int
+		actionEndAt        time.Time
+		defaultSeat        int
 	)
 
 	// 先把能胡的人找出来
 	for seat, act := range s.actionMap {
 		if act.isValidAction(outer.ActionType_ActionHu) {
 			canHu = append(canHu, seat)
+			s.Hus[seat] = false
 		}
-		nextSeat = seat // 一边找就一边设置下个行动者，如果找不到胡的人，就直接用他,，默认就是碰杠
+		defaultSeat = seat // 一边找就一边设置下个行动者，如果找不到胡的人，就直接用他,，默认就是碰杠
 	}
 
-	// 有人能胡，就随机找一个，让他先行动
+	// 有多个人能胡，就触发一炮多响
 	if len(canHu) > 0 {
-		nextSeat = canHu[rand.Intn(len(canHu))]
+		nextActionSeats = canHu
+	} else {
+		nextActionSeats = append(nextActionSeats, defaultSeat)
 	}
 
-	nextPlayer := s.mahjongPlayers[nextSeat]
-	nextAct := s.actionMap[nextSeat]
-
+	var expireDuration time.Duration
 	// 广播协议
 	notifyPlayerMsg := &outer.MahjongBTETurnNtf{
 		TotalCards: int32(s.cards.Len()),
 	}
 
-	var expireDuration time.Duration
-	if nextAct.isValidAction(outer.ActionType_ActionPlayCard) {
-		expireDuration = playCardExpiration
-		// 打牌操作，需要广播出牌人以及出牌行为
-		notifyPlayerMsg.ActionShortId = nextPlayer.ShortId
-		notifyPlayerMsg.ActionType = []outer.ActionType{outer.ActionType_ActionPlayCard}
-	} else {
-		expireDuration = pongGangHuGuoExpiration
+	for _, actionSeat := range nextActionSeats {
+		nextPlayer := s.mahjongPlayers[actionSeat]
+		nextAct := s.actionMap[actionSeat]
+		nextActionShortIds = append(nextActionShortIds, nextPlayer.ShortId)
+
+		if nextAct.isValidAction(outer.ActionType_ActionPlayCard) {
+			expireDuration = playCardExpiration
+			// 打牌操作，需要广播出牌人以及出牌行为
+			notifyPlayerMsg.ActionShortId = nextPlayer.ShortId
+			notifyPlayerMsg.ActionType = []outer.ActionType{outer.ActionType_ActionPlayCard}
+		} else {
+			expireDuration = pongGangHuGuoExpiration
+		}
+
+		s.currentAction = append(s.currentAction, nextAct)
+		delete(s.actionMap, actionSeat) // 从行动者组中删除
+
+		// 通知行动者
+		s.room.SendToPlayer(nextPlayer.ShortId, &outer.MahjongBTETurnNtf{
+			TotalCards:    int32(s.cards.Len()),
+			ActionShortId: nextPlayer.ShortId,
+			ActionEndAt:   actionEndAt.UnixMilli(),
+			ActionType:    nextAct.acts,
+			HuType:        nextAct.hus,
+			GangCards:     nextAct.gang,
+			NewCard:       nextAct.newCard.Int32(), // 客户端自己取桌面牌最后一张
+			HandCards:     nextPlayer.handCards.ToSlice(),
+		})
 	}
 
-	actionEndAt = tools.Now().Add(expireDuration)
-	notifyPlayerMsg.ActionEndAt = actionEndAt.UnixMilli()
+	s.currentActionEndAt = tools.Now().Add(expireDuration)
+	notifyPlayerMsg.ActionEndAt = s.currentActionEndAt.UnixMilli()
 
-	s.currentActionEndAt = actionEndAt
-	s.currentAction = nextAct
-	s.currentActionSeat = nextSeat
-	s.actionTimer(actionEndAt, nextSeat) // 碰,杠,胡,过,行动倒计时
-	delete(s.actionMap, nextSeat)        // 从行动者组中删除
-
-	s.Log().Infow("next action", "room", s.room.RoomId, "act player", nextPlayer.ShortId, "seat", nextSeat,
+	s.actionTimer(actionEndAt, nextActionSeats...) // 碰,杠,胡,过,行动倒计时
+	s.Log().Infow("next action", "room", s.room.RoomId, "next seats", nextActionSeats,
 		"current action", s.currentAction, "action map", s.actionMap)
 
-	// 通知行动者
-	s.room.SendToPlayer(nextPlayer.ShortId, &outer.MahjongBTETurnNtf{
-		TotalCards:    int32(s.cards.Len()),
-		ActionShortId: nextPlayer.ShortId,
-		ActionEndAt:   actionEndAt.UnixMilli(),
-		ActionType:    nextAct.acts,
-		HuType:        nextAct.hus,
-		GangCards:     nextAct.gang,
-		NewCard:       nextAct.newCard.Int32(), // 客户端自己取桌面牌最后一张
-		HandCards:     nextPlayer.handCards.ToSlice(),
-	})
-
-	s.room.Broadcast(notifyPlayerMsg, nextPlayer.ShortId)
+	s.room.Broadcast(notifyPlayerMsg, nextActionShortIds...)
 }
 
 func (s *StatePlaying) appendPeerCard(typ checkCardType, card Card, seat int, gangFn func(ntf *outer.MahjongBTEOperaNtf)) {

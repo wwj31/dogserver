@@ -56,6 +56,7 @@ enum Msg {
     IdMahjongBTETurnNtf = 1486690182;
     IdMahjongBTEOperaNtf = 1682707103;
     IdMahjongBTEGangResultNtf = 411392799;
+    IdMahjongBTEHuResultNtf = 2017298907;
     IdMahjongBTESettlementNtf = 1808167222;
     IdMailListReq = 1443645576;// dispatch to player
     IdMailListRsp = 1812753385;

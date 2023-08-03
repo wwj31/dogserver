@@ -23,9 +23,10 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 		return false, outer.ERROR_MSG_REQ_PARAM_INVALID
 	}
 
-	if !s.currentAction.canGang(card) {
+	currentAction := s.getCurrentAction(seatIndex)
+	if currentAction == nil || !currentAction.canGang(card) {
 		s.Log().Errorw("operate gang failed invalid gang card",
-			"room", s.room.RoomId, "player", p.ShortId, "currentGang", s.currentAction.gang, "card", card)
+			"room", s.room.RoomId, "player", p.ShortId, "currentGang", currentAction.gang, "card", card)
 		return false, outer.ERROR_MSG_REQ_PARAM_INVALID
 	}
 

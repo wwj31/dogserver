@@ -6,7 +6,8 @@ import (
 
 // 打一张牌
 func (s *StatePlaying) playCard(cardIndex, seatIndex int) (bool, outer.ERROR) {
-	if !s.currentAction.isValidAction(outer.ActionType_ActionPlayCard) {
+	currentAction := s.getCurrentAction(seatIndex)
+	if currentAction == nil || !currentAction.isValidAction(outer.ActionType_ActionPlayCard) {
 		return false, outer.ERROR_MAHJONG_ACTION_PLAYER_NOT_OPERA
 	}
 
