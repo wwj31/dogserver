@@ -147,10 +147,10 @@ func (s *StatePlaying) huSettlement(ntf *outer.MahjongBTEOperaNtf) {
 			totalGangScore := rivalGangInfo.totalWinScore       // 本次转移的总分
 
 			rivalGang.score -= totalGangScore
-			rivalGang.gangTotalScore -= totalGangScore
+			rivalGang.gangTotalScore -= totalGangScore // 退杠
 
 			p.score += totalGangScore
-			p.gangTotalScore += totalGangScore
+			p.gangTotalScore += totalGangScore // 退杠
 
 			// 如果需要实时结算，就把结算分放入通知
 			if s.gameParams().HuImmediatelyScore {
