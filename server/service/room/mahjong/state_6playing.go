@@ -2,8 +2,9 @@ package mahjong
 
 import (
 	"reflect"
-	"server/common/log"
 	"time"
+
+	"server/common/log"
 
 	"github.com/wwj31/dogactor/tools"
 
@@ -227,7 +228,7 @@ func (s *StatePlaying) nextAction() {
 			canHu = append(canHu, seat)
 			s.Hus[seat] = false
 		}
-		defaultSeat = seat // 一边找就一边设置下个行动者，如果找不到胡的人，就直接用他,，默认就是碰杠
+		defaultSeat = seat // 一边找就一边设置默认行动者，如果找不到胡的人，就直接用他,，默认就是碰杠
 	}
 
 	// 有多个人能胡，就触发一炮多响

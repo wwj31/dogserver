@@ -269,8 +269,8 @@ func (s *StateSettlement) settlementBroadcast(ntf *outer.MahjongBTESettlementNtf
 }
 
 func (s *StateSettlement) nextMasterIndex() {
-	if s.mutilHuByIndex != -1 {
-		s.masterIndex = s.mutilHuByIndex
+	if s.multiHuByIndex != -1 {
+		s.masterIndex = s.multiHuByIndex
 	} else if len(s.huSeat) > 0 {
 		s.masterIndex = int(s.huSeat[0])
 	} else {

@@ -92,15 +92,15 @@ type (
 	Mahjong struct {
 		room                *room.Room
 		fsm                 *room.FSM
-		currentStateEnterAt time.Time // 当前状态的进入时间
-		currentStateEndAt   time.Time // 当前状态的结束时间
-		playerAutoReady     func(p *mahjongPlayer, ready bool)
+		currentStateEnterAt time.Time                          // 当前状态的进入时间
+		currentStateEndAt   time.Time                          // 当前状态的结束时间
+		playerAutoReady     func(p *mahjongPlayer, ready bool) //
 
 		dices          [2]int32 // 两颗骰子数
 		masterIndex    int      // 庄家位置 0,1,2,3
 		gameCount      int      // 游戏的连续局数
 		huSeat         []int32  // 胡牌的位置，依次按顺序加入
-		mutilHuByIndex int      // 一炮多响点炮的人
+		multiHuByIndex int      // 一炮多响点炮的人
 
 		cards          Cards                  // 剩余牌组
 		cardsInDesktop Cards                  // 打出的牌
@@ -144,6 +144,15 @@ func (m *Mahjong) Data(shortId int64) proto.Message {
 		NewCard:          0,
 	}
 
+	// 检查当前的行动者是不是出牌状态，如果是，需要广播行动者是谁
+	for _, a := range m.currentAction {
+		if a.isValidAction(outer.ActionType_ActionPlayCard) {
+			info.ActionShortId = m.mahjongPlayers[a.seat].ShortId
+			break
+		}
+	}
+
+	// 检查玩家是否是行动者，如果不是，一下发送内容都不发
 	var currentAction *action
 	for _, a := range m.currentAction {
 		if m.mahjongPlayers[a.seat].ShortId == shortId {
@@ -156,20 +165,13 @@ func (m *Mahjong) Data(shortId int64) proto.Message {
 		return info
 	}
 
-	// 只有当行动者是出牌状态，才广播行动者
-	if currentAction != nil && currentAction.isValidAction(outer.ActionType_ActionPlayCard) {
-		info.ActionShortId = m.mahjongPlayers[currentAction.seat].ShortId
-	}
-
-	// 判断是当前行动者本人，就发行动数据
-	if currentAction.seat > 0 {
-		p := m.mahjongPlayers[currentAction.seat]
-		if p.ShortId == shortId {
-			info.ActionType = currentAction.acts
-			info.HuType = currentAction.hus
-			info.GangCards = currentAction.gang
-			info.NewCard = currentAction.newCard.Int32()
-		}
+	// 发行动数据
+	p := m.mahjongPlayers[currentAction.seat]
+	if p.ShortId == shortId {
+		info.ActionType = currentAction.acts
+		info.HuType = currentAction.hus
+		info.GangCards = currentAction.gang
+		info.NewCard = currentAction.newCard.Int32()
 	}
 
 	return info
@@ -417,12 +419,6 @@ func (m *Mahjong) immScore(shortId int64) int64 {
 	return totalScore
 }
 
-// 满足条件就亮出所有牌, 否则只亮明杠
-// 明确显示手牌的情况:
-//
-//	1.玩家是自己
-//	2.游戏结算
-//	3.参数选胡牌实时算分并且胡了
 func (m *mahjongPlayer) allCardsToPB(params *outer.MahjongParams, shortId int64, settlement bool) *outer.CardsOfBTE {
 	allCards := &outer.CardsOfBTE{}
 	if m.ShortId == shortId || settlement || (params.HuImmediatelyScore && m.hu != HuInvalid) {

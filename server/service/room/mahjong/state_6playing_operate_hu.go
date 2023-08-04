@@ -36,11 +36,6 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 		return false, outer.ERROR_MAHJONG_HU_INVALID
 	}
 
-	// 一炮多响检查，如果还有人胡了相同的peer，就算一炮多响
-	if s.checkMutilHu(lastPeerIndex) {
-		s.mutilHuByIndex = peer.seat
-	}
-
 	s.huSeat = append(s.huSeat, int32(seatIndex))
 	p.hu = hu
 	p.huPeerIndex = len(s.peerRecords) - 1
@@ -200,7 +195,7 @@ func (s *StatePlaying) huSettlement(ntf *outer.MahjongBTEOperaNtf) {
 	loser := s.mahjongPlayers[loserSeat]
 	// 一炮多响，记录点炮的人
 	if len(s.Hus) > 1 {
-		s.mutilHuByIndex = loserSeat
+		s.multiHuByIndex = loserSeat
 	}
 
 	var (

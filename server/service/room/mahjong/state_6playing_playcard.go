@@ -79,9 +79,9 @@ func (s *StatePlaying) playCard(cardIndex, seatIndex int) (bool, outer.ERROR) {
 
 		if newAction.isActivated() {
 			newAction.seat = idx
-			s.actionMap[idx] = &newAction // 碰杠胡的玩家加入行动组
+			s.actionMap[idx] = &newAction
 
-			s.Log().Infow("a new action",
+			s.Log().Infow("a new action by play",
 				"room", s.room.RoomId, "seat", idx, "other", other.ShortId,
 				"play", outCard, "hand", other.handCards, "action", &newAction)
 		}
@@ -89,7 +89,7 @@ func (s *StatePlaying) playCard(cardIndex, seatIndex int) (bool, outer.ERROR) {
 
 	// 操作成功，删除行为
 	delete(s.actionMap, seatIndex)
-	s.removeCurrentAction(seatIndex)
+	s.removeCurrentAction(seatIndex) // 打牌操作移除当前行为
 
 	if len(s.actionMap) == 0 {
 		s.drawCard(s.nextSeatIndex(seatIndex))

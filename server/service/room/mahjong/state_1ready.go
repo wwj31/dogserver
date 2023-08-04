@@ -20,7 +20,7 @@ func (s *StateReady) State() int {
 func (s *StateReady) Enter() {
 	s.Log().Infow("[Mahjong] enter state ready ", "room", s.room.RoomId)
 	s.huSeat = nil
-	s.mutilHuByIndex = -1
+	s.multiHuByIndex = -1
 	s.playerAutoReady = s.ready
 
 	readyExpireAt := time.Now().Add(ReadyExpiration)
