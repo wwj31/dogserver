@@ -6,7 +6,7 @@ import (
 
 var gangScoreRatio = map[checkCardType]float32{
 	GangType1: 1, // 弯杠1分
-	GangType3: 2, // 弯杠2分
+	GangType3: 2, // 直杠2分
 	GangType4: 2, // 暗杠2分
 }
 
@@ -156,7 +156,6 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 
 		loseScores = loseScoreAnalyze(peer.seat) // 打牌的那个人，是输分者
 		gangFunc = func(opNtf *outer.MahjongBTEOperaNtf) {
-			s.Log().Infow("gang ok by play card")
 			p.handCards, _, _ = p.handCards.Gang(card)
 			p.lightGang[card.Int32()] = s.mahjongPlayers[peer.seat].ShortId
 			gangSuccess(opNtf, loseScores)
