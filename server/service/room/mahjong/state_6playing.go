@@ -1,6 +1,7 @@
 package mahjong
 
 import (
+	"github.com/wwj31/dogactor/logger"
 	"reflect"
 	"time"
 
@@ -17,7 +18,7 @@ const (
 	drawCardType checkCardType = 1 // 摸牌
 	playCardType checkCardType = 2 // 打牌
 	GangType1    checkCardType = 3 // 明杠(弯杠),自己摸牌，杠碰的牌(可抢杠胡)
-	GangType3    checkCardType = 4 // 明杠(直杠)，别人打牌出我手牌里有三张
+	GangType3    checkCardType = 4 // 明杠(直杠)，别人打牌，刚好我手牌里有三张(可抢杠胡)
 	GangType4    checkCardType = 5 // 暗杠,自己摸牌，自己手牌有三张
 )
 
@@ -144,7 +145,6 @@ func (s *StatePlaying) actionTimer(expireAt time.Time, seats ...int) {
 			card             Card
 		)
 
-		log.Debugw("action timer", "seats", seats)
 		for _, seat := range seats {
 			player := s.mahjongPlayers[seat]
 			act := s.actionMap[seat]
@@ -272,14 +272,15 @@ func (s *StatePlaying) nextAction() {
 			NewCard:       nextAct.newCard.Int32(), // 客户端自己取桌面牌最后一张
 			HandCards:     nextPlayer.handCards.ToSlice(),
 		})
+
+		s.Log().Color(logger.White).Infow("next action", "room", s.room.RoomId, "next seats", nextActionSeats,
+			"current action", nextAct, "action map", s.actionMap, "actionEndAt", actionEndAt)
 	}
 
 	s.currentActionEndAt = actionEndAt
 	notifyPlayerMsg.ActionEndAt = s.currentActionEndAt.UnixMilli()
 
 	s.actionTimer(actionEndAt, nextActionSeats...) // 碰,杠,胡,过,行动倒计时
-	s.Log().Infow("next action", "room", s.room.RoomId, "next seats", nextActionSeats,
-		"current action", s.currentAction, "action map", s.actionMap, "actionEndAt", actionEndAt)
 
 	s.room.Broadcast(notifyPlayerMsg, nextActionShortIds...)
 }

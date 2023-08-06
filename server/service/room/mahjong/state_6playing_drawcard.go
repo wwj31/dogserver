@@ -1,6 +1,7 @@
 package mahjong
 
 import (
+	"github.com/wwj31/dogactor/logger"
 	"server/proto/outermsg/outer"
 )
 
@@ -48,6 +49,6 @@ func (s *StatePlaying) drawCard(seatIndex int) {
 	}
 	s.actionMap[seatIndex] = newAction // 摸牌者加入行动组
 
-	s.Log().Infow("draw a card", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId,
+	s.Log().Color(logger.Cyan).Infow("draw a card", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId,
 		"newCard", newCard, "action", newAction, "totalCards", s.cards.Len(), "hand", player.handCards)
 }

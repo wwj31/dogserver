@@ -1,6 +1,7 @@
 package mahjong
 
 import (
+	"github.com/wwj31/dogactor/logger"
 	"server/proto/outermsg/outer"
 )
 
@@ -31,7 +32,7 @@ func (s *StatePlaying) playCard(cardIndex, seatIndex int) (bool, outer.ERROR) {
 		OpType:    outer.ActionType_ActionPlayCard,
 		Card:      outCard.Int32(),
 	})
-	s.Log().Infow("play a card",
+	s.Log().Color(logger.Yellow).Infow("play a card",
 		"room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId, "play", outCard, "hand", player.handCards)
 
 	// 其余三家对这张牌依次做分析

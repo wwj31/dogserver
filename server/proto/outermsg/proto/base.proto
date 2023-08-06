@@ -46,6 +46,7 @@ message MahjongParams{
     bool  GangImmediatelyScore = 13; // 杠分实时结算
     bool  HuImmediatelyScore   = 14; // 胡牌实时结算
     bool  AllowScoreSmallZero  = 15; // 是否允许负分
+    bool  BigWinner            = 16; // 是否开启大赢家模式
 }
 
 // 斗地主
