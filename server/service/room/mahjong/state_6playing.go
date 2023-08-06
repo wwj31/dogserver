@@ -5,8 +5,6 @@ import (
 	"reflect"
 	"time"
 
-	"server/common/log"
-
 	"github.com/wwj31/dogactor/tools"
 
 	"server/proto/outermsg/outer"

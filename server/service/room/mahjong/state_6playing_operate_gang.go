@@ -73,18 +73,23 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 	// 杠成功后算分
 	gangSuccess := func(opNtf *outer.MahjongBTEOperaNtf, loseScores map[int32]int64) {
 		var (
-			winScore   int64   // 本次杠总赢分
-			loserSeats []int32 // 本次杠所有需要赔付的位置
+			winScore   int64                   // 本次杠总赢分
+			loserSeats = make(map[int32]int64) // 本次杠所有需要赔付的位置
 		)
 
 		// 先算输分的人
 		for loserSeat, score := range loseScores {
 			rival := s.mahjongPlayers[loserSeat]
+			// 不允许负分，能扣多少扣多少
+			if !s.gameParams().AllowScoreSmallZero && rival.score < score {
+				score = rival.score
+			}
+
 			rival.gangTotalScore -= score // 被杠,丢分
 			rival.score -= score
 
 			winScore += score
-			loserSeats = append(loserSeats, loserSeat)
+			loserSeats[loserSeat] = score //  记录玩家每次杠牌，哪些位置赔多少分
 		}
 
 		// 杠分统计数据

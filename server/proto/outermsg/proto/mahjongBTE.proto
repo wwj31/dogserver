@@ -225,12 +225,12 @@ message MahjongBTEGangResultNtf {
 
 // 结算玩家数据
 message MahjongBTESettlementPlayerData{
-    MahjongPlayerInfo Player            = 1; //
-    int32 DianPaoSeatIndex              = 2; // 点炮的人位置，如果是自己，表示自摸
-    repeated int32 ByDarkGangSeatIndex  = 3; // 被哪些人暗杠，杠的玩家位置
-    repeated int32 ByLightGangSeatIndex = 4; // 被哪些人明杠，杠的玩家位置
-    int32 TotalFan                      = 5; // 总番数
-    int64 TotalScore                    = 6; // 总输赢 负数为输
+    MahjongPlayerInfo Player              = 1; //
+    int32 DianPaoSeatIndex                = 2; // 点炮的人位置，如果是自己，表示自摸
+    map<int32,int64> ByDarkGangSeatIndex  = 3; // 被哪些人暗杠，map<杠的玩家位置，赔的分>
+    map<int32,int64> ByLightGangSeatIndex = 4; // 被哪些人明杠，map<杠的玩家位置，赔的分>
+    int32 TotalFan                        = 5; // 总番数
+    int64 TotalScore                      = 6; // 总输赢 负数为输
 }
 
 // 结算通知

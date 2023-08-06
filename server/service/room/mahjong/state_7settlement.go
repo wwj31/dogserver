@@ -218,8 +218,8 @@ func (s *StateSettlement) maxFanTingCard(tingCards map[Card]HuType) int32 {
 func (s *StateSettlement) settlementBroadcast(ntf *outer.MahjongBTESettlementNtf) {
 	allPlayerInfo := s.playersToPB(0, true) // 组装结算消息
 
-	darkGangMap := map[int32][]int32{}  // 表示每个人被哪些位置暗杠过
-	lightGangMap := map[int32][]int32{} // 表示每个人被哪些位置明杠过
+	darkGangMap := map[int32]map[int32]int64{}  // 表示每个人被哪些位置暗杠过
+	lightGangMap := map[int32]map[int32]int64{} // 表示每个人被哪些位置明杠过
 
 	// 根据每个人的杠牌，先分析出每个人扣的杠分
 	for seat, player := range s.mahjongPlayers {
@@ -235,11 +235,17 @@ func (s *StateSettlement) settlementBroadcast(ntf *outer.MahjongBTESettlementNtf
 
 		// 本局该玩家所有的杠牌,以及每次杠成功后赔钱的位置
 		for peerIndex, info := range player.gangInfos {
-			for _, loserSeat := range info.loserSeats {
+			for loserSeat, loserWin := range info.loserSeats {
 				if s.peerRecords[peerIndex].typ == GangType4 {
-					darkGangMap[loserSeat] = append(darkGangMap[loserSeat], int32(seat))
+					if darkGangMap[loserSeat] == nil {
+						darkGangMap[loserSeat] = make(map[int32]int64)
+					}
+					darkGangMap[loserSeat][int32(seat)] += loserWin
 				} else {
-					lightGangMap[loserSeat] = append(lightGangMap[loserSeat], int32(seat))
+					if lightGangMap[loserSeat] == nil {
+						lightGangMap[loserSeat] = make(map[int32]int64)
+					}
+					lightGangMap[loserSeat][int32(seat)] += loserWin
 				}
 			}
 		}

@@ -49,8 +49,8 @@ func New(r *room.Room) *Mahjong {
 const maxNum = 4
 
 type gangInfo struct {
-	loserSeats    []int32 // 赔付的位置
-	totalWinScore int64   // 本次杠总分
+	loserSeats    map[int32]int64 // 赔付的位置，赔付的分
+	totalWinScore int64           // 本次杠总分
 }
 type (
 	// 麻将-血战到底 参与游戏的玩家数据
