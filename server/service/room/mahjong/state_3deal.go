@@ -4,8 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"reflect"
-	"server/common/rds"
 	"time"
+
+	"server/common/rds"
 
 	"github.com/wwj31/dogactor/tools"
 
@@ -40,7 +41,8 @@ func (s *StateDeal) Enter() {
 		i += 13
 
 		s.room.SendToPlayer(player.ShortId, &outer.MahjongBTEDealNtf{
-			Cards: player.handCards.ToSlice(),
+			Cards:      player.handCards.ToSlice(),
+			MasterSeat: int32(s.masterIndex),
 		})
 	}
 

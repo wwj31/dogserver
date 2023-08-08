@@ -129,6 +129,7 @@ message MahjongBTEDecideMasterNtf {
 // 开始发牌通知
 message MahjongBTEDealNtf {
     repeated int32 Cards   = 1; // 手牌 (萬11-19 条21-29 筒31-39)
+    int32 MasterSeat       = 2; // 庄家位置
 }
 
 // 开始换三张
@@ -188,7 +189,9 @@ message MahjongBTEOperaNtf {
     // 杠操作结果数据
     MahjongBTEGangResultNtf GangResult = 4; // 杠结果，触发可抢杠，该字段为null
     int32                   GangType   = 5; // 1.明杠、2.暗杠
+
     int32                   Card       = 6; // 碰、杠、出牌的牌
+    int32                   CardIndex  = 7; // 出牌下标
 }
 
 // 胡牌信息
