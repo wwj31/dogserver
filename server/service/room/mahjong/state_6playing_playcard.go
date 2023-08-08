@@ -31,6 +31,7 @@ func (s *StatePlaying) playCard(cardIndex, seatIndex int) (bool, outer.ERROR) {
 		OpShortId: player.ShortId,
 		OpType:    outer.ActionType_ActionPlayCard,
 		Card:      outCard.Int32(),
+		CardIndex: int32(cardIndex),
 	})
 	s.Log().Color(logger.Yellow).Infow("play a card",
 		"room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId, "play", outCard, "hand", player.handCards)
