@@ -26,6 +26,8 @@ enum Msg {
     IdModifyPasswordReq = 655389589;// dispatch to player
     IdModifyPasswordRsp = 890276254;
     IdUpdateGoldNtf = 429487156;
+    IdGMReq = 1146584554;// dispatch to player
+    IdGMRsp = 978808237;
     IdHeartReq = 31040569;
     IdHeartRsp = 400148124;
     IdLoginReq = 1510628254;// dispatch to login

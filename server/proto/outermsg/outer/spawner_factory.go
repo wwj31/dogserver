@@ -87,6 +87,8 @@ var spawner = map[string]factory{
 	"outer.HeartRsp":                          func() interface{} { return &HeartRsp{} },
 	"outer.HeartReq":                          func() interface{} { return &HeartReq{} },
 	"outer.GameParams":                        func() interface{} { return &GameParams{} },
+	"outer.GMRsp":                             func() interface{} { return &GMRsp{} },
+	"outer.GMReq":                             func() interface{} { return &GMReq{} },
 	"outer.FailRsp":                           func() interface{} { return &FailRsp{} },
 	"outer.Exchange3Info":                     func() interface{} { return &Exchange3Info{} },
 	"outer.EnterGameRsp":                      func() interface{} { return &EnterGameRsp{} },

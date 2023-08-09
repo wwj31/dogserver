@@ -34,3 +34,11 @@ message ModifyPasswordRsp {
 message UpdateGoldNtf {
     int64 gold = 1; // 最新金币
 }
+
+// GM命令
+message GMReq {// tag:player
+    string cmd = 1;
+}
+message GMRsp {
+
+}
