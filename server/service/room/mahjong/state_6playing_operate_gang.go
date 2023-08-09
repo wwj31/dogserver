@@ -80,7 +80,7 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 		// 先算输分的人
 		for loserSeat, score := range loseScores {
 			rival := s.mahjongPlayers[loserSeat]
-			// 不允许负分，能扣多少扣多少
+			// 不允许负分，能扣多少扣多少,并且直接结算
 			if !s.gameParams().AllowScoreSmallZero && rival.score < score {
 				score = rival.score
 			}

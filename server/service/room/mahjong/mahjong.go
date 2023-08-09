@@ -101,6 +101,7 @@ type (
 		gameCount      int      // 游戏的连续局数
 		huSeat         []int32  // 胡牌的位置，依次按顺序加入
 		multiHuByIndex int      // 一炮多响点炮的人
+		scoreZeroOver  bool     // 因为有玩家没分了，而触发的结束
 
 		cards          Cards                  // 剩余牌组
 		cardsInDesktop Cards                  // 打出的牌
@@ -375,6 +376,7 @@ func (m *Mahjong) clear() {
 	}
 
 	m.cards = nil
+	m.scoreZeroOver = false
 	m.cardsInDesktop = make(Cards, 0, 8)
 	m.cardsPlayOrder = make([]int32, 0, 8)
 	m.currentAction = nil

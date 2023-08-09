@@ -1,9 +1,10 @@
 package mahjong
 
 import (
-	"github.com/wwj31/dogactor/logger"
 	"reflect"
 	"time"
+
+	"github.com/wwj31/dogactor/logger"
 
 	"github.com/wwj31/dogactor/tools"
 
@@ -202,6 +203,16 @@ func (s *StatePlaying) gameOver() bool {
 
 	if s.cards.Len() == 0 {
 		return true
+	}
+
+	// 如果不允许负分，只要有一位玩家分<=0就结束
+	if !s.gameParams().AllowScoreSmallZero {
+		for _, player := range s.mahjongPlayers {
+			if player.score <= 0 {
+				s.scoreZeroOver = true
+				return true
+			}
+		}
 	}
 	return false
 }

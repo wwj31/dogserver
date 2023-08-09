@@ -29,6 +29,7 @@ func (s *StateSettlement) Enter() {
 
 	settlementMsg := &outer.MahjongBTESettlementNtf{
 		NotHu:            notHu,
+		HasScoreZero:     s.scoreZeroOver,
 		GameCount:        int32(s.gameCount),
 		GameSettlementAt: tools.Now().UnixMilli(),
 		HuSeatIndex:      s.huSeat,
@@ -58,7 +59,8 @@ func (s *StateSettlement) Enter() {
 				modifyRsp := resp.(*inner.ModifyGoldRsp)
 				player.PlayerInfo = modifyRsp.Info
 			}
-			s.Log().Infow("modify gold success", "room", s.room.RoomId, "player", player.ShortId, "seat", seat, "player info", *player.PlayerInfo)
+			s.Log().Infow("modify gold success",
+				"room", s.room.RoomId, "player", player.ShortId, "seat", seat, "player info", *player.PlayerInfo)
 			if len(modifyRspCount) == maxNum {
 				s.settlementBroadcast(settlementMsg)
 			}
@@ -172,18 +174,6 @@ func (s *StateSettlement) notHu(ntf *outer.MahjongBTESettlementNtf) {
 		// 没叫的挨个赔钱
 		for _, notTingSeat := range hasNotTingSeat {
 			notTingPlayer := s.mahjongPlayers[notTingSeat]
-			//if notTingPlayer.score <= 0 {
-			//	continue // 没钱赔个屁
-			//}
-
-			// 如果不够赔,就按照赔付比例赔付给有叫的人
-			//if notTingPlayer.score < totalWinScore {
-			//	for winSeat, _ := range allWinner {
-			//		divScore := float64(notTingPlayer.score) * (float64(allWinner[winSeat]) / float64(totalWinScore))
-			//		s.mahjongPlayers[winSeat].score += int64(divScore)
-			//	}
-			//	notTingPlayer.score = 0
-			//} else {
 			// 够赔就直接赔
 			for seat, winScore := range allWinner {
 				s.mahjongPlayers[seat].score += winScore
@@ -261,7 +251,8 @@ func (s *StateSettlement) settlementBroadcast(ntf *outer.MahjongBTESettlementNtf
 		ntf.PlayerData[seat].ByLightGangSeatIndex = gangSeat
 	}
 
-	s.Log().Infow(" settlement broadcast", "room", s.room.RoomId, "master", s.masterIndex, "ntf", ntf.String())
+	s.Log().Infow(" settlement broadcast",
+		"room", s.room.RoomId, "master", s.masterIndex, "ntf", ntf.String())
 	s.room.Broadcast(ntf)
 
 	s.clear()           // 分算完清理数据
@@ -286,7 +277,7 @@ func (s *StateSettlement) nextMasterIndex() {
 
 // 检查是否流局
 func (s *StateSettlement) isNoHu() bool {
-	// 如果还有牌进入结算，要么是3加胡了，要么是有玩家输光强制结算
+	// 如果还有牌进入结算，要么是3家胡了，要么是有玩家输光强制结算
 	if s.cards.Len() > 0 {
 		return false
 	}
