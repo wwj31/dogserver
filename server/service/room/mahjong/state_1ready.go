@@ -26,11 +26,25 @@ func (s *StateReady) Enter() {
 	readyExpireAt := time.Now().Add(ReadyExpiration)
 	for seat := 0; seat < maxNum; seat++ {
 		player := s.mahjongPlayers[seat]
-		if player != nil {
-			s.ready(player, false)
+		if player == nil {
+			continue
 		}
+
+		if player.Gold <= 0 {
+			s.room.PlayerLeave(player.ShortId, true)
+		}
+
+		var ready bool
+		if s.gameCount < int(s.gameParams().PlayCountLimit) {
+			ready = true
+		}
+
+		s.ready(player, ready)
 	}
 
+	if s.gameCount >= int(s.gameParams().PlayCountLimit) {
+		s.gameCount = 0
+	}
 	s.room.Broadcast(&outer.MahjongBTEReadyNtf{ReadyExpireAt: readyExpireAt.UnixMilli()})
 }
 
@@ -88,12 +102,7 @@ func (s *StateReady) ready(player *mahjongPlayer, r bool) {
 	} else {
 		player.readyExpireAt = time.Now().Add(ReadyExpiration)
 		s.room.AddTimer(player.RID, player.readyExpireAt, func(dt time.Duration) {
-			if player.Gold < 999 {
-				s.room.PlayerLeave(player.ShortId, true)
-			} else {
-				s.ready(player, true)
-			}
-
+			s.ready(player, true)
 		})
 	}
 }

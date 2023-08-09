@@ -52,15 +52,15 @@ func (s *StateSettlement) Enter() {
 		finalScore := player.score
 		s.room.Request(actortype.PlayerId(player.RID), &inner.ModifyGoldReq{Gold: finalScore}).Handle(func(resp any, err error) {
 			modifyRspCount[player.RID] = struct{}{}
-			if err != nil {
-				s.Log().Errorw("modify gold failed kick-out player",
-					"room", s.room.RoomId, "player", player.ShortId, "seat", seat, "err", err)
-			} else {
+			if err == nil {
 				modifyRsp := resp.(*inner.ModifyGoldRsp)
 				player.PlayerInfo = modifyRsp.Info
 			}
-			s.Log().Infow("modify gold success",
-				"room", s.room.RoomId, "player", player.ShortId, "seat", seat, "player info", *player.PlayerInfo)
+
+			s.Log().Infow("modify gold result", "room", s.room.RoomId, "player", player.ShortId,
+				"seat", seat, "player info",
+				*player.PlayerInfo, "err", err)
+
 			if len(modifyRspCount) == maxNum {
 				s.settlementBroadcast(settlementMsg)
 			}
