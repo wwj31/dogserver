@@ -286,6 +286,11 @@ func (s *StateSettlement) nextMasterIndex() {
 
 // 检查是否流局
 func (s *StateSettlement) isNoHu() bool {
+	// 如果还有牌进入结算，要么是3加胡了，要么是有玩家输光强制结算
+	if s.cards.Len() > 0 {
+		return false
+	}
+
 	for _, player := range s.mahjongPlayers {
 		if player.hu != HuInvalid {
 			return false
