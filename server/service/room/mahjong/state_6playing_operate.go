@@ -39,6 +39,8 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 		}
 		ok = true
 		delete(s.Hus, seatIndex)
+		delete(s.actionMap, seatIndex)
+
 		if s.husWasAllDo() {
 			s.huSettlement(nil) // 传nil，表示ntf单独推送
 		}
@@ -53,6 +55,7 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 	case outer.ActionType_ActionGang:
 		ok, err = s.operateGang(player, seatIndex, card, ntf)
 		nextDrawShortIndex = seatIndex // 杠的人自己摸一张
+		delete(s.actionMap, seatIndex)
 
 		s.Log().Color(logger.Green).Infow("gang!", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId,
 			"peer", s.peerRecords[len(s.peerRecords)-1], "action map", s.actionMap, "hand", player.handCards, "lightGang cards", player.lightGang, "darkGang cards", player.darkGang)
@@ -60,6 +63,7 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 	case outer.ActionType_ActionHu:
 		ok, err = s.operateHu(player, seatIndex, ntf)
 		nextDrawShortIndex = s.nextSeatIndex(seatIndex) // 胡牌的下家摸牌
+		delete(s.actionMap, seatIndex)
 
 		s.Log().Color(logger.Red).Infow("hu!", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId, "peer", &peer, "hand", player.handCards,
 			"pong", player.pong, "lightGang cards", player.lightGang, "darkGang cards", player.darkGang, "hu", player.hu, "hu extra", player.huExtra)
@@ -75,7 +79,6 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 	}
 
 	// 操作成功，删除行为
-	delete(s.actionMap, seatIndex)
 	s.removeCurrentAction(seatIndex)
 
 	// 除了过以外的操作都需要广播通知
