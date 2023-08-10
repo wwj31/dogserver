@@ -83,6 +83,7 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 
 	// 除了过以外的操作都需要广播通知
 	if op != outer.ActionType_ActionPass {
+		ntf.HandCardsNum = int32(player.handCards.Len())
 		s.room.Broadcast(ntf)
 	}
 

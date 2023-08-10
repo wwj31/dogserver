@@ -182,16 +182,17 @@ message MahjongBTETurnNtf {
 message MahjongBTEOperaNtf {
     int64  OpShortId                   = 1; // 操作者
     ActionType OpType                  = 2; // 操作类型，1.碰、2.杠、3.胡、4.出牌
+    int32  HandCardsNum                = 3; // 剩余手牌数量
 
     // 胡操作结果数据
-    MahjongBTEHuResultNtf HuResult     = 3; // 胡结果，触发一炮多响，该字段为null
+    MahjongBTEHuResultNtf HuResult     = 4; // 胡结果，触发一炮多响，该字段为null
 
     // 杠操作结果数据
-    MahjongBTEGangResultNtf GangResult = 4; // 杠结果，触发可抢杠，该字段为null
-    int32                   GangType   = 5; // 1.明杠、2.暗杠
+    MahjongBTEGangResultNtf GangResult = 5; // 杠结果，触发可抢杠，该字段为null
+    int32                   GangType   = 6; // 1.明杠、2.暗杠
 
-    int32                   Card       = 6; // 碰、杠、出牌的牌
-    int32                   CardIndex  = 7; // 出牌下标
+    int32                   Card       = 7; // 碰、杠、出牌的牌
+    int32                   CardIndex  = 8; // 出牌下标
 }
 
 // 胡牌信息
