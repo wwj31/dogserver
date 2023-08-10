@@ -391,92 +391,6 @@ func (x *UpdateGoldNtf) GetGold() int64 {
 	return 0
 }
 
-// GM命令
-type GMReq struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Cmd string `protobuf:"bytes,1,opt,name=cmd,proto3" json:"cmd,omitempty"`
-}
-
-func (x *GMReq) Reset() {
-	*x = GMReq{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_hall_proto_msgTypes[7]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *GMReq) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GMReq) ProtoMessage() {}
-
-func (x *GMReq) ProtoReflect() protoreflect.Message {
-	mi := &file_hall_proto_msgTypes[7]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GMReq.ProtoReflect.Descriptor instead.
-func (*GMReq) Descriptor() ([]byte, []int) {
-	return file_hall_proto_rawDescGZIP(), []int{7}
-}
-
-func (x *GMReq) GetCmd() string {
-	if x != nil {
-		return x.Cmd
-	}
-	return ""
-}
-
-type GMRsp struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-}
-
-func (x *GMRsp) Reset() {
-	*x = GMRsp{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_hall_proto_msgTypes[8]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *GMRsp) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GMRsp) ProtoMessage() {}
-
-func (x *GMRsp) ProtoReflect() protoreflect.Message {
-	mi := &file_hall_proto_msgTypes[8]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GMRsp.ProtoReflect.Descriptor instead.
-func (*GMRsp) Descriptor() ([]byte, []int) {
-	return file_hall_proto_rawDescGZIP(), []int{8}
-}
-
 var File_hall_proto protoreflect.FileDescriptor
 
 var file_hall_proto_rawDesc = []byte{
@@ -506,11 +420,8 @@ var file_hall_proto_rawDesc = []byte{
 	0x72, 0x64, 0x22, 0x13, 0x0a, 0x11, 0x4d, 0x6f, 0x64, 0x69, 0x66, 0x79, 0x50, 0x61, 0x73, 0x73,
 	0x77, 0x6f, 0x72, 0x64, 0x52, 0x73, 0x70, 0x22, 0x23, 0x0a, 0x0d, 0x55, 0x70, 0x64, 0x61, 0x74,
 	0x65, 0x47, 0x6f, 0x6c, 0x64, 0x4e, 0x74, 0x66, 0x12, 0x12, 0x0a, 0x04, 0x67, 0x6f, 0x6c, 0x64,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x04, 0x67, 0x6f, 0x6c, 0x64, 0x22, 0x19, 0x0a, 0x05,
-	0x47, 0x4d, 0x52, 0x65, 0x71, 0x12, 0x10, 0x0a, 0x03, 0x63, 0x6d, 0x64, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x03, 0x63, 0x6d, 0x64, 0x22, 0x07, 0x0a, 0x05, 0x47, 0x4d, 0x52, 0x73, 0x70,
-	0x42, 0x08, 0x5a, 0x06, 0x2f, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x33,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x04, 0x67, 0x6f, 0x6c, 0x64, 0x42, 0x08, 0x5a, 0x06,
+	0x2f, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -525,7 +436,7 @@ func file_hall_proto_rawDescGZIP() []byte {
 	return file_hall_proto_rawDescData
 }
 
-var file_hall_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_hall_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_hall_proto_goTypes = []interface{}{
 	(*SetRoleInfoReq)(nil),    // 0: outer.SetRoleInfoReq
 	(*SetRoleInfoRsp)(nil),    // 1: outer.SetRoleInfoRsp
@@ -534,8 +445,6 @@ var file_hall_proto_goTypes = []interface{}{
 	(*ModifyPasswordReq)(nil), // 4: outer.ModifyPasswordReq
 	(*ModifyPasswordRsp)(nil), // 5: outer.ModifyPasswordRsp
 	(*UpdateGoldNtf)(nil),     // 6: outer.UpdateGoldNtf
-	(*GMReq)(nil),             // 7: outer.GMReq
-	(*GMRsp)(nil),             // 8: outer.GMRsp
 }
 var file_hall_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type
@@ -635,30 +544,6 @@ func file_hall_proto_init() {
 				return nil
 			}
 		}
-		file_hall_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GMReq); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_hall_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GMRsp); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -666,7 +551,7 @@ func file_hall_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_hall_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   9,
+			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
