@@ -41,8 +41,11 @@ func (s *Door) OnInit() {
 		ctx.Next()
 	})
 
-	mail := s.ginEngine.Group("/health")
-	mail.GET("/alive", func(ctx *gin.Context) {
+	gm := s.ginEngine.Group("/gm")
+	gm.GET("gold", addGold)
+
+	health := s.ginEngine.Group("/health")
+	health.GET("/alive", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, "ok")
 	})
 

@@ -70,14 +70,22 @@ func setMaster(ctx *gin.Context) {
 // 玩家上下分操作
 func addGold(ctx *gin.Context) {
 	req := gin.H{}
-	_ = ctx.BindJSON(&req)
+
+	if ctx.Request.Method == "GET" {
+		req["shortId"], _ = ctx.GetQuery("shortId")
+		req["gold"], _ = ctx.GetQuery("gold")
+	} else if ctx.Request.Method == "POST" {
+		_ = ctx.BindJSON(&req)
+	}
+
 	shortId := cast.ToInt64(req["shortId"])
+	gold := cast.ToInt64(req["gold"])
+
 	if shortId == 0 {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "shortId is empty"})
 		return
 	}
 
-	gold := cast.ToInt64(req["gold"])
 	if gold == 0 {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "the gold is zero"})
 		return
