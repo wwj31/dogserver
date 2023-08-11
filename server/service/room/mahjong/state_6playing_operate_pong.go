@@ -15,7 +15,7 @@ func (s *StatePlaying) operatePong(p *mahjongPlayer, seatIndex int) (bool, outer
 	peer := s.peerRecords[len(s.peerRecords)-1]
 	if peer.typ != playCardType {
 		s.Log().Errorw("operate pong failed peer is drawCard",
-			"room", s.room.RoomId, "player", p.ShortId, "peerRecords", s.peerRecords)
+			"room", s.room.RoomId, "player", p.ShortId, "peerRecords", s.peerRecordsLog())
 		return false, outer.ERROR_MSG_REQ_PARAM_INVALID
 	}
 
@@ -24,7 +24,7 @@ func (s *StatePlaying) operatePong(p *mahjongPlayer, seatIndex int) (bool, outer
 	desktopCard := s.cardsInDesktop[tail]
 	if desktopCard != peer.card {
 		s.Log().Errorw("operate pong logic error",
-			"room", s.room.RoomId, "player", p.ShortId, "peerRecords", s.peerRecords, "desktopCard", desktopCard)
+			"room", s.room.RoomId, "player", p.ShortId, "peerRecords", s.peerRecordsLog(), "desktopCard", desktopCard)
 		return false, outer.ERROR_MSG_REQ_PARAM_INVALID
 	}
 

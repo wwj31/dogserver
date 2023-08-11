@@ -43,7 +43,8 @@ func (s *StateDeal) Enter() {
 			s.cards = testCards
 		}
 	}
-	s.Log().Infow("[Mahjong] enter state deal", "room", s.room.RoomId, "cards", s.cards)
+	s.Log().Infow("[Mahjong] enter state deal",
+		"room", s.room.RoomId, "params", *s.gameParams(), "cards", s.cards)
 
 	var i int
 	for _, player := range s.mahjongPlayers {

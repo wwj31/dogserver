@@ -51,7 +51,7 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 		ntf.Card = peer.card.Int32() // 碰的牌
 
 		s.Log().Color(logger.Green).Infow("pong!", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId,
-			"peer", &peer, "hand", player.handCards, "pong cards", player.pong)
+			"peer", s.peerRecordsLog(), "hand", player.handCards, "pong cards", player.pong)
 
 	case outer.ActionType_ActionGang:
 		ok, err = s.operateGang(player, seatIndex, card, ntf)
@@ -59,14 +59,14 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 		delete(s.actionMap, seatIndex)
 
 		s.Log().Color(logger.Green).Infow("gang!", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId,
-			"peer", s.peerRecords[len(s.peerRecords)-1], "action map", s.actionMap, "hand", player.handCards, "lightGang cards", player.lightGang, "darkGang cards", player.darkGang)
+			"peer", s.peerRecordsLog(), "action map", s.actionMap, "hand", player.handCards, "lightGang cards", player.lightGang, "darkGang cards", player.darkGang)
 
 	case outer.ActionType_ActionHu:
 		ok, err = s.operateHu(player, seatIndex, ntf)
 		nextDrawSeatIndex = s.nextSeatIndex(seatIndex) // 胡牌的下家摸牌
 		delete(s.actionMap, seatIndex)
 
-		s.Log().Color(logger.Red).Infow("hu!", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId, "peer", s.peerRecords, "hand", player.handCards,
+		s.Log().Color(logger.Red).Infow("hu!", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId, "peer", s.peerRecordsLog(), "hand", player.handCards,
 			"pong", player.pong, "lightGang cards", player.lightGang, "darkGang cards", player.darkGang, "hu", player.hu, "hu extra", player.huExtra)
 
 	default:
