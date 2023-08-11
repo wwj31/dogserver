@@ -98,6 +98,7 @@ type (
 
 		dices          [2]int32 // 两颗骰子数
 		masterIndex    int      // 庄家位置 0,1,2,3
+		masterCard14   Card     // 庄家的第14张牌
 		gameCount      int      // 游戏的连续局数
 		huSeat         []int32  // 胡牌的位置，依次按顺序加入
 		multiHuByIndex int      // 一炮多响点炮的人

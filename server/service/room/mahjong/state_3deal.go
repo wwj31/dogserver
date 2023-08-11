@@ -25,15 +25,16 @@ func (s *StateDeal) State() int {
 
 func (s *StateDeal) Enter() {
 	s.cards = RandomCards(nil) // 总共108张
-	//s.cards = Cards{
-	//	11, 28, 29, 21, 12, 12, 22, 13, 13, 23, 25, 15, 22,
-	//	11, 11, 11, 25, 26, 27, 21, 22, 34, 34, 34, 26, 32,
-	//	12, 13, 14, 14, 14, 24, 24, 24, 28, 28, 27, 28, 29,
-	//	35, 36, 37, 38, 39, 21, 23, 33, 25, 26, 27, 28, 31,
-	//	15, 16, 38, 14, 16, 16, 15, 17, 23, 18, 18, 18, 32,
-	//	19, 33, 19, 19, 31, 31, 32, 16, 33, 37, 18, 35, 36,
-	//	17, 35, 38, 37, 38, 39, 39, 21, 17, 36, 17, 35, 23,
-	//	33, 31, 25, 36, 13, 26, 12, 37, 32, 27, 24, 39, 19, 22, 34, 15, 29, 29}
+	s.cards = Cards{
+		11, 11, 11, 28, 28, 28, 13, 13, 27, 28, 29, 15, 15,
+		11, 21, 12, 25, 26, 27, 21, 22, 34, 34, 34, 26, 32,
+		12, 22, 14, 14, 14, 24, 24, 24, 29, 13, 12, 23, 25,
+		35, 36, 37, 38, 39, 21, 23, 33, 25, 26, 27, 29, 31,
+		15,
+		16, 38, 14, 16, 16, 17, 23, 18, 18, 18, 32, 19, 33,
+		19, 19, 31, 31, 32, 16, 33, 37, 18, 35, 36, 17, 35,
+		38, 37, 38, 39, 39, 21, 17, 22, 36, 17, 35, 23, 33,
+		31, 25, 36, 13, 26, 12, 37, 32, 27, 24, 39, 19, 22, 34, 15, 29}
 	testCardsStr := rds.Ins.Get(context.Background(), "testcards").Val()
 	if testCardsStr != "" {
 		testCards := Cards{}
@@ -58,6 +59,7 @@ func (s *StateDeal) Enter() {
 	// 庄家多发一张
 	master := s.mahjongPlayers[s.masterIndex]
 	master.handCards = master.handCards.Insert(s.cards[52])
+	s.masterCard14 = s.cards[52]
 
 	// 剩下的算本局牌组
 	s.cards = s.cards[53:]
@@ -69,7 +71,7 @@ func (s *StateDeal) Enter() {
 		if s.room.GameParams.Mahjong.HuanSanZhang == 2 {
 			nextState = DecideIgnore // 不换牌，直接定缺
 		} else {
-			nextState = Exchange3
+			nextState = DecideIgnore
 		}
 
 		s.SwitchTo(nextState)
@@ -80,7 +82,10 @@ func (s *StateDeal) Enter() {
 
 func (s *StateDeal) Leave() {
 	for seatIndex, player := range s.mahjongPlayers {
-		s.Log().Infow("dealing", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId, "cards", player.handCards)
+		s.Log().Infow("dealing",
+			"room", s.room.RoomId,
+			"seat", seatIndex, "player", player.ShortId, "score", player.score,
+			"cards", player.handCards)
 	}
 	s.Log().Infow("[Mahjong] leave state deal", "room", s.room.RoomId)
 }

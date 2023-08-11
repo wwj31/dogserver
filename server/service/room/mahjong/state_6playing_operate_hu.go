@@ -67,10 +67,13 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 			act.remove(outer.ActionType_ActionPass)
 		}
 
+		// 如果删空了，直接删掉整个行为
 		if len(act.acts) == 0 {
 			delete(s.actionMap, seat)
 		}
 	}
+
+	s.Hus[seatIndex] = true
 
 	if s.husWasAllDo() {
 		s.huSettlement(ntf)
@@ -269,11 +272,11 @@ func (s *StatePlaying) huExtra(seatIndex int) ExtFanType {
 	var extraFans []ExtFanType
 
 	// 根据番数大到小，优先计算大番型
-	if len(s.peerRecords) == 0 && s.gameParams().TianDiHu {
+	if len(s.peerRecords) == 1 && s.gameParams().TianDiHu {
 		return TianHu
 	}
 
-	if len(s.peerRecords) == 1 && s.gameParams().TianDiHu {
+	if len(s.peerRecords) == 2 && s.gameParams().TianDiHu {
 		return Dihu
 	}
 

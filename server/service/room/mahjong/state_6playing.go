@@ -49,6 +49,9 @@ func (s *StatePlaying) Enter() {
 	s.currentStateEnterAt = time.Time{}
 	s.Hus = make(map[int]bool)
 
+	// 开局默认庄家摸了一张
+	s.appendPeerCard(drawCardType, s.masterCard14, s.masterIndex, nil)
+
 	// 判断能否胡牌
 	newAct := &action{seat: s.masterIndex, acts: []outer.ActionType{outer.ActionType_ActionPlayCard}}
 	master := s.mahjongPlayers[s.masterIndex]

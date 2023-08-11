@@ -2,6 +2,7 @@ package mahjong
 
 import (
 	"github.com/wwj31/dogactor/logger"
+
 	"server/proto/outermsg/outer"
 )
 
@@ -22,9 +23,8 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 		OpType:    op,
 	}
 
-	nextDrawShortIndex := s.nextSeatIndex(s.peerRecords[len(s.peerRecords)-1].seat) //提前计算下家摸牌的座位
+	nextDrawSeatIndex := s.nextSeatIndex(s.peerRecords[len(s.peerRecords)-1].seat)
 
-	peer := s.peerRecords[len(s.peerRecords)-1]
 	switch op {
 	case outer.ActionType_ActionPass:
 		s.Log().Infow("pass", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId, "hand", player.handCards)
@@ -47,6 +47,7 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 
 	case outer.ActionType_ActionPong:
 		ok, err = s.operatePong(player, seatIndex)
+		peer := s.peerRecords[len(s.peerRecords)-1]
 		ntf.Card = peer.card.Int32() // 碰的牌
 
 		s.Log().Color(logger.Green).Infow("pong!", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId,
@@ -54,7 +55,7 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 
 	case outer.ActionType_ActionGang:
 		ok, err = s.operateGang(player, seatIndex, card, ntf)
-		nextDrawShortIndex = seatIndex // 杠的人自己摸一张
+		nextDrawSeatIndex = seatIndex // 杠的人自己摸一张
 		delete(s.actionMap, seatIndex)
 
 		s.Log().Color(logger.Green).Infow("gang!", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId,
@@ -62,10 +63,10 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 
 	case outer.ActionType_ActionHu:
 		ok, err = s.operateHu(player, seatIndex, ntf)
-		nextDrawShortIndex = s.nextSeatIndex(seatIndex) // 胡牌的下家摸牌
+		nextDrawSeatIndex = s.nextSeatIndex(seatIndex) // 胡牌的下家摸牌
 		delete(s.actionMap, seatIndex)
 
-		s.Log().Color(logger.Red).Infow("hu!", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId, "peer", &peer, "hand", player.handCards,
+		s.Log().Color(logger.Red).Infow("hu!", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId, "peer", s.peerRecords, "hand", player.handCards,
 			"pong", player.pong, "lightGang cards", player.lightGang, "darkGang cards", player.darkGang, "hu", player.hu, "hu extra", player.huExtra)
 
 	default:
@@ -90,7 +91,7 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 	// 没有可行动的人，就摸牌
 	if len(s.actionMap) == 0 {
 		s.Hus = make(map[int]bool) // 每次摸牌清一次胡牌状态数据
-		s.drawCard(nextDrawShortIndex)
+		s.drawCard(nextDrawSeatIndex)
 	}
 	s.nextAction() // 碰、杠、胡、过 后的下个行为
 

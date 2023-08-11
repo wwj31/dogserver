@@ -4,9 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"testing"
+
 	"server/common/rds"
 	"server/proto/outermsg/outer"
-	"testing"
 
 	"github.com/stretchr/testify/assert"
 
@@ -17,6 +18,19 @@ func TestRandomCards(t *testing.T) {
 	cards := mahjong.RandomCards(nil)
 	cards.Sort()
 	fmt.Println(cards)
+}
+
+func TestIgnoreHandCards(t *testing.T) {
+	cards := mahjong.RandomCards(nil)
+	handCards := mahjong.Cards{
+		11, 11, 11, 28, 28, 28, 13, 13, 27, 28, 29, 15, 15,
+		11, 21, 12, 25, 26, 27, 21, 22, 34, 34, 34, 26, 32,
+		12, 22, 14, 14, 14, 24, 24, 24, 29, 13, 12, 23, 25,
+		35, 36, 37, 38, 39, 21, 23, 33, 25, 26, 27, 29, 31,
+		15}
+
+	handCards = handCards.Push(cards.Remove(handCards...)...)
+	fmt.Println(handCards, len(handCards))
 }
 
 func TestName(t *testing.T) {

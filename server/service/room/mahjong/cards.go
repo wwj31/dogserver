@@ -52,6 +52,11 @@ func (c Cards) Insert(cards ...Card) Cards {
 	return dst
 }
 
+// Push 尾部追加
+func (c Cards) Push(cards ...Card) Cards {
+	return append(c, cards...)
+}
+
 // Remove 移除一组牌,移除的牌必须全部在牌中
 func (c Cards) Remove(cards ...Card) Cards {
 	cardMap := make(map[Card]int) // 统计要移除的牌数量
