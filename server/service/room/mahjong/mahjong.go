@@ -23,8 +23,8 @@ const (
 	Exchange3ShowDuration    = 1 * time.Second  // 换三张结束后的动画播放时间
 	DecideIgnoreExpiration   = 20 * time.Second // 定缺持续时间
 	DecideIgnoreDuration     = 1 * time.Second  // 定缺结束后的动画播放时间
-	pongGangHuGuoExpiration  = 2 * time.Second  // 碰、杠、胡、过持续时间
-	playCardExpiration       = 2 * time.Second  // 出牌行为持续时间
+	pongGangHuGuoExpiration  = 20 * time.Second // 碰、杠、胡、过持续时间
+	playCardExpiration       = 20 * time.Second // 出牌行为持续时间
 	SettlementDuration       = 1 * time.Second  // 结算持续时间
 )
 

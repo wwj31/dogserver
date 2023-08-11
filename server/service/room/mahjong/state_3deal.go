@@ -72,7 +72,7 @@ func (s *StateDeal) Enter() {
 		if s.room.GameParams.Mahjong.HuanSanZhang == 2 {
 			nextState = DecideIgnore // 不换牌，直接定缺
 		} else {
-			nextState = DecideIgnore
+			nextState = Exchange3
 		}
 
 		s.SwitchTo(nextState)
