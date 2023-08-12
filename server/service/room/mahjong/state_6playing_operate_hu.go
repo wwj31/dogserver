@@ -55,6 +55,7 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 	// 计算额外加番
 	p.huExtra = s.huExtra(seatIndex)
 	p.huGen = int32(s.huGen(seatIndex))
+	p.winScore = make(map[int32]int64)
 
 	// 胡成功后，删除Gang和Pong(可以一炮多响,但是有人胡了就不能再碰、杠)
 	for seat, act := range s.actionMap {
@@ -172,9 +173,12 @@ func (s *StatePlaying) huSettlement(ntf *outer.MahjongBTEOperaNtf) {
 				if other.hu != HuInvalid || other.ShortId == p.ShortId {
 					continue
 				}
+
 				s.AWinB(huSeat, seat, winScore)
-				loseScores[int32(seat)] = winScore
+				loseScores[int32(seat)] = winScore // 统计输家和输的分
 			}
+
+			p.winScore = loseScores
 
 			// 组装通知消息数据
 			huResultNtf.ZiMo = true
@@ -185,6 +189,8 @@ func (s *StatePlaying) huSettlement(ntf *outer.MahjongBTEOperaNtf) {
 				HuOrder:     s.huIndex(huSeat),
 			})
 
+			s.Log().Infow("hu win score zimo",
+				"room", s.room.RoomId, "hu", p.hu, "extra", p.huExtra, "shortId", p.ShortId, "winner score", p.winScore)
 			return
 		}
 	}
@@ -227,17 +233,18 @@ func (s *StatePlaying) huSettlement(ntf *outer.MahjongBTEOperaNtf) {
 		s.AWinB(huSeat, loserSeat, winScore)
 		loseScores[int32(loserSeat)] += winScore
 
+		winner := s.mahjongPlayers[huSeat]
+		winner.winScore = loseScores
 		huResultNtf.Winner = append(huResultNtf.Winner, &outer.MahjongBTEHuInfo{
 			Seat:        int32(huSeat),
-			HuType:      s.mahjongPlayers[huSeat].hu.PB(),
-			HuExtraType: s.mahjongPlayers[huSeat].huExtra.PB(),
+			HuType:      winner.hu.PB(),
+			HuExtraType: winner.huExtra.PB(),
 			HuOrder:     s.huIndex(huSeat),
 		})
+		s.Log().Infow("hu win score dianPao", "room", s.room.RoomId,
+			"hu", winner.hu, "extra", winner.huExtra, "shortId", winner.ShortId, "winner score", winner.winScore)
 	}
 
-	//s.Log().Infow("hu win score", "room", s.room.RoomId,
-	//	"winner", p.ShortId, "hu", p.hu, "extra", p.huExtra, "gen", p.huGen, "fan", fan, "base score", baseScore,
-	//	"score", winScore, "pay seats", paySeat)
 }
 
 func (s *StatePlaying) AWinB(winnerSeat, loserSeat int, score int64) {
@@ -247,6 +254,7 @@ func (s *StatePlaying) AWinB(winnerSeat, loserSeat int, score int64) {
 	loser.score -= score
 }
 
+// 胡牌计算得分
 func (s *StatePlaying) huScore(p *mahjongPlayer, ziMo bool) int64 {
 	fan := huFan[p.hu] + extraFan[p.huExtra] + int(p.huGen)
 	baseScore := s.baseScore()

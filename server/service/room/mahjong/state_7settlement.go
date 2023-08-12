@@ -222,6 +222,7 @@ func (s *StateSettlement) settlementBroadcast(ntf *outer.MahjongBTESettlementNtf
 		ntf.PlayerData[seat].DianPaoSeatIndex = int32(huPeer.seat)
 		ntf.PlayerData[seat].TotalFan = int32(huFan[player.hu]+extraFan[player.huExtra]) + player.huGen
 		ntf.PlayerData[seat].TotalScore = player.score
+		ntf.PlayerData[seat].HuWinScoreSeatIndex = player.winScore
 
 		// 本局该玩家所有的杠牌,以及每次杠成功后赔钱的位置
 		for peerIndex, info := range player.gangInfos {
