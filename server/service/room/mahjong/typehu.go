@@ -4,11 +4,19 @@ import "server/proto/outermsg/outer"
 
 type HuType int32
 
+func HuTypePB() map[int32]int32 {
+	result := make(map[int32]int32)
+	for huType, num := range huFan {
+		result[int32(huType)] = int32(num)
+	}
+	return result
+}
+
 const (
 	HuInvalid     HuType = iota
 	Hu                   // 平胡      0
-	QingYiSe             // 清一色    2
 	DuiDuiHu             // 对对胡    1
+	QingYiSe             // 清一色    2
 	QingDui              // 清对      3
 	JiangDui             // 将对      3
 	QiDui                // 七对      2
@@ -23,6 +31,14 @@ const (
 )
 
 type ExtFanType int32
+
+func ExtFanTypePB() map[int32]int32 {
+	result := make(map[int32]int32)
+	for extraType, num := range extraFan {
+		result[int32(extraType)] = int32(num)
+	}
+	return result
+}
 
 const (
 	ExtraInvalid ExtFanType = iota

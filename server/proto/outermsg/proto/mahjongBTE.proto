@@ -21,12 +21,14 @@ message MahjongBTEGameInfo {
     int64                      ActionShortId    = 11; // 当前操作者
     int64                      ActionEndAt      = 12; // 操作结束时间(毫秒)
     repeated int32             HuSeats          = 13; // 当前胡牌的座位,按先后顺序加入
+    map<int32,int32>           HuFan            = 14; // 所有胡牌对应的番数 map<HuType,番数>
+    map<int32,int32>           HuExtraFan       = 15; // 胡牌额外番对应的番数 map<ExtraType,番数>
 
     // 以下数据只发操作者本人
-    repeated ActionType ActionType              = 14; // 可操作类型，1.碰、2.杠、3.胡、4.出牌
-    repeated HuType     HuType                  = 15; // 可胡牌的类型
-    repeated int32      GangCards               = 16; // 可杠的牌 出牌时，手牌中可能已经存在多副杠牌
-    int32               NewCard                 = 17; // 摸得的牌
+    repeated ActionType ActionType              = 16; // 可操作类型，1.碰、2.杠、3.胡、4.出牌
+    repeated HuType     HuType                  = 17; // 可胡牌的类型
+    repeated int32      GangCards               = 18; // 可杠的牌 出牌时，手牌中可能已经存在多副杠牌
+    int32               NewCard                 = 19; // 摸得的牌
 }
 
 // 血战到底 参与游戏的玩家数据
@@ -230,11 +232,15 @@ message MahjongBTEGangResultNtf {
 // 结算玩家数据
 message MahjongBTESettlementPlayerData{
     MahjongPlayerInfo Player              = 1; //
-    int32 DianPaoSeatIndex                = 2; // 点炮的人位置，如果是自己，表示自摸
-    map<int32,int64> ByDarkGangSeatIndex  = 3; // 被哪些人暗杠，map<杠的玩家位置，赔的分>
-    map<int32,int64> ByLightGangSeatIndex = 4; // 被哪些人明杠，map<杠的玩家位置，赔的分>
-    int32 TotalFan                        = 5; // 总番数
-    int64 TotalScore                      = 6; // 总输赢 负数为输
+    // 胡牌信息
+    int32      DianPaoSeatIndex           = 2; // 点炮的人位置，如果是自己，表示自摸
+    map<int32, int64> HuWinScoreSeatIndex = 3; // 胡牌赢得的每家分数 map<赔钱的位置，赔的分>
+
+    // 被杠的信息
+    map<int32,int64> ByDarkGangSeatIndex  = 4; // 被哪些人暗杠，map<杠的玩家位置，赔的分>
+    map<int32,int64> ByLightGangSeatIndex = 5; // 被哪些人明杠，map<杠的玩家位置，赔的分>
+    int32 TotalFan                        = 6; // 总番数
+    int64 TotalScore                      = 7; // 总输赢 负数为输
 }
 
 // 结算通知

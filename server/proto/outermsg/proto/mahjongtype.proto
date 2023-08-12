@@ -38,16 +38,17 @@ enum HuType {
     Hu            = 1;  // 平胡
     DuiDuiHu      = 2;  // 对对胡
     QingYiSe      = 3;  // 清一色
-    QiDui         = 4;  // 七对
-    LongQiDui     = 5;  // 龙七对
-    QingDui       = 6;  // 清对
-    QingQiDui     = 7;  // 清七对
-    QuanYaoJiu    = 8;  // 全幺九
-    JiangDui      = 9;  // 将对
-    JiangQiDui    = 10; // 将七对
-    MenQing       = 11; // 门清
-    ZhongZhang    = 12; // 中张
-    JiaXinWu      = 13; // 夹心五
+    QingDui       = 4;  // 清对
+    JiangDui      = 5;  // 将对
+    QiDui         = 6;  // 七对
+    LongQiDui     = 7;  // 龙七对
+    QingQiDui     = 8;  // 清七对
+    JiangQiDui    = 9;  // 将七对
+    QingLongQiDu  = 10; // 清龙七对
+    QuanYaoJiu    = 11; // 全幺九
+    MenQing       = 12; // 门清
+    ZhongZhang    = 13; // 中张
+    JiaXinWu      = 14; // 夹心五
 }
 
 // 额外番
