@@ -60,6 +60,14 @@ func (s *StatePlaying) Enter() {
 		newAct.hus = append(newAct.hus, outer.HuType(hu))
 		newAct.acts = append(newAct.acts, outer.ActionType_ActionHu)
 	}
+
+	// 判断能否暗杠
+	gangs := master.handCards.HasGang() // 检查手牌
+	newAct.gang = gangs.ToSlice()
+	if len(newAct.gang) > 0 {
+		newAct.acts = append(newAct.acts, outer.ActionType_ActionGang)
+	}
+
 	s.actionMap[s.masterIndex] = newAct
 	s.Log().Infow("[Mahjong] enter state playing", "room", s.room.RoomId, "params", *s.gameParams())
 	s.nextAction() // 庄家出牌
