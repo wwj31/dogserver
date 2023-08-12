@@ -37,7 +37,7 @@ message MahjongParams{
     int32 ZiMoJia              = 4; // 自摸 0.自摸加番、1.自摸加底
     int32 FanUpLimit           = 5; // 翻数封顶 1、2、3、4、5
     int32 DianGangHua          = 6; // 点杠花 0.点炮、1.自摸
-    int32 HuanSanZhang         = 7; // 换三张 0.同花色换三张、1.任意换三张、2.无换三张
+    int32 HuanSanZhang         = 7; // 换三张 0.无换三张、1.同花色换三张、1.任意换三张
     bool  YaoJiuDui            = 8; // 幺九将对
     bool  MenQingZhongZhang    = 9; // 门清中张
     bool  TianDiHu             = 10; // 天地胡

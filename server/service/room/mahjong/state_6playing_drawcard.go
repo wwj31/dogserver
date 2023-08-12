@@ -32,9 +32,13 @@ func (s *StatePlaying) drawCard(seatIndex int) {
 
 	// 判断能否杠
 	var gangs Cards
-	gangs = player.handCards.HasGang()                   // 检查手牌
-	if _, exist := player.pong[newCard.Int32()]; exist { // 检查碰牌组
-		gangs = gangs.Insert(newCard)
+	gangs = player.handCards.HasGang() // 检查手牌
+	if len(player.pong) > 0 {
+		for _, card := range player.handCards {
+			if _, exist := player.pong[card.Int32()]; exist { // 检查碰牌组
+				gangs = gangs.Insert(card)
+			}
+		}
 	}
 
 	newAction.gang = gangs.ToSlice()

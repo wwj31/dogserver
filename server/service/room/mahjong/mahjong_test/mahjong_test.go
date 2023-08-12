@@ -196,16 +196,11 @@ func TestRecurCheck(t *testing.T) {
 }
 
 func TestCardsTest(t *testing.T) {
-	err := rds.NewBuilder().OnConnect(func() {
+	err := rds.NewBuilder().DB(1).OnConnect(func() {
 		fmt.Println("redis connect success")
 	}).Connect()
 	assert.Nilf(t, err, "connect redis err:%v", err)
 
-	rds.Ins.Set(
-		context.Background(),
-		"testcards",
-		"[11,27,16,22,38,12,32,38,13,14,26,23,14,14,25,33,15,21,14,11,16,15,16,15,17,23,12,23,18,18,18,32,19,33,19,19,31,25,31,31,12,29,32,28,29,16,37,33,26,34,37,34,18,35,26,35,36,21,36,17,34,35,21,11,38,28,37,38,39,39,13,39,25,21,17,28,22,22,36,17,35,23,33,27,31,13,24,24,25,36,13,24,26,28,12,37,32,27,27,24,39,19,22,34,15,29,29,11]",
-		-1)
 	jsonString := rds.Ins.Get(context.Background(), "testcards").Val()
 	jsonCards := mahjong.Cards{}
 	_ = json.Unmarshal([]byte(jsonString), &jsonCards)

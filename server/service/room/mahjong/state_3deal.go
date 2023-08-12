@@ -25,16 +25,16 @@ func (s *StateDeal) State() int {
 
 func (s *StateDeal) Enter() {
 	s.cards = RandomCards(nil) // 总共108张
-	s.cards = Cards{
-		11, 11, 11, 28, 28, 28, 13, 13, 27, 28, 29, 15, 15,
-		11, 21, 12, 25, 26, 27, 21, 22, 34, 34, 34, 26, 32,
-		12, 22, 14, 14, 14, 24, 24, 24, 29, 13, 12, 23, 25,
-		35, 36, 37, 38, 39, 21, 23, 33, 25, 26, 27, 29, 31,
-		15,
-		16, 38, 14, 16, 16, 17, 23, 18, 18, 18, 32, 19, 33,
-		19, 19, 31, 31, 32, 16, 33, 37, 18, 35, 36, 17, 35,
-		38, 37, 38, 39, 39, 21, 17, 22, 36, 17, 35, 23, 33,
-		31, 25, 36, 13, 26, 12, 37, 32, 27, 24, 39, 19, 22, 34, 15, 29}
+	//s.cards = Cards{
+	//	11, 11, 11, 28, 28, 28, 13, 13, 27, 28, 29, 15, 15,
+	//	11, 21, 12, 25, 26, 27, 21, 22, 34, 34, 34, 26, 32,
+	//	12, 22, 14, 14, 14, 24, 24, 24, 29, 13, 12, 23, 25,
+	//	35, 36, 37, 38, 39, 21, 23, 33, 25, 26, 27, 29, 31,
+	//	15,
+	//	16, 38, 14, 16, 16, 17, 23, 18, 18, 18, 32, 19, 33,
+	//	19, 19, 31, 31, 32, 16, 33, 37, 18, 35, 36, 17, 35,
+	//	38, 37, 38, 39, 39, 21, 17, 22, 36, 17, 35, 23, 33,
+	//	31, 25, 36, 13, 26, 12, 37, 32, 27, 24, 39, 19, 22, 34, 15, 29}
 	testCardsStr := rds.Ins.Get(context.Background(), "testcards").Val()
 	if testCardsStr != "" {
 		testCards := Cards{}
@@ -69,7 +69,7 @@ func (s *StateDeal) Enter() {
 	s.currentStateEndAt = tools.Now().Add(DealShowDuration)
 	s.room.AddTimer(tools.XUID(), s.currentStateEndAt, func(dt time.Duration) {
 		var nextState State
-		if s.room.GameParams.Mahjong.HuanSanZhang == 2 {
+		if s.room.GameParams.Mahjong.HuanSanZhang == 0 {
 			nextState = DecideIgnore // 不换牌，直接定缺
 		} else {
 			nextState = Exchange3
