@@ -124,6 +124,11 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 			// 如果有抢杠，单独广播此通知
 			s.room.Broadcast(gangResultNtf)
 		}
+
+		// 杠成功，删除最后打的那张牌
+		if peer.typ == playCardType {
+			s.cardsInDesktop = s.cardsInDesktop[:len(s.cardsInDesktop)-1]
+		}
 	}
 
 	switch peer.typ {

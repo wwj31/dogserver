@@ -27,6 +27,8 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 
 	case playCardType, GangType1, GangType3: // 点炮,抢杠
 		hu = p.handCards.Insert(peer.card).IsHu(p.lightGang, p.darkGang, p.pong, peer.card, s.gameParams())
+		// 胡成功，删除最后打的那张牌
+		s.cardsInDesktop = s.cardsInDesktop[:len(s.cardsInDesktop)-1]
 		paySeat = append(paySeat, peer.seat) // 点炮的人陪钱
 	}
 
