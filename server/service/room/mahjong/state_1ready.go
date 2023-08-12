@@ -23,6 +23,11 @@ func (s *StateReady) Enter() {
 	s.multiHuByIndex = -1
 	s.playerAutoReady = s.ready
 
+	var ready bool
+	if s.gameCount < int(s.gameParams().PlayCountLimit) {
+		ready = true
+	}
+
 	readyExpireAt := time.Now().Add(ReadyExpiration)
 	for seat := 0; seat < maxNum; seat++ {
 		player := s.mahjongPlayers[seat]
@@ -32,11 +37,7 @@ func (s *StateReady) Enter() {
 
 		if player.Gold <= 0 {
 			s.room.PlayerLeave(player.ShortId, true)
-		}
-
-		var ready bool
-		if s.gameCount < int(s.gameParams().PlayCountLimit) {
-			ready = true
+			continue
 		}
 
 		s.ready(player, ready)

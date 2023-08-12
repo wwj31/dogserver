@@ -28,6 +28,7 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 	switch op {
 	case outer.ActionType_ActionPass:
 		s.Log().Infow("pass", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId, "hand", player.handCards)
+		ok = true
 		if currentAction.isValidAction(outer.ActionType_ActionPlayCard) {
 			// 自摸、暗杠、弯杠选择的过，只保留打牌操作
 			currentAction.acts = []outer.ActionType{outer.ActionType_ActionPlayCard}
@@ -44,7 +45,6 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 				lastPeer.afterQiangPass = nil
 			}
 		}
-		ok = true
 		delete(s.Hus, seatIndex)
 		delete(s.actionMap, seatIndex)
 

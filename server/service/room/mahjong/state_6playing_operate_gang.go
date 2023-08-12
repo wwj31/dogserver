@@ -140,6 +140,7 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 			loseScores = loseScoreAnalyze(s.allSeatsWithoutHu(seatIndex)...) // 其余三家输分
 			gangFunc = func(opNtf *outer.MahjongBTEOperaNtf) {
 				s.Log().Infow("gang ok by draw card with pong")
+				p.handCards = p.handCards.Remove(card)
 				delete(p.pong, card.Int32())
 				p.lightGang[card.Int32()] = p.ShortId
 				gangSuccess(opNtf, loseScores)

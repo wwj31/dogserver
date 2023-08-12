@@ -386,6 +386,7 @@ func (m *Mahjong) clear() {
 	m.currentAction = nil
 	m.actionMap = make(map[int]*action)
 	m.currentActionEndAt = time.Time{}
+	m.peerRecords = nil
 }
 
 func (m *Mahjong) allSeats(ignoreSeat ...int) (result []int) {

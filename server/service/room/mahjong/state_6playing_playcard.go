@@ -12,7 +12,6 @@ func (s *StatePlaying) playCard(cardIndex, seatIndex int) (bool, outer.ERROR) {
 		return false, outer.ERROR_MAHJONG_ACTION_PLAYER_NOT_OPERA
 	}
 
-	// 把打的牌从手牌移除
 	player := s.mahjongPlayers[seatIndex]
 	outCard := player.handCards[cardIndex]
 
@@ -20,6 +19,8 @@ func (s *StatePlaying) playCard(cardIndex, seatIndex int) (bool, outer.ERROR) {
 	if player.handCards.HasColorCard(player.ignoreColor) && outCard.Color() != player.ignoreColor {
 		return false, outer.ERROR_MAHJONG_MUST_OUT_IGNORE_COLOR
 	}
+
+	// 把打的牌从手牌移除
 	player.handCards = player.handCards.Remove(outCard)
 
 	s.cardsInDesktop = append(s.cardsInDesktop, outCard)          // 按照打牌顺序加入桌面牌
@@ -33,8 +34,11 @@ func (s *StatePlaying) playCard(cardIndex, seatIndex int) (bool, outer.ERROR) {
 		Card:      outCard.Int32(),
 		CardIndex: int32(cardIndex),
 	})
+
 	s.Log().Color(logger.Yellow).Infow("play a card",
-		"room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId, "play", outCard, "hand", player.handCards)
+		"room", s.room.RoomId, "seat", seatIndex,
+		"player", player.ShortId, "play", outCard,
+		"hand", player.handCards, "pong", player.pong, "light gang", player.lightGang, "dark gang", player.darkGang)
 
 	// 其余三家对这张牌依次做分析
 	for idx, other := range s.mahjongPlayers {

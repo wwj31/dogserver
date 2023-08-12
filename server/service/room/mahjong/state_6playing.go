@@ -56,9 +56,12 @@ func (s *StatePlaying) Enter() {
 	newAct := &action{seat: s.masterIndex, acts: []outer.ActionType{outer.ActionType_ActionPlayCard}}
 	master := s.mahjongPlayers[s.masterIndex]
 	hu := master.handCards.IsHu(master.lightGang, master.darkGang, master.pong, master.handCards[master.handCards.Len()-1], s.gameParams())
+
+	var pass bool
 	if hu != HuInvalid {
 		newAct.hus = append(newAct.hus, outer.HuType(hu))
 		newAct.acts = append(newAct.acts, outer.ActionType_ActionHu)
+		pass = true
 	}
 
 	// 判断能否暗杠
@@ -66,6 +69,11 @@ func (s *StatePlaying) Enter() {
 	newAct.gang = gangs.ToSlice()
 	if len(newAct.gang) > 0 {
 		newAct.acts = append(newAct.acts, outer.ActionType_ActionGang)
+		pass = true
+	}
+
+	if pass {
+		newAct.acts = append(newAct.acts, outer.ActionType_ActionPass)
 	}
 
 	s.actionMap[s.masterIndex] = newAct
