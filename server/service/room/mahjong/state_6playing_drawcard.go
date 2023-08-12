@@ -42,14 +42,21 @@ func (s *StatePlaying) drawCard(seatIndex int) {
 	}
 
 	newAction.gang = gangs.ToSlice()
+	var pass bool
 	if len(newAction.gang) > 0 {
 		newAction.acts = append(newAction.acts, outer.ActionType_ActionGang)
+		pass = true
 	}
 
 	// 判断能否胡牌
 	hu := player.handCards.IsHu(player.lightGang, player.darkGang, player.pong, newCard, s.gameParams())
 	if hu != HuInvalid {
 		newAction.acts = append(newAction.acts, outer.ActionType_ActionHu)
+		pass = true
+	}
+
+	if pass {
+		newAction.acts = append(newAction.acts, outer.ActionType_ActionPass)
 	}
 	s.actionMap[seatIndex] = newAction // 摸牌者加入行动组
 

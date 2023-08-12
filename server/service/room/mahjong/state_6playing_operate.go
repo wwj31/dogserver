@@ -28,6 +28,13 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 	switch op {
 	case outer.ActionType_ActionPass:
 		s.Log().Infow("pass", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId, "hand", player.handCards)
+		if currentAction.isValidAction(outer.ActionType_ActionPlayCard) {
+			// 自摸、暗杠、弯杠选择的过，只保留打牌操作
+			currentAction.acts = []outer.ActionType{outer.ActionType_ActionPlayCard}
+			currentAction.hus = nil
+			currentAction.gang = nil
+			return
+		}
 
 		// 检查抢杠胡的情况，所有人都过了，需要执行杠的行为
 		if s.husWasAllPass() {
