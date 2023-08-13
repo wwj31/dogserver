@@ -2,6 +2,7 @@ package mahjong
 
 import (
 	"reflect"
+	"sort"
 	"time"
 
 	"github.com/wwj31/dogactor/tools"
@@ -71,7 +72,22 @@ func (s *StateDecideIgnore) stateEnd() {
 	s.room.CancelTimer(s.timerId)
 	for _, player := range s.mahjongPlayers {
 		if player.ignoreColor == ColorUnknown {
-			player.ignoreColor = Tong
+			TongCards := player.handCards.colorCards(Tong)
+			TiaoCards := player.handCards.colorCards(Tiao)
+			WanCards := player.handCards.colorCards(Wan)
+
+			arr := []struct {
+				c   ColorType
+				len int
+			}{
+				{c: Tong, len: TongCards.Len()},
+				{c: Tiao, len: TiaoCards.Len()},
+				{c: Wan, len: WanCards.Len()},
+			}
+
+			sort.Slice(arr, func(i, j int) bool { return arr[i].len < arr[j].len })
+
+			player.ignoreColor = arr[0].c
 		}
 
 		s.colorMap[player.ShortId] = player.ignoreColor.PB()
