@@ -29,8 +29,9 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 	case outer.ActionType_ActionPass:
 		s.Log().Infow("pass", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId, "hand", player.handCards)
 		ok = true
+
+		// 自己摸牌后触发的行为，选择过，不做任何处理,只保留打牌操作
 		if currentAction.isValidAction(outer.ActionType_ActionPlayCard) {
-			// 自摸、暗杠、弯杠选择的过，只保留打牌操作
 			currentAction.acts = []outer.ActionType{outer.ActionType_ActionPlayCard}
 			currentAction.hus = nil
 			currentAction.gang = nil
