@@ -300,7 +300,7 @@ func (m *Mahjong) PlayerLeave(quitPlayer *room.Player) {
 		if player != nil && player.ShortId == quitPlayer.ShortId {
 			m.room.CancelTimer(quitPlayer.RID)
 			m.mahjongPlayers[idx] = nil
-			m.Log().Infow("player leave mahjong", "shortId", player.ShortId, "seat", idx)
+			m.Log().Infow("player leave mahjong", "shortId", player.ShortId, "seat", idx, "gold", player.Gold)
 			return
 		}
 	}

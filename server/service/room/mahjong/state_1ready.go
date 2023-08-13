@@ -85,7 +85,7 @@ func (s *StateReady) ready(player *mahjongPlayer, r bool) {
 	s.room.Broadcast(&outer.MahjongBTEPlayerReadyNtf{ShortId: player.ShortId, Ready: r})
 
 	s.Log().Infow("the player request ready ",
-		"room", s.room.RoomId, "player", player.ShortId, "ready", r)
+		"room", s.room.RoomId, "player", player.ShortId, "ready", r, "gold", player.Gold)
 
 	player.ready = r
 

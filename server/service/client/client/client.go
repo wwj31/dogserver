@@ -121,7 +121,7 @@ func (s *Client) OnHandle(m actor.Message) {
 	case *outer.MahjongBTEPlayerReadyNtf:
 		log.Infow("MahjongBTEPlayerReadyNtf room player ready!", "msg", msg.String())
 	case *outer.UpdateGoldNtf:
-		log.Infow("UpdateGoldNtf room player ready!", "msg", msg.String())
+		log.Infow("UpdateGoldNtf", "msg", msg.String())
 	default:
 		pb := msg.(proto.Message)
 		log.Infow("msg", "type", reflect.TypeOf(pb), "data", pb.String())
