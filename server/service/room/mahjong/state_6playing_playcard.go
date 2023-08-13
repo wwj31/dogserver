@@ -29,10 +29,11 @@ func (s *StatePlaying) playCard(cardIndex, seatIndex int) (bool, outer.ERROR) {
 
 	// 先把打牌消息广播出去
 	s.room.Broadcast(&outer.MahjongBTEOperaNtf{
-		OpShortId: player.ShortId,
-		OpType:    outer.ActionType_ActionPlayCard,
-		Card:      outCard.Int32(),
-		CardIndex: int32(cardIndex),
+		OpShortId:    player.ShortId,
+		OpType:       outer.ActionType_ActionPlayCard,
+		HandCardsNum: int32(player.handCards.Len()),
+		Card:         outCard.Int32(),
+		CardIndex:    int32(cardIndex),
 	})
 
 	s.Log().Color(logger.Yellow).Infow("play a card",
