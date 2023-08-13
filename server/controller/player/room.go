@@ -181,7 +181,12 @@ var _ = router.Reg(func(p *player.Player, msg *inner.RoomKickOutNtf) any {
 
 // 房间通知结算后修改金币
 var _ = router.Reg(func(p *player.Player, msg *inner.ModifyGoldReq) any {
-	p.Role().AddGold(msg.Gold)
+	addGold := msg.Gold
+	if msg.SetOrAdd {
+		addGold = msg.Gold - p.Role().Gold()
+	}
+
+	p.Role().AddGold(addGold)
 	return &inner.ModifyGoldRsp{Info: p.PlayerInfo()}
 })
 

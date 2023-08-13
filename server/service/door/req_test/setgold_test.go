@@ -12,7 +12,7 @@ import (
 
 func TestSetGold(t *testing.T) {
 	b, _ := json.Marshal(map[string]interface{}{
-		"shortId": 1639901,
+		"shortId": 1905995,
 		"gold":    1000,
 	})
 

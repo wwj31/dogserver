@@ -18,13 +18,13 @@ import (
 const (
 	ReadyExpiration          = 20 * time.Second // 准备超时时间
 	DecideMasterShowDuration = 3 * time.Second  // 定庄广播后的动画播放时间
-	DealShowDuration         = 20 * time.Second // 发牌广播后的动画播放时间
-	Exchange3Expiration      = 20 * time.Second // 换三张持续时间
+	DealShowDuration         = 2 * time.Second  // 发牌广播后的动画播放时间
+	Exchange3Expiration      = 2 * time.Second  // 换三张持续时间
 	Exchange3ShowDuration    = 1 * time.Second  // 换三张结束后的动画播放时间
-	DecideIgnoreExpiration   = 20 * time.Second // 定缺持续时间
+	DecideIgnoreExpiration   = 2 * time.Second  // 定缺持续时间
 	DecideIgnoreDuration     = 1 * time.Second  // 定缺结束后的动画播放时间
-	pongGangHuGuoExpiration  = 20 * time.Second // 碰、杠、胡、过持续时间
-	playCardExpiration       = 20 * time.Second // 出牌行为持续时间
+	pongGangHuGuoExpiration  = 2 * time.Second  // 碰、杠、胡、过持续时间
+	playCardExpiration       = 2 * time.Second  // 出牌行为持续时间
 	SettlementDuration       = 1 * time.Second  // 结算持续时间
 )
 
@@ -367,7 +367,17 @@ func (m *Mahjong) gameParams() *outer.MahjongParams {
 }
 
 func (m *Mahjong) baseScore() int64 {
-	return int64(float32(m.gameParams().BaseScore) * m.gameParams().BaseScoreTimes)
+	base := m.gameParams().BaseScore
+	if base == 0 {
+		base = 1
+	}
+
+	baseScoreTimes := m.gameParams().BaseScoreTimes
+	if baseScoreTimes == 0 {
+		baseScoreTimes = 1.0
+	}
+
+	return int64(float32(base) * baseScoreTimes)
 }
 
 func (m *Mahjong) clear() {

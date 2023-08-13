@@ -45,7 +45,8 @@ message NewPlayerInfo {
 
 // 通知玩家修改最新新币
 message ModifyGoldReq {
-    int64 Gold = 1;
+    int64 Gold     = 1;
+    bool  SetOrAdd = 2; // true.Set、 false.Add
 }
 
 message ModifyGoldRsp {

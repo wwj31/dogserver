@@ -50,16 +50,18 @@ func (s *StateSettlement) Enter() {
 	for seat := 0; seat < maxNum; seat++ {
 		player := s.mahjongPlayers[seat]
 		finalScore := player.score
-		s.room.Request(actortype.PlayerId(player.RID), &inner.ModifyGoldReq{Gold: finalScore}).Handle(func(resp any, err error) {
+		s.room.Request(actortype.PlayerId(player.RID), &inner.ModifyGoldReq{
+			SetOrAdd: true,
+			Gold:     finalScore,
+		}).Handle(func(resp any, err error) {
 			modifyRspCount[player.RID] = struct{}{}
 			if err == nil {
 				modifyRsp := resp.(*inner.ModifyGoldRsp)
 				player.PlayerInfo = modifyRsp.Info
 			}
 
-			s.Log().Infow("modify gold result", "room", s.room.RoomId, "player", player.ShortId,
-				"seat", seat, "player info",
-				*player.PlayerInfo, "err", err)
+			s.Log().Infow("modify gold result", "room", s.room.RoomId, "seat", seat,
+				"player", player.ShortId, "latest gold", player.Gold, "err", err)
 
 			if len(modifyRspCount) == maxNum {
 				s.settlementBroadcast(settlementMsg)
@@ -120,10 +122,18 @@ func (s *StateSettlement) notHu(ntf *outer.MahjongBTESettlementNtf) {
 			// 花猪单独赔钱，不计入查大叫
 			if player.handCards.HasColorCard(player.ignoreColor) {
 				pigSeats = append(pigSeats, seat) // 花猪
+				ntf.PigSeat = append(ntf.PigSeat, int32(seat))
 			} else {
 				hasNotTingSeat = append(hasNotTingSeat, seat) // 没叫的人
+				ntf.NotTingSeat = append(ntf.NotTingSeat, int32(seat))
 			}
 		}
+	}
+
+	// 4家全是花猪, 或者4家都没有叫  ？？?
+	if len(pigSeats) == maxNum || len(hasNotTingSeat) == maxNum {
+		s.Log().Infow("all player is the pig", "pigs", pigSeats, "not ting", hasNotTingSeat)
+		return
 	}
 
 	// 先把猪儿的钱赔了
@@ -179,18 +189,8 @@ func (s *StateSettlement) notHu(ntf *outer.MahjongBTESettlementNtf) {
 				s.mahjongPlayers[seat].score += winScore
 			}
 			notTingPlayer.score -= totalWinScore
-			//}
 		}
 	}
-
-	for _, seat := range hasNotTingSeat {
-		ntf.NotTingSeat = append(ntf.NotTingSeat, int32(seat))
-	}
-
-	for _, seat := range pigSeats {
-		ntf.PigSeat = append(ntf.PigSeat, int32(seat))
-	}
-
 }
 
 // 从听牌能胡的牌型中，选出最大番

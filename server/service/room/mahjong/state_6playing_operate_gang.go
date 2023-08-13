@@ -87,6 +87,8 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 
 			rival.gangTotalScore -= score // 被杠,丢分
 			rival.score -= score
+			s.Log().Infow("lose score update by gang", "room", s.room.RoomId,
+				"shortId", rival.ShortId, "current score", rival.score, "sub score", score)
 
 			winScore += score
 			loserSeats[loserSeat] = score //  记录玩家每次杠牌，哪些位置赔多少分
@@ -95,6 +97,9 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 		// 杠分统计数据
 		p.gangTotalScore += winScore // 杠,得分
 		p.score += winScore          // 总分，实时计算杠分
+
+		s.Log().Infow("win score update by gang", "room", s.room.RoomId,
+			"shortId", p.ShortId, "current score", p.score, "sub score", winScore)
 
 		// 记录本次杠获得的总分，以及每个赔付的位置
 		p.gangInfos[lastPeerIndex] = &gangInfo{}

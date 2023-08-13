@@ -155,8 +155,14 @@ func (s *StatePlaying) huSettlement(ntf *outer.MahjongBTEOperaNtf) {
 			rivalGang.score -= totalGangScore
 			rivalGang.gangTotalScore -= totalGangScore // 退杠
 
+			s.Log().Infow("lose score update by gangShangPao", "room", s.room.RoomId,
+				"shortId", rivalGang.ShortId, "current score", rivalGang.score, "sub score", totalGangScore)
+
 			p.score += totalGangScore
 			p.gangTotalScore += totalGangScore // 退杠
+
+			s.Log().Infow("win score update by gangShangPao", "room", s.room.RoomId,
+				"shortId", p.ShortId, "current score", p.score, "sub score", totalGangScore)
 
 			// 如果需要实时结算，就把结算分放入通知
 			if s.gameParams().HuImmediatelyScore {
@@ -257,6 +263,8 @@ func (s *StatePlaying) AWinB(winnerSeat, loserSeat int, score int64) {
 	loser := s.mahjongPlayers[loserSeat]
 	winner.score += score
 	loser.score -= score
+	s.Log().Infow("a win b", "room", s.room.RoomId,
+		"a", winner.ShortId, "a score", winner.score, "b", loser.ShortId, "b score", loser.score, "score", score)
 }
 
 // 胡牌计算得分
