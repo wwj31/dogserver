@@ -254,3 +254,15 @@ message MahjongBTESettlementNtf {
     repeated int32 NotTingSeat                         = 7; // 哪些位置没听牌
     repeated int32 PigSeat                             = 8; // 哪些位置是花猪
 }
+
+// 大结算信息
+message MahjongBTEFinialSettlement {
+    repeated MahjongBTEFinialPlayerInfo PlayerInfo = 1; // 东南西北4个玩家的大结算信息
+}
+
+message MahjongBTEFinialPlayerInfo {
+    int64 TotalScore     = 1; // 总输赢，负分表示输
+    int32 TotalLightGang = 2; // 明杠总次数
+    int32 TotalDarkGang  = 3; // 暗杠总次数
+    int32 TotalHu        = 4; // 胡牌总次数
+}

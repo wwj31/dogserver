@@ -68,6 +68,19 @@ func (s *StateSettlement) Enter() {
 			}
 		})
 	}
+
+	// 大结算
+	if s.finalSettlement() {
+		ntf := &outer.MahjongBTEFinialSettlement{}
+		for seat := 0; seat < maxNum; seat++ {
+			player := s.mahjongPlayers[seat]
+			ntf.PlayerInfo = append(ntf.PlayerInfo, player.finalStatsMsg)
+			player.finalStatsMsg = &outer.MahjongBTEFinialPlayerInfo{}
+		}
+		s.room.Broadcast(ntf)
+
+		// TODO 抽水
+	}
 }
 
 func (s *StateSettlement) Leave() {
@@ -288,5 +301,8 @@ func (s *StateSettlement) isNoHu() bool {
 			return false
 		}
 	}
+	return true
+}
+func (s *StateSettlement) finalSettlement() bool {
 	return true
 }

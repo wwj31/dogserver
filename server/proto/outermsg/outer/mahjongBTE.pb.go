@@ -2238,6 +2238,125 @@ func (x *MahjongBTESettlementNtf) GetPigSeat() []int32 {
 	return nil
 }
 
+// 大结算信息
+type MahjongBTEFinialSettlement struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	PlayerInfo []*MahjongBTEFinialPlayerInfo `protobuf:"bytes,1,rep,name=PlayerInfo,proto3" json:"PlayerInfo,omitempty"` // 东南西北4个玩家的大结算信息
+}
+
+func (x *MahjongBTEFinialSettlement) Reset() {
+	*x = MahjongBTEFinialSettlement{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_mahjongBTE_proto_msgTypes[33]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *MahjongBTEFinialSettlement) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MahjongBTEFinialSettlement) ProtoMessage() {}
+
+func (x *MahjongBTEFinialSettlement) ProtoReflect() protoreflect.Message {
+	mi := &file_mahjongBTE_proto_msgTypes[33]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MahjongBTEFinialSettlement.ProtoReflect.Descriptor instead.
+func (*MahjongBTEFinialSettlement) Descriptor() ([]byte, []int) {
+	return file_mahjongBTE_proto_rawDescGZIP(), []int{33}
+}
+
+func (x *MahjongBTEFinialSettlement) GetPlayerInfo() []*MahjongBTEFinialPlayerInfo {
+	if x != nil {
+		return x.PlayerInfo
+	}
+	return nil
+}
+
+type MahjongBTEFinialPlayerInfo struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	TotalScore     int64 `protobuf:"varint,1,opt,name=TotalScore,proto3" json:"TotalScore,omitempty"`         // 总输赢，负分表示输
+	TotalLightGang int32 `protobuf:"varint,2,opt,name=TotalLightGang,proto3" json:"TotalLightGang,omitempty"` // 明杠总次数
+	TotalDarkGang  int32 `protobuf:"varint,3,opt,name=TotalDarkGang,proto3" json:"TotalDarkGang,omitempty"`   // 暗杠总次数
+	TotalHu        int32 `protobuf:"varint,4,opt,name=TotalHu,proto3" json:"TotalHu,omitempty"`               // 胡牌总次数
+}
+
+func (x *MahjongBTEFinialPlayerInfo) Reset() {
+	*x = MahjongBTEFinialPlayerInfo{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_mahjongBTE_proto_msgTypes[34]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *MahjongBTEFinialPlayerInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MahjongBTEFinialPlayerInfo) ProtoMessage() {}
+
+func (x *MahjongBTEFinialPlayerInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_mahjongBTE_proto_msgTypes[34]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MahjongBTEFinialPlayerInfo.ProtoReflect.Descriptor instead.
+func (*MahjongBTEFinialPlayerInfo) Descriptor() ([]byte, []int) {
+	return file_mahjongBTE_proto_rawDescGZIP(), []int{34}
+}
+
+func (x *MahjongBTEFinialPlayerInfo) GetTotalScore() int64 {
+	if x != nil {
+		return x.TotalScore
+	}
+	return 0
+}
+
+func (x *MahjongBTEFinialPlayerInfo) GetTotalLightGang() int32 {
+	if x != nil {
+		return x.TotalLightGang
+	}
+	return 0
+}
+
+func (x *MahjongBTEFinialPlayerInfo) GetTotalDarkGang() int32 {
+	if x != nil {
+		return x.TotalDarkGang
+	}
+	return 0
+}
+
+func (x *MahjongBTEFinialPlayerInfo) GetTotalHu() int32 {
+	if x != nil {
+		return x.TotalHu
+	}
+	return 0
+}
+
 var File_mahjongBTE_proto protoreflect.FileDescriptor
 
 var file_mahjongBTE_proto_rawDesc = []byte{
@@ -2606,8 +2725,25 @@ var file_mahjongBTE_proto_rawDesc = []byte{
 	0x4e, 0x6f, 0x74, 0x54, 0x69, 0x6e, 0x67, 0x53, 0x65, 0x61, 0x74, 0x18, 0x07, 0x20, 0x03, 0x28,
 	0x05, 0x52, 0x0b, 0x4e, 0x6f, 0x74, 0x54, 0x69, 0x6e, 0x67, 0x53, 0x65, 0x61, 0x74, 0x12, 0x18,
 	0x0a, 0x07, 0x50, 0x69, 0x67, 0x53, 0x65, 0x61, 0x74, 0x18, 0x08, 0x20, 0x03, 0x28, 0x05, 0x52,
-	0x07, 0x50, 0x69, 0x67, 0x53, 0x65, 0x61, 0x74, 0x42, 0x08, 0x5a, 0x06, 0x2f, 0x6f, 0x75, 0x74,
-	0x65, 0x72, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x07, 0x50, 0x69, 0x67, 0x53, 0x65, 0x61, 0x74, 0x22, 0x5f, 0x0a, 0x1a, 0x4d, 0x61, 0x68, 0x6a,
+	0x6f, 0x6e, 0x67, 0x42, 0x54, 0x45, 0x46, 0x69, 0x6e, 0x69, 0x61, 0x6c, 0x53, 0x65, 0x74, 0x74,
+	0x6c, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x12, 0x41, 0x0a, 0x0a, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72,
+	0x49, 0x6e, 0x66, 0x6f, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x21, 0x2e, 0x6f, 0x75, 0x74,
+	0x65, 0x72, 0x2e, 0x4d, 0x61, 0x68, 0x6a, 0x6f, 0x6e, 0x67, 0x42, 0x54, 0x45, 0x46, 0x69, 0x6e,
+	0x69, 0x61, 0x6c, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x0a, 0x50,
+	0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x6e, 0x66, 0x6f, 0x22, 0xa4, 0x01, 0x0a, 0x1a, 0x4d, 0x61,
+	0x68, 0x6a, 0x6f, 0x6e, 0x67, 0x42, 0x54, 0x45, 0x46, 0x69, 0x6e, 0x69, 0x61, 0x6c, 0x50, 0x6c,
+	0x61, 0x79, 0x65, 0x72, 0x49, 0x6e, 0x66, 0x6f, 0x12, 0x1e, 0x0a, 0x0a, 0x54, 0x6f, 0x74, 0x61,
+	0x6c, 0x53, 0x63, 0x6f, 0x72, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0a, 0x54, 0x6f,
+	0x74, 0x61, 0x6c, 0x53, 0x63, 0x6f, 0x72, 0x65, 0x12, 0x26, 0x0a, 0x0e, 0x54, 0x6f, 0x74, 0x61,
+	0x6c, 0x4c, 0x69, 0x67, 0x68, 0x74, 0x47, 0x61, 0x6e, 0x67, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05,
+	0x52, 0x0e, 0x54, 0x6f, 0x74, 0x61, 0x6c, 0x4c, 0x69, 0x67, 0x68, 0x74, 0x47, 0x61, 0x6e, 0x67,
+	0x12, 0x24, 0x0a, 0x0d, 0x54, 0x6f, 0x74, 0x61, 0x6c, 0x44, 0x61, 0x72, 0x6b, 0x47, 0x61, 0x6e,
+	0x67, 0x18, 0x03, 0x20, 0x01, 0x28, 0x05, 0x52, 0x0d, 0x54, 0x6f, 0x74, 0x61, 0x6c, 0x44, 0x61,
+	0x72, 0x6b, 0x47, 0x61, 0x6e, 0x67, 0x12, 0x18, 0x0a, 0x07, 0x54, 0x6f, 0x74, 0x61, 0x6c, 0x48,
+	0x75, 0x18, 0x04, 0x20, 0x01, 0x28, 0x05, 0x52, 0x07, 0x54, 0x6f, 0x74, 0x61, 0x6c, 0x48, 0x75,
+	0x42, 0x08, 0x5a, 0x06, 0x2f, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x33,
 }
 
 var (
@@ -2622,7 +2758,7 @@ func file_mahjongBTE_proto_rawDescGZIP() []byte {
 	return file_mahjongBTE_proto_rawDescData
 }
 
-var file_mahjongBTE_proto_msgTypes = make([]protoimpl.MessageInfo, 43)
+var file_mahjongBTE_proto_msgTypes = make([]protoimpl.MessageInfo, 45)
 var file_mahjongBTE_proto_goTypes = []interface{}{
 	(*MahjongBTEGameInfo)(nil),                // 0: outer.MahjongBTEGameInfo
 	(*MahjongPlayerInfo)(nil),                 // 1: outer.MahjongPlayerInfo
@@ -2657,64 +2793,67 @@ var file_mahjongBTE_proto_goTypes = []interface{}{
 	(*MahjongBTEGangResultNtf)(nil),           // 30: outer.MahjongBTEGangResultNtf
 	(*MahjongBTESettlementPlayerData)(nil),    // 31: outer.MahjongBTESettlementPlayerData
 	(*MahjongBTESettlementNtf)(nil),           // 32: outer.MahjongBTESettlementNtf
-	nil,                                       // 33: outer.MahjongBTEGameInfo.HuFanEntry
-	nil,                                       // 34: outer.MahjongBTEGameInfo.HuExtraFanEntry
-	nil,                                       // 35: outer.CardsOfBTE.LightGangEntry
-	nil,                                       // 36: outer.CardsOfBTE.PongEntry
-	nil,                                       // 37: outer.MahjongBTEDecideIgnoreEndNtf.ColorsEntry
-	nil,                                       // 38: outer.MahjongBTEHuResultNtf.LoseScoresEntry
-	nil,                                       // 39: outer.MahjongBTEGangResultNtf.LoseScoresEntry
-	nil,                                       // 40: outer.MahjongBTESettlementPlayerData.HuWinScoreSeatIndexEntry
-	nil,                                       // 41: outer.MahjongBTESettlementPlayerData.ByDarkGangSeatIndexEntry
-	nil,                                       // 42: outer.MahjongBTESettlementPlayerData.ByLightGangSeatIndexEntry
-	(MahjongBTEState)(0),                      // 43: outer.MahjongBTEState
-	(ActionType)(0),                           // 44: outer.ActionType
-	(HuType)(0),                               // 45: outer.HuType
-	(ColorType)(0),                            // 46: outer.ColorType
-	(ExtraType)(0),                            // 47: outer.ExtraType
+	(*MahjongBTEFinialSettlement)(nil),        // 33: outer.MahjongBTEFinialSettlement
+	(*MahjongBTEFinialPlayerInfo)(nil),        // 34: outer.MahjongBTEFinialPlayerInfo
+	nil,                                       // 35: outer.MahjongBTEGameInfo.HuFanEntry
+	nil,                                       // 36: outer.MahjongBTEGameInfo.HuExtraFanEntry
+	nil,                                       // 37: outer.CardsOfBTE.LightGangEntry
+	nil,                                       // 38: outer.CardsOfBTE.PongEntry
+	nil,                                       // 39: outer.MahjongBTEDecideIgnoreEndNtf.ColorsEntry
+	nil,                                       // 40: outer.MahjongBTEHuResultNtf.LoseScoresEntry
+	nil,                                       // 41: outer.MahjongBTEGangResultNtf.LoseScoresEntry
+	nil,                                       // 42: outer.MahjongBTESettlementPlayerData.HuWinScoreSeatIndexEntry
+	nil,                                       // 43: outer.MahjongBTESettlementPlayerData.ByDarkGangSeatIndexEntry
+	nil,                                       // 44: outer.MahjongBTESettlementPlayerData.ByLightGangSeatIndexEntry
+	(MahjongBTEState)(0),                      // 45: outer.MahjongBTEState
+	(ActionType)(0),                           // 46: outer.ActionType
+	(HuType)(0),                               // 47: outer.HuType
+	(ColorType)(0),                            // 48: outer.ColorType
+	(ExtraType)(0),                            // 49: outer.ExtraType
 }
 var file_mahjongBTE_proto_depIdxs = []int32{
-	43, // 0: outer.MahjongBTEGameInfo.State:type_name -> outer.MahjongBTEState
+	45, // 0: outer.MahjongBTEGameInfo.State:type_name -> outer.MahjongBTEState
 	1,  // 1: outer.MahjongBTEGameInfo.Players:type_name -> outer.MahjongPlayerInfo
 	2,  // 2: outer.MahjongBTEGameInfo.Ex3Info:type_name -> outer.Exchange3Info
-	33, // 3: outer.MahjongBTEGameInfo.HuFan:type_name -> outer.MahjongBTEGameInfo.HuFanEntry
-	34, // 4: outer.MahjongBTEGameInfo.HuExtraFan:type_name -> outer.MahjongBTEGameInfo.HuExtraFanEntry
-	44, // 5: outer.MahjongBTEGameInfo.ActionType:type_name -> outer.ActionType
-	45, // 6: outer.MahjongBTEGameInfo.HuType:type_name -> outer.HuType
-	46, // 7: outer.MahjongPlayerInfo.DecideColor:type_name -> outer.ColorType
+	35, // 3: outer.MahjongBTEGameInfo.HuFan:type_name -> outer.MahjongBTEGameInfo.HuFanEntry
+	36, // 4: outer.MahjongBTEGameInfo.HuExtraFan:type_name -> outer.MahjongBTEGameInfo.HuExtraFanEntry
+	46, // 5: outer.MahjongBTEGameInfo.ActionType:type_name -> outer.ActionType
+	47, // 6: outer.MahjongBTEGameInfo.HuType:type_name -> outer.HuType
+	48, // 7: outer.MahjongPlayerInfo.DecideColor:type_name -> outer.ColorType
 	3,  // 8: outer.MahjongPlayerInfo.AllCards:type_name -> outer.CardsOfBTE
-	45, // 9: outer.MahjongPlayerInfo.HuType:type_name -> outer.HuType
-	47, // 10: outer.MahjongPlayerInfo.HuExtraType:type_name -> outer.ExtraType
-	35, // 11: outer.CardsOfBTE.LightGang:type_name -> outer.CardsOfBTE.LightGangEntry
-	36, // 12: outer.CardsOfBTE.Pong:type_name -> outer.CardsOfBTE.PongEntry
-	46, // 13: outer.MahjongBTEDecideIgnoreReq.color:type_name -> outer.ColorType
+	47, // 9: outer.MahjongPlayerInfo.HuType:type_name -> outer.HuType
+	49, // 10: outer.MahjongPlayerInfo.HuExtraType:type_name -> outer.ExtraType
+	37, // 11: outer.CardsOfBTE.LightGang:type_name -> outer.CardsOfBTE.LightGangEntry
+	38, // 12: outer.CardsOfBTE.Pong:type_name -> outer.CardsOfBTE.PongEntry
+	48, // 13: outer.MahjongBTEDecideIgnoreReq.color:type_name -> outer.ColorType
 	3,  // 14: outer.MahjongBTEPlayCardRsp.AllCards:type_name -> outer.CardsOfBTE
-	44, // 15: outer.MahjongBTEOperateReq.ActionType:type_name -> outer.ActionType
-	45, // 16: outer.MahjongBTEOperateReq.Hu:type_name -> outer.HuType
+	46, // 15: outer.MahjongBTEOperateReq.ActionType:type_name -> outer.ActionType
+	47, // 16: outer.MahjongBTEOperateReq.Hu:type_name -> outer.HuType
 	3,  // 17: outer.MahjongBTEOperateRsp.AllCards:type_name -> outer.CardsOfBTE
 	2,  // 18: outer.MahjongBTEExchange3EndNtf.Ex3Info:type_name -> outer.Exchange3Info
-	37, // 19: outer.MahjongBTEDecideIgnoreEndNtf.Colors:type_name -> outer.MahjongBTEDecideIgnoreEndNtf.ColorsEntry
-	44, // 20: outer.MahjongBTETurnNtf.ActionType:type_name -> outer.ActionType
-	45, // 21: outer.MahjongBTETurnNtf.HuType:type_name -> outer.HuType
-	44, // 22: outer.MahjongBTEOperaNtf.OpType:type_name -> outer.ActionType
+	39, // 19: outer.MahjongBTEDecideIgnoreEndNtf.Colors:type_name -> outer.MahjongBTEDecideIgnoreEndNtf.ColorsEntry
+	46, // 20: outer.MahjongBTETurnNtf.ActionType:type_name -> outer.ActionType
+	47, // 21: outer.MahjongBTETurnNtf.HuType:type_name -> outer.HuType
+	46, // 22: outer.MahjongBTEOperaNtf.OpType:type_name -> outer.ActionType
 	29, // 23: outer.MahjongBTEOperaNtf.HuResult:type_name -> outer.MahjongBTEHuResultNtf
 	30, // 24: outer.MahjongBTEOperaNtf.GangResult:type_name -> outer.MahjongBTEGangResultNtf
-	45, // 25: outer.MahjongBTEHuInfo.HuType:type_name -> outer.HuType
-	47, // 26: outer.MahjongBTEHuInfo.HuExtraType:type_name -> outer.ExtraType
+	47, // 25: outer.MahjongBTEHuInfo.HuType:type_name -> outer.HuType
+	49, // 26: outer.MahjongBTEHuInfo.HuExtraType:type_name -> outer.ExtraType
 	28, // 27: outer.MahjongBTEHuResultNtf.Winner:type_name -> outer.MahjongBTEHuInfo
-	38, // 28: outer.MahjongBTEHuResultNtf.LoseScores:type_name -> outer.MahjongBTEHuResultNtf.LoseScoresEntry
-	39, // 29: outer.MahjongBTEGangResultNtf.LoseScores:type_name -> outer.MahjongBTEGangResultNtf.LoseScoresEntry
+	40, // 28: outer.MahjongBTEHuResultNtf.LoseScores:type_name -> outer.MahjongBTEHuResultNtf.LoseScoresEntry
+	41, // 29: outer.MahjongBTEGangResultNtf.LoseScores:type_name -> outer.MahjongBTEGangResultNtf.LoseScoresEntry
 	1,  // 30: outer.MahjongBTESettlementPlayerData.Player:type_name -> outer.MahjongPlayerInfo
-	40, // 31: outer.MahjongBTESettlementPlayerData.HuWinScoreSeatIndex:type_name -> outer.MahjongBTESettlementPlayerData.HuWinScoreSeatIndexEntry
-	41, // 32: outer.MahjongBTESettlementPlayerData.ByDarkGangSeatIndex:type_name -> outer.MahjongBTESettlementPlayerData.ByDarkGangSeatIndexEntry
-	42, // 33: outer.MahjongBTESettlementPlayerData.ByLightGangSeatIndex:type_name -> outer.MahjongBTESettlementPlayerData.ByLightGangSeatIndexEntry
+	42, // 31: outer.MahjongBTESettlementPlayerData.HuWinScoreSeatIndex:type_name -> outer.MahjongBTESettlementPlayerData.HuWinScoreSeatIndexEntry
+	43, // 32: outer.MahjongBTESettlementPlayerData.ByDarkGangSeatIndex:type_name -> outer.MahjongBTESettlementPlayerData.ByDarkGangSeatIndexEntry
+	44, // 33: outer.MahjongBTESettlementPlayerData.ByLightGangSeatIndex:type_name -> outer.MahjongBTESettlementPlayerData.ByLightGangSeatIndexEntry
 	31, // 34: outer.MahjongBTESettlementNtf.PlayerData:type_name -> outer.MahjongBTESettlementPlayerData
-	46, // 35: outer.MahjongBTEDecideIgnoreEndNtf.ColorsEntry.value:type_name -> outer.ColorType
-	36, // [36:36] is the sub-list for method output_type
-	36, // [36:36] is the sub-list for method input_type
-	36, // [36:36] is the sub-list for extension type_name
-	36, // [36:36] is the sub-list for extension extendee
-	0,  // [0:36] is the sub-list for field type_name
+	34, // 35: outer.MahjongBTEFinialSettlement.PlayerInfo:type_name -> outer.MahjongBTEFinialPlayerInfo
+	48, // 36: outer.MahjongBTEDecideIgnoreEndNtf.ColorsEntry.value:type_name -> outer.ColorType
+	37, // [37:37] is the sub-list for method output_type
+	37, // [37:37] is the sub-list for method input_type
+	37, // [37:37] is the sub-list for extension type_name
+	37, // [37:37] is the sub-list for extension extendee
+	0,  // [0:37] is the sub-list for field type_name
 }
 
 func init() { file_mahjongBTE_proto_init() }
@@ -3120,6 +3259,30 @@ func file_mahjongBTE_proto_init() {
 				return nil
 			}
 		}
+		file_mahjongBTE_proto_msgTypes[33].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*MahjongBTEFinialSettlement); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_mahjongBTE_proto_msgTypes[34].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*MahjongBTEFinialPlayerInfo); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -3127,7 +3290,7 @@ func file_mahjongBTE_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_mahjongBTE_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   43,
+			NumMessages:   45,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

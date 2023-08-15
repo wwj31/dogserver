@@ -59,6 +59,7 @@ type (
 		score         int64
 		ready         bool
 		readyExpireAt time.Time
+		finalStatsMsg *outer.MahjongBTEFinialPlayerInfo
 
 		ignoreColor ColorType            // 定缺花色
 		exchange    *outer.Exchange3Info // 换三张信息
@@ -278,6 +279,7 @@ func (m *Mahjong) PlayerEnter(roomPlayer *room.Player) {
 	for i, player := range m.mahjongPlayers {
 		if player == nil {
 			player = m.newMahjongPlayer(roomPlayer)
+			player.finalStatsMsg = &outer.MahjongBTEFinialPlayerInfo{}
 			m.mahjongPlayers[i] = player
 			if m.playerAutoReady != nil {
 				m.playerAutoReady(player, false)
@@ -386,6 +388,7 @@ func (m *Mahjong) clear() {
 		gamer := m.mahjongPlayers[i]
 		if gamer != nil {
 			m.mahjongPlayers[i] = m.newMahjongPlayer(gamer.Player)
+			m.mahjongPlayers[i].finalStatsMsg = gamer.finalStatsMsg
 		}
 	}
 

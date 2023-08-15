@@ -61,6 +61,8 @@ var spawner = map[string]factory{
 	"outer.MahjongBTEHuInfo":                  func() interface{} { return &MahjongBTEHuInfo{} },
 	"outer.MahjongBTEGangResultNtf":           func() interface{} { return &MahjongBTEGangResultNtf{} },
 	"outer.MahjongBTEGameInfo":                func() interface{} { return &MahjongBTEGameInfo{} },
+	"outer.MahjongBTEFinialSettlement":        func() interface{} { return &MahjongBTEFinialSettlement{} },
+	"outer.MahjongBTEFinialPlayerInfo":        func() interface{} { return &MahjongBTEFinialPlayerInfo{} },
 	"outer.MahjongBTEExchange3Rsp":            func() interface{} { return &MahjongBTEExchange3Rsp{} },
 	"outer.MahjongBTEExchange3Req":            func() interface{} { return &MahjongBTEExchange3Req{} },
 	"outer.MahjongBTEExchange3PlayerReadyNtf": func() interface{} { return &MahjongBTEExchange3PlayerReadyNtf{} },
