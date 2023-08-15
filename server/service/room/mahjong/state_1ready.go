@@ -23,7 +23,10 @@ func (s *StateReady) Enter() {
 	s.multiHuByIndex = -1
 	s.playerAutoReady = s.ready
 
-	var ready bool
+	var (
+		ready          bool
+		resetGameCount bool
+	)
 	if s.gameCount < int(s.gameParams().PlayCountLimit) {
 		ready = true
 	}
@@ -37,13 +40,14 @@ func (s *StateReady) Enter() {
 
 		if player.Gold <= 0 {
 			s.room.PlayerLeave(player.ShortId, true)
+			resetGameCount = true
 			continue
 		}
 
 		s.ready(player, ready)
 	}
 
-	if s.gameCount >= int(s.gameParams().PlayCountLimit) {
+	if s.gameCount >= int(s.gameParams().PlayCountLimit) || resetGameCount {
 		s.gameCount = 0
 	}
 	s.room.Broadcast(&outer.MahjongBTEReadyNtf{ReadyExpireAt: readyExpireAt.UnixMilli()})
