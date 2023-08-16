@@ -21,6 +21,7 @@ func (s *StateReady) Enter() {
 	s.Log().Infow("[Mahjong] enter state ready ", "room", s.room.RoomId)
 	s.huSeat = nil
 	s.multiHuByIndex = -1
+	s.gameCount++
 	s.playerAutoReady = s.ready
 
 	var (
@@ -29,6 +30,10 @@ func (s *StateReady) Enter() {
 	)
 	if s.gameCount < int(s.gameParams().PlayCountLimit) {
 		ready = true
+	}
+
+	if s.gameCount >= int(s.gameParams().PlayCountLimit) || resetGameCount {
+		s.gameCount = 1
 	}
 
 	readyExpireAt := time.Now().Add(ReadyExpiration)
@@ -47,14 +52,10 @@ func (s *StateReady) Enter() {
 		s.ready(player, ready)
 	}
 
-	if s.gameCount >= int(s.gameParams().PlayCountLimit) || resetGameCount {
-		s.gameCount = 0
-	}
 	s.room.Broadcast(&outer.MahjongBTEReadyNtf{ReadyExpireAt: readyExpireAt.UnixMilli()})
 }
 
 func (s *StateReady) Leave() {
-	s.gameCount++
 	s.Log().Infow("[Mahjong] leave state ready", "room", s.room.RoomId)
 }
 
@@ -95,7 +96,6 @@ func (s *StateReady) ready(player *mahjongPlayer, r bool) {
 
 	if r {
 		player.readyExpireAt = time.Time{}
-
 		s.room.CancelTimer(player.RID)
 		if s.checkAllReady() {
 			if s.gameCount == 0 {

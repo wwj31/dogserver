@@ -170,7 +170,7 @@ func (s *StatePlaying) actionTimer(expireAt time.Time, seats ...int) {
 			// (碰杠胡过)行动者，优先打胡->杠->碰->打牌
 			if act.isValidAction(outer.ActionType_ActionHu) {
 				defaultOperaType = outer.ActionType_ActionHu
-			} else if act.isValidAction(outer.ActionType_ActionGang) {
+			} else if act.isValidAction(outer.ActionType_ActionGang) && s.cards.Len() > 0 {
 				defaultOperaType = outer.ActionType_ActionGang
 				card = Card(act.gang[0])
 			} else if act.isValidAction(outer.ActionType_ActionPong) {
