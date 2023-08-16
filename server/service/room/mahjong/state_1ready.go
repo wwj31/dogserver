@@ -2,6 +2,7 @@ package mahjong
 
 import (
 	"reflect"
+	"server/common/log"
 	"time"
 
 	"server/proto/outermsg/outer"
@@ -49,6 +50,7 @@ func (s *StateReady) Enter() {
 			continue
 		}
 
+		log.Infow("player ready", "player", player.ShortId, "ready", ready)
 		s.ready(player, ready)
 	}
 
