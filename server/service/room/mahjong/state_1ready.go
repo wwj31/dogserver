@@ -28,11 +28,11 @@ func (s *StateReady) Enter() {
 		ready          bool
 		resetGameCount bool
 	)
-	if s.gameCount < int(s.gameParams().PlayCountLimit) {
+	if s.gameCount <= int(s.gameParams().PlayCountLimit) {
 		ready = true
 	}
 
-	if s.gameCount >= int(s.gameParams().PlayCountLimit) || resetGameCount {
+	if s.gameCount > int(s.gameParams().PlayCountLimit) || resetGameCount {
 		s.gameCount = 1
 	}
 
@@ -98,7 +98,7 @@ func (s *StateReady) ready(player *mahjongPlayer, r bool) {
 		player.readyExpireAt = time.Time{}
 		s.room.CancelTimer(player.RID)
 		if s.checkAllReady() {
-			if s.gameCount == 0 {
+			if s.gameCount == 1 {
 				s.SwitchTo(DecideMaster)
 			} else {
 				s.SwitchTo(Deal)

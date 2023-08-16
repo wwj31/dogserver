@@ -253,10 +253,10 @@ func (m *Mahjong) CanLeave(p *inner.PlayerInfo) bool {
 			return true
 		}
 
-		if int32(m.gameCount) == 1 {
-			return false
+		if m.gameCount == 1 {
+			return true
 		}
-		return true
+		return false
 	}
 	return false
 }
