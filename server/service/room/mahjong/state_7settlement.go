@@ -45,6 +45,19 @@ func (s *StateSettlement) Enter() {
 		s.notHu(settlementMsg)
 	}
 
+	// 大结算
+	if s.finalSettlement() || s.scoreZeroOver {
+		ntf := &outer.MahjongBTEFinialSettlement{}
+		for seat := 0; seat < maxNum; seat++ {
+			player := s.mahjongPlayers[seat]
+			ntf.PlayerInfo = append(ntf.PlayerInfo, player.finalStatsMsg)
+			player.finalStatsMsg = &outer.MahjongBTEFinialPlayerInfo{}
+		}
+		settlementMsg.FinalSettlement = ntf
+
+		// TODO 抽水
+	}
+
 	// 结算分数为最终金币
 	modifyRspCount := make(map[string]struct{}) // 必须等待所有玩家金币修改成功后，才能发送结算
 	for seat := 0; seat < maxNum; seat++ {
@@ -69,18 +82,6 @@ func (s *StateSettlement) Enter() {
 		})
 	}
 
-	// 大结算
-	if s.finalSettlement() {
-		ntf := &outer.MahjongBTEFinialSettlement{}
-		for seat := 0; seat < maxNum; seat++ {
-			player := s.mahjongPlayers[seat]
-			ntf.PlayerInfo = append(ntf.PlayerInfo, player.finalStatsMsg)
-			player.finalStatsMsg = &outer.MahjongBTEFinialPlayerInfo{}
-		}
-		s.room.Broadcast(ntf)
-
-		// TODO 抽水
-	}
 }
 
 func (s *StateSettlement) Leave() {
@@ -304,5 +305,9 @@ func (s *StateSettlement) isNoHu() bool {
 	return true
 }
 func (s *StateSettlement) finalSettlement() bool {
+	if int32(s.gameCount) >= s.gameParams().PlayCountLimit {
+		return true
+	}
+
 	return true
 }

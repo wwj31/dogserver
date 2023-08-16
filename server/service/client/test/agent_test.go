@@ -1,8 +1,9 @@
 package test
 
 import (
-	"server/common/log"
 	"testing"
+
+	"server/common/log"
 
 	"github.com/stretchr/testify/assert"
 
@@ -11,7 +12,7 @@ import (
 )
 
 func TestMembersReq(t *testing.T) {
-	cli := &client.Client{Addr: *Addr, DeviceID: "wwj1"}
+	cli := &client.Client{Addr: *Addr, DeviceID: "test1"}
 	Init(cli)
 	rsp, ok := cli.Req(outer.Msg_IdAgentMembersReq, &outer.AgentMembersReq{}).(*outer.AgentMembersRsp)
 	assert.True(t, ok)

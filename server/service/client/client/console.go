@@ -85,6 +85,17 @@ var _ = reg("l", func(arg ...string) {
 	}
 })
 
+// 房间列表
+var _ = reg("agent", func(arg ...string) {
+	req := &outer.AgentMembersReq{}
+	v := client.Req(outer.Msg_IdAgentMembersReq, req)
+	if rsp, ok := v.(*outer.AgentMembersRsp); ok {
+		for _, member := range rsp.DownMembers {
+			log.Infof("roominfo %v", *member)
+		}
+	}
+})
+
 // 加入房间
 var _ = reg("j", func(arg ...string) {
 	if len(arg) != 1 {

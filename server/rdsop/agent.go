@@ -126,7 +126,7 @@ func AgentDown(shortId int64, downNum ...int) (down []int64) {
 
 		pip := rds.Ins.Pipeline()
 		for _, id := range ids {
-			pip.SMembers(context.Background(), AgentUpKey(id))
+			pip.SMembers(context.Background(), AgentDownKey(id))
 		}
 		results, err := pip.Exec(context.Background())
 		if err != nil {

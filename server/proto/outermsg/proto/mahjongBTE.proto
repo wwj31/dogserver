@@ -253,6 +253,8 @@ message MahjongBTESettlementNtf {
     repeated int32 HuSeatIndex                         = 6; // 胡牌的位置,按胡牌先后位置排序
     repeated int32 NotTingSeat                         = 7; // 哪些位置没听牌
     repeated int32 PigSeat                             = 8; // 哪些位置是花猪
+
+    MahjongBTEFinialSettlement FinalSettlement         = 9; // 非大结算，值为null
 }
 
 // 大结算信息
