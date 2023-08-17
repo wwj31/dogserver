@@ -98,7 +98,6 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 
 	// 没有可行动的人，就摸牌
 	if len(s.actionMap) == 0 {
-		s.Hus = make(map[int]bool) // 每次摸牌清一次胡牌状态数据
 		s.drawCard(nextDrawSeatIndex)
 	}
 	s.nextAction() // 碰、杠、胡、过 后的下个行为

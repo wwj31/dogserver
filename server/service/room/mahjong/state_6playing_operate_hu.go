@@ -140,12 +140,16 @@ func (s *StatePlaying) huSettlement(ntf *outer.MahjongBTEOperaNtf) {
 
 	// 呼叫转移,只在1对1的时候才生效,一炮多响，不会触发呼叫转移
 	if len(s.Hus) == 1 {
-		var huSeat int
-		for seat, _ := range s.Hus {
-			huSeat = seat
+		// 先找到胡的那个人
+		var (
+			p      *mahjongPlayer
+			huSeat int
+		)
+		for huSeat, _ = range s.Hus {
+			p = s.mahjongPlayers[huSeat]
 		}
 
-		p := s.mahjongPlayers[huSeat]
+		// 判断杠上炮的情况
 		if p.huExtra == GangShangPao {
 			gangPeerIndex := len(s.peerRecords) - 3
 			peerRecord := s.peerRecords[gangPeerIndex]          // 杠的那次记录
@@ -176,6 +180,7 @@ func (s *StatePlaying) huSettlement(ntf *outer.MahjongBTEOperaNtf) {
 				"score", totalGangScore, "rival gang loser seats", rivalGangInfo.loserSeats)
 		}
 
+		/////////////////////////////////////  以下为自摸胡的情况 /////////////////////////////////////
 		huPeer := s.peerRecords[p.huPeerIndex]
 		if huPeer.typ == drawCardType {
 			winScore := s.huScore(p, true)
@@ -207,12 +212,13 @@ func (s *StatePlaying) huSettlement(ntf *outer.MahjongBTEOperaNtf) {
 		}
 	}
 
+	/////////////////////////////////////  以下为点炮胡的情况 /////////////////////////////////////
 	lastPeerIndex := len(s.peerRecords) - 1
 	peer := s.peerRecords[lastPeerIndex]
 	loserSeat := peer.seat
 	loser := s.mahjongPlayers[loserSeat]
 	// 一炮多响，记录点炮的人
-	if len(s.Hus) > 1 {
+	if len(s.Hus) > 1 && s.multiHuByIndex == -1 {
 		s.multiHuByIndex = loserSeat
 	}
 
@@ -257,6 +263,7 @@ func (s *StatePlaying) huSettlement(ntf *outer.MahjongBTEOperaNtf) {
 			"hu", winner.hu, "extra", winner.huExtra, "shortId", winner.ShortId, "winner score", winner.winScore)
 	}
 
+	s.Hus = make(map[int]bool) // 清胡牌状态数据
 }
 
 func (s *StatePlaying) AWinB(winnerSeat, loserSeat int, score int64) {
