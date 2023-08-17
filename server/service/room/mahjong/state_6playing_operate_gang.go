@@ -71,7 +71,7 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 	}
 
 	// 杠成功后算分
-	gangSuccess := func(opNtf *outer.MahjongBTEOperaNtf, loseScores map[int32]int64) {
+	gangSuccess := func(gangType checkCardType, opNtf *outer.MahjongBTEOperaNtf, loseScores map[int32]int64) {
 		var (
 			winScore   int64                   // 本次杠总赢分
 			loserSeats = make(map[int32]int64) // 本次杠所有需要赔付的位置
@@ -86,7 +86,7 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 			}
 
 			rival.gangTotalScore -= score // 被杠,丢分
-			rival.score -= score
+			rival.updateScore(-score)
 			s.Log().Infow("lose score update by gang", "room", s.room.RoomId,
 				"shortId", rival.ShortId, "current score", rival.score, "sub score", score)
 
@@ -94,9 +94,15 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 			loserSeats[loserSeat] = score //  记录玩家每次杠牌，哪些位置赔多少分
 		}
 
+		if gangType == GangType4 {
+			p.finalStatsMsg.TotalDarkGang++
+		} else {
+			p.finalStatsMsg.TotalLightGang++
+		}
+
 		// 杠分统计数据
 		p.gangTotalScore += winScore // 杠,得分
-		p.score += winScore          // 总分，实时计算杠分
+		p.updateScore(winScore)      // 总分，实时计算杠分
 
 		s.Log().Infow("win score update by gang", "room", s.room.RoomId,
 			"shortId", p.ShortId, "current score", p.score, "sub score", winScore)
@@ -148,7 +154,7 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 				p.handCards = p.handCards.Remove(card)
 				delete(p.pong, card.Int32())
 				p.lightGang[card.Int32()] = p.ShortId
-				gangSuccess(opNtf, loseScores)
+				gangSuccess(gangType, opNtf, loseScores)
 			}
 			qiangGang = hasQiangGang()
 			ntf.Card = card.Int32() // 杠的牌
@@ -162,7 +168,7 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 				s.Log().Infow("gang ok by draw card")
 				p.handCards = p.handCards.Remove(card, card, card, card)
 				p.darkGang[card.Int32()] = p.ShortId
-				gangSuccess(opNtf, loseScores)
+				gangSuccess(gangType, opNtf, loseScores)
 			}
 		}
 
@@ -174,7 +180,7 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 		gangFunc = func(opNtf *outer.MahjongBTEOperaNtf) {
 			p.handCards, _, _ = p.handCards.Gang(card)
 			p.lightGang[card.Int32()] = s.mahjongPlayers[peer.seat].ShortId
-			gangSuccess(opNtf, loseScores)
+			gangSuccess(gangType, opNtf, loseScores)
 		}
 
 		qiangGang = hasQiangGang()

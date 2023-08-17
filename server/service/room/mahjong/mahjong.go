@@ -455,6 +455,11 @@ func (m *Mahjong) peerRecordsLog() string {
 	return log
 }
 
+func (m *mahjongPlayer) updateScore(val int64) {
+	m.score += val
+	m.finalStatsMsg.TotalScore += val
+}
+
 func (m *mahjongPlayer) allCardsToPB(params *outer.MahjongParams, shortId int64, settlement bool) *outer.CardsOfBTE {
 	allCards := &outer.CardsOfBTE{}
 	if m.ShortId == shortId || settlement || (params.HuImmediatelyScore && m.hu != HuInvalid) {

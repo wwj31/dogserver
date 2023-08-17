@@ -58,6 +58,7 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 	p.huExtra = s.huExtra(seatIndex)
 	p.huGen = int32(s.huGen(seatIndex))
 	p.winScore = make(map[int32]int64)
+	p.finalStatsMsg.TotalHu++
 
 	// 胡成功后，删除Gang和Pong(可以一炮多响,但是有人胡了就不能再碰、杠)
 	for seat, act := range s.actionMap {
@@ -152,13 +153,13 @@ func (s *StatePlaying) huSettlement(ntf *outer.MahjongBTEOperaNtf) {
 			rivalGangInfo := rivalGang.gangInfos[gangPeerIndex] // 杠信息
 			totalGangScore := rivalGangInfo.totalWinScore       // 本次转移的总分
 
-			rivalGang.score -= totalGangScore
+			rivalGang.updateScore(-totalGangScore)
 			rivalGang.gangTotalScore -= totalGangScore // 退杠
 
 			s.Log().Infow("lose score update by gangShangPao", "room", s.room.RoomId,
 				"shortId", rivalGang.ShortId, "current score", rivalGang.score, "sub score", totalGangScore)
 
-			p.score += totalGangScore
+			p.updateScore(totalGangScore)
 			p.gangTotalScore += totalGangScore // 退杠
 
 			s.Log().Infow("win score update by gangShangPao", "room", s.room.RoomId,
@@ -261,8 +262,8 @@ func (s *StatePlaying) huSettlement(ntf *outer.MahjongBTEOperaNtf) {
 func (s *StatePlaying) AWinB(winnerSeat, loserSeat int, score int64) {
 	winner := s.mahjongPlayers[winnerSeat]
 	loser := s.mahjongPlayers[loserSeat]
-	winner.score += score
-	loser.score -= score
+	winner.updateScore(score)
+	loser.updateScore(-score)
 	s.Log().Infow("a win b", "room", s.room.RoomId,
 		"a", winner.ShortId, "a score", winner.score, "b", loser.ShortId, "b score", loser.score, "score", score)
 }

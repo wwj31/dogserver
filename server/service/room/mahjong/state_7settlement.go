@@ -26,8 +26,10 @@ func (s *StateSettlement) Enter() {
 	notHu := s.isNoHu()
 	s.Log().Infow("[Mahjong] enter state settlement",
 		"room", s.room.RoomId, "master", s.masterIndex, "notHu", notHu, "game count", s.gameCount)
+	s.currentStateEndAt = tools.Now().Add(SettlementDuration)
 
 	settlementMsg := &outer.MahjongBTESettlementNtf{
+		EndAt:            s.currentActionEndAt.UnixMilli(),
 		NotHu:            notHu,
 		HasScoreZero:     s.scoreZeroOver,
 		GameCount:        int32(s.gameCount),
@@ -121,15 +123,15 @@ func (s *StateSettlement) notHu(ntf *outer.MahjongBTESettlementNtf) {
 			hasTingSeat = append(hasTingSeat, seat)
 		} else {
 			// 没有叫，需要退杠分
-			for peerIdx, info := range player.gangInfos {
+			for peerIdx, gang := range player.gangInfos {
 				peer := s.peerRecords[peerIdx]
-				loseScore := int64(float32(s.baseScore()) * gangScoreRatio[peer.typ])
-				for _, loseSeat := range info.loserSeats {
-					s.mahjongPlayers[loseSeat].gangTotalScore += loseScore // 退杠得分
-					s.mahjongPlayers[loseSeat].score += loseScore
+				gangWinScore := int64(float32(s.baseScore()) * gangScoreRatio[peer.typ])
+				for _, loseSeat := range gang.loserSeats {
+					s.mahjongPlayers[loseSeat].gangTotalScore += gangWinScore // 退杠得分
+					s.mahjongPlayers[loseSeat].updateScore(gangWinScore)
 
-					player.gangTotalScore -= loseScore // 没叫，退杠分
-					player.score -= loseScore
+					player.gangTotalScore -= gangWinScore // 没叫，退杠分
+					player.updateScore(-gangWinScore)
 				}
 			}
 
@@ -166,17 +168,13 @@ func (s *StateSettlement) notHu(ntf *outer.MahjongBTESettlementNtf) {
 			// 如果猪儿有钱不够赔，
 			// 那么有多少就赔多少，赢的人均分
 			var winScore int64
-			//if playerPig.score < needSubBaseScore*int64(len(winSeats)) {
-			//	winScore = playerPig.score / int64(len(winSeats))
-			//} else {
 			winScore = needSubBaseScore
-			//}
-			playerPig.score -= winScore * int64(len(winSeats))
+			playerPig.updateScore(winScore * int64(len(winSeats)))
 
 			// 赢钱的人加分
 			for _, seat := range winSeats {
 				player := s.mahjongPlayers[seat]
-				player.score += winScore
+				player.updateScore(winScore)
 			}
 		}
 	}
@@ -200,9 +198,9 @@ func (s *StateSettlement) notHu(ntf *outer.MahjongBTESettlementNtf) {
 			notTingPlayer := s.mahjongPlayers[notTingSeat]
 			// 够赔就直接赔
 			for seat, winScore := range allWinner {
-				s.mahjongPlayers[seat].score += winScore
+				s.mahjongPlayers[seat].updateScore(winScore)
 			}
-			notTingPlayer.score -= totalWinScore
+			notTingPlayer.updateScore(-totalWinScore)
 		}
 	}
 }
@@ -274,7 +272,6 @@ func (s *StateSettlement) settlementBroadcast(ntf *outer.MahjongBTESettlementNtf
 	s.nextMasterIndex() // 计算下一局庄家
 
 	// 结算给个短暂的时间
-	s.currentStateEndAt = tools.Now().Add(SettlementDuration)
 	s.room.AddTimer(tools.XUID(), s.currentStateEndAt, func(dt time.Duration) {
 		s.SwitchTo(Ready)
 	})

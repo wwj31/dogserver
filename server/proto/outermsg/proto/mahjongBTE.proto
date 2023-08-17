@@ -245,15 +245,16 @@ message MahjongBTESettlementPlayerData{
 
 // 结算通知
 message MahjongBTESettlementNtf {
-    bool     NotHu                                     = 1;  // true.流局
-    bool     HasScoreZero                              = 2;  // 玩家分输光了，提前进入结算(只有在房间选择不允许负分的时候生效)
-    repeated MahjongBTESettlementPlayerData PlayerData = 3; // 东南西北四个方位玩家结算数据
-    int32    GameCount                                 = 4; // 游戏局数
-    int64    GameSettlementAt                          = 5; // 结算时间
-    repeated int32 HuSeatIndex                         = 6; // 胡牌的位置,按胡牌先后位置排序
-    repeated int32 NotTingSeat                         = 7; // 哪些位置没听牌
-    repeated int32 PigSeat                             = 8; // 哪些位置是花猪
-    MahjongBTEFinialSettlement FinalSettlement         = 9; // 非大结算，值为null
+    int64    EndAt                                     = 1; // 结算结束时间
+    bool     NotHu                                     = 2;  // true.流局
+    bool     HasScoreZero                              = 3;  // 玩家分输光了，提前进入结算(只有在房间选择不允许负分的时候生效)
+    repeated MahjongBTESettlementPlayerData PlayerData = 4; // 东南西北四个方位玩家结算数据
+    int32    GameCount                                 = 5; // 游戏局数
+    int64    GameSettlementAt                          = 6; // 结算开始时间
+    repeated int32 HuSeatIndex                         = 7; // 胡牌的位置,按胡牌先后位置排序
+    repeated int32 NotTingSeat                         = 8; // 哪些位置没听牌
+    repeated int32 PigSeat                             = 9; // 哪些位置是花猪
+    MahjongBTEFinialSettlement FinalSettlement         = 10; // 非大结算，值为null
 }
 
 // 大结算信息
