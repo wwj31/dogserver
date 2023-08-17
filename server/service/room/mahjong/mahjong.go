@@ -379,7 +379,7 @@ func (m *Mahjong) baseScore() int64 {
 		baseScoreTimes = 1.0
 	}
 
-	return int64(float32(base) * baseScoreTimes)
+	return int64(float32(base*1000) * baseScoreTimes)
 }
 
 func (m *Mahjong) clear() {
