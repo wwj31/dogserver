@@ -158,7 +158,7 @@ func (s *StatePlaying) huSettlement(ntf *outer.MahjongBTEOperaNtf) {
 			totalGangScore := rivalGangInfo.totalWinScore       // 本次转移的总分
 
 			rivalGang.updateScore(-totalGangScore)
-			rivalGang.gangTotalScore -= totalGangScore // 退杠
+			rivalGang.gangTotalScore -= totalGangScore // 呼叫转移
 
 			s.Log().Infow("lose score update by gangShangPao", "room", s.room.RoomId,
 				"shortId", rivalGang.ShortId, "current score", rivalGang.score, "sub score", totalGangScore)

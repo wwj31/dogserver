@@ -150,6 +150,14 @@ func (p *Player) SetGateSession(gSession common.GSession) { p.gSession = gSessio
 func (p *Player) Online() bool                            { return p.GateSession().Valid() }
 
 func (p *Player) Login(first bool, enterGameRsp *outer.EnterGameRsp) {
+	// 离线gm命令
+	gmMsgs := rdsop.GetOfflineGMCmd(p.Role().ShortId(), p.System())
+	for _, msg := range gmMsgs {
+		p.Send(p.ID(), msg)
+	}
+
+	p.System().ProtoIndex()
+
 	for _, mod := range p.models {
 		mod.OnLogin(first, enterGameRsp)
 	}

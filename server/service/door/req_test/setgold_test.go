@@ -26,7 +26,7 @@ func TestSetGold(t *testing.T) {
 }
 
 func TestURLSetGold(t *testing.T) {
-	rsp, err := http.Get("http://1.14.17.15:9999/gm/gold/?shortId=1022696&gold=100000")
+	rsp, err := http.Get("http://localhost:9999/gm/gold/?shortId=1639901&gold=1")
 	assert.Nil(t, err)
 	fmt.Println(rsp)
 }

@@ -3,6 +3,7 @@ package door
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"server/common"
 	"server/common/actortype"
@@ -119,11 +120,13 @@ func addGold(ctx *gin.Context) {
 		}
 	}
 
-	result, err := door.RequestWait(actortype.PlayerId(playerInfo.RID), &inner.ModifyGoldReq{Gold: gold})
+	gmMsg := &inner.ModifyGoldReq{Gold: gold}
+	result, err := door.RequestWait(actortype.PlayerId(playerInfo.RID), gmMsg, time.Second)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError,
-			gin.H{"error": err.Error()})
+		rdsop.AddOfflineGMCmd(playerInfo.ShortId, gmMsg)
+		ctx.JSON(http.StatusOK, gin.H{"info": "玩家不在线，命令保存等待玩家上线执行"})
 		return
+
 	}
 
 	rsp, ok := result.(*inner.ModifyGoldRsp)

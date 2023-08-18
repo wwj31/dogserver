@@ -68,3 +68,8 @@ func RoomsInfoKey(roomId int64) string {
 func RoomsIncIdKey() string {
 	return fmt.Sprintf("room:inc_id")
 }
+
+// GMCmdListKey 离线玩家gm命令队列
+func GMCmdListKey(shortId int64) string {
+	return fmt.Sprintf("gm:cmd:%v", shortId)
+}
