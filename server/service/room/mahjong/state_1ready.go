@@ -26,35 +26,46 @@ func (s *StateReady) Enter() {
 	s.playerAutoReady = s.ready
 
 	var (
-		ready          bool
-		resetGameCount bool
+		autoReady      bool
+		resetPlayCount bool
 	)
-	if s.gameCount <= int(s.gameParams().PlayCountLimit) {
-		ready = true
-	}
 
-	if s.gameCount > int(s.gameParams().PlayCountLimit) || resetGameCount {
-		s.gameCount = 1
-	}
-
-	readyExpireAt := time.Now().Add(ReadyExpiration)
+	// 先把金币<=0的玩家踢出去
 	for seat := 0; seat < maxNum; seat++ {
 		player := s.mahjongPlayers[seat]
 		if player == nil {
 			continue
 		}
-
 		if player.Gold <= 0 {
+			log.Infow("kick player with ready case gold <= 0", "shortId", player.ShortId, "gold", player.Gold)
 			s.room.PlayerLeave(player.ShortId, true)
-			resetGameCount = true
+			resetPlayCount = true
 			continue
 		}
-
-		log.Infow("player ready", "player", player.ShortId, "ready", ready)
-		s.ready(player, ready)
 	}
 
-	s.room.Broadcast(&outer.MahjongBTEReadyNtf{ReadyExpireAt: readyExpireAt.UnixMilli()})
+	// 判断游戏是否需要重置
+	if s.gameCount > int(s.gameParams().PlayCountLimit) || resetPlayCount {
+		s.gameCount = 1
+	} else {
+		autoReady = true // 不需要重置，就自动准备
+	}
+
+	// 设置每个玩家的准备状态
+	for seat := 0; seat < maxNum; seat++ {
+		player := s.mahjongPlayers[seat]
+		if player == nil {
+			continue
+		}
+		log.Infow("player ready", "player", player.ShortId, "ready", autoReady, "gold", player.Gold)
+		s.ready(player, autoReady)
+	}
+
+	// 只有重置后的第一局才需要自动准备
+	if s.gameCount == 1 {
+		readyExpireAt := time.Now().Add(ReadyExpiration)
+		s.room.Broadcast(&outer.MahjongBTEReadyNtf{ReadyExpireAt: readyExpireAt.UnixMilli()})
+	}
 }
 
 func (s *StateReady) Leave() {

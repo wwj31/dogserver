@@ -79,7 +79,7 @@ func (s *StateSettlement) Enter() {
 				"player", player.ShortId, "latest gold", player.Gold, "err", err)
 
 			if len(modifyRspCount) == maxNum {
-				s.settlementBroadcast(settlementMsg)
+				s.afterSettle(settlementMsg)
 			}
 		})
 	}
@@ -217,7 +217,7 @@ func (s *StateSettlement) maxFanTingCard(tingCards map[Card]HuType) int32 {
 	return maxFan
 }
 
-func (s *StateSettlement) settlementBroadcast(ntf *outer.MahjongBTESettlementNtf) {
+func (s *StateSettlement) afterSettle(ntf *outer.MahjongBTESettlementNtf) {
 	allPlayerInfo := s.playersToPB(0, true) // 组装结算消息
 
 	darkGangMap := map[int32]map[int32]int64{}  // 表示每个人被哪些位置暗杠过

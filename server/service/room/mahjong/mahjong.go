@@ -239,24 +239,33 @@ func (m *Mahjong) SeatIndex(shortId int64) int {
 }
 
 func (m *Mahjong) CanEnter(p *inner.PlayerInfo) bool {
+	if p.Gold <= 0 {
+		return false
+	}
+
 	if m.fsm.State() == Ready {
 		return true
 	}
+
 	return false
 }
 
 func (m *Mahjong) CanLeave(p *inner.PlayerInfo) bool {
+	if p.Gold <= 0 {
+		return true
+	}
+
 	// 只有准备和结算时可以离开
 	switch m.fsm.State() {
-	case Ready:
-		if p.Gold <= 0 {
+	case Settlement:
+		if m.gameCount == int(m.gameParams().PlayCountLimit) {
 			return true
 		}
 
+	case Ready:
 		if m.gameCount == 1 {
 			return true
 		}
-		return false
 	}
 	return false
 }
