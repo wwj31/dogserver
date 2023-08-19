@@ -49,6 +49,8 @@ func (s *StateSettlement) Enter() {
 
 	// 大结算
 	if s.finalSettlement() || s.scoreZeroOver {
+		s.gameCount = int(s.gameParams().PlayCountLimit)
+
 		ntf := &outer.MahjongBTEFinialSettlement{}
 		for seat := 0; seat < maxNum; seat++ {
 			player := s.mahjongPlayers[seat]

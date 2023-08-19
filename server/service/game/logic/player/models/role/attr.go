@@ -25,6 +25,9 @@ func (s *Role) AddGold(v int64) {
 	s.Player.SendToClient(&outer.UpdateGoldNtf{Gold: s.data.Gold})
 }
 
+func (s *Role) GoldLine() int64     { return s.data.GoldLine }
+func (s *Role) SetGoldLine(v int64) { s.data.GoldLine = v }
+
 func (s *Role) Name() string        { return s.data.Name }
 func (s *Role) Icon() string        { return s.data.Icon }
 func (s *Role) Gender() int32       { return s.data.Gender }

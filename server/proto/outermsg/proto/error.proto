@@ -18,35 +18,40 @@ enum ERROR {
    GOLD_NOT_ENOUGH                  = 12; // 金币不足
    NAME_LEN_OUT_OF_RANGE            = 13; // 名字太长
    MODIFY_PASSWORD_NOT_PHONE        = 14; // 修改失败，未绑定手机号
-   PLAYER_NOT_IN_ALLIANCE           = 15; // 玩家没有联盟
-   PLAYER_POSITION_LIMIT            = 16; // 玩家职位权限不够
-   CAN_NOT_FIND_PLAYER_INFO         = 17; // 无法通过短id找到玩家
-   PLAYER_NOT_IN_CORRECT_ALLIANCE   = 18; // 被设置的玩家不在本联盟中
-   CAN_NOT_SET_HIGHER_POSITION      = 19; // 不能对职位更高的人设置职位
-   CAN_NOT_SET_NOT_IN_DOWN_POSITION = 20; // 不能对非直属下级设置职位
-   TARGET_IS_NOT_DOWN               = 21; // 不是直属上下级关系
-   PLAYER_ALREADY_IN_ALLIANCE       = 22; // 玩家已有联盟
-   PLAYER_ALREADY_HAS_UP            = 23; // 玩家已有上级
-   PLAYER_ALREADY_IN_ROOM           = 24; // 玩家已经在房间内，不能重复进入房间
-   ROOM_HAS_PLAYER_CAN_NOT_DISBAND  = 25; // 房间还有人，不能解散
-   ROOM_WAS_FULL_CAN_NOT_ENTER      = 26; // 房间已满
-   PLAYER_NOT_IN_ROOM               = 27; // 玩家没有房间
-   ROOM_CAN_NOT_ENTER               = 28; // 房间当前不能进入
-   ROOM_CAN_NOT_LEAVE               = 29; // 房间当前不能退出
-   ROOM_CAN_NOT_READY               = 30; // 房间当前不能切换准备状态
-   ROOM_CAN_NOT_SET_GOLD            = 31; // 房间当前状态不允许玩家上下分
-   ROOM_PLAYER_NOT_IN_GAME          = 32; // 玩家未参与游戏
-   MAHJONG_EXCHANGE3_LEN_ERROR      = 33; // 请求换三张长度不为3
-   MAHJONG_EXCHANGE3_INDEX_ERROR    = 34; // 请求换三张下标越界长度不为0-12
-   MAHJONG_EXCHANGE3_INDEX_EQUAL    = 35; // 请求换三张下标重复
-   MAHJONG_EXCHANGE3_OPERATED       = 36; // 请求换三张已经操作过
-   MAHJONG_EXCHANGE3_COLOR_ERROR    = 37; // 同花色换三张，花色不同
-   MAHJONG_ACTION_PLAYER_NOT_MATCH  = 38; // 当前未轮到该玩家行动
-   MAHJONG_ACTION_PLAYER_NOT_OPERA  = 39; // 当前玩家可以行动，但是执行的行动无效
-   MAHJONG_HU_INVALID               = 41; // 玩家当前牌型不能胡牌
-   MAHJONG_MUST_OUT_IGNORE_COLOR    = 42; // 还存在定缺的花色的牌,必须打该花色的牌
-   MAHJONG_STATE_MSG_INVALID        = 43; // 当前状态不受理此消息
-   MAHJONG_SPARE_CARDS_WAS_EMPTY    = 44; // 牌堆没牌了
+   CAN_NOT_FIND_PLAYER_INFO         = 15; // 无法通过短id找到玩家
+   // 联盟、上下级
+   PLAYER_NOT_IN_ALLIANCE           = 56; // 玩家没有联盟
+   PLAYER_POSITION_LIMIT            = 57; // 玩家职位权限不够
+   PLAYER_NOT_IN_CORRECT_ALLIANCE   = 58; // 被设置的玩家不在本联盟中
+   CAN_NOT_SET_HIGHER_POSITION      = 59; // 不能对职位更高的人设置职位
+   CAN_NOT_SET_NOT_IN_DOWN_POSITION = 60; // 不能对非直属下级设置职位
+   TARGET_IS_NOT_DOWN               = 61; // 不是直属上下级关系
+   PLAYER_ALREADY_IN_ALLIANCE       = 62; // 玩家已有联盟
+   PLAYER_ALREADY_HAS_UP            = 63; // 玩家已有上级
+   // 房间
+   PLAYER_ALREADY_IN_ROOM           = 104; // 玩家已经在房间内，不能重复进入房间
+   ROOM_HAS_PLAYER_CAN_NOT_DISBAND  = 105; // 房间还有人，不能解散
+   ROOM_WAS_FULL_CAN_NOT_ENTER      = 106; // 房间已满
+   PLAYER_NOT_IN_ROOM               = 107; // 玩家没有房间
+   ROOM_CAN_NOT_ENTER               = 108; // 房间当前不能进入
+   ROOM_CAN_NOT_LEAVE               = 109; // 房间当前不能退出
+   ROOM_CAN_NOT_READY               = 100; // 房间当前不能切换准备状态
+   ROOM_CAN_NOT_SET_GOLD            = 101; // 房间当前状态不允许玩家上下分
+   ROOM_PLAYER_NOT_IN_GAME          = 102; // 玩家未参与游戏
+   ROOM_CANNOT_ENTER_WITH_GOLD_LINE = 103; // 玩家金币为达到警戒线，不能进房间
+
+   // 血战到底
+   MAHJONG_EXCHANGE3_LEN_ERROR      = 200; // 请求换三张长度不为3
+   MAHJONG_EXCHANGE3_INDEX_ERROR    = 201; // 请求换三张下标越界长度不为0-12
+   MAHJONG_EXCHANGE3_INDEX_EQUAL    = 202; // 请求换三张下标重复
+   MAHJONG_EXCHANGE3_OPERATED       = 203; // 请求换三张已经操作过
+   MAHJONG_EXCHANGE3_COLOR_ERROR    = 204; // 同花色换三张，花色不同
+   MAHJONG_ACTION_PLAYER_NOT_MATCH  = 205; // 当前未轮到该玩家行动
+   MAHJONG_ACTION_PLAYER_NOT_OPERA  = 206; // 当前玩家可以行动，但是执行的行动无效
+   MAHJONG_HU_INVALID               = 207; // 玩家当前牌型不能胡牌
+   MAHJONG_MUST_OUT_IGNORE_COLOR    = 208; // 还存在定缺的花色的牌,必须打该花色的牌
+   MAHJONG_STATE_MSG_INVALID        = 209; // 当前状态不受理此消息
+   MAHJONG_SPARE_CARDS_WAS_EMPTY    = 210; // 牌堆没牌了
 }
 
 message FailRsp {

@@ -134,6 +134,10 @@ var _ = router.Reg(func(p *player.Player, msg *outer.JoinRoomReq) any {
 		return outer.ERROR_MSG_REQ_PARAM_INVALID
 	}
 
+	if p.Role().Gold() <= p.Role().GoldLine() {
+		return outer.ERROR_ROOM_CANNOT_ENTER_WITH_GOLD_LINE
+	}
+
 	roomActor := actortype.RoomName(msg.RoomId)
 	v, err := p.RequestWait(roomActor, &inner.JoinRoomReq{Player: p.PlayerInfo()})
 	if yes, code := common.IsErr(v, err); yes {

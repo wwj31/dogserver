@@ -17,6 +17,7 @@ message RoleInfo
     string Icon     = 9;
     int64  Gold     = 10;
     int32  Gender   = 11;
+    int64  GoldLine  =12;  // 警戒值
 }
 
 message AllianceInfo

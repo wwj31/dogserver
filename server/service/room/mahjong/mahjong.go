@@ -239,10 +239,6 @@ func (m *Mahjong) SeatIndex(shortId int64) int {
 }
 
 func (m *Mahjong) CanEnter(p *inner.PlayerInfo) bool {
-	if p.Gold <= 0 {
-		return false
-	}
-
 	if m.fsm.State() == Ready {
 		return true
 	}

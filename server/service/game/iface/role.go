@@ -19,6 +19,9 @@ type Role interface {
 	Gold() int64
 	AddGold(v int64)
 
+	GoldLine() int64
+	SetGoldLine(v int64)
+
 	Name() string
 	Icon() string
 	Gender() int32
