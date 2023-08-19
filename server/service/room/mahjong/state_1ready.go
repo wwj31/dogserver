@@ -36,10 +36,15 @@ func (s *StateReady) Enter() {
 		if player == nil {
 			continue
 		}
+
 		if player.Gold <= 0 {
-			log.Infow("kick player with ready case gold <= 0", "shortId", player.ShortId, "gold", player.Gold)
-			s.room.PlayerLeave(player.ShortId, true)
-			resetPlayCount = true
+			// 玩家没分了，如果是最后一把，或者不允许负分，
+			// 就踢出玩家并且设置游戏重置
+			if s.gameCount > int(s.gameParams().PlayCountLimit) || !s.gameParams().AllowScoreSmallZero {
+				log.Infow("kick player with ready case gold <= 0", "shortId", player.ShortId, "gold", player.Gold)
+				s.room.PlayerLeave(player.ShortId, true)
+				resetPlayCount = true
+			}
 			continue
 		}
 	}
