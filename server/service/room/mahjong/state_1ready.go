@@ -51,6 +51,7 @@ func (s *StateReady) Enter() {
 
 	// 判断游戏是否需要重置
 	if s.gameCount > int(s.gameParams().PlayCountLimit) || resetPlayCount {
+		log.Infow("reset game count", "current", s.gameCount, "param", s.gameParams().PlayCountLimit, "reset", resetPlayCount)
 		s.gameCount = 1
 	} else {
 		autoReady = true // 不需要重置，就自动准备

@@ -264,22 +264,23 @@ type MahjongParams struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	PlayCountLimit       int32   `protobuf:"varint,1,opt,name=playCountLimit,proto3" json:"playCountLimit,omitempty"`              // 必须打满多少局才能退出
-	BaseScore            int32   `protobuf:"varint,2,opt,name=BaseScore,proto3" json:"BaseScore,omitempty"`                        // 底分
-	BaseScoreTimes       float32 `protobuf:"fixed32,3,opt,name=BaseScoreTimes,proto3" json:"BaseScoreTimes,omitempty"`             // 倍数 0.1、0.5、1、2
-	ZiMoJia              int32   `protobuf:"varint,4,opt,name=ZiMoJia,proto3" json:"ZiMoJia,omitempty"`                            // 自摸 0.自摸加番、1.自摸加底
-	FanUpLimit           int32   `protobuf:"varint,5,opt,name=FanUpLimit,proto3" json:"FanUpLimit,omitempty"`                      // 翻数封顶 1、2、3、4、5
-	DianGangHua          int32   `protobuf:"varint,6,opt,name=DianGangHua,proto3" json:"DianGangHua,omitempty"`                    // 点杠花 0.点炮、1.自摸
-	HuanSanZhang         int32   `protobuf:"varint,7,opt,name=HuanSanZhang,proto3" json:"HuanSanZhang,omitempty"`                  // 换三张 0.无换三张、1.同花色换三张、1.任意换三张
-	YaoJiuDui            bool    `protobuf:"varint,8,opt,name=YaoJiuDui,proto3" json:"YaoJiuDui,omitempty"`                        // 幺九将对
-	MenQingZhongZhang    bool    `protobuf:"varint,9,opt,name=MenQingZhongZhang,proto3" json:"MenQingZhongZhang,omitempty"`        // 门清中张
-	TianDiHu             bool    `protobuf:"varint,10,opt,name=TianDiHu,proto3" json:"TianDiHu,omitempty"`                         // 天地胡
-	DianPaoPingHu        bool    `protobuf:"varint,11,opt,name=DianPaoPingHu,proto3" json:"DianPaoPingHu,omitempty"`               // 点炮可平胡
-	JiaXinWu             bool    `protobuf:"varint,12,opt,name=JiaXinWu,proto3" json:"JiaXinWu,omitempty"`                         // 夹心五
-	GangImmediatelyScore bool    `protobuf:"varint,13,opt,name=GangImmediatelyScore,proto3" json:"GangImmediatelyScore,omitempty"` // 杠分实时结算
-	HuImmediatelyScore   bool    `protobuf:"varint,14,opt,name=HuImmediatelyScore,proto3" json:"HuImmediatelyScore,omitempty"`     // 胡牌实时结算
-	AllowScoreSmallZero  bool    `protobuf:"varint,15,opt,name=AllowScoreSmallZero,proto3" json:"AllowScoreSmallZero,omitempty"`   // 是否允许负分
-	BigWinner            bool    `protobuf:"varint,16,opt,name=BigWinner,proto3" json:"BigWinner,omitempty"`                       // 是否开启大赢家模式
+	PlayCountLimit       int32         `protobuf:"varint,1,opt,name=playCountLimit,proto3" json:"playCountLimit,omitempty"`              // 必须打满多少局才能退出
+	BaseScore            int32         `protobuf:"varint,2,opt,name=BaseScore,proto3" json:"BaseScore,omitempty"`                        // 底分
+	BaseScoreTimes       float32       `protobuf:"fixed32,3,opt,name=BaseScoreTimes,proto3" json:"BaseScoreTimes,omitempty"`             // 倍数 0.1、0.5、1、2
+	ZiMoJia              int32         `protobuf:"varint,4,opt,name=ZiMoJia,proto3" json:"ZiMoJia,omitempty"`                            // 自摸 0.自摸加番、1.自摸加底
+	FanUpLimit           int32         `protobuf:"varint,5,opt,name=FanUpLimit,proto3" json:"FanUpLimit,omitempty"`                      // 翻数封顶 1、2、3、4、5
+	DianGangHua          int32         `protobuf:"varint,6,opt,name=DianGangHua,proto3" json:"DianGangHua,omitempty"`                    // 点杠花 0.点炮、1.自摸
+	HuanSanZhang         int32         `protobuf:"varint,7,opt,name=HuanSanZhang,proto3" json:"HuanSanZhang,omitempty"`                  // 换三张 0.无换三张、1.同花色换三张、1.任意换三张
+	YaoJiuDui            bool          `protobuf:"varint,8,opt,name=YaoJiuDui,proto3" json:"YaoJiuDui,omitempty"`                        // 幺九将对
+	MenQingZhongZhang    bool          `protobuf:"varint,9,opt,name=MenQingZhongZhang,proto3" json:"MenQingZhongZhang,omitempty"`        // 门清中张
+	TianDiHu             bool          `protobuf:"varint,10,opt,name=TianDiHu,proto3" json:"TianDiHu,omitempty"`                         // 天地胡
+	DianPaoPingHu        bool          `protobuf:"varint,11,opt,name=DianPaoPingHu,proto3" json:"DianPaoPingHu,omitempty"`               // 点炮可平胡
+	JiaXinWu             bool          `protobuf:"varint,12,opt,name=JiaXinWu,proto3" json:"JiaXinWu,omitempty"`                         // 夹心五
+	GangImmediatelyScore bool          `protobuf:"varint,13,opt,name=GangImmediatelyScore,proto3" json:"GangImmediatelyScore,omitempty"` // 杠分实时结算
+	HuImmediatelyScore   bool          `protobuf:"varint,14,opt,name=HuImmediatelyScore,proto3" json:"HuImmediatelyScore,omitempty"`     // 胡牌实时结算
+	AllowScoreSmallZero  bool          `protobuf:"varint,15,opt,name=AllowScoreSmallZero,proto3" json:"AllowScoreSmallZero,omitempty"`   // 是否允许负分
+	BigWinner            bool          `protobuf:"varint,16,opt,name=BigWinner,proto3" json:"BigWinner,omitempty"`                       // 是否开启大赢家模式
+	ReBate               *RebateParams `protobuf:"bytes,17,opt,name=ReBate,proto3" json:"ReBate,omitempty"`                              // 抽水相关设置
 }
 
 func (x *MahjongParams) Reset() {
@@ -426,6 +427,13 @@ func (x *MahjongParams) GetBigWinner() bool {
 	return false
 }
 
+func (x *MahjongParams) GetReBate() *RebateParams {
+	if x != nil {
+		return x.ReBate
+	}
+	return nil
+}
+
 // 斗地主
 type DDZParams struct {
 	state         protoimpl.MessageState
@@ -465,6 +473,165 @@ func (*DDZParams) Descriptor() ([]byte, []int) {
 	return file_base_proto_rawDescGZIP(), []int{4}
 }
 
+type RangeParams struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Valid            bool  `protobuf:"varint,1,opt,name=Valid,proto3" json:"Valid,omitempty"`                       // 是否勾选生效
+	Min              int64 `protobuf:"varint,2,opt,name=Min,proto3" json:"Min,omitempty"`                           // 区间最小值
+	Max              int64 `protobuf:"varint,3,opt,name=Max,proto3" json:"Max,omitempty"`                           // 区间最大值
+	RebateRatio      int64 `protobuf:"varint,4,opt,name=RebateRatio,proto3" json:"RebateRatio,omitempty"`           // 抽水百分比,发5就是抽5%
+	MinimumGuarantee int64 `protobuf:"varint,5,opt,name=MinimumGuarantee,proto3" json:"MinimumGuarantee,omitempty"` // 保底          注：最终抽水=保底+(盈利*抽水百分比)
+	MinimumRebate    int64 `protobuf:"varint,6,opt,name=MinimumRebate,proto3" json:"MinimumRebate,omitempty"`       // 最低起抽       注：最少要赢这么多分才抽,否则就不抽
+}
+
+func (x *RangeParams) Reset() {
+	*x = RangeParams{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_base_proto_msgTypes[5]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *RangeParams) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RangeParams) ProtoMessage() {}
+
+func (x *RangeParams) ProtoReflect() protoreflect.Message {
+	mi := &file_base_proto_msgTypes[5]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RangeParams.ProtoReflect.Descriptor instead.
+func (*RangeParams) Descriptor() ([]byte, []int) {
+	return file_base_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *RangeParams) GetValid() bool {
+	if x != nil {
+		return x.Valid
+	}
+	return false
+}
+
+func (x *RangeParams) GetMin() int64 {
+	if x != nil {
+		return x.Min
+	}
+	return 0
+}
+
+func (x *RangeParams) GetMax() int64 {
+	if x != nil {
+		return x.Max
+	}
+	return 0
+}
+
+func (x *RangeParams) GetRebateRatio() int64 {
+	if x != nil {
+		return x.RebateRatio
+	}
+	return 0
+}
+
+func (x *RangeParams) GetMinimumGuarantee() int64 {
+	if x != nil {
+		return x.MinimumGuarantee
+	}
+	return 0
+}
+
+func (x *RangeParams) GetMinimumRebate() int64 {
+	if x != nil {
+		return x.MinimumRebate
+	}
+	return 0
+}
+
+// 返利参数
+type RebateParams struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	RangeL1 *RangeParams `protobuf:"bytes,1,opt,name=RangeL1,proto3" json:"RangeL1,omitempty"` // 第1区间
+	RangeL2 *RangeParams `protobuf:"bytes,2,opt,name=RangeL2,proto3" json:"RangeL2,omitempty"` // 第2区间
+	RangeL3 *RangeParams `protobuf:"bytes,3,opt,name=RangeL3,proto3" json:"RangeL3,omitempty"` // 第3区间
+	RangeL4 *RangeParams `protobuf:"bytes,4,opt,name=RangeL4,proto3" json:"RangeL4,omitempty"` // 第4区间
+}
+
+func (x *RebateParams) Reset() {
+	*x = RebateParams{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_base_proto_msgTypes[6]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *RebateParams) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RebateParams) ProtoMessage() {}
+
+func (x *RebateParams) ProtoReflect() protoreflect.Message {
+	mi := &file_base_proto_msgTypes[6]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RebateParams.ProtoReflect.Descriptor instead.
+func (*RebateParams) Descriptor() ([]byte, []int) {
+	return file_base_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *RebateParams) GetRangeL1() *RangeParams {
+	if x != nil {
+		return x.RangeL1
+	}
+	return nil
+}
+
+func (x *RebateParams) GetRangeL2() *RangeParams {
+	if x != nil {
+		return x.RangeL2
+	}
+	return nil
+}
+
+func (x *RebateParams) GetRangeL3() *RangeParams {
+	if x != nil {
+		return x.RangeL3
+	}
+	return nil
+}
+
+func (x *RebateParams) GetRangeL4() *RangeParams {
+	if x != nil {
+		return x.RangeL4
+	}
+	return nil
+}
+
 var File_base_proto protoreflect.FileDescriptor
 
 var file_base_proto_rawDesc = []byte{
@@ -498,7 +665,7 @@ var file_base_proto_rawDesc = []byte{
 	0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52, 0x07, 0x4d, 0x61, 0x68, 0x6a, 0x6f, 0x6e, 0x67, 0x12,
 	0x22, 0x0a, 0x03, 0x44, 0x44, 0x5a, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x10, 0x2e, 0x6f,
 	0x75, 0x74, 0x65, 0x72, 0x2e, 0x44, 0x44, 0x5a, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52, 0x03,
-	0x44, 0x44, 0x5a, 0x22, 0xdb, 0x04, 0x0a, 0x0d, 0x4d, 0x61, 0x68, 0x6a, 0x6f, 0x6e, 0x67, 0x50,
+	0x44, 0x44, 0x5a, 0x22, 0x88, 0x05, 0x0a, 0x0d, 0x4d, 0x61, 0x68, 0x6a, 0x6f, 0x6e, 0x67, 0x50,
 	0x61, 0x72, 0x61, 0x6d, 0x73, 0x12, 0x26, 0x0a, 0x0e, 0x70, 0x6c, 0x61, 0x79, 0x43, 0x6f, 0x75,
 	0x6e, 0x74, 0x4c, 0x69, 0x6d, 0x69, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x0e, 0x70,
 	0x6c, 0x61, 0x79, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x4c, 0x69, 0x6d, 0x69, 0x74, 0x12, 0x1c, 0x0a,
@@ -536,8 +703,36 @@ var file_base_proto_rawDesc = []byte{
 	0x41, 0x6c, 0x6c, 0x6f, 0x77, 0x53, 0x63, 0x6f, 0x72, 0x65, 0x53, 0x6d, 0x61, 0x6c, 0x6c, 0x5a,
 	0x65, 0x72, 0x6f, 0x12, 0x1c, 0x0a, 0x09, 0x42, 0x69, 0x67, 0x57, 0x69, 0x6e, 0x6e, 0x65, 0x72,
 	0x18, 0x10, 0x20, 0x01, 0x28, 0x08, 0x52, 0x09, 0x42, 0x69, 0x67, 0x57, 0x69, 0x6e, 0x6e, 0x65,
-	0x72, 0x22, 0x0b, 0x0a, 0x09, 0x44, 0x44, 0x5a, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x42, 0x08,
-	0x5a, 0x06, 0x2f, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x72, 0x12, 0x2b, 0x0a, 0x06, 0x52, 0x65, 0x42, 0x61, 0x74, 0x65, 0x18, 0x11, 0x20, 0x01, 0x28,
+	0x0b, 0x32, 0x13, 0x2e, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x52, 0x65, 0x62, 0x61, 0x74, 0x65,
+	0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52, 0x06, 0x52, 0x65, 0x42, 0x61, 0x74, 0x65, 0x22, 0x0b,
+	0x0a, 0x09, 0x44, 0x44, 0x5a, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x22, 0xbb, 0x01, 0x0a, 0x0b,
+	0x52, 0x61, 0x6e, 0x67, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x12, 0x14, 0x0a, 0x05, 0x56,
+	0x61, 0x6c, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x05, 0x56, 0x61, 0x6c, 0x69,
+	0x64, 0x12, 0x10, 0x0a, 0x03, 0x4d, 0x69, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x03, 0x52, 0x03,
+	0x4d, 0x69, 0x6e, 0x12, 0x10, 0x0a, 0x03, 0x4d, 0x61, 0x78, 0x18, 0x03, 0x20, 0x01, 0x28, 0x03,
+	0x52, 0x03, 0x4d, 0x61, 0x78, 0x12, 0x20, 0x0a, 0x0b, 0x52, 0x65, 0x62, 0x61, 0x74, 0x65, 0x52,
+	0x61, 0x74, 0x69, 0x6f, 0x18, 0x04, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0b, 0x52, 0x65, 0x62, 0x61,
+	0x74, 0x65, 0x52, 0x61, 0x74, 0x69, 0x6f, 0x12, 0x2a, 0x0a, 0x10, 0x4d, 0x69, 0x6e, 0x69, 0x6d,
+	0x75, 0x6d, 0x47, 0x75, 0x61, 0x72, 0x61, 0x6e, 0x74, 0x65, 0x65, 0x18, 0x05, 0x20, 0x01, 0x28,
+	0x03, 0x52, 0x10, 0x4d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d, 0x47, 0x75, 0x61, 0x72, 0x61, 0x6e,
+	0x74, 0x65, 0x65, 0x12, 0x24, 0x0a, 0x0d, 0x4d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d, 0x52, 0x65,
+	0x62, 0x61, 0x74, 0x65, 0x18, 0x06, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0d, 0x4d, 0x69, 0x6e, 0x69,
+	0x6d, 0x75, 0x6d, 0x52, 0x65, 0x62, 0x61, 0x74, 0x65, 0x22, 0xc6, 0x01, 0x0a, 0x0c, 0x52, 0x65,
+	0x62, 0x61, 0x74, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x12, 0x2c, 0x0a, 0x07, 0x52, 0x61,
+	0x6e, 0x67, 0x65, 0x4c, 0x31, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x6f, 0x75,
+	0x74, 0x65, 0x72, 0x2e, 0x52, 0x61, 0x6e, 0x67, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52,
+	0x07, 0x52, 0x61, 0x6e, 0x67, 0x65, 0x4c, 0x31, 0x12, 0x2c, 0x0a, 0x07, 0x52, 0x61, 0x6e, 0x67,
+	0x65, 0x4c, 0x32, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x6f, 0x75, 0x74, 0x65,
+	0x72, 0x2e, 0x52, 0x61, 0x6e, 0x67, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52, 0x07, 0x52,
+	0x61, 0x6e, 0x67, 0x65, 0x4c, 0x32, 0x12, 0x2c, 0x0a, 0x07, 0x52, 0x61, 0x6e, 0x67, 0x65, 0x4c,
+	0x33, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e,
+	0x52, 0x61, 0x6e, 0x67, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52, 0x07, 0x52, 0x61, 0x6e,
+	0x67, 0x65, 0x4c, 0x33, 0x12, 0x2c, 0x0a, 0x07, 0x52, 0x61, 0x6e, 0x67, 0x65, 0x4c, 0x34, 0x18,
+	0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x52, 0x61,
+	0x6e, 0x67, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52, 0x07, 0x52, 0x61, 0x6e, 0x67, 0x65,
+	0x4c, 0x34, 0x42, 0x08, 0x5a, 0x06, 0x2f, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x62, 0x06, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -552,24 +747,31 @@ func file_base_proto_rawDescGZIP() []byte {
 	return file_base_proto_rawDescData
 }
 
-var file_base_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_base_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_base_proto_goTypes = []interface{}{
 	(*Base)(nil),          // 0: outer.Base
 	(*PlayerInfo)(nil),    // 1: outer.PlayerInfo
 	(*GameParams)(nil),    // 2: outer.GameParams
 	(*MahjongParams)(nil), // 3: outer.MahjongParams
 	(*DDZParams)(nil),     // 4: outer.DDZParams
-	(Position)(0),         // 5: outer.Position
+	(*RangeParams)(nil),   // 5: outer.RangeParams
+	(*RebateParams)(nil),  // 6: outer.RebateParams
+	(Position)(0),         // 7: outer.Position
 }
 var file_base_proto_depIdxs = []int32{
-	5, // 0: outer.PlayerInfo.Position:type_name -> outer.Position
+	7, // 0: outer.PlayerInfo.Position:type_name -> outer.Position
 	3, // 1: outer.GameParams.Mahjong:type_name -> outer.MahjongParams
 	4, // 2: outer.GameParams.DDZ:type_name -> outer.DDZParams
-	3, // [3:3] is the sub-list for method output_type
-	3, // [3:3] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	6, // 3: outer.MahjongParams.ReBate:type_name -> outer.RebateParams
+	5, // 4: outer.RebateParams.RangeL1:type_name -> outer.RangeParams
+	5, // 5: outer.RebateParams.RangeL2:type_name -> outer.RangeParams
+	5, // 6: outer.RebateParams.RangeL3:type_name -> outer.RangeParams
+	5, // 7: outer.RebateParams.RangeL4:type_name -> outer.RangeParams
+	8, // [8:8] is the sub-list for method output_type
+	8, // [8:8] is the sub-list for method input_type
+	8, // [8:8] is the sub-list for extension type_name
+	8, // [8:8] is the sub-list for extension extendee
+	0, // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_base_proto_init() }
@@ -639,6 +841,30 @@ func file_base_proto_init() {
 				return nil
 			}
 		}
+		file_base_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*RangeParams); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_base_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*RebateParams); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -646,7 +872,7 @@ func file_base_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_base_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   5,
+			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
