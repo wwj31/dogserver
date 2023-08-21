@@ -60,17 +60,21 @@ const (
 	ERROR_ROOM_PLAYER_NOT_IN_GAME          ERROR = 102 // 玩家未参与游戏
 	ERROR_ROOM_CANNOT_ENTER_WITH_GOLD_LINE ERROR = 103 // 玩家金币为达到警戒线，不能进房间
 	// 血战到底
-	ERROR_MAHJONG_EXCHANGE3_LEN_ERROR     ERROR = 200 // 请求换三张长度不为3
-	ERROR_MAHJONG_EXCHANGE3_INDEX_ERROR   ERROR = 201 // 请求换三张下标越界长度不为0-12
-	ERROR_MAHJONG_EXCHANGE3_INDEX_EQUAL   ERROR = 202 // 请求换三张下标重复
-	ERROR_MAHJONG_EXCHANGE3_OPERATED      ERROR = 203 // 请求换三张已经操作过
-	ERROR_MAHJONG_EXCHANGE3_COLOR_ERROR   ERROR = 204 // 同花色换三张，花色不同
-	ERROR_MAHJONG_ACTION_PLAYER_NOT_MATCH ERROR = 205 // 当前未轮到该玩家行动
-	ERROR_MAHJONG_ACTION_PLAYER_NOT_OPERA ERROR = 206 // 当前玩家可以行动，但是执行的行动无效
-	ERROR_MAHJONG_HU_INVALID              ERROR = 207 // 玩家当前牌型不能胡牌
-	ERROR_MAHJONG_MUST_OUT_IGNORE_COLOR   ERROR = 208 // 还存在定缺的花色的牌,必须打该花色的牌
-	ERROR_MAHJONG_STATE_MSG_INVALID       ERROR = 209 // 当前状态不受理此消息
-	ERROR_MAHJONG_SPARE_CARDS_WAS_EMPTY   ERROR = 210 // 牌堆没牌了
+	ERROR_MAHJONG_EXCHANGE3_LEN_ERROR         ERROR = 200 // 请求换三张长度不为3
+	ERROR_MAHJONG_EXCHANGE3_INDEX_ERROR       ERROR = 201 // 请求换三张下标越界长度不为0-12
+	ERROR_MAHJONG_EXCHANGE3_INDEX_EQUAL       ERROR = 202 // 请求换三张下标重复
+	ERROR_MAHJONG_EXCHANGE3_OPERATED          ERROR = 203 // 请求换三张已经操作过
+	ERROR_MAHJONG_EXCHANGE3_COLOR_ERROR       ERROR = 204 // 同花色换三张，花色不同
+	ERROR_MAHJONG_ACTION_PLAYER_NOT_MATCH     ERROR = 205 // 当前未轮到该玩家行动
+	ERROR_MAHJONG_ACTION_PLAYER_NOT_OPERA     ERROR = 206 // 当前玩家可以行动，但是执行的行动无效
+	ERROR_MAHJONG_HU_INVALID                  ERROR = 207 // 玩家当前牌型不能胡牌
+	ERROR_MAHJONG_MUST_OUT_IGNORE_COLOR       ERROR = 208 // 还存在定缺的花色的牌,必须打该花色的牌
+	ERROR_MAHJONG_STATE_MSG_INVALID           ERROR = 209 // 当前状态不受理此消息
+	ERROR_MAHJONG_SPARE_CARDS_WAS_EMPTY       ERROR = 210 // 牌堆没牌了
+	ERROR_MAHJONG_REBATE_PARAM_MINMAX_INVALID ERROR = 220 // 麻将抽水范围参数设置错误
+	ERROR_MAHJONG_REBATE_PARAM_REBATE_INVALID ERROR = 221 // 麻将抽水百分比参数设置错误
+	ERROR_MAHJONG_REBATE_PARAM_LIMIT_INVALID  ERROR = 222 // 麻将抽水参数设置错误
+	ERROR_MAHJONG_REBATE_PARAM_RANGE_INVALID  ERROR = 223 // 麻将抽水范围参数设置不连续
 )
 
 // Enum value maps for ERROR.
@@ -121,53 +125,61 @@ var (
 		208: "MAHJONG_MUST_OUT_IGNORE_COLOR",
 		209: "MAHJONG_STATE_MSG_INVALID",
 		210: "MAHJONG_SPARE_CARDS_WAS_EMPTY",
+		220: "MAHJONG_REBATE_PARAM_MINMAX_INVALID",
+		221: "MAHJONG_REBATE_PARAM_REBATE_INVALID",
+		222: "MAHJONG_REBATE_PARAM_LIMIT_INVALID",
+		223: "MAHJONG_REBATE_PARAM_RANGE_INVALID",
 	}
 	ERROR_value = map[string]int32{
-		"OK":                               0,
-		"FAILED":                           1,
-		"MSG_REQ_PARAM_INVALID":            2,
-		"LOGIN_TOKEN_INVALID":              3,
-		"REPEAT_LOGIN":                     4,
-		"INVALID_PHONE_FORMAT":             5,
-		"INVALID_PASSWORD_FORMAT":          6,
-		"PHONE_WAS_BOUND":                  7,
-		"PHONE_PASSWORD_IS_EMPTY":          8,
-		"PHONE_PASSWORD_ERROR":             9,
-		"PHONE_NOT_FOUND":                  10,
-		"NEW_ACCOUNT_FAILED":               11,
-		"GOLD_NOT_ENOUGH":                  12,
-		"NAME_LEN_OUT_OF_RANGE":            13,
-		"MODIFY_PASSWORD_NOT_PHONE":        14,
-		"CAN_NOT_FIND_PLAYER_INFO":         15,
-		"PLAYER_NOT_IN_ALLIANCE":           56,
-		"PLAYER_POSITION_LIMIT":            57,
-		"PLAYER_NOT_IN_CORRECT_ALLIANCE":   58,
-		"CAN_NOT_SET_HIGHER_POSITION":      59,
-		"CAN_NOT_SET_NOT_IN_DOWN_POSITION": 60,
-		"TARGET_IS_NOT_DOWN":               61,
-		"PLAYER_ALREADY_IN_ALLIANCE":       62,
-		"PLAYER_ALREADY_HAS_UP":            63,
-		"PLAYER_ALREADY_IN_ROOM":           104,
-		"ROOM_HAS_PLAYER_CAN_NOT_DISBAND":  105,
-		"ROOM_WAS_FULL_CAN_NOT_ENTER":      106,
-		"PLAYER_NOT_IN_ROOM":               107,
-		"ROOM_CAN_NOT_ENTER":               108,
-		"ROOM_CAN_NOT_LEAVE":               109,
-		"ROOM_CAN_NOT_READY":               100,
-		"ROOM_CAN_NOT_SET_GOLD":            101,
-		"ROOM_PLAYER_NOT_IN_GAME":          102,
-		"ROOM_CANNOT_ENTER_WITH_GOLD_LINE": 103,
-		"MAHJONG_EXCHANGE3_LEN_ERROR":      200,
-		"MAHJONG_EXCHANGE3_INDEX_ERROR":    201,
-		"MAHJONG_EXCHANGE3_INDEX_EQUAL":    202,
-		"MAHJONG_EXCHANGE3_OPERATED":       203,
-		"MAHJONG_EXCHANGE3_COLOR_ERROR":    204,
-		"MAHJONG_ACTION_PLAYER_NOT_MATCH":  205,
-		"MAHJONG_ACTION_PLAYER_NOT_OPERA":  206,
-		"MAHJONG_HU_INVALID":               207,
-		"MAHJONG_MUST_OUT_IGNORE_COLOR":    208,
-		"MAHJONG_STATE_MSG_INVALID":        209,
-		"MAHJONG_SPARE_CARDS_WAS_EMPTY":    210,
+		"OK":                                  0,
+		"FAILED":                              1,
+		"MSG_REQ_PARAM_INVALID":               2,
+		"LOGIN_TOKEN_INVALID":                 3,
+		"REPEAT_LOGIN":                        4,
+		"INVALID_PHONE_FORMAT":                5,
+		"INVALID_PASSWORD_FORMAT":             6,
+		"PHONE_WAS_BOUND":                     7,
+		"PHONE_PASSWORD_IS_EMPTY":             8,
+		"PHONE_PASSWORD_ERROR":                9,
+		"PHONE_NOT_FOUND":                     10,
+		"NEW_ACCOUNT_FAILED":                  11,
+		"GOLD_NOT_ENOUGH":                     12,
+		"NAME_LEN_OUT_OF_RANGE":               13,
+		"MODIFY_PASSWORD_NOT_PHONE":           14,
+		"CAN_NOT_FIND_PLAYER_INFO":            15,
+		"PLAYER_NOT_IN_ALLIANCE":              56,
+		"PLAYER_POSITION_LIMIT":               57,
+		"PLAYER_NOT_IN_CORRECT_ALLIANCE":      58,
+		"CAN_NOT_SET_HIGHER_POSITION":         59,
+		"CAN_NOT_SET_NOT_IN_DOWN_POSITION":    60,
+		"TARGET_IS_NOT_DOWN":                  61,
+		"PLAYER_ALREADY_IN_ALLIANCE":          62,
+		"PLAYER_ALREADY_HAS_UP":               63,
+		"PLAYER_ALREADY_IN_ROOM":              104,
+		"ROOM_HAS_PLAYER_CAN_NOT_DISBAND":     105,
+		"ROOM_WAS_FULL_CAN_NOT_ENTER":         106,
+		"PLAYER_NOT_IN_ROOM":                  107,
+		"ROOM_CAN_NOT_ENTER":                  108,
+		"ROOM_CAN_NOT_LEAVE":                  109,
+		"ROOM_CAN_NOT_READY":                  100,
+		"ROOM_CAN_NOT_SET_GOLD":               101,
+		"ROOM_PLAYER_NOT_IN_GAME":             102,
+		"ROOM_CANNOT_ENTER_WITH_GOLD_LINE":    103,
+		"MAHJONG_EXCHANGE3_LEN_ERROR":         200,
+		"MAHJONG_EXCHANGE3_INDEX_ERROR":       201,
+		"MAHJONG_EXCHANGE3_INDEX_EQUAL":       202,
+		"MAHJONG_EXCHANGE3_OPERATED":          203,
+		"MAHJONG_EXCHANGE3_COLOR_ERROR":       204,
+		"MAHJONG_ACTION_PLAYER_NOT_MATCH":     205,
+		"MAHJONG_ACTION_PLAYER_NOT_OPERA":     206,
+		"MAHJONG_HU_INVALID":                  207,
+		"MAHJONG_MUST_OUT_IGNORE_COLOR":       208,
+		"MAHJONG_STATE_MSG_INVALID":           209,
+		"MAHJONG_SPARE_CARDS_WAS_EMPTY":       210,
+		"MAHJONG_REBATE_PARAM_MINMAX_INVALID": 220,
+		"MAHJONG_REBATE_PARAM_REBATE_INVALID": 221,
+		"MAHJONG_REBATE_PARAM_LIMIT_INVALID":  222,
+		"MAHJONG_REBATE_PARAM_RANGE_INVALID":  223,
 	}
 )
 
@@ -300,7 +312,7 @@ var file_error_proto_rawDesc = []byte{
 	0x2e, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x45, 0x52, 0x52, 0x4f, 0x52, 0x52, 0x05, 0x45, 0x72,
 	0x72, 0x6f, 0x72, 0x12, 0x12, 0x0a, 0x04, 0x69, 0x6e, 0x66, 0x6f, 0x18, 0x02, 0x20, 0x01, 0x28,
 	0x09, 0x52, 0x04, 0x69, 0x6e, 0x66, 0x6f, 0x22, 0x09, 0x0a, 0x07, 0x55, 0x6e, 0x6b, 0x6e, 0x6f,
-	0x77, 0x6e, 0x2a, 0x8f, 0x0a, 0x0a, 0x05, 0x45, 0x52, 0x52, 0x4f, 0x52, 0x12, 0x06, 0x0a, 0x02,
+	0x77, 0x6e, 0x2a, 0xb5, 0x0b, 0x0a, 0x05, 0x45, 0x52, 0x52, 0x4f, 0x52, 0x12, 0x06, 0x0a, 0x02,
 	0x4f, 0x4b, 0x10, 0x00, 0x12, 0x0a, 0x0a, 0x06, 0x46, 0x41, 0x49, 0x4c, 0x45, 0x44, 0x10, 0x01,
 	0x12, 0x19, 0x0a, 0x15, 0x4d, 0x53, 0x47, 0x5f, 0x52, 0x45, 0x51, 0x5f, 0x50, 0x41, 0x52, 0x41,
 	0x4d, 0x5f, 0x49, 0x4e, 0x56, 0x41, 0x4c, 0x49, 0x44, 0x10, 0x02, 0x12, 0x17, 0x0a, 0x13, 0x4c,
@@ -381,8 +393,18 @@ var file_error_proto_rawDesc = []byte{
 	0x45, 0x5f, 0x4d, 0x53, 0x47, 0x5f, 0x49, 0x4e, 0x56, 0x41, 0x4c, 0x49, 0x44, 0x10, 0xd1, 0x01,
 	0x12, 0x22, 0x0a, 0x1d, 0x4d, 0x41, 0x48, 0x4a, 0x4f, 0x4e, 0x47, 0x5f, 0x53, 0x50, 0x41, 0x52,
 	0x45, 0x5f, 0x43, 0x41, 0x52, 0x44, 0x53, 0x5f, 0x57, 0x41, 0x53, 0x5f, 0x45, 0x4d, 0x50, 0x54,
-	0x59, 0x10, 0xd2, 0x01, 0x42, 0x08, 0x5a, 0x06, 0x2f, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x62, 0x06,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x59, 0x10, 0xd2, 0x01, 0x12, 0x28, 0x0a, 0x23, 0x4d, 0x41, 0x48, 0x4a, 0x4f, 0x4e, 0x47, 0x5f,
+	0x52, 0x45, 0x42, 0x41, 0x54, 0x45, 0x5f, 0x50, 0x41, 0x52, 0x41, 0x4d, 0x5f, 0x4d, 0x49, 0x4e,
+	0x4d, 0x41, 0x58, 0x5f, 0x49, 0x4e, 0x56, 0x41, 0x4c, 0x49, 0x44, 0x10, 0xdc, 0x01, 0x12, 0x28,
+	0x0a, 0x23, 0x4d, 0x41, 0x48, 0x4a, 0x4f, 0x4e, 0x47, 0x5f, 0x52, 0x45, 0x42, 0x41, 0x54, 0x45,
+	0x5f, 0x50, 0x41, 0x52, 0x41, 0x4d, 0x5f, 0x52, 0x45, 0x42, 0x41, 0x54, 0x45, 0x5f, 0x49, 0x4e,
+	0x56, 0x41, 0x4c, 0x49, 0x44, 0x10, 0xdd, 0x01, 0x12, 0x27, 0x0a, 0x22, 0x4d, 0x41, 0x48, 0x4a,
+	0x4f, 0x4e, 0x47, 0x5f, 0x52, 0x45, 0x42, 0x41, 0x54, 0x45, 0x5f, 0x50, 0x41, 0x52, 0x41, 0x4d,
+	0x5f, 0x4c, 0x49, 0x4d, 0x49, 0x54, 0x5f, 0x49, 0x4e, 0x56, 0x41, 0x4c, 0x49, 0x44, 0x10, 0xde,
+	0x01, 0x12, 0x27, 0x0a, 0x22, 0x4d, 0x41, 0x48, 0x4a, 0x4f, 0x4e, 0x47, 0x5f, 0x52, 0x45, 0x42,
+	0x41, 0x54, 0x45, 0x5f, 0x50, 0x41, 0x52, 0x41, 0x4d, 0x5f, 0x52, 0x41, 0x4e, 0x47, 0x45, 0x5f,
+	0x49, 0x4e, 0x56, 0x41, 0x4c, 0x49, 0x44, 0x10, 0xdf, 0x01, 0x42, 0x08, 0x5a, 0x06, 0x2f, 0x6f,
+	0x75, 0x74, 0x65, 0x72, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (

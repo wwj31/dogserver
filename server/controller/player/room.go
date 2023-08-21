@@ -20,6 +20,45 @@ import (
 	"server/service/game/logic/player"
 )
 
+// 检查抽水参数是否合法
+func checkMahjongParam(params *outer.RebateParams) outer.ERROR {
+	fixedRanges := []*outer.RangeParams{params.RangeL1, params.RangeL2, params.RangeL3, params.RangeL4}
+	var validRanges []*outer.RangeParams
+
+	// 找到勾选了生效的范围
+	for _, param := range fixedRanges {
+		if !param.Valid {
+			continue
+		}
+		// 检查min、max是否合法
+		if param.Min >= param.Max {
+			return outer.ERROR_MAHJONG_REBATE_PARAM_MINMAX_INVALID
+		}
+
+		// 抽水百分比是否合法
+		if param.RebateRatio < 0 || param.RebateRatio > 100 {
+			return outer.ERROR_MAHJONG_REBATE_PARAM_REBATE_INVALID
+		}
+
+		if param.MinimumGuarantee < 0 || param.MinimumRebate < 0 {
+			return outer.ERROR_MAHJONG_REBATE_PARAM_LIMIT_INVALID
+		}
+
+		validRanges = append(validRanges, param)
+	}
+
+	// 检查生效范围是否都连续
+	var prevMax int64 = -1
+	for _, param := range validRanges {
+		if prevMax+1 != param.Min {
+			return outer.ERROR_MAHJONG_REBATE_PARAM_RANGE_INVALID
+		}
+		prevMax = param.Max
+	}
+
+	return outer.ERROR_OK
+}
+
 // 创建房间
 var _ = router.Reg(func(p *player.Player, msg *outer.CreateRoomReq) any {
 	if msg.GameParams == nil {
@@ -33,6 +72,16 @@ var _ = router.Reg(func(p *player.Player, msg *outer.CreateRoomReq) any {
 	roomMgrId := rdsop.GetRoomMgrId()
 	if roomMgrId == -1 {
 		return outer.ERROR_FAILED
+	}
+
+	// 检查各个游戏的抽水参数是否合法
+	switch msg.GameType {
+	case outer.GameType_Mahjong:
+		if err := checkMahjongParam(msg.GetGameParams().Mahjong.ReBate); err != outer.ERROR_OK {
+			return err
+		}
+
+	case outer.GameType_DDZ:
 	}
 
 	gameParamsBytes, _ := proto.Marshal(msg.GetGameParams())
