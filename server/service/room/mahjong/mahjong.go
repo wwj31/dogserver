@@ -484,6 +484,10 @@ func (m *mahjongPlayer) allCardsToPB(params *outer.MahjongParams, shortId int64,
 
 // 检测该行为是否在当前可操作行为中
 func (a *action) isValidAction(actionType outer.ActionType) bool {
+	if a == nil {
+		return false
+	}
+
 	for _, act := range a.acts {
 		if act == actionType {
 			return true

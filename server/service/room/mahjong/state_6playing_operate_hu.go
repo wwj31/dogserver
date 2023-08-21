@@ -115,7 +115,10 @@ func (s *StatePlaying) huSettlement(ntf *outer.MahjongBTEOperaNtf) {
 		LoseScores: make(map[int32]int64),
 		Card:       s.peerRecords[len(s.peerRecords)-1].card.Int32(),
 	}
-	ntf.HuResult = huResultNtf
+
+	if ntf != nil {
+		ntf.HuResult = huResultNtf
+	}
 
 	loseScores := map[int32]int64{}
 	defer func() {

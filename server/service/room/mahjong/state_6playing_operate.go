@@ -2,8 +2,6 @@ package mahjong
 
 import (
 	"github.com/wwj31/dogactor/logger"
-	"server/common/log"
-
 	"server/proto/outermsg/outer"
 )
 
@@ -36,6 +34,7 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 			currentAction.acts = []outer.ActionType{outer.ActionType_ActionPlayCard}
 			currentAction.hus = nil
 			currentAction.gang = nil
+			s.Log().Infof("pass play card")
 			return
 		}
 
