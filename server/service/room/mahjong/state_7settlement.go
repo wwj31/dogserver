@@ -49,6 +49,8 @@ func (s *StateSettlement) Enter() {
 
 	// 大结算
 	if s.finalSettlement() || s.scoreZeroOver {
+		s.Log().Infow("final settlement",
+			"scoreZeroOver", s.scoreZeroOver, "game count", s.gameCount, "param", s.gameParams().PlayCountLimit)
 		s.gameCount = int(s.gameParams().PlayCountLimit)
 
 		ntf := &outer.MahjongBTEFinialSettlement{}
@@ -308,5 +310,5 @@ func (s *StateSettlement) finalSettlement() bool {
 		return true
 	}
 
-	return true
+	return false
 }

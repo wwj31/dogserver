@@ -21,15 +21,15 @@ import (
 )
 
 // 检查抽水参数是否合法
-func checkMahjongParam(params *outer.RebateParams) outer.ERROR {
+func checkMahjongParams(params *outer.RebateParams) (err outer.ERROR) {
 	fixedRanges := []*outer.RangeParams{params.RangeL1, params.RangeL2, params.RangeL3, params.RangeL4}
 	var validRanges []*outer.RangeParams
-
 	// 找到勾选了生效的范围
 	for _, param := range fixedRanges {
 		if !param.Valid {
 			continue
 		}
+
 		// 检查min、max是否合法
 		if param.Min >= param.Max {
 			return outer.ERROR_MAHJONG_REBATE_PARAM_MINMAX_INVALID
@@ -47,13 +47,19 @@ func checkMahjongParam(params *outer.RebateParams) outer.ERROR {
 		validRanges = append(validRanges, param)
 	}
 
-	// 检查生效范围是否都连续
-	var prevMax int64 = -1
-	for _, param := range validRanges {
-		if prevMax+1 != param.Min {
-			return outer.ERROR_MAHJONG_REBATE_PARAM_RANGE_INVALID
+	// 检查生效范围是否有交叉
+	for i, x := range validRanges {
+		for j, y := range validRanges {
+			if i == j {
+				continue
+			}
+
+			// 最小值和最大值均不能再其他区间范围内,区间左开右闭
+			if y.Min <= x.Min && x.Min < y.Max ||
+				y.Min < x.Max && x.Max <= y.Max {
+				return outer.ERROR_MAHJONG_REBATE_PARAM_RANGE_INVALID
+			}
 		}
-		prevMax = param.Max
 	}
 
 	return outer.ERROR_OK
@@ -77,7 +83,8 @@ var _ = router.Reg(func(p *player.Player, msg *outer.CreateRoomReq) any {
 	// 检查各个游戏的抽水参数是否合法
 	switch msg.GameType {
 	case outer.GameType_Mahjong:
-		if err := checkMahjongParam(msg.GetGameParams().Mahjong.ReBate); err != outer.ERROR_OK {
+		if err := checkMahjongParams(msg.GetGameParams().Mahjong.ReBate); err != outer.ERROR_OK {
+			log.Warnw("checkMahjongParams failed ", "player", p.Role().ShortId(), "rebate", msg.GameParams.Mahjong.ReBate.String())
 			return err
 		}
 

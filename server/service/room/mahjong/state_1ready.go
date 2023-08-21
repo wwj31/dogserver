@@ -2,8 +2,9 @@ package mahjong
 
 import (
 	"reflect"
-	"server/common/log"
 	"time"
+
+	"server/common/log"
 
 	"server/proto/outermsg/outer"
 )
@@ -51,7 +52,7 @@ func (s *StateReady) Enter() {
 
 	// 判断游戏是否需要重置
 	if s.gameCount > int(s.gameParams().PlayCountLimit) || resetPlayCount {
-		log.Infow("reset game count", "current", s.gameCount, "param", s.gameParams().PlayCountLimit, "reset", resetPlayCount)
+		s.Log().Infow("reset game count", "current", s.gameCount, "param", s.gameParams().PlayCountLimit, "reset", resetPlayCount)
 		s.gameCount = 1
 	} else {
 		autoReady = true // 不需要重置，就自动准备
@@ -63,7 +64,7 @@ func (s *StateReady) Enter() {
 		if player == nil {
 			continue
 		}
-		log.Infow("player ready", "player", player.ShortId, "ready", autoReady, "gold", player.Gold)
+		s.Log().Infow("player ready", "player", player.ShortId, "ready", autoReady, "gold", player.Gold)
 		s.ready(player, autoReady)
 	}
 

@@ -57,7 +57,7 @@ enum ERROR {
    MAHJONG_REBATE_PARAM_MINMAX_INVALID = 220; // 麻将抽水范围参数设置错误
    MAHJONG_REBATE_PARAM_REBATE_INVALID = 221; // 麻将抽水百分比参数设置错误
    MAHJONG_REBATE_PARAM_LIMIT_INVALID  = 222; // 麻将抽水参数设置错误
-   MAHJONG_REBATE_PARAM_RANGE_INVALID  = 223; // 麻将抽水范围参数设置不连续
+   MAHJONG_REBATE_PARAM_RANGE_INVALID  = 223; // 麻将抽水范围参数设置有交叉
 }
 
 message FailRsp {
