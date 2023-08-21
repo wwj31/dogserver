@@ -224,16 +224,15 @@ func (s *StatePlaying) gameOver() bool {
 		return true
 	}
 
-	// 如果不允许负分，只要有一位玩家分<=警戒值就结束
-	if !s.gameParams().AllowScoreSmallZero {
-		for _, player := range s.mahjongPlayers {
-			// NOTE: 玩家每把结算后，会更新playerInfo，所以每把的GoldLine是固定的
-			if player.score <= player.GetGoldLine() {
-				s.scoreZeroOver = true
-				return true
-			}
+	// 只要有一位玩家分<=警戒值就结束
+	for _, player := range s.mahjongPlayers {
+		// NOTE: 玩家每把结算后，会更新playerInfo，所以每把的GoldLine是固定的
+		if player.score <= player.GetGoldLine() {
+			s.scoreZeroOver = true
+			return true
 		}
 	}
+
 	return false
 }
 
