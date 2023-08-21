@@ -115,6 +115,7 @@ func (s *StatePlaying) Handle(shortId int64, v any) (result any) {
 		s.Log().Warnw("illegal operation", "current seat", s.currentAction, "seat", seatIndex, "player", player.ShortId)
 		return outer.ERROR_MAHJONG_ACTION_PLAYER_NOT_MATCH
 	}
+	s.Log().Infow("playing handle msg", reflect.TypeOf(v).String(), v)
 
 	switch msg := v.(type) {
 	case *outer.MahjongBTEPlayCardReq: // 打牌

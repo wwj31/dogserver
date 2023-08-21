@@ -2,6 +2,7 @@ package mahjong
 
 import (
 	"github.com/wwj31/dogactor/logger"
+	"server/common/log"
 
 	"server/proto/outermsg/outer"
 )
@@ -87,8 +88,13 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 		return
 	}
 
-	// 操作成功，删除行为
-	s.removeCurrentAction(seatIndex)
+	s.removeCurrentAction(seatIndex) // 删除行为
+
+	// 还有人可以胡，但没胡，先等待其他人操作
+	if len(s.Hus) > 0 && !s.husWasAllDo() {
+		s.Log().Infow("YiPaoDuoXiang waiter other hu", "hus", s.Hus)
+		return
+	}
 
 	// 除了过以外的操作都需要广播通知
 	if op != outer.ActionType_ActionPass {
