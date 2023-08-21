@@ -18,7 +18,7 @@ import (
 const (
 	ReadyExpiration          = 20 * time.Second // 准备超时时间
 	DecideMasterShowDuration = 3 * time.Second  // 定庄广播后的动画播放时间
-	DealShowDuration         = 20 * time.Second // 发牌广播后的动画播放时间
+	DealShowDuration         = 2 * time.Second  // 发牌广播后的动画播放时间
 	Exchange3Expiration      = 20 * time.Second // 换三张持续时间
 	Exchange3ShowDuration    = 1 * time.Second  // 换三张结束后的动画播放时间
 	DecideIgnoreExpiration   = 20 * time.Second // 定缺持续时间

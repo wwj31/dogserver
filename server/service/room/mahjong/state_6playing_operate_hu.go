@@ -9,7 +9,6 @@ import (
 
 // 胡牌操作
 func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.MahjongBTEOperaNtf) (bool, outer.ERROR) {
-	var paySeat []int // 需要赔钱的座位
 	// 获得最后一次操作的牌
 	lastPeerIndex := len(s.peerRecords) - 1
 	peer := s.peerRecords[lastPeerIndex]
@@ -17,19 +16,10 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 	switch peer.typ {
 	case drawCardType: // 自摸
 		hu = p.handCards.IsHu(p.lightGang, p.darkGang, p.pong, peer.card, s.gameParams())
-		// 其余没胡的都要赔钱
-		for seat, other := range s.mahjongPlayers {
-			if other.hu != HuInvalid || other.ShortId == p.ShortId {
-				continue
-			}
-			paySeat = append(paySeat, seat)
-		}
 
 	case playCardType, GangType1, GangType3: // 点炮,抢杠
 		hu = p.handCards.Insert(peer.card).IsHu(p.lightGang, p.darkGang, p.pong, peer.card, s.gameParams())
 		// 胡成功，删除最后打的那张牌
-		s.cardsInDesktop = s.cardsInDesktop[:len(s.cardsInDesktop)-1]
-		paySeat = append(paySeat, peer.seat) // 点炮的人陪钱
 	}
 
 	if hu == HuInvalid {
@@ -95,7 +85,7 @@ func (s *StatePlaying) huIndex(seat int) int32 {
 	return -1
 }
 
-// 是否所有能胡的人都胡了
+// 是否所有能胡的人都胡了,至少有1人胡，才为true
 func (s *StatePlaying) husWasAllDo() bool {
 	if len(s.Hus) == 0 {
 		return false
@@ -263,7 +253,8 @@ func (s *StatePlaying) huSettlement(ntf *outer.MahjongBTEOperaNtf) {
 			"hu", winner.hu, "extra", winner.huExtra, "shortId", winner.ShortId, "winner score", winner.winScore)
 	}
 
-	s.Hus = make(map[int]bool) // 清胡牌状态数据
+	s.Hus = make(map[int]bool)                                    // 清胡牌状态数据
+	s.cardsInDesktop = s.cardsInDesktop[:len(s.cardsInDesktop)-1] // 胡成功，删除最后一张牌
 }
 
 func (s *StatePlaying) AWinB(winnerSeat, loserSeat int, score int64) {
