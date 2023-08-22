@@ -2,6 +2,7 @@ package mahjong
 
 import (
 	"github.com/wwj31/dogactor/logger"
+
 	"server/proto/outermsg/outer"
 )
 
@@ -11,6 +12,9 @@ func (s *StatePlaying) playCard(cardIndex, seatIndex int) (bool, outer.ERROR) {
 	if currentAction == nil || !currentAction.isValidAction(outer.ActionType_ActionPlayCard) {
 		return false, outer.ERROR_MAHJONG_ACTION_PLAYER_NOT_OPERA
 	}
+
+	// 打牌的同时能胡牌，删除胡牌状态
+	delete(s.Hus, seatIndex)
 
 	player := s.mahjongPlayers[seatIndex]
 	outCard := player.handCards[cardIndex]

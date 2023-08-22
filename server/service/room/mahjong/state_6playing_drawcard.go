@@ -2,6 +2,7 @@ package mahjong
 
 import (
 	"github.com/wwj31/dogactor/logger"
+
 	"server/proto/outermsg/outer"
 )
 
@@ -38,6 +39,13 @@ func (s *StatePlaying) drawCard(seatIndex int) {
 			if _, exist := player.pong[card.Int32()]; exist { // 检查碰牌组
 				gangs = gangs.Insert(card)
 			}
+		}
+	}
+
+	// 杠牌不能是定缺的牌，去除所有定缺的杠
+	for i := len(gangs) - 1; i >= 0; i-- {
+		if gangs[i].Color() == player.ignoreColor {
+			gangs = append(gangs[:i], gangs[i+1:]...)
 		}
 	}
 
