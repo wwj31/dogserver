@@ -2,6 +2,8 @@ package mahjong
 
 import (
 	"github.com/wwj31/dogactor/logger"
+
+	"server/common/log"
 	"server/proto/outermsg/outer"
 )
 
@@ -17,6 +19,25 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 		return false, outer.ERROR_MAHJONG_ACTION_PLAYER_NOT_OPERA
 	}
 
+	// 打牌的时候，选过 把其他操作都删了
+	if currentAction.isValidAction(outer.ActionType_ActionPlayCard) && op == outer.ActionType_ActionPass {
+		currentAction.acts = []outer.ActionType{outer.ActionType_ActionPlayCard}
+		currentAction.hus = nil
+		currentAction.gang = nil
+		s.Log().Infof("pass play card")
+		return true, outer.ERROR_OK
+	}
+
+	// 碰杠，需要单独判断是否在一炮多响的情况下
+	if op == outer.ActionType_ActionPong || op == outer.ActionType_ActionGang {
+		// 一炮多响,如果还有人能胡，但是没胡，需要保留操作
+		if s.husWasWaiting() {
+			log.Infow("spare operate", "seat", seatIndex, "short", player.ShortId, "op", op, "hu", hu, "card", card)
+			s.HusPongGang = func() { s.operate(player, seatIndex, op, hu, card) }
+			return true, outer.ERROR_OK
+		}
+	}
+
 	ntf := &outer.MahjongBTEOperaNtf{
 		OpShortId: player.ShortId,
 		OpType:    op,
@@ -24,32 +45,36 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 
 	nextDrawSeatIndex := s.nextSeatIndex(s.peerRecords[len(s.peerRecords)-1].seat)
 
+	// 如果有胡操作，碰杠过都把胡状态删除
+	if op != outer.ActionType_ActionHu {
+		delete(s.Hus, seatIndex)
+	}
+
+	delete(s.actionMap, seatIndex)
+
 	switch op {
 	case outer.ActionType_ActionPass:
 		s.Log().Infow("pass", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId, "hand", player.handCards)
 		ok = true
 
-		// 自己摸牌后触发的行为，选择过，不做任何处理,只保留打牌操作
-		if currentAction.isValidAction(outer.ActionType_ActionPlayCard) {
-			currentAction.acts = []outer.ActionType{outer.ActionType_ActionPlayCard}
-			currentAction.hus = nil
-			currentAction.gang = nil
-			s.Log().Infof("pass play card")
-			return
-		}
-
-		// 检查抢杠胡的情况，所有人都过了，需要执行杠的行为
+		// 一炮多响，所有人都过了
 		if s.husWasAllPass() {
+			// 检查抢杠胡的情况，需要执行杠的行为
 			lastPeer := s.peerRecords[len(s.peerRecords)-1]
 			if lastPeer.typ >= GangType1 && lastPeer.afterQiangPass != nil {
 				lastPeer.afterQiangPass(nil)
 				lastPeer.afterQiangPass = nil
 			}
+
+			// 如果有人在一炮多响期间，点了胡碰操作，需要还原操作
+			if s.HusPongGang != nil {
+				s.HusPongGang()
+				s.HusPongGang = nil
+			}
 		}
-		delete(s.Hus, seatIndex)
-		delete(s.actionMap, seatIndex)
 
 		if s.husWasAllDo() {
+			s.HusPongGang = nil
 			s.huSettlement(nil) // 传nil，表示ntf单独推送
 		}
 
@@ -62,17 +87,29 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 			"peer", s.peerRecordsLog(), "hand", player.handCards, "pong cards", player.pong)
 
 	case outer.ActionType_ActionGang:
+		// 一炮多响，已经有人胡了，直接判断结算
+		if s.husWasAllDo() {
+			s.HusPongGang = nil
+			s.huSettlement(nil) // 传nil，表示ntf单独推送
+			break
+		}
+
 		ok, err = s.operateGang(player, seatIndex, card, ntf)
 		nextDrawSeatIndex = seatIndex // 杠的人自己摸一张
-		delete(s.actionMap, seatIndex)
 
 		s.Log().Color(logger.Green).Infow("gang!", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId,
 			"peer", s.peerRecordsLog(), "action map", s.actionMap, "hand", player.handCards, "lightGang cards", player.lightGang, "darkGang cards", player.darkGang)
 
 	case outer.ActionType_ActionHu:
+		// 一炮多响，已经有人胡了，直接判断能否结算
+		if s.husWasAllDo() {
+			s.HusPongGang = nil
+			s.huSettlement(nil) // 传nil，表示ntf单独推送
+			break
+		}
+
 		ok, err = s.operateHu(player, seatIndex, ntf)
 		nextDrawSeatIndex = s.nextSeatIndex(seatIndex) // 胡牌的下家摸牌
-		delete(s.actionMap, seatIndex)
 
 		s.Log().Color(logger.Red).Infow("hu!", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId, "peer", s.peerRecordsLog(), "hand", player.handCards,
 			"pong", player.pong, "lightGang cards", player.lightGang, "darkGang cards", player.darkGang, "hu", player.hu, "hu extra", player.huExtra)
@@ -83,11 +120,11 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 		return false, outer.ERROR_MSG_REQ_PARAM_INVALID
 	}
 
+	s.removeCurrentAction(seatIndex) // 删除行为
+
 	if !ok {
 		return
 	}
-
-	s.removeCurrentAction(seatIndex) // 删除行为
 
 	// 还有人可以胡，但没胡，先等待其他人操作
 	if len(s.Hus) > 0 && !s.husWasAllDo() {

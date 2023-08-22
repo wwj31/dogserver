@@ -101,12 +101,27 @@ func (s *StatePlaying) husWasAllDo() bool {
 
 // 是否所有能胡的人都过了
 func (s *StatePlaying) husWasAllPass() bool {
+	return len(s.Hus) == 0
+}
+
+// 是否已经有人胡过了
+func (s *StatePlaying) husWasDo() bool {
 	for _, isHu := range s.Hus {
 		if isHu {
-			return false
+			return true
 		}
 	}
-	return true
+	return false
+}
+
+// 是否还有人能胡，但是没胡
+func (s *StatePlaying) husWasWaiting() bool {
+	for _, isHu := range s.Hus {
+		if !isHu {
+			return true
+		}
+	}
+	return false
 }
 
 // 胡牌小结算，等能胡的所有人都胡了，才执行结算操作

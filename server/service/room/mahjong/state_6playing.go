@@ -36,6 +36,7 @@ type StatePlaying struct {
 	*Mahjong
 	actionTimerId string
 	Hus           map[int]bool // 表示可胡，但还没胡的玩家,过操作会从中删除
+	HusPongGang   func()       // 表示一炮多响期间选择碰杠的那个人，如果所有能胡的都过了，执行原本的操作
 }
 
 func (s *StatePlaying) State() int {
@@ -48,6 +49,7 @@ func (s *StatePlaying) Enter() {
 	s.actionTimerId = ""
 	s.currentStateEnterAt = time.Time{}
 	s.Hus = make(map[int]bool)
+	s.HusPongGang = nil
 
 	// 开局默认庄家摸了一张
 	s.appendPeerCard(drawCardType, s.masterCard14, s.masterIndex, nil)
@@ -167,6 +169,9 @@ func (s *StatePlaying) actionTimer(expireAt time.Time, seats ...int) {
 		for _, seat := range seats {
 			player := s.mahjongPlayers[seat]
 			act := s.actionMap[seat]
+			if act == nil {
+				break
+			}
 
 			// (碰杠胡过)行动者，优先打胡->杠->碰->打牌
 			if act.isValidAction(outer.ActionType_ActionHu) {
