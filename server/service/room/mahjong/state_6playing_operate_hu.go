@@ -122,6 +122,7 @@ func (s *StatePlaying) huSettlement(ntf *outer.MahjongBTEOperaNtf) {
 
 	loseScores := map[int32]int64{}
 	defer func() {
+		s.Hus = make(map[int]bool) // 清胡牌状态数据
 		for _, p := range s.mahjongPlayers {
 			huResultNtf.CurrentScores = append(huResultNtf.CurrentScores, s.immScore(p.ShortId))
 		}
@@ -256,7 +257,6 @@ func (s *StatePlaying) huSettlement(ntf *outer.MahjongBTEOperaNtf) {
 			"hu", winner.hu, "extra", winner.huExtra, "shortId", winner.ShortId, "winner score", winner.winScore)
 	}
 
-	s.Hus = make(map[int]bool)                                    // 清胡牌状态数据
 	s.cardsInDesktop = s.cardsInDesktop[:len(s.cardsInDesktop)-1] // 胡成功，删除最后一张牌
 }
 
