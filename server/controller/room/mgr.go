@@ -38,6 +38,10 @@ var _ = router.Reg(func(mgr *room.Mgr, msg *inner.CreateRoomReq) any {
 		}
 	}
 
+	if gameParams.Mahjong.PlayCountLimit == 16 {
+		gameParams.Mahjong.PlayCountLimit = 1
+	}
+
 	newRoomInfo := rdsop.NewRoomInfo{
 		RoomId:         roomId,
 		CreatorShortId: msg.CreatorShortId,

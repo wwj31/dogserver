@@ -183,7 +183,6 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 			gangSuccess(gangType, opNtf, loseScores)
 		}
 
-		qiangGang = hasQiangGang()
 		ntf.Card = card.Int32() // 杠的牌
 	}
 

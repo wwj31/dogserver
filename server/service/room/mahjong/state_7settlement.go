@@ -24,12 +24,14 @@ func (s *StateSettlement) State() int {
 
 func (s *StateSettlement) Enter() {
 	notHu := s.isNoHu()
-	s.Log().Infow("[Mahjong] enter state settlement",
-		"room", s.room.RoomId, "master", s.masterIndex, "notHu", notHu, "game count", s.gameCount)
+
 	s.currentStateEndAt = tools.Now().Add(SettlementDuration)
+	s.Log().Infow("[Mahjong] enter state settlement",
+		"room", s.room.RoomId, "master", s.masterIndex, "notHu", notHu, "game count", s.gameCount,
+		"endAt", s.currentStateEndAt.UnixMilli())
 
 	settlementMsg := &outer.MahjongBTESettlementNtf{
-		EndAt:            s.currentActionEndAt.UnixMilli(),
+		EndAt:            s.currentStateEndAt.UnixMilli(),
 		NotHu:            notHu,
 		HasScoreZero:     s.scoreZeroOver,
 		GameCount:        int32(s.gameCount),
@@ -237,7 +239,7 @@ func (s *StateSettlement) afterSettle(ntf *outer.MahjongBTESettlementNtf) {
 		ntf.PlayerData[seat].Player = allPlayerInfo[seat]
 		ntf.PlayerData[seat].DianPaoSeatIndex = int32(huPeer.seat)
 		ntf.PlayerData[seat].TotalFan = int32(huFan[player.hu]+extraFan[player.huExtra]) + player.huGen
-		ntf.PlayerData[seat].TotalScore = player.score
+		ntf.PlayerData[seat].TotalScore = player.totalWinScore
 		ntf.PlayerData[seat].HuWinScoreSeatIndex = player.winScore
 
 		// 本局该玩家所有的杠牌,以及每次杠成功后赔钱的位置

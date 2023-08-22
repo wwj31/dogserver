@@ -57,6 +57,7 @@ type (
 	mahjongPlayer struct {
 		*room.Player
 		score         int64
+		totalWinScore int64 // 单局的总输赢
 		ready         bool
 		readyExpireAt time.Time
 		finalStatsMsg *outer.MahjongBTEFinialPlayerInfo
@@ -462,6 +463,7 @@ func (m *Mahjong) peerRecordsLog() string {
 
 func (m *mahjongPlayer) updateScore(val int64) {
 	m.score += val
+	m.totalWinScore += val // 单局总输赢
 	m.finalStatsMsg.TotalScore += val
 }
 
