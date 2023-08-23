@@ -39,7 +39,7 @@ type StatePlaying struct {
 	// 1.false表示可胡，但还没胡的玩家
 	// 2.true表示明确操作了胡的玩家
 	// 3.玩家操作过，或者碰杠，会把false的kv删掉
-	Hus map[int]bool
+	canHus map[int]bool
 
 	HusPongGang func() // 表示一炮多响期间选择碰杠的那个人，如果所有能胡的都过了，执行原本的操作
 }
@@ -53,7 +53,7 @@ func (s *StatePlaying) Enter() {
 	s.actionMap = make(map[int]*action)
 	s.actionTimerId = ""
 	s.currentStateEnterAt = time.Time{}
-	s.Hus = make(map[int]bool)
+	s.canHus = make(map[int]bool)
 	s.HusPongGang = nil
 
 	// 开局默认庄家摸了一张
@@ -265,7 +265,7 @@ func (s *StatePlaying) nextAction() {
 	for seat, act := range s.actionMap {
 		if act.isValidAction(outer.ActionType_ActionHu) {
 			canHu = append(canHu, seat)
-			s.Hus[seat] = false
+			s.canHus[seat] = false
 		}
 		defaultSeat = seat // 一边找就一边设置默认行动者，如果找不到胡的人，就直接用他,，默认就是碰杠
 	}

@@ -77,7 +77,7 @@ func (s *StatePlaying) drawCard(seatIndex int) {
 		newAction.acts = append(newAction.acts, outer.ActionType_ActionPass)
 	}
 	s.actionMap[seatIndex] = newAction // 摸牌者加入行动组
-	s.Hus = make(map[int]bool)         // 清胡牌状态数据
+	s.canHus = make(map[int]bool)      // 清胡牌状态数据
 
 	s.Log().Color(logger.Cyan).Infow("draw a card", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId,
 		"newCard", newCard, "action", newAction, "totalCards", s.cards.Len(), "hand", player.handCards,

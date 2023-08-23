@@ -73,7 +73,7 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 		}
 	}
 
-	s.Hus[seatIndex] = true
+	s.canHus[seatIndex] = true
 
 	if s.husWasAllDo() {
 		s.huSettlement(ntf)
@@ -93,11 +93,11 @@ func (s *StatePlaying) huIndex(seat int) int32 {
 
 // 是否所有能胡的人都胡了,至少有1人胡，才为true
 func (s *StatePlaying) husWasAllDo() bool {
-	if len(s.Hus) == 0 {
+	if len(s.canHus) == 0 {
 		return false
 	}
 
-	for _, isHu := range s.Hus {
+	for _, isHu := range s.canHus {
 		if !isHu {
 			return false
 		}
@@ -107,12 +107,12 @@ func (s *StatePlaying) husWasAllDo() bool {
 
 // 是否所有能胡的人都过了
 func (s *StatePlaying) husWasAllPass() bool {
-	return len(s.Hus) == 0
+	return len(s.canHus) == 0
 }
 
 // 是否已经有人胡过了
 func (s *StatePlaying) husWasDo() bool {
-	for _, isHu := range s.Hus {
+	for _, isHu := range s.canHus {
 		if isHu {
 			return true
 		}
@@ -121,8 +121,8 @@ func (s *StatePlaying) husWasDo() bool {
 }
 
 // 是否还有人能胡，但是没胡
-func (s *StatePlaying) husWasWaiting() bool {
-	for _, isHu := range s.Hus {
+func (s *StatePlaying) needWaiting4Hu() bool {
+	for _, isHu := range s.canHus {
 		if !isHu {
 			return true
 		}
@@ -158,13 +158,13 @@ func (s *StatePlaying) huSettlement(ntf *outer.MahjongBTEOperaNtf) {
 	}()
 
 	// 呼叫转移,只在1对1的时候才生效,一炮多响，不会触发呼叫转移
-	if len(s.Hus) == 1 {
+	if len(s.canHus) == 1 {
 		// 先找到胡的那个人
 		var (
 			p      *mahjongPlayer
 			huSeat int
 		)
-		for huSeat, _ = range s.Hus {
+		for huSeat, _ = range s.canHus {
 			p = s.mahjongPlayers[huSeat]
 		}
 
@@ -237,7 +237,7 @@ func (s *StatePlaying) huSettlement(ntf *outer.MahjongBTEOperaNtf) {
 	loserSeat := peer.seat
 	loser := s.mahjongPlayers[loserSeat]
 	// 一炮多响，记录点炮的人
-	if len(s.Hus) > 1 && s.multiHuByIndex == -1 {
+	if len(s.canHus) > 1 && s.multiHuByIndex == -1 {
 		s.multiHuByIndex = loserSeat
 	}
 
@@ -247,7 +247,7 @@ func (s *StatePlaying) huSettlement(ntf *outer.MahjongBTEOperaNtf) {
 	)
 
 	// 先统计胡牌的所有人，总共要赢多少分
-	for huSeat, _ := range s.Hus {
+	for huSeat, _ := range s.canHus {
 		huPlayer := s.mahjongPlayers[huSeat]
 		winScore := s.huScore(huPlayer, false)
 		winnerScore[huSeat] = winScore

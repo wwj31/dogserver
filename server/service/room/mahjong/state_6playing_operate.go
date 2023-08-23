@@ -29,13 +29,13 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 
 	// 如果有胡操作，碰杠过都把胡状态删除
 	if op != outer.ActionType_ActionHu {
-		delete(s.Hus, seatIndex)
+		delete(s.canHus, seatIndex)
 	}
 
 	// 碰杠，需要单独判断是否在一炮多响的情况下
 	if op == outer.ActionType_ActionPong || op == outer.ActionType_ActionGang {
 		// 一炮多响,如果还有人能胡，但是没胡，需要保留操作
-		if s.husWasWaiting() {
+		if s.needWaiting4Hu() {
 			s.Log().Infow(" YiPaoDuoXiang PongGang before other hu",
 				"seat", seatIndex, "short", player.ShortId, "op", op, "hu", hu, "card", card)
 			s.HusPongGang = func() { s.operate(player, seatIndex, op, hu, card) }
@@ -82,7 +82,7 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 	case outer.ActionType_ActionPong:
 		// 一炮多响，已经有人胡了，直接判断结算
 		if s.husWasAllDo() {
-			s.Log().Infow("pong trigger settlement", "hus", s.Hus)
+			s.Log().Infow("pong trigger settlement", "hus", s.canHus)
 			s.HusPongGang = nil
 			s.huSettlement(nil) // 传nil，表示ntf单独推送
 			ok = true
@@ -99,7 +99,7 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 	case outer.ActionType_ActionGang:
 		// 一炮多响，已经有人胡了，直接判断结算
 		if s.husWasAllDo() {
-			s.Log().Infow("gang trigger settlement", "hus", s.Hus)
+			s.Log().Infow("gang trigger settlement", "hus", s.canHus)
 			s.HusPongGang = nil
 			s.huSettlement(nil) // 传nil，表示ntf单独推送
 			ok = true
@@ -140,24 +140,24 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 	}
 
 	// 还有人可以胡，但没胡，先等待其他人操作
-	if len(s.Hus) > 0 && !s.husWasAllDo() {
-		s.Log().Infow("YiPaoDuoXiang waiter other hu", "hus", s.Hus)
+	if s.needWaiting4Hu() {
+		s.Log().Infow("YiPaoDuoXiang waiter other hu", "hus", s.canHus)
 		return
 	}
 
 	// 1.过操作，不广播.
 	// 2.碰杠胡操作，不在一炮多响的情况下要广播，
 	//   在一炮多响中，如果不用等待其他人操作，要广播.
-	if op != outer.ActionType_ActionPass && (len(s.Hus) == 0 || s.husWasAllDo()) {
+	if op != outer.ActionType_ActionPass && !s.needWaiting4Hu() {
 		ntf.HandCardsNum = int32(player.handCards.Len())
 		s.room.Broadcast(ntf)
 	}
 
 	// 如果触发了一炮多响，并且至少2个人胡了，就点炮的人摸牌
-	if len(s.Hus) >= 2 {
+	if len(s.canHus) >= 2 {
 		nextDrawSeatIndex = s.multiHuByIndex
-	} else if len(s.Hus) == 1 { // 如果一炮多响的时候，只有一个人胡了，那么下次出来就是他的下家
-		for seat := range s.Hus {
+	} else if len(s.canHus) == 1 { // 如果一炮多响的时候，只有一个人胡了，那么下次出来就是他的下家
+		for seat := range s.canHus {
 			nextDrawSeatIndex = s.nextSeatIndex(seat) // 胡牌的下家摸牌
 		}
 	}

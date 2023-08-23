@@ -14,7 +14,7 @@ func (s *StatePlaying) playCard(cardIndex, seatIndex int) (bool, outer.ERROR) {
 	}
 
 	// 打牌的同时能胡牌，删除胡牌状态
-	delete(s.Hus, seatIndex)
+	delete(s.canHus, seatIndex)
 
 	player := s.mahjongPlayers[seatIndex]
 	outCard := player.handCards[cardIndex]
