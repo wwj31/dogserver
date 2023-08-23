@@ -193,7 +193,7 @@ func RecurCheckHu(cards Cards, upCardsHas1or9 bool) HuType {
 // Has1or9 是否带有1或9
 func (c Cards) Has1or9() bool {
 	for _, card := range c {
-		num := card.Int() / 10
+		num := card.Int() % 10
 		if num == 1 || num == 9 {
 			return true
 		}
