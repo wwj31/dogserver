@@ -57,10 +57,20 @@ func (s *StatePlaying) drawCard(seatIndex int) {
 	}
 
 	// 判断能否胡牌
+	player.passHandHuFan = 0
+
+	var (
+		extra    ExtFanType
+		gen, fan int
+	)
+
 	hu := player.handCards.IsHu(player.lightGang, player.darkGang, player.pong, newCard, s.gameParams())
 	if hu != HuInvalid {
 		newAction.acts = append(newAction.acts, outer.ActionType_ActionHu)
 		pass = true
+
+		fan, gen, extra = s.fanGenExtra(hu, seatIndex)
+		player.passHandHuFan = fan
 	}
 
 	if pass {
@@ -69,5 +79,6 @@ func (s *StatePlaying) drawCard(seatIndex int) {
 	s.actionMap[seatIndex] = newAction // 摸牌者加入行动组
 
 	s.Log().Color(logger.Cyan).Infow("draw a card", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId,
-		"newCard", newCard, "action", newAction, "totalCards", s.cards.Len(), "hand", player.handCards)
+		"newCard", newCard, "action", newAction, "totalCards", s.cards.Len(), "hand", player.handCards,
+		"pass hand", player.passHandHuFan, "hu", hu, "gen", gen, "extra", extra)
 }

@@ -46,9 +46,9 @@ func (s *StatePlaying) playCard(cardIndex, seatIndex int) (bool, outer.ERROR) {
 		"hand", player.handCards, "pong", player.pong, "light gang", player.lightGang, "dark gang", player.darkGang)
 
 	// 其余三家对这张牌依次做分析
-	for idx, other := range s.mahjongPlayers {
+	for otherSeat, other := range s.mahjongPlayers {
 		// 跳过自己
-		if seatIndex == idx {
+		if seatIndex == otherSeat {
 			continue
 		}
 
@@ -79,9 +79,15 @@ func (s *StatePlaying) playCard(cardIndex, seatIndex int) (bool, outer.ERROR) {
 		}
 
 		if hu := other.handCards.Insert(outCard).IsHu(other.lightGang, other.darkGang, other.pong, outCard, s.gameParams()); hu != HuInvalid {
-			newAction.acts = append(newAction.acts, outer.ActionType_ActionHu)
-			newAction.hus = append(newAction.hus, hu.PB())
-			pass = true
+			fan, gen, extra := s.fanGenExtra(hu, otherSeat)
+			if fan > other.passHandHuFan {
+				newAction.acts = append(newAction.acts, outer.ActionType_ActionHu)
+				newAction.hus = append(newAction.hus, hu.PB())
+				pass = true
+			} else {
+				s.Log().Infow("play a card trigger pass hand",
+					"seat", otherSeat, "other", other.ShortId, "pass hand", other.passHandHuFan, "hu", hu, "gen", gen, "extra", extra)
+			}
 		}
 
 		if pass {
@@ -89,11 +95,11 @@ func (s *StatePlaying) playCard(cardIndex, seatIndex int) (bool, outer.ERROR) {
 		}
 
 		if newAction.isActivated() {
-			newAction.seat = idx
-			s.actionMap[idx] = &newAction
+			newAction.seat = otherSeat
+			s.actionMap[otherSeat] = &newAction
 
 			s.Log().Infow("a new action by play",
-				"room", s.room.RoomId, "seat", idx, "other", other.ShortId,
+				"room", s.room.RoomId, "seat", otherSeat, "other", other.ShortId,
 				"play", outCard, "hand", other.handCards, "action", &newAction)
 		}
 	}

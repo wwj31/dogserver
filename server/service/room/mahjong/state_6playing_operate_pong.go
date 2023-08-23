@@ -46,5 +46,6 @@ func (s *StatePlaying) operatePong(p *mahjongPlayer, seatIndex int) (bool, outer
 	p.pong[peer.card.Int32()] = s.mahjongPlayers[peer.seat].ShortId                                              // 加入自己的碰牌组
 	s.actionMap[seatIndex] = &action{seat: seatIndex, acts: []outer.ActionType{outer.ActionType_ActionPlayCard}} // 碰后新增出牌行为
 	s.cardsInDesktop = s.cardsInDesktop[:tail]
+	p.passHandHuFan = 0
 	return true, outer.ERROR_OK
 }

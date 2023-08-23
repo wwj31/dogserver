@@ -11,7 +11,7 @@ type GamblingType int32
 
 const (
 	Mahjong GamblingType = 0
-	DZZ     GamblingType = 1
+	NiuNiu  GamblingType = 1
 )
 
 func (g GamblingType) Int32() int32 {

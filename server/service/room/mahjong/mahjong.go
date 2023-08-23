@@ -75,13 +75,14 @@ type (
 		gangTotalScore int64             // 杠总共赢的分数
 
 		// 胡牌数据
-		hu           HuType          // 胡牌
-		huCard       Card            // 胡的那张牌
-		huExtra      ExtFanType      // 胡牌额外加番
-		huGen        int32           // 胡牌有几根
-		huPeerIndex  int             // 胡的那次peer下标
-		winScore     map[int32]int64 // 胡牌赢的分 map[赔分的位置]赔的分
-		huTotalScore int64           // 胡牌赢的总分
+		hu            HuType          // 胡牌
+		huCard        Card            // 胡的那张牌
+		huExtra       ExtFanType      // 胡牌额外加番
+		huGen         int32           // 胡牌有几根
+		huPeerIndex   int             // 胡的那次peer下标
+		winScore      map[int32]int64 // 胡牌赢的分 map[赔分的位置]赔的分
+		huTotalScore  int64           // 胡牌赢的总分
+		passHandHuFan int             // 过手胡限制，当前限制番数
 	}
 
 	action struct {

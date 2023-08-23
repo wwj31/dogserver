@@ -14,5 +14,5 @@ enum Position {
 
 enum GameType {
     Mahjong     = 0; // 麻将
-    DDZ         = 1; // 斗地主
+    NiuNiu      = 1; // 牛牛
 }

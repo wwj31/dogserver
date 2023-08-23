@@ -50,11 +50,18 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 			}
 
 			if hu := other.handCards.Insert(card).IsHu(other.lightGang, other.darkGang, other.pong, card, s.gameParams()); hu != HuInvalid {
-				newAction := action{seat: seat}
-				newAction.acts = append(newAction.acts, outer.ActionType_ActionHu, outer.ActionType_ActionPass)
-				newAction.hus = append(newAction.hus, hu.PB())
-				s.actionMap[seat] = &newAction // 抢杠胡操作
-				b = true
+				fan, gen, extra := s.fanGenExtra(hu, seat)
+				if fan > other.passHandHuFan {
+					newAction := action{seat: seat}
+					newAction.acts = append(newAction.acts, outer.ActionType_ActionHu, outer.ActionType_ActionPass)
+					newAction.hus = append(newAction.hus, hu.PB())
+					s.actionMap[seat] = &newAction // 抢杠胡操作
+					b = true
+				} else {
+					s.Log().Infow("hasQiangGang trigger pass hand",
+						"seat", seat, "other", other.ShortId, "pass hand", other.passHandHuFan, "hu", hu, "gen", gen, "extra", extra)
+				}
+
 			}
 		}
 		return b
@@ -103,6 +110,7 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 		// 杠分统计数据
 		p.gangTotalScore += winScore // 杠,得分
 		p.updateScore(winScore)      // 总分，实时计算杠分
+		p.passHandHuFan = 0          // 重置过手胡
 
 		s.Log().Infow("win score update by gang", "room", s.room.RoomId,
 			"shortId", p.ShortId, "current score", p.score, "sub score", winScore)

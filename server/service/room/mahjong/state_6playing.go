@@ -340,3 +340,11 @@ func (s *StatePlaying) checkMutilHu(huPeerIndex int) bool {
 	}
 	return false
 }
+
+// 胡牌了，计算总共几番，其中多少个根，是否有额外番
+func (s *StatePlaying) fanGenExtra(hu HuType, seat int) (fan, gen int, extra ExtFanType) {
+	extra = s.huExtra(seat)
+	gen = s.huGen(seat)
+	fan = huFan[hu] + extraFan[extra] + gen
+	return
+}
