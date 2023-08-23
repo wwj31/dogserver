@@ -3,7 +3,6 @@ package mahjong
 import (
 	"github.com/wwj31/dogactor/logger"
 
-	"server/common/log"
 	"server/proto/outermsg/outer"
 )
 
@@ -28,14 +27,21 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 		return true, outer.ERROR_OK
 	}
 
+	// 如果有胡操作，碰杠过都把胡状态删除
+	if op != outer.ActionType_ActionHu {
+		delete(s.Hus, seatIndex)
+	}
+
 	// 碰杠，需要单独判断是否在一炮多响的情况下
 	if op == outer.ActionType_ActionPong || op == outer.ActionType_ActionGang {
 		// 一炮多响,如果还有人能胡，但是没胡，需要保留操作
 		if s.husWasWaiting() {
-			log.Infow("spare operate", "seat", seatIndex, "short", player.ShortId, "op", op, "hu", hu, "card", card)
+			s.Log().Infow(" YiPaoDuoXiang PongGang before other hu",
+				"seat", seatIndex, "short", player.ShortId, "op", op, "hu", hu, "card", card)
 			s.HusPongGang = func() { s.operate(player, seatIndex, op, hu, card) }
 			return true, outer.ERROR_OK
 		}
+
 	}
 
 	ntf := &outer.MahjongBTEOperaNtf{
@@ -44,11 +50,6 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 	}
 
 	nextDrawSeatIndex := s.nextSeatIndex(s.peerRecords[len(s.peerRecords)-1].seat)
-
-	// 如果有胡操作，碰杠过都把胡状态删除
-	if op != outer.ActionType_ActionHu {
-		delete(s.Hus, seatIndex)
-	}
 
 	delete(s.actionMap, seatIndex)
 
@@ -79,6 +80,15 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 		}
 
 	case outer.ActionType_ActionPong:
+		// 一炮多响，已经有人胡了，直接判断结算
+		if s.husWasAllDo() {
+			s.Log().Infow("pong trigger settlement", "hus", s.Hus)
+			s.HusPongGang = nil
+			s.huSettlement(nil) // 传nil，表示ntf单独推送
+			ok = true
+			break
+		}
+
 		ok, err = s.operatePong(player, seatIndex)
 		peer := s.peerRecords[len(s.peerRecords)-1]
 		ntf.Card = peer.card.Int32() // 碰的牌
@@ -89,8 +99,10 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 	case outer.ActionType_ActionGang:
 		// 一炮多响，已经有人胡了，直接判断结算
 		if s.husWasAllDo() {
+			s.Log().Infow("gang trigger settlement", "hus", s.Hus)
 			s.HusPongGang = nil
 			s.huSettlement(nil) // 传nil，表示ntf单独推送
+			ok = true
 			break
 		}
 
@@ -105,6 +117,7 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 		if s.husWasAllDo() {
 			s.HusPongGang = nil
 			s.huSettlement(nil) // 传nil，表示ntf单独推送
+			ok = true
 			break
 		}
 
@@ -132,10 +145,21 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 		return
 	}
 
-	// 除了过以外的操作都需要广播通知
-	if op != outer.ActionType_ActionPass {
+	// 1.过操作，不广播.
+	// 2.碰杠胡操作，不在一炮多响的情况下要广播，
+	//   在一炮多响中，如果不用等待其他人操作，要广播.
+	if op != outer.ActionType_ActionPass && (len(s.Hus) == 0 || s.husWasAllDo()) {
 		ntf.HandCardsNum = int32(player.handCards.Len())
 		s.room.Broadcast(ntf)
+	}
+
+	// 如果触发了一炮多响，并且至少2个人胡了，就点炮的人摸牌
+	if len(s.Hus) >= 2 {
+		nextDrawSeatIndex = s.multiHuByIndex
+	} else if len(s.Hus) == 1 { // 如果一炮多响的时候，只有一个人胡了，那么下次出来就是他的下家
+		for seat := range s.Hus {
+			nextDrawSeatIndex = s.nextSeatIndex(seat) // 胡牌的下家摸牌
+		}
 	}
 
 	// 没有可行动的人，就摸牌

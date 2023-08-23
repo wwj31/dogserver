@@ -55,6 +55,14 @@ func (s *StateSettlement) Enter() {
 			"scoreZeroOver", s.scoreZeroOver, "game count", s.gameCount, "param", s.gameParams().PlayCountLimit)
 		s.gameCount = int(s.gameParams().PlayCountLimit)
 
+		if s.gameParams().BigWinner {
+			// 大赢家抽水模式
+			s.rebate(true)
+		} else {
+			// 所有赢家抽水模式
+			s.rebate(false)
+		}
+
 		ntf := &outer.MahjongBTEFinialSettlement{}
 		for seat := 0; seat < maxNum; seat++ {
 			player := s.mahjongPlayers[seat]
@@ -63,7 +71,6 @@ func (s *StateSettlement) Enter() {
 		}
 		settlementMsg.FinalSettlement = ntf
 
-		// TODO 抽水
 	}
 
 	// 结算分数为最终金币
@@ -318,4 +325,79 @@ func (s *StateSettlement) finalSettlement() bool {
 	}
 
 	return false
+}
+
+func (s *StateSettlement) rebate(bigWinner bool) {
+	var (
+		winners []*mahjongPlayer
+	)
+
+	if bigWinner {
+		var (
+			winScore int64
+			winner   *mahjongPlayer
+		)
+
+		for i, player := range s.mahjongPlayers {
+			if player.finalStatsMsg.TotalScore > winScore {
+				winner = s.mahjongPlayers[i]
+				winScore = player.finalStatsMsg.TotalScore
+			}
+		}
+		winners = append(winners, winner)
+	} else {
+		for _, player := range s.mahjongPlayers {
+			if player.finalStatsMsg.TotalScore > 0 {
+				winners = append(winners, player)
+			}
+		}
+	}
+
+	// 处理每一位赢家抽水
+	for _, winner := range winners {
+		rangeCfg := s.rebateRange(winner)
+		winScore := winner.finalStatsMsg.TotalScore
+		if rangeCfg == nil {
+			s.Log().Warnw("winner rebate score not in any range",
+				"big winners", winner.ShortId, "win", winScore)
+			continue
+		}
+
+		// 检查是否达到抽水最低要求
+		if winScore < rangeCfg.MinimumRebate {
+			s.Log().Warnw("the winner win the score did not meet the expected score",
+				"big winners", winner.ShortId, "win", winScore)
+			continue
+		}
+
+		ratioScore := (winScore * rangeCfg.RebateRatio) / 100
+		val := winner.score - (ratioScore + rangeCfg.MinimumGuarantee)
+
+		s.Log().Infow("rebate", "winner", winner.ShortId, "before score", winner.score,
+			"ratioScore", ratioScore,
+			"val", val,
+			"winScore", winScore,
+			"range param", rangeCfg.String())
+		winner.score = common.Max(0, val)
+	}
+
+}
+
+// 找出玩家赢分所在区间的参数配置
+func (s *StateSettlement) rebateRange(winner *mahjongPlayer) *outer.RangeParams {
+	params := s.gameParams().ReBate
+	if params == nil {
+		return nil
+	}
+
+	for _, param := range []*outer.RangeParams{params.RangeL1, params.RangeL2, params.RangeL3, params.RangeL4} {
+		if !param.Valid {
+			continue
+		}
+		totalWin := winner.finalStatsMsg.TotalScore
+		if param.Min < totalWin && totalWin <= param.Max {
+			return param
+		}
+	}
+	return nil
 }

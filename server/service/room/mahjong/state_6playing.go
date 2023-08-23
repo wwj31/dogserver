@@ -35,8 +35,13 @@ type (
 type StatePlaying struct {
 	*Mahjong
 	actionTimerId string
-	Hus           map[int]bool // 表示可胡，但还没胡的玩家,过操作会从中删除
-	HusPongGang   func()       // 表示一炮多响期间选择碰杠的那个人，如果所有能胡的都过了，执行原本的操作
+
+	// 1.false表示可胡，但还没胡的玩家
+	// 2.true表示明确操作了胡的玩家
+	// 3.玩家操作过，或者碰杠，会把false的kv删掉
+	Hus map[int]bool
+
+	HusPongGang func() // 表示一炮多响期间选择碰杠的那个人，如果所有能胡的都过了，执行原本的操作
 }
 
 func (s *StatePlaying) State() int {
@@ -117,7 +122,7 @@ func (s *StatePlaying) Handle(shortId int64, v any) (result any) {
 		s.Log().Warnw("illegal operation", "current seat", s.currentAction, "seat", seatIndex, "player", player.ShortId)
 		return outer.ERROR_MAHJONG_ACTION_PLAYER_NOT_MATCH
 	}
-	s.Log().Infow("playing handle msg", reflect.TypeOf(v).String(), v)
+	s.Log().Infow("playing handle msg", "shortId", shortId, reflect.TypeOf(v).String(), v)
 
 	switch msg := v.(type) {
 	case *outer.MahjongBTEPlayCardReq: // 打牌
@@ -307,7 +312,7 @@ func (s *StatePlaying) nextAction() {
 			HandCards:     nextPlayer.handCards.ToSlice(),
 		})
 
-		s.Log().Color(logger.White).Infow("next action", "room", s.room.RoomId, "next seats", nextActionSeats,
+		s.Log().Color(logger.White).Infow("new action", "room", s.room.RoomId, "next seats", nextActionSeats,
 			"current action", nextAct, "action map", s.actionMap, "actionEndAt", actionEndAt)
 	}
 
@@ -326,19 +331,6 @@ func (s *StatePlaying) appendPeerCard(typ checkCardType, card Card, seat int, ga
 		seat:           seat,
 		afterQiangPass: gangFn,
 	})
-}
-
-// 检查是否一炮多响
-func (s *StatePlaying) checkMutilHu(huPeerIndex int) bool {
-	if huPeerIndex == 0 {
-		return false
-	}
-	for _, player := range s.mahjongPlayers {
-		if player.huPeerIndex != 0 && player.huPeerIndex == huPeerIndex {
-			return true
-		}
-	}
-	return false
 }
 
 // 胡牌了，计算总共几番，其中多少个根，是否有额外番

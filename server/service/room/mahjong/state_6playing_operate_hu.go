@@ -53,6 +53,11 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 
 	// 胡成功后，删除Gang和Pong(可以一炮多响,但是有人胡了就不能再碰、杠)
 	for seat, act := range s.actionMap {
+		// 如果行为中有胡，保留碰杠
+		if act.isValidAction(outer.ActionType_ActionHu) {
+			continue
+		}
+
 		act.remove(outer.ActionType_ActionGang)
 		act.remove(outer.ActionType_ActionPong)
 		act.gang = []int32{}
@@ -138,13 +143,17 @@ func (s *StatePlaying) huSettlement(ntf *outer.MahjongBTEOperaNtf) {
 
 	loseScores := map[int32]int64{}
 	defer func() {
-		s.Hus = make(map[int]bool) // 清胡牌状态数据
+
 		for _, p := range s.mahjongPlayers {
 			huResultNtf.CurrentScores = append(huResultNtf.CurrentScores, s.immScore(p.ShortId))
 		}
 
 		if s.gameParams().HuImmediatelyScore {
 			huResultNtf.LoseScores = loseScores
+		}
+
+		if ntf == nil {
+			s.room.Broadcast(huResultNtf)
 		}
 	}()
 
@@ -238,11 +247,7 @@ func (s *StatePlaying) huSettlement(ntf *outer.MahjongBTEOperaNtf) {
 	)
 
 	// 先统计胡牌的所有人，总共要赢多少分
-	for huSeat, isHu := range s.Hus {
-		if !isHu {
-			continue // 可以胡，但是选择过操作，会走到这里
-		}
-
+	for huSeat, _ := range s.Hus {
 		huPlayer := s.mahjongPlayers[huSeat]
 		winScore := s.huScore(huPlayer, false)
 		winnerScore[huSeat] = winScore
