@@ -2,7 +2,6 @@ package mahjong
 
 import (
 	"math"
-
 	"server/common"
 	"server/proto/outermsg/outer"
 )
@@ -269,7 +268,7 @@ func (s *StatePlaying) huSettlement(ntf *outer.MahjongBTEOperaNtf) {
 		loseScores[int32(loserSeat)] += winScore
 
 		winner := s.mahjongPlayers[huSeat]
-		winner.winScore = loseScores
+		winner.winScore = map[int32]int64{int32(loserSeat): winScore}
 		huResultNtf.Winner = append(huResultNtf.Winner, &outer.MahjongBTEHuInfo{
 			Seat:        int32(huSeat),
 			HuType:      winner.hu.PB(),
@@ -306,7 +305,7 @@ func (s *StatePlaying) huScore(p *mahjongPlayer, ziMo bool) int64 {
 
 	fan = common.Min(int(s.fanUpLimit()), fan)
 	ratio := math.Pow(float64(2), float64(fan))
-	winScore := s.baseScore() * int64(ratio)
+	winScore := baseScore * int64(ratio)
 	return winScore
 }
 
