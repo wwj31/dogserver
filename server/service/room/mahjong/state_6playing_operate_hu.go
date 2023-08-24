@@ -211,7 +211,7 @@ func (s *StatePlaying) huSettlement(ntf *outer.MahjongBTEOperaNtf) {
 					continue
 				}
 
-				s.AWinB(huSeat, seat, winScore)
+				s.AWinBByHu(huSeat, seat, winScore)
 				loseScores[int32(seat)] = winScore // 统计输家和输的分
 			}
 
@@ -264,7 +264,7 @@ func (s *StatePlaying) huSettlement(ntf *outer.MahjongBTEOperaNtf) {
 			winScore = int64(float64(loser.score) * ratio)
 		}
 
-		s.AWinB(huSeat, loserSeat, winScore)
+		s.AWinBByHu(huSeat, loserSeat, winScore)
 		loseScores[int32(loserSeat)] += winScore
 
 		winner := s.mahjongPlayers[huSeat]
@@ -282,11 +282,13 @@ func (s *StatePlaying) huSettlement(ntf *outer.MahjongBTEOperaNtf) {
 	s.cardsInDesktop = s.cardsInDesktop[:len(s.cardsInDesktop)-1] // 胡成功，删除最后一张牌
 }
 
-func (s *StatePlaying) AWinB(winnerSeat, loserSeat int, score int64) {
+func (s *StatePlaying) AWinBByHu(winnerSeat, loserSeat int, score int64) {
 	winner := s.mahjongPlayers[winnerSeat]
 	loser := s.mahjongPlayers[loserSeat]
 	winner.updateScore(score)
+	winner.huTotalScore += score
 	loser.updateScore(-score)
+	loser.huTotalScore -= score
 	s.Log().Infow("a win b", "room", s.room.RoomId,
 		"a", winner.ShortId, "a score", winner.score, "b", loser.ShortId, "b score", loser.score, "score", score)
 }
