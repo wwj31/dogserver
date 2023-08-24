@@ -145,7 +145,7 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 		return
 	}
 
-	// 1.过操作，不广播.
+	// 1.过操作，始终不广播.
 	// 2.碰杠胡操作，不在一炮多响的情况下要广播，
 	//   在一炮多响中，如果不用等待其他人操作，要广播.
 	if op != outer.ActionType_ActionPass && !s.needWaiting4Hu() {
@@ -162,11 +162,14 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 		}
 	}
 
+	s.afterOperate(nextDrawSeatIndex)
+	return true, outer.ERROR_OK
+}
+
+func (s *StatePlaying) afterOperate(nextDrawCardSeat int) {
 	// 没有可行动的人，就摸牌
 	if len(s.actionMap) == 0 {
-		s.drawCard(nextDrawSeatIndex)
+		s.drawCard(nextDrawCardSeat)
 	}
 	s.nextAction() // 碰、杠、胡、过 后的下个行为
-
-	return true, outer.ERROR_OK
 }
