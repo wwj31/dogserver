@@ -108,15 +108,14 @@ type (
 		multiHuByIndex int      // 一炮多响点炮的人
 		scoreZeroOver  bool     // 因为有玩家没分了，而触发的结束
 
-		cards          Cards                  // 剩余牌组
-		cardsInDesktop Cards                  // 打出的牌
-		cardsPlayOrder []int32                // 出牌座位顺序
-		mahjongPlayers [maxNum]*mahjongPlayer // 参与游戏的玩家
-		peerRecords    []peerRecords          // 需要关注的操作记录(出牌、摸牌、杠)按触发顺序添加
-		actionMap      map[int]*action        // 有行为的人
-
-		currentAction      []*action // 当前行动者
-		currentActionEndAt time.Time // 当前行动者结束时间
+		cards              Cards                  // 剩余牌组
+		cardsInDesktop     Cards                  // 打出的牌
+		cardsPlayOrder     []int32                // 出牌座位顺序
+		mahjongPlayers     [maxNum]*mahjongPlayer // 参与游戏的玩家
+		peerRecords        []peerRecords          // 需要关注的操作记录(出牌、摸牌、杠)按触发顺序添加
+		actionMap          map[int]*action        // 代表某次操作触发了玩家的行为
+		currentAction      []*action              // 当前行动者,从actionMap中筛选出来的，当前能行动的人
+		currentActionEndAt time.Time              // 当前行动者结束时间
 	}
 )
 
@@ -160,7 +159,7 @@ func (m *Mahjong) Data(shortId int64) proto.Message {
 		}
 	}
 
-	// 检查玩家是否是行动者，如果不是，一下发送内容都不发
+	// 检查玩家是否是行动者，如果不是，以下发送内容都不发
 	var currentAction *action
 	for _, a := range m.currentAction {
 		if m.mahjongPlayers[a.seat].ShortId == shortId {

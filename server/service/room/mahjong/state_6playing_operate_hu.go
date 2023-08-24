@@ -8,7 +8,7 @@ import (
 )
 
 // 胡牌操作
-func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.MahjongBTEOperaNtf) (bool, outer.ERROR) {
+func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.MahjongBTEOperaNtf) outer.ERROR {
 	// 获得最后一次操作的牌
 	lastPeerIndex := len(s.peerRecords) - 1
 	peer := s.peerRecords[lastPeerIndex]
@@ -25,7 +25,7 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 	if hu == HuInvalid {
 		s.Log().Errorw("operate hu invalid",
 			"room", s.room.RoomId, "seat", seatIndex, "player", p.ShortId, "hand", p.handCards)
-		return false, outer.ERROR_MAHJONG_HU_INVALID
+		return outer.ERROR_MAHJONG_HU_INVALID
 	}
 
 	s.huSeat = append(s.huSeat, int32(seatIndex))
@@ -78,7 +78,7 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 	if s.husWasAllDo() {
 		s.huSettlement(ntf)
 	}
-	return true, outer.ERROR_OK
+	return outer.ERROR_OK
 }
 
 // 是否所有能胡的人都胡了
@@ -155,6 +155,7 @@ func (s *StatePlaying) huSettlement(ntf *outer.MahjongBTEOperaNtf) {
 		if ntf == nil {
 			s.room.Broadcast(huResultNtf)
 		}
+		s.currentAction = nil
 	}()
 
 	// 呼叫转移,只在1对1的时候才生效,一炮多响，不会触发呼叫转移
@@ -247,7 +248,7 @@ func (s *StatePlaying) huSettlement(ntf *outer.MahjongBTEOperaNtf) {
 	)
 
 	// 先统计胡牌的所有人，总共要赢多少分
-	for huSeat, _ := range s.canHus {
+	for huSeat := range s.canHus {
 		huPlayer := s.mahjongPlayers[huSeat]
 		winScore := s.huScore(huPlayer, false)
 		winnerScore[huSeat] = winScore

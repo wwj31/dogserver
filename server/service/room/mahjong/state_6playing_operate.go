@@ -7,15 +7,15 @@ import (
 )
 
 // 碰杠胡过
-func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.ActionType, hu HuType, card Card) (ok bool, err outer.ERROR) {
+func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.ActionType, hu HuType, card Card) (err outer.ERROR) {
 	if op == outer.ActionType_ActionPlayCard {
 		// 此函数不受理打牌
-		return false, outer.ERROR_MSG_REQ_PARAM_INVALID
+		return outer.ERROR_MSG_REQ_PARAM_INVALID
 	}
 
 	currentAction := s.getCurrentAction(seatIndex)
 	if currentAction == nil || !currentAction.isValidAction(op) {
-		return false, outer.ERROR_MAHJONG_ACTION_PLAYER_NOT_OPERA
+		return outer.ERROR_MAHJONG_ACTION_PLAYER_NOT_OPERA
 	}
 
 	// 打牌的时候，选过 把其他操作都删了
@@ -23,25 +23,37 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 		currentAction.acts = []outer.ActionType{outer.ActionType_ActionPlayCard}
 		currentAction.hus = nil
 		currentAction.gang = nil
-		s.Log().Infof("pass play card")
-		return true, outer.ERROR_OK
+		s.Log().Infof("operate pass with play card", "shortId", player.ShortId, "seat", seatIndex, "card", card)
+		return outer.ERROR_OK
 	}
 
-	// 如果有胡操作，碰杠过都把胡状态删除
+	delete(s.actionMap, seatIndex)
 	if op != outer.ActionType_ActionHu {
+		// 如果有胡操作，碰杠过都把胡状态删除
 		delete(s.canHus, seatIndex)
 	}
 
-	// 碰杠，需要单独判断是否在一炮多响的情况下
-	if op == outer.ActionType_ActionPong || op == outer.ActionType_ActionGang {
-		// 一炮多响,如果还有人能胡，但是没胡，需要保留操作
-		if s.needWaiting4Hu() {
-			s.Log().Infow(" YiPaoDuoXiang PongGang before other hu",
-				"seat", seatIndex, "short", player.ShortId, "op", op, "hu", hu, "card", card)
-			s.HusPongGang = func() { s.operate(player, seatIndex, op, hu, card) }
-			return true, outer.ERROR_OK
-		}
+	// 针对一炮多响情况，提前对碰杠操作做一次检查
+	switch op {
+	case outer.ActionType_ActionPong, outer.ActionType_ActionGang: // 碰杠，需要单独判断是否在一炮多响的情况下
+		if len(s.canHus) > 0 {
+			// 一炮多响的情况下,
+			// 如果还没有人胡,需要保留碰杠操作,能胡的人选过再执行碰杠,
+			// 否则，碰杠操作统统视为过.
 
+			if !s.husWasDo() {
+				s.Log().Infow("delay this pong/gang operator",
+					"seat", seatIndex, "short", player.ShortId, "op", op, "card", card)
+				s.HusPongGang = func() { s.operate(player, seatIndex, op, hu, card) }
+
+				return outer.ERROR_OK
+			} else {
+				player.passHandHuFan = 0 // 这里需要清除过手胡
+				s.Log().Infow("replace pong/gang with pass",
+					"seat", seatIndex, "short", player.ShortId, "op", op, "card", card)
+				op = outer.ActionType_ActionPass
+			}
+		}
 	}
 
 	ntf := &outer.MahjongBTEOperaNtf{
@@ -51,93 +63,63 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 
 	nextDrawSeatIndex := s.nextSeatIndex(s.peerRecords[len(s.peerRecords)-1].seat)
 
-	delete(s.actionMap, seatIndex)
-
 	switch op {
 	case outer.ActionType_ActionPass:
 		s.Log().Infow("pass", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId, "hand", player.handCards)
-		ok = true
 
-		// 一炮多响，所有人都过了
-		if s.husWasAllPass() {
+		if s.husWasAllPass() { // 一炮多响，所有人都过了
 			// 检查抢杠胡的情况，需要执行杠的行为
 			lastPeer := s.peerRecords[len(s.peerRecords)-1]
-			if lastPeer.typ >= GangType1 && lastPeer.afterQiangPass != nil {
+			if lastPeer.typ == GangType1 && lastPeer.afterQiangPass != nil {
 				lastPeer.afterQiangPass(nil)
 				lastPeer.afterQiangPass = nil
 			}
 
-			// 如果有人在一炮多响期间，点了胡碰操作，需要还原操作
+			// 如果有人在一炮多响期间，点了碰杠，需要延续执行操作
 			if s.HusPongGang != nil {
 				s.HusPongGang()
 				s.HusPongGang = nil
 			}
-		}
-
-		if s.husWasAllDo() {
+		} else if !s.needWaiting4Hu() { // 一炮多响，不用等了
 			s.HusPongGang = nil
 			s.huSettlement(nil) // 传nil，表示ntf单独推送
 		}
 
 	case outer.ActionType_ActionPong:
-		// 一炮多响，已经有人胡了，直接判断结算
-		if s.husWasAllDo() {
-			s.Log().Infow("pong trigger settlement", "hus", s.canHus)
-			s.HusPongGang = nil
-			s.huSettlement(nil) // 传nil，表示ntf单独推送
-			ok = true
-			break
+		if err = s.operatePong(player, seatIndex); err != outer.ERROR_OK {
+			return err
 		}
 
-		ok, err = s.operatePong(player, seatIndex)
 		peer := s.peerRecords[len(s.peerRecords)-1]
 		ntf.Card = peer.card.Int32() // 碰的牌
-
 		s.Log().Color(logger.Green).Infow("pong!", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId,
 			"peer", s.peerRecordsLog(), "hand", player.handCards, "pong cards", player.pong)
 
 	case outer.ActionType_ActionGang:
-		// 一炮多响，已经有人胡了，直接判断结算
-		if s.husWasAllDo() {
-			s.Log().Infow("gang trigger settlement", "hus", s.canHus)
-			s.HusPongGang = nil
-			s.huSettlement(nil) // 传nil，表示ntf单独推送
-			ok = true
-			break
+		if err = s.operateGang(player, seatIndex, card, ntf); err != outer.ERROR_OK {
+			return err
 		}
 
-		ok, err = s.operateGang(player, seatIndex, card, ntf)
 		nextDrawSeatIndex = seatIndex // 杠的人自己摸一张
-
 		s.Log().Color(logger.Green).Infow("gang!", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId,
 			"peer", s.peerRecordsLog(), "action map", s.actionMap, "hand", player.handCards, "lightGang cards", player.lightGang, "darkGang cards", player.darkGang)
 
 	case outer.ActionType_ActionHu:
-		// 一炮多响，已经有人胡了，直接判断能否结算
-		if s.husWasAllDo() {
-			s.HusPongGang = nil
-			s.huSettlement(nil) // 传nil，表示ntf单独推送
-			ok = true
-			break
+		if err = s.operateHu(player, seatIndex, ntf); err != outer.ERROR_OK {
+			return err
 		}
 
-		ok, err = s.operateHu(player, seatIndex, ntf)
 		nextDrawSeatIndex = s.nextSeatIndex(seatIndex) // 胡牌的下家摸牌
-
 		s.Log().Color(logger.Red).Infow("hu!", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId, "peer", s.peerRecordsLog(), "hand", player.handCards,
 			"pong", player.pong, "lightGang cards", player.lightGang, "darkGang cards", player.darkGang, "hu", player.hu, "hu extra", player.huExtra)
 
 	default:
 		s.Log().Errorw("unknown action op",
 			"room", s.room.RoomId, "player", player.ShortId, "op", op)
-		return false, outer.ERROR_MSG_REQ_PARAM_INVALID
+		return outer.ERROR_MSG_REQ_PARAM_INVALID
 	}
 
 	s.removeCurrentAction(seatIndex) // 删除行为
-
-	if !ok {
-		return
-	}
 
 	// 还有人可以胡，但没胡，先等待其他人操作
 	if s.needWaiting4Hu() {
@@ -163,7 +145,7 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 	}
 
 	s.afterOperate(nextDrawSeatIndex)
-	return true, outer.ERROR_OK
+	return outer.ERROR_OK
 }
 
 func (s *StatePlaying) afterOperate(nextDrawCardSeat int) {

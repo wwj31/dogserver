@@ -137,7 +137,7 @@ func (s *StatePlaying) Handle(shortId int64, v any) (result any) {
 		return &outer.MahjongBTEPlayCardRsp{AllCards: player.allCardsToPB(s.gameParams(), player.ShortId, false)}
 
 	case *outer.MahjongBTEOperateReq: // 碰、杠、胡、过
-		if ok, errCode := s.operate(player, seatIndex, msg.ActionType, HuType(msg.Hu), Card(msg.Gang)); !ok {
+		if errCode := s.operate(player, seatIndex, msg.ActionType, HuType(msg.Hu), Card(msg.Gang)); errCode != outer.ERROR_OK {
 			return errCode
 		}
 		return &outer.MahjongBTEOperateRsp{AllCards: player.allCardsToPB(s.gameParams(), player.ShortId, false)}

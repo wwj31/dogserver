@@ -11,23 +11,23 @@ var gangScoreRatio = map[checkCardType]float32{
 }
 
 // 杠牌操作
-func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, ntf *outer.MahjongBTEOperaNtf) (ok bool, err outer.ERROR) {
+func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, ntf *outer.MahjongBTEOperaNtf) (err outer.ERROR) {
 	// 如果牌堆数量为0，不能杠
 	if len(s.cards) == 0 {
-		return false, outer.ERROR_MAHJONG_SPARE_CARDS_WAS_EMPTY
+		return outer.ERROR_MAHJONG_SPARE_CARDS_WAS_EMPTY
 	}
 
 	if len(s.peerRecords) == 0 {
 		s.Log().Errorw("operate gang failed peerRecords len = 0",
 			"room", s.room.RoomId, "player", p.ShortId)
-		return false, outer.ERROR_MSG_REQ_PARAM_INVALID
+		return outer.ERROR_MSG_REQ_PARAM_INVALID
 	}
 
 	currentAction := s.getCurrentAction(seatIndex)
 	if currentAction == nil || !currentAction.canGang(card) {
 		s.Log().Errorw("operate gang failed invalid gang card",
 			"room", s.room.RoomId, "player", p.ShortId, "currentGang", currentAction.gang, "card", card)
-		return false, outer.ERROR_MSG_REQ_PARAM_INVALID
+		return outer.ERROR_MSG_REQ_PARAM_INVALID
 	}
 
 	// 获得最后一次操作的牌
@@ -201,7 +201,7 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 	}
 
 	s.appendPeerCard(gangType, card, seatIndex, gangFunc)
-	return true, outer.ERROR_OK
+	return outer.ERROR_OK
 }
 
 // 获得排除了某些座位后，剩余的没胡座位
