@@ -23,7 +23,7 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 		currentAction.acts = []outer.ActionType{outer.ActionType_ActionPlayCard}
 		currentAction.hus = nil
 		currentAction.gang = nil
-		s.Log().Infof("operate pass with play card", "shortId", player.ShortId, "seat", seatIndex, "card", card)
+		s.Log().Infow("operate pass with play card", "shortId", player.ShortId, "seat", seatIndex, "card", card)
 		return outer.ERROR_OK
 	}
 
@@ -66,6 +66,7 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 	switch op {
 	case outer.ActionType_ActionPass:
 		s.Log().Infow("pass", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId, "hand", player.handCards)
+		s.removeCurrentAction(seatIndex) // 删除行为
 
 		if s.husWasAllPass() { // 一炮多响，所有人都过了
 			// 检查抢杠胡的情况，需要执行杠的行为
@@ -79,7 +80,9 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 			if s.HusPongGang != nil {
 				s.HusPongGang()
 				s.HusPongGang = nil
+				return outer.ERROR_OK
 			}
+
 		} else if !s.needWaiting4Hu() { // 一炮多响，不用等了
 			s.HusPongGang = nil
 			s.huSettlement(nil) // 传nil，表示ntf单独推送
@@ -89,6 +92,7 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 		if err = s.operatePong(player, seatIndex); err != outer.ERROR_OK {
 			return err
 		}
+		s.removeCurrentAction(seatIndex) // 删除行为
 
 		peer := s.peerRecords[len(s.peerRecords)-1]
 		ntf.Card = peer.card.Int32() // 碰的牌
@@ -99,6 +103,7 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 		if err = s.operateGang(player, seatIndex, card, ntf); err != outer.ERROR_OK {
 			return err
 		}
+		s.removeCurrentAction(seatIndex) // 删除行为
 
 		nextDrawSeatIndex = seatIndex // 杠的人自己摸一张
 		s.Log().Color(logger.Green).Infow("gang!", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId,
@@ -108,6 +113,7 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 		if err = s.operateHu(player, seatIndex, ntf); err != outer.ERROR_OK {
 			return err
 		}
+		s.removeCurrentAction(seatIndex) // 删除行为
 
 		nextDrawSeatIndex = s.nextSeatIndex(seatIndex) // 胡牌的下家摸牌
 		s.Log().Color(logger.Red).Infow("hu!", "room", s.room.RoomId, "seat", seatIndex, "player", player.ShortId, "peer", s.peerRecordsLog(), "hand", player.handCards,
@@ -118,8 +124,6 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 			"room", s.room.RoomId, "player", player.ShortId, "op", op)
 		return outer.ERROR_MSG_REQ_PARAM_INVALID
 	}
-
-	s.removeCurrentAction(seatIndex) // 删除行为
 
 	// 还有人可以胡，但没胡，先等待其他人操作
 	if s.needWaiting4Hu() {

@@ -155,6 +155,7 @@ func (s *StatePlaying) huSettlement(ntf *outer.MahjongBTEOperaNtf) {
 		if ntf == nil {
 			s.room.Broadcast(huResultNtf)
 		}
+		s.Log().Infow("hu settlement ", "MahjongBTEHuResultNtf", huResultNtf.String())
 		s.currentAction = nil
 	}()
 
