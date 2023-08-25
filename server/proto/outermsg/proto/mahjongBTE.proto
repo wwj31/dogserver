@@ -185,12 +185,9 @@ message MahjongBTETurnNtf {
 
 // 出牌提示
 message PlayCardTips {
-    message Ting {
-        HuType HuType             = 1; // 能胡的牌型
-        repeated int32  TingCards = 2; // 听牌牌组
-    }
-    int32 Card          = 1; // 提示的牌
-    repeated Ting Tings = 2; // 胡牌、听牌信息
+    int32 Card                = 1; // 提示的牌
+    HuType HuType             = 2; // 能胡的牌型
+    repeated int32  TingCards = 3; // 听牌牌组
 }
 
 // 玩家操作结果通知

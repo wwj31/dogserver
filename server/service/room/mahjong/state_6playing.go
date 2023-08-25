@@ -344,6 +344,40 @@ func (s *StatePlaying) fanGenExtra(hu HuType, seat int) (fan, gen int, extra Ext
 }
 
 // 出牌tips
-func (s *StatePlaying) tips(p *mahjongPlayer) []*outer.PlayCardTips {
-	return nil
+func (s *StatePlaying) tips(p *mahjongPlayer) (result []*outer.PlayCardTips) {
+	// 分析每一张牌如果打出去，会叫哪些牌
+	for _, playCard := range p.handCards {
+		newHand := p.handCards.Remove(playCard)
+		tingCards, err := newHand.ting(p.ignoreColor, p.lightGang, p.darkGang, p.pong, s.gameParams())
+		if err != nil {
+			s.Log().Warnw("tips ting err", "err", err)
+			return nil
+		}
+
+		// 找到能的最大番牌
+		var (
+			fan    int
+			huType HuType
+			cards  []int32
+		)
+
+		for c, t := range tingCards {
+			if huFan[t] > fan {
+				fan = huFan[t]
+				huType = t
+				cards = nil
+			}
+
+			if t == huType {
+				cards = append(cards, c.Int32())
+			}
+		}
+
+		result = append(result, &outer.PlayCardTips{
+			Card:      playCard.Int32(),
+			HuType:    huType.PB(),
+			TingCards: cards,
+		})
+	}
+	return result
 }
