@@ -2,6 +2,7 @@ package mahjong
 
 import (
 	"math"
+
 	"server/common"
 	"server/proto/outermsg/outer"
 )
@@ -284,11 +285,13 @@ func (s *StatePlaying) huSettlement(ntf *outer.MahjongBTEOperaNtf) {
 
 func (s *StatePlaying) AWinBByHu(winnerSeat, loserSeat int, score int64) {
 	winner := s.mahjongPlayers[winnerSeat]
-	loser := s.mahjongPlayers[loserSeat]
 	winner.updateScore(score)
 	winner.huTotalScore += score
+
+	loser := s.mahjongPlayers[loserSeat]
 	loser.updateScore(-score)
 	loser.huTotalScore -= score
+
 	s.Log().Infow("a win b", "room", s.room.RoomId,
 		"a", winner.ShortId, "a score", winner.score, "b", loser.ShortId, "b score", loser.score, "score", score)
 }

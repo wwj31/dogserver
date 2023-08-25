@@ -374,10 +374,8 @@ func (s *StateSettlement) rebate(bigWinner bool) {
 		val := winner.score - (ratioScore + rangeCfg.MinimumGuarantee)
 
 		s.Log().Infow("rebate", "winner", winner.ShortId, "before score", winner.score,
-			"ratioScore", ratioScore,
-			"val", val,
-			"winScore", winScore,
-			"range param", rangeCfg.String())
+			"ratioScore", ratioScore, "val", val, "winScore", winScore, "range param", rangeCfg.String())
+
 		winner.score = common.Max(0, val)
 	}
 
