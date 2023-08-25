@@ -136,15 +136,13 @@ func (s *StateSettlement) notHu(ntf *outer.MahjongBTESettlementNtf) {
 			hasTingSeat = append(hasTingSeat, seat)
 		} else {
 			// 没有叫，需要退杠分
-			for peerIdx, gang := range player.gangInfos {
-				peer := s.peerRecords[peerIdx]
-				gangWinScore := int64(float32(s.baseScore()) * gangScoreRatio[peer.typ])
-				for _, loseSeat := range gang.loserSeats {
-					s.mahjongPlayers[loseSeat].gangTotalScore += gangWinScore // 退杠得分
-					s.mahjongPlayers[loseSeat].updateScore(gangWinScore)
+			for _, gang := range player.gangInfos {
+				for loseSeat, score := range gang.loserSeats {
+					s.mahjongPlayers[loseSeat].gangTotalScore += score // 退杠得分
+					s.mahjongPlayers[loseSeat].updateScore(score)
 
-					player.gangTotalScore -= gangWinScore // 没叫，退杠分
-					player.updateScore(-gangWinScore)
+					player.gangTotalScore -= score // 没叫，退杠分
+					player.updateScore(-score)
 				}
 			}
 
