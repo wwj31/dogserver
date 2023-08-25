@@ -170,15 +170,27 @@ message MahjongBTEPlayingNtf {
 
 // 玩家轮动通知
 message MahjongBTETurnNtf {
-    int32      TotalCards          = 1; // 剩余总牌数
-    int64      ActionShortId       = 2; // 操作者 如果是0，表示等待其他玩家碰、杠、胡、过、操作
-    int64      ActionEndAt         = 3; // 操作结束时间(毫秒)
+    int32      TotalCards            = 1; // 剩余总牌数
+    int64      ActionShortId         = 2; // 操作者 如果是0，表示等待其他玩家碰、杠、胡、过、操作
+    int64      ActionEndAt           = 3; // 操作结束时间(毫秒)
+
     // 以下数据只发操作者本人
-    repeated ActionType ActionType  = 4; // 可操作类型，1.碰、2.杠、3.胡、4.出牌
-    repeated HuType     HuType      = 5; // 可胡牌的类型
-    repeated int32      GangCards   = 6; // 可杠的牌 出牌时，手牌中可能已经存在多副杠牌
-    int32               NewCard     = 7; // 摸到的牌(仅用于出牌)
-    repeated int32      HandCards   = 8; // 最新手牌
+    repeated ActionType   ActionType = 4; // 可操作类型，1.碰、2.杠、3.胡、4.出牌
+    repeated HuType       HuType     = 5; // 可胡牌的类型
+    repeated int32        GangCards  = 6; // 可杠的牌 出牌时，手牌中可能已经存在多副杠牌
+    int32                 NewCard    = 7; // 摸到的牌(仅用于出牌)
+    repeated int32        HandCards  = 8; // 最新手牌
+    repeated PlayCardTips Tips       = 9; // 听牌提示
+}
+
+// 出牌提示
+message PlayCardTips {
+    message Ting {
+        HuType HuType             = 1; // 能胡的牌型
+        repeated int32  TingCards = 2; // 听牌牌组
+    }
+    int32 Card          = 1; // 提示的牌
+    repeated Ting Tings = 2; // 胡牌、听牌信息
 }
 
 // 玩家操作结果通知

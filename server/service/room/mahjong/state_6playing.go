@@ -291,8 +291,10 @@ func (s *StatePlaying) nextAction() {
 		if nextAct.isValidAction(outer.ActionType_ActionPlayCard) {
 			expireDuration = playCardExpiration
 			// 打牌操作，需要广播出牌人以及出牌行为
+
 			notifyPlayerMsg.ActionShortId = nextPlayer.ShortId
 			notifyPlayerMsg.ActionType = []outer.ActionType{outer.ActionType_ActionPlayCard}
+			notifyPlayerMsg.Tips = s.tips(nextPlayer)
 		} else {
 			expireDuration = pongGangHuGuoExpiration
 		}
@@ -339,4 +341,9 @@ func (s *StatePlaying) fanGenExtra(hu HuType, seat int) (fan, gen int, extra Ext
 	gen = s.huGen(seat)
 	fan = huFan[hu] + extraFan[extra] + gen
 	return
+}
+
+// 出牌tips
+func (s *StatePlaying) tips(p *mahjongPlayer) []*outer.PlayCardTips {
+	return nil
 }
