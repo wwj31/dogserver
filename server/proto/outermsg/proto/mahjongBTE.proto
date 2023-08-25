@@ -11,24 +11,25 @@ message MahjongBTEGameInfo {
     MahjongBTEState            State            = 1; // 当前状态
     int64                      StateEnterAt     = 2; // 当前状态的进入时间(毫秒)
     int64                      StateEndAt       = 3; // 当前状态的结束时间(毫秒)
-    repeated MahjongPlayerInfo Players          = 4; // 东南西北 四方玩家信息
-    repeated int32             Dices            = 5; // 定庄的2颗骰子数
-    int32                      MasterIndex      = 6; // 庄家位置 东南西北(0-3)
-    Exchange3Info              Ex3Info          = 7; // 换三张数据
-    int32                      TotalCardsCount  = 8; // 剩余总牌数
-    repeated int32             CardsPlayHistory = 9; // 出牌历史记录
-    repeated int32             CardsPlayOrder   = 10; // 出牌顺序
-    int64                      ActionShortId    = 11; // 当前操作者
-    int64                      ActionEndAt      = 12; // 操作结束时间(毫秒)
-    repeated int32             HuSeats          = 13; // 当前胡牌的座位,按先后顺序加入
-    map<int32,int32>           HuFan            = 14; // 所有胡牌对应的番数 map<HuType,番数>
-    map<int32,int32>           HuExtraFan       = 15; // 胡牌额外番对应的番数 map<ExtraType,番数>
+    int32                      GameCount        = 4; // 游戏局数
+    repeated MahjongPlayerInfo Players          = 5; // 东南西北 四方玩家信息
+    repeated int32             Dices            = 6; // 定庄的2颗骰子数
+    int32                      MasterIndex      = 7; // 庄家位置 东南西北(0-3)
+    Exchange3Info              Ex3Info          = 8; // 换三张数据
+    int32                      TotalCardsCount  = 9; // 剩余总牌数
+    repeated int32             CardsPlayHistory = 10; // 出牌历史记录
+    repeated int32             CardsPlayOrder   = 11; // 出牌顺序
+    int64                      ActionShortId    = 12; // 当前操作者
+    int64                      ActionEndAt      = 13; // 操作结束时间(毫秒)
+    repeated int32             HuSeats          = 14; // 当前胡牌的座位,按先后顺序加入
+    map<int32,int32>           HuFan            = 15; // 所有胡牌对应的番数 map<HuType,番数>
+    map<int32,int32>           HuExtraFan       = 16; // 胡牌额外番对应的番数 map<ExtraType,番数>
 
     // 以下数据只发操作者本人
-    repeated ActionType ActionType              = 16; // 可操作类型，1.碰、2.杠、3.胡、4.出牌
-    repeated HuType     HuType                  = 17; // 可胡牌的类型
-    repeated int32      GangCards               = 18; // 可杠的牌 出牌时，手牌中可能已经存在多副杠牌
-    int32               NewCard                 = 19; // 摸得的牌
+    repeated ActionType ActionType              = 17; // 可操作类型，1.碰、2.杠、3.胡、4.出牌
+    repeated HuType     HuType                  = 18; // 可胡牌的类型
+    repeated int32      GangCards               = 19; // 可杠的牌 出牌时，手牌中可能已经存在多副杠牌
+    int32               NewCard                 = 20; // 摸得的牌
 }
 
 // 血战到底 参与游戏的玩家数据

@@ -133,6 +133,7 @@ func (m *Mahjong) Data(shortId int64) proto.Message {
 		State:            outer.MahjongBTEState(m.fsm.State()),
 		StateEnterAt:     m.currentStateEnterAt.UnixMilli(),
 		StateEndAt:       m.currentStateEndAt.UnixMilli(),
+		GameCount:        int32(m.gameCount),
 		Players:          m.playersToPB(shortId, false),
 		Dices:            m.dices[:],
 		MasterIndex:      int32(m.masterIndex),
