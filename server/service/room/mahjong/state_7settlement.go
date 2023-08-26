@@ -241,9 +241,13 @@ func (s *StateSettlement) afterSettle(ntf *outer.MahjongBTESettlementNtf) {
 			huPeer = s.peerRecords[player.huPeerIndex]
 		}
 
+		totalFan := int32(huFan[player.hu]) + player.huGen
+		for _, ext := range player.huExtra {
+			totalFan += int32(extraFan[ext])
+		}
 		ntf.PlayerData[seat].Player = allPlayerInfo[seat]
 		ntf.PlayerData[seat].DianPaoSeatIndex = int32(huPeer.seat)
-		ntf.PlayerData[seat].TotalFan = int32(huFan[player.hu]+extraFan[player.huExtra]) + player.huGen
+		ntf.PlayerData[seat].TotalFan = totalFan
 		ntf.PlayerData[seat].TotalScore = player.totalWinScore
 		ntf.PlayerData[seat].HuWinScoreSeatIndex = player.winScore
 

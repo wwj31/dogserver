@@ -171,7 +171,7 @@ func (s *StatePlaying) huSettlement(ntf *outer.MahjongBTEOperaNtf) {
 		}
 
 		// 判断杠上炮的情况
-		if p.huExtra == GangShangPao {
+		if ExtraWithin(p.huExtra, GangShangPao) {
 			gangPeerIndex := len(s.peerRecords) - 3
 			peerRecord := s.peerRecords[gangPeerIndex]          // 杠的那次记录
 			rivalGang := s.mahjongPlayers[peerRecord.seat]      // 杠的人
@@ -223,7 +223,7 @@ func (s *StatePlaying) huSettlement(ntf *outer.MahjongBTEOperaNtf) {
 			huResultNtf.Winner = append(huResultNtf.Winner, &outer.MahjongBTEHuInfo{
 				Seat:        int32(huSeat),
 				HuType:      p.hu.PB(),
-				HuExtraType: p.huExtra.PB(),
+				HuExtraType: ExtFanArrToPB(p.huExtra),
 				HuOrder:     s.huIndex(huSeat),
 			})
 
@@ -273,7 +273,7 @@ func (s *StatePlaying) huSettlement(ntf *outer.MahjongBTEOperaNtf) {
 		huResultNtf.Winner = append(huResultNtf.Winner, &outer.MahjongBTEHuInfo{
 			Seat:        int32(huSeat),
 			HuType:      winner.hu.PB(),
-			HuExtraType: winner.huExtra.PB(),
+			HuExtraType: ExtFanArrToPB(winner.huExtra),
 			HuOrder:     s.huIndex(huSeat),
 		})
 		s.Log().Infow("hu win score dianPao", "room", s.room.RoomId,
@@ -298,7 +298,11 @@ func (s *StatePlaying) AWinBByHu(winnerSeat, loserSeat int, score int64) {
 
 // 胡牌计算得分
 func (s *StatePlaying) huScore(p *mahjongPlayer, ziMo bool) int64 {
-	fan := huFan[p.hu] + extraFan[p.huExtra] + int(p.huGen)
+	fan := huFan[p.hu] + int(p.huGen)
+	for _, ext := range p.huExtra {
+		fan += extraFan[ext]
+	}
+
 	baseScore := s.baseScore()
 	if ziMo {
 		if s.gameParams().ZiMoJia == 0 { // 自摸加番
@@ -315,16 +319,14 @@ func (s *StatePlaying) huScore(p *mahjongPlayer, ziMo bool) int64 {
 }
 
 // 分析是否有额外加番
-func (s *StatePlaying) huExtra(seatIndex int) ExtFanType {
-	var extraFans []ExtFanType
-
+func (s *StatePlaying) huExtra(seatIndex int) (extra []ExtFanType) {
 	// 根据番数大到小，优先计算大番型
 	if len(s.peerRecords) == 1 && s.gameParams().TianDiHu {
-		return TianHu
+		return []ExtFanType{TianHu}
 	}
 
 	if len(s.peerRecords) == 2 && s.gameParams().TianDiHu {
-		return Dihu
+		return []ExtFanType{Dihu}
 	}
 
 	lastPeerCard := s.peerRecords[len(s.peerRecords)-1]
@@ -333,27 +335,28 @@ func (s *StatePlaying) huExtra(seatIndex int) ExtFanType {
 	if s.cards.Len() == 0 {
 		switch lastPeerCard.typ {
 		case drawCardType:
-			extraFans = append(extraFans, ShaoDiHu) // 最后一张牌，摸起来胡了，扫底胡
+			extra = append(extra, ShaoDiHu) // 最后一张牌，摸起来胡了，扫底胡
 		case playCardType:
-			extraFans = append(extraFans, HaiDiPao) // 最后一张牌，摸起来后出牌点炮了，海底炮
+			extra = append(extra, HaiDiPao) // 最后一张牌，摸起来后出牌点炮了，海底炮
 		}
 	}
 
 	p := s.mahjongPlayers[seatIndex]
 	if p.handCards.Len() == 2 {
-		extraFans = append(extraFans, JinGouGou) // 只剩2张牌做将，金钩胡
+		extra = append(extra, JinGouGou) // 只剩2张牌做将，金钩胡
 	}
 
 	// 抢杠
 	if lastPeerCard.typ == GangType1 {
-		extraFans = append(extraFans, QiangGangHu) // 抢杠胡
+		extra = append(extra, QiangGangHu) // 抢杠胡
 	}
 
 	// 如果上次是杠，这次一定是摸牌，判断是否杠上花
 	if len(s.peerRecords) >= 2 {
 		beforeLastPeerCard := s.peerRecords[len(s.peerRecords)-2]
+		s.Log().Infow("peer records", "data", beforeLastPeerCard.typ)
 		if beforeLastPeerCard.typ >= GangType1 {
-			extraFans = append(extraFans, GangShangHua) // 刚上花
+			return []ExtFanType{GangShangHua}
 		}
 	}
 
@@ -361,11 +364,11 @@ func (s *StatePlaying) huExtra(seatIndex int) ExtFanType {
 	if len(s.peerRecords) >= 3 {
 		beforeBeforeLastPeerCard := s.peerRecords[len(s.peerRecords)-3]
 		if beforeBeforeLastPeerCard.typ >= GangType1 {
-			extraFans = append(extraFans, GangShangPao) // 杠上炮
+			extra = append(extra, GangShangPao) // 杠上炮
 		}
 	}
 
-	return 0
+	return
 }
 
 // 算根

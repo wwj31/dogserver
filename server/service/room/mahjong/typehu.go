@@ -118,3 +118,20 @@ func (e ExtFanType) PB() outer.ExtraType {
 func (c ColorType) PB() outer.ColorType {
 	return outer.ColorType(c)
 }
+
+func ExtFanArrToPB(ext []ExtFanType) []outer.ExtraType {
+	var result []outer.ExtraType
+	for _, v := range ext {
+		result = append(result, v.PB())
+	}
+	return result
+}
+
+func ExtraWithin(extras []ExtFanType, v ExtFanType) bool {
+	for _, ext := range extras {
+		if ext == v {
+			return true
+		}
+	}
+	return false
+}

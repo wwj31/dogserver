@@ -227,17 +227,17 @@ type MahjongPlayerInfo struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	ShortId        int64       `protobuf:"varint,1,opt,name=ShortId,proto3" json:"ShortId,omitempty"`                              // 参与者短ID
-	Ready          bool        `protobuf:"varint,2,opt,name=Ready,proto3" json:"Ready,omitempty"`                                  // true.准备、false.未准备
-	ReadyExpireAt  int64       `protobuf:"varint,3,opt,name=ReadyExpireAt,proto3" json:"ReadyExpireAt,omitempty"`                  // 准备超时时间(毫秒)
-	Exchange3Ready bool        `protobuf:"varint,4,opt,name=Exchange3Ready,proto3" json:"Exchange3Ready,omitempty"`                // 换三张玩家 确认状态 true.确认、false.未确认
-	DecideColor    ColorType   `protobuf:"varint,5,opt,name=DecideColor,proto3,enum=outer.ColorType" json:"DecideColor,omitempty"` // 定缺花色
-	AllCards       *CardsOfBTE `protobuf:"bytes,6,opt,name=AllCards,proto3" json:"AllCards,omitempty"`                             // 玩家的所有牌，手牌、碰、杠
-	HuType         HuType      `protobuf:"varint,7,opt,name=HuType,proto3,enum=outer.HuType" json:"HuType,omitempty"`              // 胡牌类型
-	HuExtraType    ExtraType   `protobuf:"varint,8,opt,name=HuExtraType,proto3,enum=outer.ExtraType" json:"HuExtraType,omitempty"` // 胡牌额外加番
-	HuCard         int32       `protobuf:"varint,9,opt,name=HuCard,proto3" json:"HuCard,omitempty"`                                // 胡的那张牌
-	HuGen          int32       `protobuf:"varint,10,opt,name=HuGen,proto3" json:"HuGen,omitempty"`                                 // 胡牌的根数
-	Score          int64       `protobuf:"varint,11,opt,name=Score,proto3" json:"Score,omitempty"`                                 // 玩家本局拥有的分数
+	ShortId        int64       `protobuf:"varint,1,opt,name=ShortId,proto3" json:"ShortId,omitempty"`                                     // 参与者短ID
+	Ready          bool        `protobuf:"varint,2,opt,name=Ready,proto3" json:"Ready,omitempty"`                                         // true.准备、false.未准备
+	ReadyExpireAt  int64       `protobuf:"varint,3,opt,name=ReadyExpireAt,proto3" json:"ReadyExpireAt,omitempty"`                         // 准备超时时间(毫秒)
+	Exchange3Ready bool        `protobuf:"varint,4,opt,name=Exchange3Ready,proto3" json:"Exchange3Ready,omitempty"`                       // 换三张玩家 确认状态 true.确认、false.未确认
+	DecideColor    ColorType   `protobuf:"varint,5,opt,name=DecideColor,proto3,enum=outer.ColorType" json:"DecideColor,omitempty"`        // 定缺花色
+	AllCards       *CardsOfBTE `protobuf:"bytes,6,opt,name=AllCards,proto3" json:"AllCards,omitempty"`                                    // 玩家的所有牌，手牌、碰、杠
+	HuType         HuType      `protobuf:"varint,7,opt,name=HuType,proto3,enum=outer.HuType" json:"HuType,omitempty"`                     // 胡牌类型
+	HuExtraType    []ExtraType `protobuf:"varint,8,rep,packed,name=HuExtraType,proto3,enum=outer.ExtraType" json:"HuExtraType,omitempty"` // 胡牌额外加番
+	HuCard         int32       `protobuf:"varint,9,opt,name=HuCard,proto3" json:"HuCard,omitempty"`                                       // 胡的那张牌
+	HuGen          int32       `protobuf:"varint,10,opt,name=HuGen,proto3" json:"HuGen,omitempty"`                                        // 胡牌的根数
+	Score          int64       `protobuf:"varint,11,opt,name=Score,proto3" json:"Score,omitempty"`                                        // 玩家本局拥有的分数
 }
 
 func (x *MahjongPlayerInfo) Reset() {
@@ -321,11 +321,11 @@ func (x *MahjongPlayerInfo) GetHuType() HuType {
 	return HuType_HuTypeUnknown
 }
 
-func (x *MahjongPlayerInfo) GetHuExtraType() ExtraType {
+func (x *MahjongPlayerInfo) GetHuExtraType() []ExtraType {
 	if x != nil {
 		return x.HuExtraType
 	}
-	return ExtraType_ExtraInvalid
+	return nil
 }
 
 func (x *MahjongPlayerInfo) GetHuCard() int32 {
@@ -1871,10 +1871,10 @@ type MahjongBTEHuInfo struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Seat        int32     `protobuf:"varint,1,opt,name=Seat,proto3" json:"Seat,omitempty"`                                    // 座位
-	HuType      HuType    `protobuf:"varint,2,opt,name=HuType,proto3,enum=outer.HuType" json:"HuType,omitempty"`              // 胡牌类型
-	HuExtraType ExtraType `protobuf:"varint,3,opt,name=HuExtraType,proto3,enum=outer.ExtraType" json:"HuExtraType,omitempty"` // 胡牌额外加番
-	HuOrder     int32     `protobuf:"varint,4,opt,name=HuOrder,proto3" json:"HuOrder,omitempty"`                              // 当前是第几个胡牌的
+	Seat        int32       `protobuf:"varint,1,opt,name=Seat,proto3" json:"Seat,omitempty"`                                           // 座位
+	HuType      HuType      `protobuf:"varint,2,opt,name=HuType,proto3,enum=outer.HuType" json:"HuType,omitempty"`                     // 胡牌类型
+	HuExtraType []ExtraType `protobuf:"varint,3,rep,packed,name=HuExtraType,proto3,enum=outer.ExtraType" json:"HuExtraType,omitempty"` // 胡牌额外加番
+	HuOrder     int32       `protobuf:"varint,4,opt,name=HuOrder,proto3" json:"HuOrder,omitempty"`                                     // 当前是第几个胡牌的
 }
 
 func (x *MahjongBTEHuInfo) Reset() {
@@ -1923,11 +1923,11 @@ func (x *MahjongBTEHuInfo) GetHuType() HuType {
 	return HuType_HuTypeUnknown
 }
 
-func (x *MahjongBTEHuInfo) GetHuExtraType() ExtraType {
+func (x *MahjongBTEHuInfo) GetHuExtraType() []ExtraType {
 	if x != nil {
 		return x.HuExtraType
 	}
-	return ExtraType_ExtraInvalid
+	return nil
 }
 
 func (x *MahjongBTEHuInfo) GetHuOrder() int32 {
@@ -2537,7 +2537,7 @@ var file_mahjongBTE_proto_rawDesc = []byte{
 	0x70, 0x65, 0x18, 0x07, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x0d, 0x2e, 0x6f, 0x75, 0x74, 0x65, 0x72,
 	0x2e, 0x48, 0x75, 0x54, 0x79, 0x70, 0x65, 0x52, 0x06, 0x48, 0x75, 0x54, 0x79, 0x70, 0x65, 0x12,
 	0x32, 0x0a, 0x0b, 0x48, 0x75, 0x45, 0x78, 0x74, 0x72, 0x61, 0x54, 0x79, 0x70, 0x65, 0x18, 0x08,
-	0x20, 0x01, 0x28, 0x0e, 0x32, 0x10, 0x2e, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x45, 0x78, 0x74,
+	0x20, 0x03, 0x28, 0x0e, 0x32, 0x10, 0x2e, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x45, 0x78, 0x74,
 	0x72, 0x61, 0x54, 0x79, 0x70, 0x65, 0x52, 0x0b, 0x48, 0x75, 0x45, 0x78, 0x74, 0x72, 0x61, 0x54,
 	0x79, 0x70, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x48, 0x75, 0x43, 0x61, 0x72, 0x64, 0x18, 0x09, 0x20,
 	0x01, 0x28, 0x05, 0x52, 0x06, 0x48, 0x75, 0x43, 0x61, 0x72, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x48,
@@ -2718,7 +2718,7 @@ var file_mahjongBTE_proto_rawDesc = []byte{
 	0x61, 0x74, 0x12, 0x25, 0x0a, 0x06, 0x48, 0x75, 0x54, 0x79, 0x70, 0x65, 0x18, 0x02, 0x20, 0x01,
 	0x28, 0x0e, 0x32, 0x0d, 0x2e, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x48, 0x75, 0x54, 0x79, 0x70,
 	0x65, 0x52, 0x06, 0x48, 0x75, 0x54, 0x79, 0x70, 0x65, 0x12, 0x32, 0x0a, 0x0b, 0x48, 0x75, 0x45,
-	0x78, 0x74, 0x72, 0x61, 0x54, 0x79, 0x70, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x10,
+	0x78, 0x74, 0x72, 0x61, 0x54, 0x79, 0x70, 0x65, 0x18, 0x03, 0x20, 0x03, 0x28, 0x0e, 0x32, 0x10,
 	0x2e, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x45, 0x78, 0x74, 0x72, 0x61, 0x54, 0x79, 0x70, 0x65,
 	0x52, 0x0b, 0x48, 0x75, 0x45, 0x78, 0x74, 0x72, 0x61, 0x54, 0x79, 0x70, 0x65, 0x12, 0x18, 0x0a,
 	0x07, 0x48, 0x75, 0x4f, 0x72, 0x64, 0x65, 0x72, 0x18, 0x04, 0x20, 0x01, 0x28, 0x05, 0x52, 0x07,

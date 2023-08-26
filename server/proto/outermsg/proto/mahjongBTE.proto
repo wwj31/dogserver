@@ -34,17 +34,17 @@ message MahjongBTEGameInfo {
 
 // 血战到底 参与游戏的玩家数据
 message MahjongPlayerInfo {
-    int64      ShortId        = 1; // 参与者短ID
-    bool       Ready          = 2; // true.准备、false.未准备
-    int64      ReadyExpireAt  = 3; // 准备超时时间(毫秒)
-    bool       Exchange3Ready = 4; // 换三张玩家 确认状态 true.确认、false.未确认
-    ColorType  DecideColor    = 5; // 定缺花色
-    CardsOfBTE AllCards       = 6; // 玩家的所有牌，手牌、碰、杠
-    HuType     HuType         = 7; // 胡牌类型
-    ExtraType  HuExtraType    = 8; // 胡牌额外加番
-    int32      HuCard         = 9; // 胡的那张牌
-    int32      HuGen          = 10;// 胡牌的根数
-    int64      Score          = 11;// 玩家本局拥有的分数
+    int64               ShortId        = 1; // 参与者短ID
+    bool                Ready          = 2; // true.准备、false.未准备
+    int64               ReadyExpireAt  = 3; // 准备超时时间(毫秒)
+    bool                Exchange3Ready = 4; // 换三张玩家 确认状态 true.确认、false.未确认
+    ColorType           DecideColor    = 5; // 定缺花色
+    CardsOfBTE          AllCards       = 6; // 玩家的所有牌，手牌、碰、杠
+    HuType              HuType         = 7; // 胡牌类型
+    repeated ExtraType  HuExtraType    = 8; // 胡牌额外加番
+    int32               HuCard         = 9; // 胡的那张牌
+    int32               HuGen          = 10;// 胡牌的根数
+    int64               Score          = 11;// 玩家本局拥有的分数
 }
 
 // 血战到底 换三张数据
@@ -209,10 +209,10 @@ message MahjongBTEOperaNtf {
 
 // 胡牌信息
 message MahjongBTEHuInfo {
-    int32             Seat             = 1; // 座位
-    HuType            HuType           = 2; // 胡牌类型
-    ExtraType         HuExtraType      = 3; // 胡牌额外加番
-    int32             HuOrder          = 4; // 当前是第几个胡牌的
+    int32              Seat             = 1; // 座位
+    HuType             HuType           = 2; // 胡牌类型
+    repeated ExtraType HuExtraType      = 3; // 胡牌额外加番
+    int32              HuOrder          = 4; // 当前是第几个胡牌的
 }
 
 // 胡牌算分结果通知

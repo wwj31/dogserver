@@ -77,7 +77,7 @@ type (
 		// 胡牌数据
 		hu            HuType          // 胡牌
 		huCard        Card            // 胡的那张牌
-		huExtra       ExtFanType      // 胡牌额外加番
+		huExtra       []ExtFanType    // 胡牌额外加番
 		huGen         int32           // 胡牌有几根
 		huPeerIndex   int             // 胡的那次peer下标
 		winScore      map[int32]int64 // 胡牌赢的分 map[赔分的位置]赔的分
@@ -221,7 +221,7 @@ func (m *Mahjong) playersToPB(shortId int64, settlement bool) (players []*outer.
 				DecideColor:    outer.ColorType(player.ignoreColor),
 				AllCards:       allCards,
 				HuType:         player.hu.PB(),
-				HuExtraType:    player.huExtra.PB(),
+				HuExtraType:    ExtFanArrToPB(player.huExtra),
 				HuCard:         huPeer.card.Int32(),
 				HuGen:          player.huGen,
 				Score:          m.immScore(shortId),

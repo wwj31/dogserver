@@ -60,7 +60,7 @@ func (s *StatePlaying) drawCard(seatIndex int) {
 	player.passHandHuFan = 0
 
 	var (
-		extra    ExtFanType
+		extra    []ExtFanType
 		gen, fan int
 	)
 

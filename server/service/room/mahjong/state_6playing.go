@@ -336,10 +336,12 @@ func (s *StatePlaying) appendPeerCard(typ checkCardType, card Card, seat int, ga
 }
 
 // 胡牌了，计算总共几番，其中多少个根，是否有额外番
-func (s *StatePlaying) fanGenExtra(hu HuType, seat int) (fan, gen int, extra ExtFanType) {
-	extra = s.huExtra(seat)
+func (s *StatePlaying) fanGenExtra(hu HuType, seat int) (fan, gen int, extras []ExtFanType) {
+	extras = s.huExtra(seat)
 	gen = s.huGen(seat)
-	fan = huFan[hu] + extraFan[extra] + gen
+	for _, ext := range extras {
+		fan = huFan[hu] + extraFan[ext] + gen
+	}
 	return
 }
 

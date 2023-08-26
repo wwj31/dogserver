@@ -276,7 +276,7 @@ type MahjongParams struct {
 	TianDiHu             bool          `protobuf:"varint,10,opt,name=TianDiHu,proto3" json:"TianDiHu,omitempty"`                         // 天地胡
 	DianPaoPingHu        bool          `protobuf:"varint,11,opt,name=DianPaoPingHu,proto3" json:"DianPaoPingHu,omitempty"`               // 点炮可平胡
 	JiaXinWu             bool          `protobuf:"varint,12,opt,name=JiaXinWu,proto3" json:"JiaXinWu,omitempty"`                         // 夹心五
-	GangImmediatelyScore bool          `protobuf:"varint,13,opt,name=GangImmediatelyScore,proto3" json:"GangImmediatelyScore,omitempty"` // 杠分实时结算
+	GangImmediatelyScore bool          `protobuf:"varint,13,opt,name=GangImmediatelyScore,proto3" json:"GangImmediatelyScore,omitempty"` // 杠分实时结
 	HuImmediatelyScore   bool          `protobuf:"varint,14,opt,name=HuImmediatelyScore,proto3" json:"HuImmediatelyScore,omitempty"`     // 胡牌实时结算
 	AllowScoreSmallZero  bool          `protobuf:"varint,15,opt,name=AllowScoreSmallZero,proto3" json:"AllowScoreSmallZero,omitempty"`   // 是否允许负分
 	BigWinner            bool          `protobuf:"varint,16,opt,name=BigWinner,proto3" json:"BigWinner,omitempty"`                       // 是否开启大赢家模式
