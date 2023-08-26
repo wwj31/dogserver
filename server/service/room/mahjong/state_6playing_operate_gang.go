@@ -49,6 +49,10 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 				continue
 			}
 
+			if other.hu != HuInvalid {
+				continue
+			}
+
 			if hu := other.handCards.Insert(card).IsHu(other.lightGang, other.darkGang, other.pong, card, s.gameParams()); hu != HuInvalid {
 				fan, gen, extra := s.fanGenExtra(hu, seat)
 				if fan > other.passHandHuFan {
