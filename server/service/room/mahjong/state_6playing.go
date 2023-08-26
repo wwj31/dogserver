@@ -354,7 +354,7 @@ func (s *StatePlaying) tips(p *mahjongPlayer) (result []*outer.PlayCardTips) {
 			return nil
 		}
 
-		// 找到能的最大番牌
+		// 找到能胡的最大番牌
 		var (
 			fan    int
 			huType HuType
