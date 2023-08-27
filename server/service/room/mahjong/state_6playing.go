@@ -105,6 +105,7 @@ func (s *StatePlaying) getCurrentAction(seat int) *action {
 func (s *StatePlaying) removeCurrentAction(seat int) {
 	for i, a := range s.currentAction {
 		if a.seat == seat {
+			s.Log().Infow("remove current action ", "seat", seat)
 			s.currentAction = append(s.currentAction[:i], s.currentAction[i+1:]...)
 			return
 		}
@@ -172,12 +173,13 @@ func (s *StatePlaying) actionTimer(expireAt time.Time, seats ...int) {
 		)
 
 		for _, seat := range seats {
-			player := s.mahjongPlayers[seat]
-			act := s.actionMap[seat]
+			act := s.getCurrentAction(seat)
 			if act == nil {
-				break
+				continue
 			}
+			player := s.mahjongPlayers[seat]
 
+			s.Log().Infow("operator timeout with auto op", "short", player.ShortId, "seat", seat, "act", act.String())
 			// (碰杠胡过)行动者，优先打胡->杠->碰->打牌
 			if act.isValidAction(outer.ActionType_ActionHu) {
 				defaultOperaType = outer.ActionType_ActionHu

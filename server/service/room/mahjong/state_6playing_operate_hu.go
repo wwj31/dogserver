@@ -359,7 +359,6 @@ func (s *StatePlaying) huExtra(seatIndex int) (extra []ExtFanType) {
 	// 如果上次是杠，这次一定是摸牌，判断是否杠上花
 	if len(s.peerRecords) >= 2 {
 		beforeLastPeerCard := s.peerRecords[len(s.peerRecords)-2]
-		s.Log().Infow("peer records", "data", beforeLastPeerCard.typ)
 		if beforeLastPeerCard.typ >= GangType1 {
 			return []ExtFanType{GangShangHua}
 		}

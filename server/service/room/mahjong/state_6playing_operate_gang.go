@@ -120,7 +120,7 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 			"shortId", p.ShortId, "current score", p.score, "sub score", winScore)
 
 		// 记录本次杠获得的总分，以及每个赔付的位置
-		gangPeerIndex := len(s.peerRecords) - 1
+		gangPeerIndex := len(s.peerRecords) // 杠牌位置，这个时候还没有记录上,所以取len的值
 		p.gangInfos[gangPeerIndex] = &gangInfo{}
 		p.gangInfos[gangPeerIndex].loserSeats = loserSeats
 		p.gangInfos[gangPeerIndex].totalWinScore += winScore // 本次杠获得总分

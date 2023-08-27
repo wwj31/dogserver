@@ -527,5 +527,5 @@ func (a *action) canGang(card Card) bool {
 }
 
 func (a *action) String() string {
-	return fmt.Sprintf("actions:%v,hus:%v,gang:%v", a.acts, a.hus, a.gang)
+	return fmt.Sprintf("seat:%v actions:%v,hus:%v,gang:%v", a.seat, a.acts, a.hus, a.gang)
 }
