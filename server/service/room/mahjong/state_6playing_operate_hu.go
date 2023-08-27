@@ -176,7 +176,12 @@ func (s *StatePlaying) huSettlement(ntf *outer.MahjongBTEOperaNtf) {
 			peerRecord := s.peerRecords[gangPeerIndex]          // 杠的那次记录
 			rivalGang := s.mahjongPlayers[peerRecord.seat]      // 杠的人
 			rivalGangInfo := rivalGang.gangInfos[gangPeerIndex] // 杠信息
-			totalGangScore := rivalGangInfo.totalWinScore       // 本次转移的总分
+			if rivalGangInfo == nil {
+				s.Log().Errorw("peer records", "shortId", p.ShortId, "peer", s.peerRecords)
+				return
+			}
+
+			totalGangScore := rivalGangInfo.totalWinScore // 本次转移的总分
 
 			rivalGang.updateScore(-totalGangScore)
 			rivalGang.gangTotalScore -= totalGangScore // 呼叫转移

@@ -356,6 +356,7 @@ func (s *StateSettlement) rebate(bigWinner bool) {
 	}
 
 	// 处理每一位赢家抽水
+	var totalRebate int64
 	for _, winner := range winners {
 		rangeCfg := s.rebateRange(winner)
 		winScore := winner.finalStatsMsg.TotalScore
@@ -373,12 +374,15 @@ func (s *StateSettlement) rebate(bigWinner bool) {
 		}
 
 		ratioScore := (winScore * rangeCfg.RebateRatio) / 100
-		val := winner.score - (ratioScore + rangeCfg.MinimumGuarantee)
+		rebate := ratioScore + rangeCfg.MinimumGuarantee
+		totalRebate += rebate
+		val := winner.score - rebate
 
 		s.Log().Infow("rebate", "winner", winner.ShortId, "before score", winner.score,
-			"ratioScore", ratioScore, "val", val, "winScore", winScore, "range param", rangeCfg.String())
+			"ratioScore", ratioScore, "val", val, "winScore", winScore, "rebate", rebate, "range param", rangeCfg.String())
 
 		winner.score = common.Max(0, val)
+
 	}
 
 }
