@@ -286,10 +286,9 @@ func (s *StateSettlement) afterSettle(ntf *outer.MahjongBTESettlementNtf) {
 	s.clear()           // 分算完清理数据
 	s.nextMasterIndex() // 计算下一局庄家
 
-	s.Log().Infow("==================big settlement==================", "count", s.gameCount)
-	s.Log().Infow("==================big settlement==================")
-	s.Log().Infow("==================big settlement==================")
-	s.Log().Infow("==================big settlement==================")
+	s.Log().Infow("==================settlement==================", "count", s.gameCount)
+	s.Log().Infof(" ")
+	s.Log().Infof(" ")
 
 	// 结算给个短暂的时间
 	s.room.AddTimer(tools.XUID(), s.currentStateEndAt, func(dt time.Duration) {
