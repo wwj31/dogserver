@@ -34,12 +34,12 @@ message SetAgentDownRebateRsp {
 message RebateScoreReq {// tag:player
 }
 message RebateScoreRsp {
-    int64 Score  = 1; // 最新可领取的返利分
+    int64 Gold  = 1; // 最新可领取的返利分
 }
 
 // 领取返利分
 message AwardRebateScoreReq {// tag:player
 }
 message AwardRebateScoreRsp {
-    int64 Score  = 1; // 领取了多少分
+    int64 Gold  = 1; // 领取了多少分
 }

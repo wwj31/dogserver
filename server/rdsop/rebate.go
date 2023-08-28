@@ -69,13 +69,13 @@ func SetRebateInfo(shortId, downShortId int64, point int32) (err outer.ERROR) {
 	return
 }
 
-// AddRebateScore 给玩家加返利分数
-func AddRebateScore(shortId, score int64) {
+// AddRebateGold 给玩家加返利分数
+func AddRebateGold(shortId, score int64) {
 	rds.Ins.IncrBy(context.Background(), RebateScoreKey(shortId), score)
 }
 
-// GetRebateScore 玩家返利分数
-func GetRebateScore(shortId int64) int64 {
+// GetRebateGold 玩家返利分数
+func GetRebateGold(shortId int64) int64 {
 	val, err := rds.Ins.Get(context.Background(), RebateScoreKey(shortId)).Result()
 	if err == nil {
 		return cast.ToInt64(val)

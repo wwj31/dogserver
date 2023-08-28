@@ -1,6 +1,7 @@
 package player
 
 import (
+	"server/common/log"
 	"server/common/router"
 	"server/proto/convert"
 	"server/proto/outermsg/outer"
@@ -74,5 +75,24 @@ var _ = router.Reg(func(p *player.Player, msg *outer.SetAgentDownRebateReq) any 
 	return &outer.SetAgentDownRebateRsp{
 		ShortId: msg.ShortId,
 		Rebate:  msg.Rebate,
+	}
+})
+
+// 获取自己可领的返利分
+var _ = router.Reg(func(p *player.Player, msg *outer.RebateScoreReq) any {
+	return &outer.RebateScoreRsp{
+		Gold: rdsop.GetRebateGold(p.Role().ShortId()),
+	}
+})
+
+// 领取返利分
+var _ = router.Reg(func(p *player.Player, msg *outer.AwardRebateScoreReq) any {
+	score := rdsop.GetRebateGold(p.Role().ShortId())
+	p.Role().AddGold(score)
+	rdsop.AddRebateGold(p.Role().ShortId(), -score)
+
+	log.Infow("get rebate gold", "short", p.Role().ShortId(), "score", score)
+	return &outer.AwardRebateScoreRsp{
+		Gold: score,
 	}
 })
