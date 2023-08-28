@@ -319,6 +319,178 @@ func (x *SetAgentDownRebateRsp) GetRebate() int32 {
 	return 0
 }
 
+// 查看当前自己的返利分
+type RebateScoreReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *RebateScoreReq) Reset() {
+	*x = RebateScoreReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_agent_proto_msgTypes[6]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *RebateScoreReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RebateScoreReq) ProtoMessage() {}
+
+func (x *RebateScoreReq) ProtoReflect() protoreflect.Message {
+	mi := &file_agent_proto_msgTypes[6]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RebateScoreReq.ProtoReflect.Descriptor instead.
+func (*RebateScoreReq) Descriptor() ([]byte, []int) {
+	return file_agent_proto_rawDescGZIP(), []int{6}
+}
+
+type RebateScoreRsp struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Score int64 `protobuf:"varint,1,opt,name=Score,proto3" json:"Score,omitempty"` // 最新可领取的返利分
+}
+
+func (x *RebateScoreRsp) Reset() {
+	*x = RebateScoreRsp{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_agent_proto_msgTypes[7]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *RebateScoreRsp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RebateScoreRsp) ProtoMessage() {}
+
+func (x *RebateScoreRsp) ProtoReflect() protoreflect.Message {
+	mi := &file_agent_proto_msgTypes[7]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RebateScoreRsp.ProtoReflect.Descriptor instead.
+func (*RebateScoreRsp) Descriptor() ([]byte, []int) {
+	return file_agent_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *RebateScoreRsp) GetScore() int64 {
+	if x != nil {
+		return x.Score
+	}
+	return 0
+}
+
+// 领取返利分
+type AwardRebateScoreReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *AwardRebateScoreReq) Reset() {
+	*x = AwardRebateScoreReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_agent_proto_msgTypes[8]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *AwardRebateScoreReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AwardRebateScoreReq) ProtoMessage() {}
+
+func (x *AwardRebateScoreReq) ProtoReflect() protoreflect.Message {
+	mi := &file_agent_proto_msgTypes[8]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AwardRebateScoreReq.ProtoReflect.Descriptor instead.
+func (*AwardRebateScoreReq) Descriptor() ([]byte, []int) {
+	return file_agent_proto_rawDescGZIP(), []int{8}
+}
+
+type AwardRebateScoreRsp struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Score int64 `protobuf:"varint,1,opt,name=Score,proto3" json:"Score,omitempty"` // 领取了多少分
+}
+
+func (x *AwardRebateScoreRsp) Reset() {
+	*x = AwardRebateScoreRsp{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_agent_proto_msgTypes[9]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *AwardRebateScoreRsp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AwardRebateScoreRsp) ProtoMessage() {}
+
+func (x *AwardRebateScoreRsp) ProtoReflect() protoreflect.Message {
+	mi := &file_agent_proto_msgTypes[9]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AwardRebateScoreRsp.ProtoReflect.Descriptor instead.
+func (*AwardRebateScoreRsp) Descriptor() ([]byte, []int) {
+	return file_agent_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *AwardRebateScoreRsp) GetScore() int64 {
+	if x != nil {
+		return x.Score
+	}
+	return 0
+}
+
 var File_agent_proto protoreflect.FileDescriptor
 
 var file_agent_proto_rawDesc = []byte{
@@ -356,8 +528,16 @@ var file_agent_proto_rawDesc = []byte{
 	0x18, 0x0a, 0x07, 0x53, 0x68, 0x6f, 0x72, 0x74, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03,
 	0x52, 0x07, 0x53, 0x68, 0x6f, 0x72, 0x74, 0x49, 0x64, 0x12, 0x16, 0x0a, 0x06, 0x52, 0x65, 0x62,
 	0x61, 0x74, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x06, 0x52, 0x65, 0x62, 0x61, 0x74,
-	0x65, 0x42, 0x08, 0x5a, 0x06, 0x2f, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x62, 0x06, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x33,
+	0x65, 0x22, 0x10, 0x0a, 0x0e, 0x52, 0x65, 0x62, 0x61, 0x74, 0x65, 0x53, 0x63, 0x6f, 0x72, 0x65,
+	0x52, 0x65, 0x71, 0x22, 0x26, 0x0a, 0x0e, 0x52, 0x65, 0x62, 0x61, 0x74, 0x65, 0x53, 0x63, 0x6f,
+	0x72, 0x65, 0x52, 0x73, 0x70, 0x12, 0x14, 0x0a, 0x05, 0x53, 0x63, 0x6f, 0x72, 0x65, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x03, 0x52, 0x05, 0x53, 0x63, 0x6f, 0x72, 0x65, 0x22, 0x15, 0x0a, 0x13, 0x41,
+	0x77, 0x61, 0x72, 0x64, 0x52, 0x65, 0x62, 0x61, 0x74, 0x65, 0x53, 0x63, 0x6f, 0x72, 0x65, 0x52,
+	0x65, 0x71, 0x22, 0x2b, 0x0a, 0x13, 0x41, 0x77, 0x61, 0x72, 0x64, 0x52, 0x65, 0x62, 0x61, 0x74,
+	0x65, 0x53, 0x63, 0x6f, 0x72, 0x65, 0x52, 0x73, 0x70, 0x12, 0x14, 0x0a, 0x05, 0x53, 0x63, 0x6f,
+	0x72, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x05, 0x53, 0x63, 0x6f, 0x72, 0x65, 0x42,
+	0x08, 0x5a, 0x06, 0x2f, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x33,
 }
 
 var (
@@ -372,7 +552,7 @@ func file_agent_proto_rawDescGZIP() []byte {
 	return file_agent_proto_rawDescData
 }
 
-var file_agent_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_agent_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_agent_proto_goTypes = []interface{}{
 	(*AgentMembersReq)(nil),       // 0: outer.AgentMembersReq
 	(*AgentMembersRsp)(nil),       // 1: outer.AgentMembersRsp
@@ -380,18 +560,22 @@ var file_agent_proto_goTypes = []interface{}{
 	(*AgentRebateInfoRsp)(nil),    // 3: outer.AgentRebateInfoRsp
 	(*SetAgentDownRebateReq)(nil), // 4: outer.SetAgentDownRebateReq
 	(*SetAgentDownRebateRsp)(nil), // 5: outer.SetAgentDownRebateRsp
-	nil,                           // 6: outer.AgentRebateInfoRsp.DownPointsEntry
-	(*PlayerInfo)(nil),            // 7: outer.PlayerInfo
+	(*RebateScoreReq)(nil),        // 6: outer.RebateScoreReq
+	(*RebateScoreRsp)(nil),        // 7: outer.RebateScoreRsp
+	(*AwardRebateScoreReq)(nil),   // 8: outer.AwardRebateScoreReq
+	(*AwardRebateScoreRsp)(nil),   // 9: outer.AwardRebateScoreRsp
+	nil,                           // 10: outer.AgentRebateInfoRsp.DownPointsEntry
+	(*PlayerInfo)(nil),            // 11: outer.PlayerInfo
 }
 var file_agent_proto_depIdxs = []int32{
-	7, // 0: outer.AgentMembersRsp.UpMember:type_name -> outer.PlayerInfo
-	7, // 1: outer.AgentMembersRsp.DownMembers:type_name -> outer.PlayerInfo
-	6, // 2: outer.AgentRebateInfoRsp.DownPoints:type_name -> outer.AgentRebateInfoRsp.DownPointsEntry
-	3, // [3:3] is the sub-list for method output_type
-	3, // [3:3] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	11, // 0: outer.AgentMembersRsp.UpMember:type_name -> outer.PlayerInfo
+	11, // 1: outer.AgentMembersRsp.DownMembers:type_name -> outer.PlayerInfo
+	10, // 2: outer.AgentRebateInfoRsp.DownPoints:type_name -> outer.AgentRebateInfoRsp.DownPointsEntry
+	3,  // [3:3] is the sub-list for method output_type
+	3,  // [3:3] is the sub-list for method input_type
+	3,  // [3:3] is the sub-list for extension type_name
+	3,  // [3:3] is the sub-list for extension extendee
+	0,  // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_agent_proto_init() }
@@ -473,6 +657,54 @@ func file_agent_proto_init() {
 				return nil
 			}
 		}
+		file_agent_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*RebateScoreReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_agent_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*RebateScoreRsp); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_agent_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*AwardRebateScoreReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_agent_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*AwardRebateScoreRsp); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -480,7 +712,7 @@ func file_agent_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_agent_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   7,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

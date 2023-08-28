@@ -29,3 +29,17 @@ message SetAgentDownRebateRsp {
     int64 ShortId = 1; // 下级的短id
     int32 Rebate  = 2; // 最新点位
 }
+
+// 查看当前自己的返利分
+message RebateScoreReq {// tag:player
+}
+message RebateScoreRsp {
+    int64 Score  = 1; // 最新可领取的返利分
+}
+
+// 领取返利分
+message AwardRebateScoreReq {// tag:player
+}
+message AwardRebateScoreRsp {
+    int64 Score  = 1; // 领取了多少分
+}
