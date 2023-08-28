@@ -406,14 +406,14 @@ func (x *RebateScoreRsp) GetGold() int64 {
 }
 
 // 领取返利分
-type AwardRebateScoreReq struct {
+type ClaimRebateScoreReq struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 }
 
-func (x *AwardRebateScoreReq) Reset() {
-	*x = AwardRebateScoreReq{}
+func (x *ClaimRebateScoreReq) Reset() {
+	*x = ClaimRebateScoreReq{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_agent_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -421,13 +421,13 @@ func (x *AwardRebateScoreReq) Reset() {
 	}
 }
 
-func (x *AwardRebateScoreReq) String() string {
+func (x *ClaimRebateScoreReq) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*AwardRebateScoreReq) ProtoMessage() {}
+func (*ClaimRebateScoreReq) ProtoMessage() {}
 
-func (x *AwardRebateScoreReq) ProtoReflect() protoreflect.Message {
+func (x *ClaimRebateScoreReq) ProtoReflect() protoreflect.Message {
 	mi := &file_agent_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -439,12 +439,12 @@ func (x *AwardRebateScoreReq) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use AwardRebateScoreReq.ProtoReflect.Descriptor instead.
-func (*AwardRebateScoreReq) Descriptor() ([]byte, []int) {
+// Deprecated: Use ClaimRebateScoreReq.ProtoReflect.Descriptor instead.
+func (*ClaimRebateScoreReq) Descriptor() ([]byte, []int) {
 	return file_agent_proto_rawDescGZIP(), []int{8}
 }
 
-type AwardRebateScoreRsp struct {
+type ClaimRebateScoreRsp struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -452,8 +452,8 @@ type AwardRebateScoreRsp struct {
 	Gold int64 `protobuf:"varint,1,opt,name=Gold,proto3" json:"Gold,omitempty"` // 领取了多少分
 }
 
-func (x *AwardRebateScoreRsp) Reset() {
-	*x = AwardRebateScoreRsp{}
+func (x *ClaimRebateScoreRsp) Reset() {
+	*x = ClaimRebateScoreRsp{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_agent_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -461,13 +461,13 @@ func (x *AwardRebateScoreRsp) Reset() {
 	}
 }
 
-func (x *AwardRebateScoreRsp) String() string {
+func (x *ClaimRebateScoreRsp) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*AwardRebateScoreRsp) ProtoMessage() {}
+func (*ClaimRebateScoreRsp) ProtoMessage() {}
 
-func (x *AwardRebateScoreRsp) ProtoReflect() protoreflect.Message {
+func (x *ClaimRebateScoreRsp) ProtoReflect() protoreflect.Message {
 	mi := &file_agent_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -479,12 +479,12 @@ func (x *AwardRebateScoreRsp) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use AwardRebateScoreRsp.ProtoReflect.Descriptor instead.
-func (*AwardRebateScoreRsp) Descriptor() ([]byte, []int) {
+// Deprecated: Use ClaimRebateScoreRsp.ProtoReflect.Descriptor instead.
+func (*ClaimRebateScoreRsp) Descriptor() ([]byte, []int) {
 	return file_agent_proto_rawDescGZIP(), []int{9}
 }
 
-func (x *AwardRebateScoreRsp) GetGold() int64 {
+func (x *ClaimRebateScoreRsp) GetGold() int64 {
 	if x != nil {
 		return x.Gold
 	}
@@ -531,9 +531,9 @@ var file_agent_proto_rawDesc = []byte{
 	0x65, 0x22, 0x10, 0x0a, 0x0e, 0x52, 0x65, 0x62, 0x61, 0x74, 0x65, 0x53, 0x63, 0x6f, 0x72, 0x65,
 	0x52, 0x65, 0x71, 0x22, 0x24, 0x0a, 0x0e, 0x52, 0x65, 0x62, 0x61, 0x74, 0x65, 0x53, 0x63, 0x6f,
 	0x72, 0x65, 0x52, 0x73, 0x70, 0x12, 0x12, 0x0a, 0x04, 0x47, 0x6f, 0x6c, 0x64, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x03, 0x52, 0x04, 0x47, 0x6f, 0x6c, 0x64, 0x22, 0x15, 0x0a, 0x13, 0x41, 0x77, 0x61,
-	0x72, 0x64, 0x52, 0x65, 0x62, 0x61, 0x74, 0x65, 0x53, 0x63, 0x6f, 0x72, 0x65, 0x52, 0x65, 0x71,
-	0x22, 0x29, 0x0a, 0x13, 0x41, 0x77, 0x61, 0x72, 0x64, 0x52, 0x65, 0x62, 0x61, 0x74, 0x65, 0x53,
+	0x01, 0x28, 0x03, 0x52, 0x04, 0x47, 0x6f, 0x6c, 0x64, 0x22, 0x15, 0x0a, 0x13, 0x43, 0x6c, 0x61,
+	0x69, 0x6d, 0x52, 0x65, 0x62, 0x61, 0x74, 0x65, 0x53, 0x63, 0x6f, 0x72, 0x65, 0x52, 0x65, 0x71,
+	0x22, 0x29, 0x0a, 0x13, 0x43, 0x6c, 0x61, 0x69, 0x6d, 0x52, 0x65, 0x62, 0x61, 0x74, 0x65, 0x53,
 	0x63, 0x6f, 0x72, 0x65, 0x52, 0x73, 0x70, 0x12, 0x12, 0x0a, 0x04, 0x47, 0x6f, 0x6c, 0x64, 0x18,
 	0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x04, 0x47, 0x6f, 0x6c, 0x64, 0x42, 0x08, 0x5a, 0x06, 0x2f,
 	0x6f, 0x75, 0x74, 0x65, 0x72, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
@@ -561,8 +561,8 @@ var file_agent_proto_goTypes = []interface{}{
 	(*SetAgentDownRebateRsp)(nil), // 5: outer.SetAgentDownRebateRsp
 	(*RebateScoreReq)(nil),        // 6: outer.RebateScoreReq
 	(*RebateScoreRsp)(nil),        // 7: outer.RebateScoreRsp
-	(*AwardRebateScoreReq)(nil),   // 8: outer.AwardRebateScoreReq
-	(*AwardRebateScoreRsp)(nil),   // 9: outer.AwardRebateScoreRsp
+	(*ClaimRebateScoreReq)(nil),   // 8: outer.ClaimRebateScoreReq
+	(*ClaimRebateScoreRsp)(nil),   // 9: outer.ClaimRebateScoreRsp
 	nil,                           // 10: outer.AgentRebateInfoRsp.DownPointsEntry
 	(*PlayerInfo)(nil),            // 11: outer.PlayerInfo
 }
@@ -681,7 +681,7 @@ func file_agent_proto_init() {
 			}
 		}
 		file_agent_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*AwardRebateScoreReq); i {
+			switch v := v.(*ClaimRebateScoreReq); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -693,7 +693,7 @@ func file_agent_proto_init() {
 			}
 		}
 		file_agent_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*AwardRebateScoreRsp); i {
+			switch v := v.(*ClaimRebateScoreRsp); i {
 			case 0:
 				return &v.state
 			case 1:

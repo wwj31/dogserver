@@ -38,8 +38,8 @@ message RebateScoreRsp {
 }
 
 // 领取返利分
-message AwardRebateScoreReq {// tag:player
+message ClaimRebateScoreReq {// tag:player
 }
-message AwardRebateScoreRsp {
+message ClaimRebateScoreRsp {
     int64 Gold  = 1; // 领取了多少分
 }

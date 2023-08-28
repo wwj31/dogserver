@@ -86,13 +86,17 @@ var _ = router.Reg(func(p *player.Player, msg *outer.RebateScoreReq) any {
 })
 
 // 领取返利分
-var _ = router.Reg(func(p *player.Player, msg *outer.AwardRebateScoreReq) any {
+var _ = router.Reg(func(p *player.Player, msg *outer.ClaimRebateScoreReq) any {
 	score := rdsop.GetRebateGold(p.Role().ShortId())
+	if score <= 0 {
+		return outer.ERROR_MSG_REQ_PARAM_INVALID
+	}
+
 	p.Role().AddGold(score)
 	rdsop.AddRebateGold(p.Role().ShortId(), -score)
 
-	log.Infow("get rebate gold", "short", p.Role().ShortId(), "score", score)
-	return &outer.AwardRebateScoreRsp{
+	log.Infow("claim rebate gold", "short", p.Role().ShortId(), "score", score)
+	return &outer.ClaimRebateScoreRsp{
 		Gold: score,
 	}
 })
