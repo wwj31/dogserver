@@ -7,6 +7,10 @@ enum Msg {
     IdUnknown = 0;
     IdAgentMembersReq = 1894584925;// dispatch to player
     IdAgentMembersRsp = 1592587688;
+    IdAgentRebateInfoReq = 1945440328;// dispatch to player
+    IdAgentRebateInfoRsp = 99953918;
+    IdSetAgentDownRebateReq = 1298664679;// dispatch to player
+    IdSetAgentDownRebateRsp = 1600661662;
     IdAllianceInfoNtf = 672428706;
     IdDisbandAllianceReq = 650636160;// dispatch to player
     IdDisbandAllianceRsp = 952633399;

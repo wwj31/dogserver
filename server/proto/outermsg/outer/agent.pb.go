@@ -114,6 +114,211 @@ func (x *AgentMembersRsp) GetDownMembers() []*PlayerInfo {
 	return nil
 }
 
+// 获取返利以及下级返利点位相关信息
+type AgentRebateInfoReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *AgentRebateInfoReq) Reset() {
+	*x = AgentRebateInfoReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_agent_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *AgentRebateInfoReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AgentRebateInfoReq) ProtoMessage() {}
+
+func (x *AgentRebateInfoReq) ProtoReflect() protoreflect.Message {
+	mi := &file_agent_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AgentRebateInfoReq.ProtoReflect.Descriptor instead.
+func (*AgentRebateInfoReq) Descriptor() ([]byte, []int) {
+	return file_agent_proto_rawDescGZIP(), []int{2}
+}
+
+type AgentRebateInfoRsp struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	OwnRebatePoints int32           `protobuf:"varint,1,opt,name=OwnRebatePoints,proto3" json:"OwnRebatePoints,omitempty"`                                                                                // 自己的返利点位 0~100%
+	DownPoints      map[int64]int32 `protobuf:"bytes,2,rep,name=DownPoints,proto3" json:"DownPoints,omitempty" protobuf_key:"varint,1,opt,name=key,proto3" protobuf_val:"varint,2,opt,name=value,proto3"` // 每一位下级的返利点位 map<shortId,Points>
+}
+
+func (x *AgentRebateInfoRsp) Reset() {
+	*x = AgentRebateInfoRsp{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_agent_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *AgentRebateInfoRsp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AgentRebateInfoRsp) ProtoMessage() {}
+
+func (x *AgentRebateInfoRsp) ProtoReflect() protoreflect.Message {
+	mi := &file_agent_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AgentRebateInfoRsp.ProtoReflect.Descriptor instead.
+func (*AgentRebateInfoRsp) Descriptor() ([]byte, []int) {
+	return file_agent_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *AgentRebateInfoRsp) GetOwnRebatePoints() int32 {
+	if x != nil {
+		return x.OwnRebatePoints
+	}
+	return 0
+}
+
+func (x *AgentRebateInfoRsp) GetDownPoints() map[int64]int32 {
+	if x != nil {
+		return x.DownPoints
+	}
+	return nil
+}
+
+// 给下级分配点位
+type SetAgentDownRebateReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	ShortId int64 `protobuf:"varint,1,opt,name=ShortId,proto3" json:"ShortId,omitempty"` // 下级的短id
+	Rebate  int32 `protobuf:"varint,2,opt,name=Rebate,proto3" json:"Rebate,omitempty"`   // 分配给他的点位
+}
+
+func (x *SetAgentDownRebateReq) Reset() {
+	*x = SetAgentDownRebateReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_agent_proto_msgTypes[4]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SetAgentDownRebateReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SetAgentDownRebateReq) ProtoMessage() {}
+
+func (x *SetAgentDownRebateReq) ProtoReflect() protoreflect.Message {
+	mi := &file_agent_proto_msgTypes[4]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SetAgentDownRebateReq.ProtoReflect.Descriptor instead.
+func (*SetAgentDownRebateReq) Descriptor() ([]byte, []int) {
+	return file_agent_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *SetAgentDownRebateReq) GetShortId() int64 {
+	if x != nil {
+		return x.ShortId
+	}
+	return 0
+}
+
+func (x *SetAgentDownRebateReq) GetRebate() int32 {
+	if x != nil {
+		return x.Rebate
+	}
+	return 0
+}
+
+type SetAgentDownRebateRsp struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	ShortId int64 `protobuf:"varint,1,opt,name=ShortId,proto3" json:"ShortId,omitempty"` // 下级的短id
+	Rebate  int32 `protobuf:"varint,2,opt,name=Rebate,proto3" json:"Rebate,omitempty"`   // 最新点位
+}
+
+func (x *SetAgentDownRebateRsp) Reset() {
+	*x = SetAgentDownRebateRsp{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_agent_proto_msgTypes[5]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SetAgentDownRebateRsp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SetAgentDownRebateRsp) ProtoMessage() {}
+
+func (x *SetAgentDownRebateRsp) ProtoReflect() protoreflect.Message {
+	mi := &file_agent_proto_msgTypes[5]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SetAgentDownRebateRsp.ProtoReflect.Descriptor instead.
+func (*SetAgentDownRebateRsp) Descriptor() ([]byte, []int) {
+	return file_agent_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *SetAgentDownRebateRsp) GetShortId() int64 {
+	if x != nil {
+		return x.ShortId
+	}
+	return 0
+}
+
+func (x *SetAgentDownRebateRsp) GetRebate() int32 {
+	if x != nil {
+		return x.Rebate
+	}
+	return 0
+}
+
 var File_agent_proto protoreflect.FileDescriptor
 
 var file_agent_proto_rawDesc = []byte{
@@ -127,8 +332,32 @@ var file_agent_proto_rawDesc = []byte{
 	0x65, 0x6d, 0x62, 0x65, 0x72, 0x12, 0x33, 0x0a, 0x0b, 0x44, 0x6f, 0x77, 0x6e, 0x4d, 0x65, 0x6d,
 	0x62, 0x65, 0x72, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x11, 0x2e, 0x6f, 0x75, 0x74,
 	0x65, 0x72, 0x2e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x0b, 0x44,
-	0x6f, 0x77, 0x6e, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x42, 0x08, 0x5a, 0x06, 0x2f, 0x6f,
-	0x75, 0x74, 0x65, 0x72, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x6f, 0x77, 0x6e, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x22, 0x14, 0x0a, 0x12, 0x41, 0x67,
+	0x65, 0x6e, 0x74, 0x52, 0x65, 0x62, 0x61, 0x74, 0x65, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x65, 0x71,
+	0x22, 0xc8, 0x01, 0x0a, 0x12, 0x41, 0x67, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x62, 0x61, 0x74, 0x65,
+	0x49, 0x6e, 0x66, 0x6f, 0x52, 0x73, 0x70, 0x12, 0x28, 0x0a, 0x0f, 0x4f, 0x77, 0x6e, 0x52, 0x65,
+	0x62, 0x61, 0x74, 0x65, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05,
+	0x52, 0x0f, 0x4f, 0x77, 0x6e, 0x52, 0x65, 0x62, 0x61, 0x74, 0x65, 0x50, 0x6f, 0x69, 0x6e, 0x74,
+	0x73, 0x12, 0x49, 0x0a, 0x0a, 0x44, 0x6f, 0x77, 0x6e, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x73, 0x18,
+	0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x29, 0x2e, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x41, 0x67,
+	0x65, 0x6e, 0x74, 0x52, 0x65, 0x62, 0x61, 0x74, 0x65, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x73, 0x70,
+	0x2e, 0x44, 0x6f, 0x77, 0x6e, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x73, 0x45, 0x6e, 0x74, 0x72, 0x79,
+	0x52, 0x0a, 0x44, 0x6f, 0x77, 0x6e, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x73, 0x1a, 0x3d, 0x0a, 0x0f,
+	0x44, 0x6f, 0x77, 0x6e, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x73, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x12,
+	0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x03, 0x6b, 0x65,
+	0x79, 0x12, 0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05,
+	0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x3a, 0x02, 0x38, 0x01, 0x22, 0x49, 0x0a, 0x15, 0x53,
+	0x65, 0x74, 0x41, 0x67, 0x65, 0x6e, 0x74, 0x44, 0x6f, 0x77, 0x6e, 0x52, 0x65, 0x62, 0x61, 0x74,
+	0x65, 0x52, 0x65, 0x71, 0x12, 0x18, 0x0a, 0x07, 0x53, 0x68, 0x6f, 0x72, 0x74, 0x49, 0x64, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x07, 0x53, 0x68, 0x6f, 0x72, 0x74, 0x49, 0x64, 0x12, 0x16,
+	0x0a, 0x06, 0x52, 0x65, 0x62, 0x61, 0x74, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x06,
+	0x52, 0x65, 0x62, 0x61, 0x74, 0x65, 0x22, 0x49, 0x0a, 0x15, 0x53, 0x65, 0x74, 0x41, 0x67, 0x65,
+	0x6e, 0x74, 0x44, 0x6f, 0x77, 0x6e, 0x52, 0x65, 0x62, 0x61, 0x74, 0x65, 0x52, 0x73, 0x70, 0x12,
+	0x18, 0x0a, 0x07, 0x53, 0x68, 0x6f, 0x72, 0x74, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03,
+	0x52, 0x07, 0x53, 0x68, 0x6f, 0x72, 0x74, 0x49, 0x64, 0x12, 0x16, 0x0a, 0x06, 0x52, 0x65, 0x62,
+	0x61, 0x74, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x06, 0x52, 0x65, 0x62, 0x61, 0x74,
+	0x65, 0x42, 0x08, 0x5a, 0x06, 0x2f, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x62, 0x06, 0x70, 0x72, 0x6f,
+	0x74, 0x6f, 0x33,
 }
 
 var (
@@ -143,20 +372,26 @@ func file_agent_proto_rawDescGZIP() []byte {
 	return file_agent_proto_rawDescData
 }
 
-var file_agent_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_agent_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_agent_proto_goTypes = []interface{}{
-	(*AgentMembersReq)(nil), // 0: outer.AgentMembersReq
-	(*AgentMembersRsp)(nil), // 1: outer.AgentMembersRsp
-	(*PlayerInfo)(nil),      // 2: outer.PlayerInfo
+	(*AgentMembersReq)(nil),       // 0: outer.AgentMembersReq
+	(*AgentMembersRsp)(nil),       // 1: outer.AgentMembersRsp
+	(*AgentRebateInfoReq)(nil),    // 2: outer.AgentRebateInfoReq
+	(*AgentRebateInfoRsp)(nil),    // 3: outer.AgentRebateInfoRsp
+	(*SetAgentDownRebateReq)(nil), // 4: outer.SetAgentDownRebateReq
+	(*SetAgentDownRebateRsp)(nil), // 5: outer.SetAgentDownRebateRsp
+	nil,                           // 6: outer.AgentRebateInfoRsp.DownPointsEntry
+	(*PlayerInfo)(nil),            // 7: outer.PlayerInfo
 }
 var file_agent_proto_depIdxs = []int32{
-	2, // 0: outer.AgentMembersRsp.UpMember:type_name -> outer.PlayerInfo
-	2, // 1: outer.AgentMembersRsp.DownMembers:type_name -> outer.PlayerInfo
-	2, // [2:2] is the sub-list for method output_type
-	2, // [2:2] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	7, // 0: outer.AgentMembersRsp.UpMember:type_name -> outer.PlayerInfo
+	7, // 1: outer.AgentMembersRsp.DownMembers:type_name -> outer.PlayerInfo
+	6, // 2: outer.AgentRebateInfoRsp.DownPoints:type_name -> outer.AgentRebateInfoRsp.DownPointsEntry
+	3, // [3:3] is the sub-list for method output_type
+	3, // [3:3] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_agent_proto_init() }
@@ -190,6 +425,54 @@ func file_agent_proto_init() {
 				return nil
 			}
 		}
+		file_agent_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*AgentRebateInfoReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_agent_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*AgentRebateInfoRsp); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_agent_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SetAgentDownRebateReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_agent_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SetAgentDownRebateRsp); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -197,7 +480,7 @@ func file_agent_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_agent_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

@@ -21,14 +21,16 @@ enum ERROR {
    CAN_NOT_FIND_PLAYER_INFO         = 15; // 无法通过短id找到玩家
 
    // 联盟、上下级
-   PLAYER_NOT_IN_ALLIANCE           = 56; // 玩家没有联盟
-   PLAYER_POSITION_LIMIT            = 57; // 玩家职位权限不够
-   PLAYER_NOT_IN_CORRECT_ALLIANCE   = 58; // 被设置的玩家不在本联盟中
-   CAN_NOT_SET_HIGHER_POSITION      = 59; // 不能对职位更高的人设置职位
-   CAN_NOT_SET_NOT_IN_DOWN_POSITION = 60; // 不能对非直属下级设置职位
-   TARGET_IS_NOT_DOWN               = 61; // 不是直属上下级关系
-   PLAYER_ALREADY_IN_ALLIANCE       = 62; // 玩家已有联盟
-   PLAYER_ALREADY_HAS_UP            = 63; // 玩家已有上级
+   PLAYER_NOT_IN_ALLIANCE             = 56; // 玩家没有联盟
+   PLAYER_POSITION_LIMIT              = 57; // 玩家职位权限不够
+   PLAYER_NOT_IN_CORRECT_ALLIANCE     = 58; // 被设置的玩家不在本联盟中
+   CAN_NOT_SET_HIGHER_POSITION        = 59; // 不能对职位更高的人设置职位
+   CAN_NOT_SET_NOT_IN_DOWN_POSITION   = 60; // 不能对非直属下级设置职位
+   TARGET_IS_NOT_DOWN                 = 61; // 不是直属上下级关系
+   PLAYER_ALREADY_IN_ALLIANCE         = 62; // 玩家已有联盟
+   PLAYER_ALREADY_HAS_UP              = 63; // 玩家已有上级
+   AGENT_SET_REBATE_ONLY_HIGHER       = 64; // 设置的点位不能小于已有的点位
+   AGENT_SET_REBATE_ONLY_OUT_OF_RANGE = 65; // 下级总点位和操作玩家点位
 
    // 房间
    PLAYER_ALREADY_IN_ROOM           = 104; // 玩家已经在房间内，不能重复进入房间
