@@ -1,7 +1,6 @@
 package player
 
 import (
-	"server/common/rds"
 	"server/common/router"
 	"server/proto/convert"
 	"server/proto/outermsg/outer"
@@ -10,21 +9,21 @@ import (
 )
 
 // // 获取上、下级信息
-var _ = router.Reg(func(player *player.Player, msg *outer.AgentMembersReq) any {
+var _ = router.Reg(func(p *player.Player, msg *outer.AgentMembersReq) any {
 	var (
 		upMember    *outer.PlayerInfo
 		downMembers []*outer.PlayerInfo
 	)
 
-	upShortId := rdsop.AgentUp(player.Role().ShortId())
+	upShortId := rdsop.AgentUp(p.Role().ShortId())
 	if upShortId != 0 {
 		upInfo := rdsop.PlayerInfo(upShortId)
 		upMember = convert.PlayerInnerToOuter(&upInfo)
 	}
 
-	downShortIds := rdsop.AgentDown(player.Role().ShortId())
+	downShortIds := rdsop.AgentDown(p.Role().ShortId())
 	for _, shortId := range downShortIds {
-		if shortId == player.Role().ShortId() {
+		if shortId == p.Role().ShortId() {
 			continue
 		}
 
@@ -39,8 +38,8 @@ var _ = router.Reg(func(player *player.Player, msg *outer.AgentMembersReq) any {
 })
 
 // 获取自己的以及下级分配的返利信息
-var _ = router.Reg(func(player *player.Player, msg *outer.AgentRebateInfoReq) any {
-	rebate := rdsop.GetRebateInfo(player.Role().ShortId())
+var _ = router.Reg(func(p *player.Player, msg *outer.AgentRebateInfoReq) any {
+	rebate := rdsop.GetRebateInfo(p.Role().ShortId())
 	return &outer.AgentRebateInfoRsp{
 		OwnRebatePoints: rebate.Point,
 		DownPoints:      rebate.DownPoints,
@@ -48,8 +47,32 @@ var _ = router.Reg(func(player *player.Player, msg *outer.AgentRebateInfoReq) an
 })
 
 // 设置下级的返利信息
-var _ = router.Reg(func(player *player.Player, msg *outer.SetAgentDownRebateReq) any {
-	rds.LockDo()
-	rebate := rdsop.GetRebateInfo(player.Role().ShortId())
-	return &outer.SetAgentDownRebateRsp{}
+var _ = router.Reg(func(p *player.Player, msg *outer.SetAgentDownRebateReq) any {
+	if msg.Rebate < 0 || msg.Rebate > 100 {
+		return outer.ERROR_MSG_REQ_PARAM_INVALID
+	}
+
+	downs := rdsop.AgentDown(p.Role().ShortId(), 1)
+	var ok bool
+	for _, downShortId := range downs {
+		if downShortId == msg.ShortId {
+			ok = true
+			break
+		}
+	}
+
+	// 不是直属下级，不能设置
+	if !ok {
+		return outer.ERROR_TARGET_IS_NOT_DOWN
+	}
+
+	err := rdsop.SetRebateInfo(p.Role().ShortId(), msg.ShortId, msg.Rebate)
+	if err != outer.ERROR_OK {
+		return err
+	}
+
+	return &outer.SetAgentDownRebateRsp{
+		ShortId: msg.ShortId,
+		Rebate:  msg.Rebate,
+	}
 })

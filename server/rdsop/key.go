@@ -44,6 +44,11 @@ func AgentRebateKey(shortId int64) string {
 	return fmt.Sprintf("agent:%v:rebate", shortId)
 }
 
+// RebateScoreKey 返利利润
+func RebateScoreKey(shortId int64) string {
+	return fmt.Sprintf("agent:%v:score", shortId)
+}
+
 // DeleteAlliancesKey 被删除的联盟
 func DeleteAlliancesKey() string {
 	return fmt.Sprintf("alliance:deleted")
