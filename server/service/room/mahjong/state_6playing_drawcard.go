@@ -62,15 +62,19 @@ func (s *StatePlaying) drawCard(seatIndex int) {
 	var (
 		extra    []ExtFanType
 		gen, fan int
+		hu       HuType
 	)
 
-	hu := player.handCards.IsHu(player.lightGang, player.darkGang, player.pong, newCard, s.gameParams())
-	if hu != HuInvalid {
-		newAction.acts = append(newAction.acts, outer.ActionType_ActionHu)
-		pass = true
+	// 还存在定缺花色的牌，不能胡
+	if !player.handCards.HasColorCard(player.ignoreColor) {
+		hu = player.handCards.IsHu(player.lightGang, player.darkGang, player.pong, newCard, s.gameParams())
+		if hu != HuInvalid {
+			newAction.acts = append(newAction.acts, outer.ActionType_ActionHu)
+			pass = true
 
-		fan, gen, extra = s.fanGenExtra(hu, seatIndex)
-		player.passHandHuFan = fan
+			fan, gen, extra = s.fanGenExtra(hu, seatIndex)
+			player.passHandHuFan = fan
+		}
 	}
 
 	if pass {
