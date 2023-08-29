@@ -60,7 +60,7 @@ func (s *StatePlaying) Enter() {
 
 	// 为了统一所有摸牌流程，先把庄家提前获得的第14张牌放入牌堆头部，然后走drawCard流程
 	master := s.mahjongPlayers[s.masterIndex]
-	master.handCards.Remove(s.masterCard14)
+	master.handCards = master.handCards.Remove(s.masterCard14)
 	newCards := append(make(Cards, 0, s.cards.Len()+1), s.masterCard14)
 	s.cards = append(newCards, s.cards...)
 
