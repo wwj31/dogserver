@@ -78,15 +78,17 @@ func (s *StatePlaying) playCard(cardIndex, seatIndex int) (bool, outer.ERROR) {
 			pass = true
 		}
 
-		if hu := other.handCards.Insert(outCard).IsHu(other.lightGang, other.darkGang, other.pong, outCard, s.gameParams()); hu != HuInvalid {
-			fan, gen, extra := s.fanGenExtra(hu, otherSeat)
-			if fan > other.passHandHuFan {
-				newAction.acts = append(newAction.acts, outer.ActionType_ActionHu)
-				newAction.hus = append(newAction.hus, hu.PB())
-				pass = true
-			} else {
-				s.Log().Infow("play a card trigger pass hand",
-					"seat", otherSeat, "other", other.ShortId, "pass hand", other.passHandHuFan, "hu", hu, "gen", gen, "extra", extra)
+		if !other.handCards.HasColorCard(other.ignoreColor) {
+			if hu := other.handCards.Insert(outCard).IsHu(other.lightGang, other.darkGang, other.pong, outCard, s.gameParams()); hu != HuInvalid {
+				fan, gen, extra := s.fanGenExtra(hu, otherSeat)
+				if fan > other.passHandHuFan {
+					newAction.acts = append(newAction.acts, outer.ActionType_ActionHu)
+					newAction.hus = append(newAction.hus, hu.PB())
+					pass = true
+				} else {
+					s.Log().Infow("play a card trigger pass hand",
+						"seat", otherSeat, "other", other.ShortId, "pass hand", other.passHandHuFan, "hu", hu, "gen", gen, "extra", extra)
+				}
 			}
 		}
 
