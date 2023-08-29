@@ -415,7 +415,9 @@ func (s *StateSettlement) rebate(totalProfit int64) {
 
 	pip := rds.Ins.Pipeline()
 	for _, player := range s.mahjongPlayers {
+		s.Log().Infow("recur profit start", "start short", player.ShortId)
 		s.recurRebate(divProfit, player.UpShortId, player.ShortId, 0, pip)
+		s.Log().Infow("recur profit done", "end short", player.ShortId)
 	}
 
 	if _, err := pip.Exec(context.Background()); err != nil {
@@ -448,6 +450,6 @@ func (s *StateSettlement) recurRebate(profitGold, upShortId, shortId, downShortI
 		return
 	}
 
-	// 向上级别递归
+	// 向上级递归
 	s.recurRebate(profitGold, rdsop.AgentUp(upShortId), upShortId, shortId, addPip)
 }
