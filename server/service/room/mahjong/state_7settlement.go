@@ -403,6 +403,11 @@ func (s *StateSettlement) profitRange(winner *mahjongPlayer) *outer.RangeParams 
 // rebate 返利计算
 func (s *StateSettlement) rebate(totalProfit int64) {
 	divProfit := totalProfit / 4 // 每个玩家那条上级路线，都均分获得利润
+	if divProfit == 0 {
+		s.Log().Infow("profit is zero!!", "total profit", totalProfit)
+		return
+	}
+
 	for _, player := range s.mahjongPlayers {
 		s.recurRebate(divProfit, player.UpShortId, player.ShortId, 0)
 	}
@@ -416,19 +421,23 @@ func (s *StateSettlement) recurRebate(profitGold, upShortId, shortId, downShortI
 		exactPoint      int32 // 确切的获利点位
 		exactProfitGold int64 // 确切的获利
 	)
-	// 先检查自己是否有获利点位
+
+	// 自己有点位，先分自己一份
 	if rebateInfo.Point > 0 {
 		// 自己的获利=自己的分润-下级的分润
-		exactPoint = rebateInfo.Point - rebateInfo.DownPoints[downShortId]
+		exactPoint = common.Max(0, rebateInfo.Point-rebateInfo.DownPoints[downShortId])
 		exactProfitGold = profitGold * int64(exactPoint) / 100
 		rdsop.AddRebateGold(shortId, exactProfitGold)
 	}
+
 	s.Log().Infow("rebate calculating ...", "room", s.room.RoomId,
 		"short", shortId, "up", upShortId, "down", downShortId,
-		"profitGold", profitGold, "point", exactPoint, "gold", exactProfitGold)
+		"profitGold", profitGold, "point", exactPoint, "gold", exactProfitGold, "rebateInfo", rebateInfo)
+
+	if upShortId == 0 {
+		return
+	}
 
 	// 向上级别递归
-	if upShortId != 0 {
-		s.recurRebate(profitGold, rdsop.AgentUp(upShortId), upShortId, shortId)
-	}
+	s.recurRebate(profitGold, rdsop.AgentUp(upShortId), upShortId, shortId)
 }
