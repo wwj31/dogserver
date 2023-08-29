@@ -49,6 +49,8 @@ func (s *StatePlaying) State() int {
 }
 
 func (s *StatePlaying) Enter() {
+	s.Log().Infow("[Mahjong] enter state playing", "room", s.room.RoomId, "params", *s.gameParams())
+
 	s.peerRecords = make([]peerRecords, 0)
 	s.actionMap = make(map[int]*action)
 	s.actionTimerId = ""
@@ -56,36 +58,14 @@ func (s *StatePlaying) Enter() {
 	s.canHus = make(map[int]bool)
 	s.HusPongGang = nil
 
-	// 开局默认庄家摸了一张
-	s.appendPeerCard(drawCardType, s.masterCard14, s.masterIndex, nil)
-
-	// 判断能否胡牌
-	newAct := &action{seat: s.masterIndex, acts: []outer.ActionType{outer.ActionType_ActionPlayCard}}
+	// 为了统一所有摸牌流程，先把庄家提前获得的第14张牌放入牌堆头部，然后走drawCard流程
 	master := s.mahjongPlayers[s.masterIndex]
-	hu := master.handCards.IsHu(master.lightGang, master.darkGang, master.pong, master.handCards[master.handCards.Len()-1], s.gameParams())
+	master.handCards.Remove(s.masterCard14)
+	newCards := append(make(Cards, 0, s.cards.Len()+1), s.masterCard14)
+	s.cards = append(newCards, s.cards...)
 
-	var pass bool
-	if hu != HuInvalid {
-		newAct.hus = append(newAct.hus, outer.HuType(hu))
-		newAct.acts = append(newAct.acts, outer.ActionType_ActionHu)
-		pass = true
-	}
-
-	// 判断能否暗杠
-	gangs := master.handCards.HasGang() // 检查手牌
-	newAct.gang = gangs.ToSlice()
-	if len(newAct.gang) > 0 {
-		newAct.acts = append(newAct.acts, outer.ActionType_ActionGang)
-		pass = true
-	}
-
-	if pass {
-		newAct.acts = append(newAct.acts, outer.ActionType_ActionPass)
-	}
-
-	s.actionMap[s.masterIndex] = newAct
-	s.Log().Infow("[Mahjong] enter state playing", "room", s.room.RoomId, "params", *s.gameParams())
-	s.nextAction() // 庄家出牌
+	s.drawCard(s.masterIndex) // 庄家重新摸牌
+	s.nextAction()            // 庄家出牌
 }
 
 func (s *StatePlaying) Leave() {
