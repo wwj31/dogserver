@@ -78,7 +78,7 @@ var _ = router.Reg(func(p *player.Player, msg *outer.SetAgentDownRebateReq) any 
 	}
 })
 
-// 获取自己可领的返利分
+// 获取自己可领的返利分数信息
 var _ = router.Reg(func(p *player.Player, msg *outer.RebateScoreReq) any {
 	return &outer.RebateScoreRsp{
 		Gold: rdsop.GetRebateGold(p.Role().ShortId()),

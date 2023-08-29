@@ -36,12 +36,14 @@ func SetRebateInfo(shortId, downShortId int64, point int32) (err outer.ERROR) {
 	rds.LockDo(getKey(shortId), func() {
 		rebateInfo := GetRebateInfo(downShortId)
 		rebateInfo.DownPoints[downShortId] = point
-		var totalPoint int32
+
+		// 获得点位最高的下级
+		var HighestPoint int32
 		for _, p := range rebateInfo.DownPoints {
-			totalPoint += p
+			HighestPoint = common.Max(HighestPoint, p)
 		}
 
-		if rebateInfo.Point < totalPoint {
+		if rebateInfo.Point < HighestPoint {
 			err = outer.ERROR_AGENT_SET_REBATE_ONLY_OUT_OF_RANGE
 			return
 		}
