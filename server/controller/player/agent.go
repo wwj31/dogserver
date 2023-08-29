@@ -1,7 +1,10 @@
 package player
 
 import (
+	"context"
+
 	"server/common/log"
+	"server/common/rds"
 	"server/common/router"
 	"server/proto/convert"
 	"server/proto/outermsg/outer"
@@ -93,7 +96,13 @@ var _ = router.Reg(func(p *player.Player, msg *outer.ClaimRebateScoreReq) any {
 	}
 
 	p.Role().AddGold(score)
-	rdsop.AddRebateGold(p.Role().ShortId(), -score)
+	pip := rds.Ins.Pipeline()
+	rdsop.AddRebateGold(p.Role().ShortId(), -score, pip)
+	_, err := pip.Exec(context.Background())
+	if err != nil {
+		log.Errorw("claim rebate score redis failed", "short", p.Role().ShortId(), "score", score)
+		return outer.ERROR_FAILED
+	}
 
 	log.Infow("claim rebate gold", "short", p.Role().ShortId(), "score", score)
 	return &outer.ClaimRebateScoreRsp{

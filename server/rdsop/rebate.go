@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/go-redis/redis/v9"
 	"github.com/spf13/cast"
 
 	"server/common"
@@ -72,8 +73,8 @@ func SetRebateInfo(shortId, downShortId int64, point int32) (err outer.ERROR) {
 }
 
 // AddRebateGold 给玩家加返利分数
-func AddRebateGold(shortId, score int64) {
-	rds.Ins.IncrBy(context.Background(), RebateScoreKey(shortId), score)
+func AddRebateGold(shortId, score int64, pip redis.Pipeliner) {
+	pip.IncrBy(context.Background(), RebateScoreKey(shortId), score)
 }
 
 // GetRebateGold 玩家返利分数

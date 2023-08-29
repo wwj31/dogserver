@@ -1,11 +1,16 @@
 package mahjong
 
 import (
+	"context"
 	"math"
 	"time"
 
+	"github.com/go-redis/redis/v9"
+
 	"server/common"
 	"server/common/actortype"
+	"server/common/log"
+	"server/common/rds"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
 	"server/rdsop"
@@ -408,13 +413,18 @@ func (s *StateSettlement) rebate(totalProfit int64) {
 		return
 	}
 
+	pip := rds.Ins.Pipeline()
 	for _, player := range s.mahjongPlayers {
-		s.recurRebate(divProfit, player.UpShortId, player.ShortId, 0)
+		s.recurRebate(divProfit, player.UpShortId, player.ShortId, 0, pip)
+	}
+
+	if _, err := pip.Exec(context.Background()); err != nil {
+		log.Errorw("rebate redis failed", "err", err)
 	}
 }
 
 // 逐层向上返利
-func (s *StateSettlement) recurRebate(profitGold, upShortId, shortId, downShortId int64) {
+func (s *StateSettlement) recurRebate(profitGold, upShortId, shortId, downShortId int64, addPip redis.Pipeliner) {
 	rebateInfo := rdsop.GetRebateInfo(shortId)
 
 	var (
@@ -427,7 +437,7 @@ func (s *StateSettlement) recurRebate(profitGold, upShortId, shortId, downShortI
 		// 自己的获利=自己的分润-下级的分润
 		exactPoint = common.Max(0, rebateInfo.Point-rebateInfo.DownPoints[downShortId])
 		exactProfitGold = profitGold * int64(exactPoint) / 100
-		rdsop.AddRebateGold(shortId, exactProfitGold)
+		rdsop.AddRebateGold(shortId, exactProfitGold, addPip)
 	}
 
 	s.Log().Infow("rebate calculating ...", "room", s.room.RoomId,
@@ -439,5 +449,5 @@ func (s *StateSettlement) recurRebate(profitGold, upShortId, shortId, downShortI
 	}
 
 	// 向上级别递归
-	s.recurRebate(profitGold, rdsop.AgentUp(upShortId), upShortId, shortId)
+	s.recurRebate(profitGold, rdsop.AgentUp(upShortId), upShortId, shortId, addPip)
 }
