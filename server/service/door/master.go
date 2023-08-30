@@ -23,6 +23,13 @@ func setMaster(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "shortId is empty"})
 		return
 	}
+
+	rebatePoint := cast.ToInt32(req["rebate"])
+	if rebatePoint == 0 {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "rebate is zero"})
+		return
+	}
+
 	playerInfo := rdsop.PlayerInfo(shortId)
 	if playerInfo.RID == "" {
 		ctx.JSON(http.StatusBadRequest,
@@ -64,6 +71,9 @@ func setMaster(ctx *gin.Context) {
 			gin.H{"error": "创建联盟失败"})
 		return
 	}
+
+	// 设置盟主返利点位
+	rdsop.SetRebateInfoByDoor(shortId, rebatePoint)
 
 	ctx.JSON(http.StatusOK, gin.H{"info": "联盟创建成功"})
 }

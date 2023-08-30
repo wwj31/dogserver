@@ -53,6 +53,7 @@ func (s *Door) OnInit() {
 	alliance.Use(checkToken)
 	alliance.POST("/setmaster", setMaster)
 	alliance.POST("/addgold", addGold)
+	alliance.POST("/rebate", setRebate)
 
 	go func() {
 		log.Infow("gin startup ", "port", 9999)

@@ -27,14 +27,32 @@ func GetRebateInfo(shortId int64) RebateInfo {
 	}
 
 	common.JsonUnmarshal(str, &result)
+	if result.DownPoints == nil {
+		result.DownPoints = map[int64]int32{}
+	}
+
 	return result
+}
+
+// SetRebateInfoByDoor 后台设置玩家返利信息
+func SetRebateInfoByDoor(shortId int64, point int32) (info RebateInfo) {
+	rds.LockDo(rebateSetSyncKey(shortId), func() {
+		bateInfo := GetRebateInfo(shortId)
+		bateInfo.Point = point
+		info = bateInfo
+		str := common.JsonMarshal(bateInfo)
+		rds.Ins.Set(context.Background(), AgentRebateKey(shortId), str, -1)
+	})
+	return
+}
+
+func rebateSetSyncKey(id int64) string {
+	return fmt.Sprintf("agent:rebate:%v", id)
 }
 
 // SetRebateInfo 设置下级玩家返利信息
 func SetRebateInfo(shortId, downShortId int64, point int32) (err outer.ERROR) {
-	getKey := func(id int64) string { return fmt.Sprintf("agent:rebate:%v", id) }
-
-	rds.LockDo(getKey(shortId), func() {
+	rds.LockDo(rebateSetSyncKey(shortId), func() {
 		rebateInfo := GetRebateInfo(downShortId)
 		rebateInfo.DownPoints[downShortId] = point
 
@@ -49,7 +67,7 @@ func SetRebateInfo(shortId, downShortId int64, point int32) (err outer.ERROR) {
 			return
 		}
 
-		rds.LockDo(getKey(downShortId), func() {
+		rds.LockDo(rebateSetSyncKey(downShortId), func() {
 			downRebateInfo := GetRebateInfo(downShortId)
 			// 设置的点，必须大于等于该下级当前已有的点位
 			if point < downRebateInfo.Point {

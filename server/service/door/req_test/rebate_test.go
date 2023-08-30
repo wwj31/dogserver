@@ -11,12 +11,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestSetMaster(t *testing.T) {
+func TestSetRebate(t *testing.T) {
 	b, _ := json.Marshal(map[string]interface{}{
 		"shortId": 1022696,
 		"rebate":  100,
 	})
-	req, err := http.NewRequest(http.MethodPost, fmt.Sprintf("http://%v:9999/alliance/setmaster", addr),
+	req, err := http.NewRequest(http.MethodPost, fmt.Sprintf("http://%v:9999/alliance/rebate", addr),
 		bytes.NewReader(b))
 	addSign(req)
 	assert.Nil(t, err)
