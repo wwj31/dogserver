@@ -34,7 +34,9 @@ message SetAgentDownRebateRsp {
 message RebateScoreReq {// tag:player
 }
 message RebateScoreRsp {
-    int64 Gold  = 1; // 最新可领取的返利分
+    int64 Gold        = 1; // 最新可领取的返利分
+    int64 GoldOfToday = 2; // 今日累计返利
+    int64 GoldOfWeek  = 3; // 本周累计返利
 }
 
 // 领取返利分

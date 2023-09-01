@@ -3,6 +3,7 @@ package rdsop
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/go-redis/redis/v9"
 	"github.com/spf13/cast"
@@ -92,14 +93,59 @@ func SetRebateInfo(shortId, downShortId int64, point int32) (err outer.ERROR) {
 
 // AddRebateGold 给玩家加返利分数
 func AddRebateGold(shortId, score int64, pip redis.Pipeliner) {
-	pip.IncrBy(context.Background(), RebateScoreKey(shortId), score)
+	ctx := context.Background()
+
+	// 累计返利
+	pip.IncrBy(ctx, RebateGoldKey(shortId), score)
+
+	// 今日统计返利
+	statTodayKey := RebateScoreKeyForToday(shortId)
+	pip.IncrBy(ctx, statTodayKey, score)
+	pip.Expire(ctx, statTodayKey, 24*time.Hour)
+
+	// 本周统计统计返利
+	statWeekKey := RebateScoreKeyForWeek(shortId)
+	pip.IncrBy(ctx, statWeekKey, score)
+	pip.Expire(ctx, statWeekKey, 7*24*time.Hour)
 }
 
 // GetRebateGold 玩家返利分数
-func GetRebateGold(shortId int64) int64 {
-	val, err := rds.Ins.Get(context.Background(), RebateScoreKey(shortId)).Result()
-	if err == nil {
-		return cast.ToInt64(val)
+func GetRebateGold(shortId int64) (gold, goldOfToday, goldOfWeek int64) {
+	pip := rds.Ins.Pipeline()
+	ctx := context.Background()
+
+	var (
+		cmds                   []*redis.StringCmd
+		rebateGoldKey          = RebateGoldKey(shortId)
+		rebateScoreKeyForToday = RebateScoreKeyForToday(shortId)
+		rebateScoreKeyForWeek  = RebateScoreKeyForWeek(shortId)
+	)
+
+	cmds = append(cmds, pip.Get(ctx, rebateGoldKey))
+	cmds = append(cmds, pip.Get(ctx, rebateScoreKeyForToday))
+	cmds = append(cmds, pip.Get(ctx, rebateScoreKeyForWeek))
+	_, err := pip.Exec(ctx)
+	if err != nil {
+		log.Errorw("get rebate gold failed", "err", err)
+		return
 	}
-	return 0
+
+	if len(cmds) < 3 {
+		log.Errorw("get rebate gold unexpected outcome", "short", shortId, "cmd len", cmds,
+			"rebateGoldKey", rebateGoldKey,
+			"rebateScoreKeyForToday", rebateScoreKeyForToday,
+			"rebateScoreKeyForWeek", rebateScoreKeyForWeek)
+		return
+	}
+
+	gold = cast.ToInt64(cmds[0].Val())
+	goldOfToday = cast.ToInt64(cmds[1].Val())
+	goldOfWeek = cast.ToInt64(cmds[2].Val())
+
+	log.Errorw("get rebate gold ", "short", shortId, "cmd len", cmds,
+		"gold", gold, "goldOfToday", goldOfToday, "goldOfWeek", goldOfWeek,
+		"rebateGoldKey", rebateGoldKey,
+		"rebateScoreKeyForToday", rebateScoreKeyForToday,
+		"rebateScoreKeyForWeek", rebateScoreKeyForWeek)
+	return
 }

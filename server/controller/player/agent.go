@@ -83,29 +83,32 @@ var _ = router.Reg(func(p *player.Player, msg *outer.SetAgentDownRebateReq) any 
 
 // 获取自己可领的返利分数信息
 var _ = router.Reg(func(p *player.Player, msg *outer.RebateScoreReq) any {
+	gold, goldOfToday, goldOfWeek := rdsop.GetRebateGold(p.Role().ShortId())
 	return &outer.RebateScoreRsp{
-		Gold: rdsop.GetRebateGold(p.Role().ShortId()),
+		Gold:        gold,
+		GoldOfToday: goldOfToday,
+		GoldOfWeek:  goldOfWeek,
 	}
 })
 
 // 领取返利分
 var _ = router.Reg(func(p *player.Player, msg *outer.ClaimRebateScoreReq) any {
-	score := rdsop.GetRebateGold(p.Role().ShortId())
-	if score <= 0 {
+	gold, _, _ := rdsop.GetRebateGold(p.Role().ShortId())
+	if gold <= 0 {
 		return outer.ERROR_MSG_REQ_PARAM_INVALID
 	}
 
-	p.Role().AddGold(score)
+	p.Role().AddGold(gold)
 	pip := rds.Ins.Pipeline()
-	rdsop.AddRebateGold(p.Role().ShortId(), -score, pip)
+	rdsop.AddRebateGold(p.Role().ShortId(), -gold, pip)
 	_, err := pip.Exec(context.Background())
 	if err != nil {
-		log.Errorw("claim rebate score redis failed", "short", p.Role().ShortId(), "score", score)
+		log.Errorw("claim rebate gold redis failed", "short", p.Role().ShortId(), "gold", gold)
 		return outer.ERROR_FAILED
 	}
 
-	log.Infow("claim rebate gold", "short", p.Role().ShortId(), "score", score)
+	log.Infow("claim rebate gold", "short", p.Role().ShortId(), "gold", gold)
 	return &outer.ClaimRebateScoreRsp{
-		Gold: score,
+		Gold: gold,
 	}
 })

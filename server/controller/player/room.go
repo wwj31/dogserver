@@ -71,7 +71,7 @@ var _ = router.Reg(func(p *player.Player, msg *outer.CreateRoomReq) any {
 		return outer.ERROR_MSG_REQ_PARAM_INVALID
 	}
 
-	if p.Alliance().Position() != alliance.Master.Int32() {
+	if p.Alliance().Position() < alliance.DeputyMaster.Int32() {
 		return outer.ERROR_PLAYER_POSITION_LIMIT
 	}
 

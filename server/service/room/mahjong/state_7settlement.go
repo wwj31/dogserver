@@ -350,9 +350,9 @@ func (s *StateSettlement) profit(bigWinner bool) (totalProfit int64) {
 		}
 		winners = append(winners, winner)
 	} else {
-		for _, player := range s.mahjongPlayers {
+		for i, player := range s.mahjongPlayers {
 			if player.finalStatsMsg.TotalScore > 0 {
-				winners = append(winners, player)
+				winners = append(winners, s.mahjongPlayers[i])
 			}
 		}
 	}

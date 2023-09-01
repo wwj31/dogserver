@@ -2,6 +2,8 @@ package rdsop
 
 import (
 	"fmt"
+
+	"github.com/wwj31/dogactor/tools"
 )
 
 // LockLoginKey 登录流程用的分布式，防止并发登录，保证单个玩家登录都是同步的
@@ -44,9 +46,23 @@ func AgentRebateKey(shortId int64) string {
 	return fmt.Sprintf("agent:%v:rebate", shortId)
 }
 
-// RebateScoreKey 返利利润
-func RebateScoreKey(shortId int64) string {
-	return fmt.Sprintf("agent:%v:score", shortId)
+// RebateGoldKey 返利利润
+func RebateGoldKey(shortId int64) string {
+	return fmt.Sprintf("agent:%v:gold", shortId)
+}
+
+// RebateScoreKeyForToday 统计今日返利利润
+func RebateScoreKeyForToday(shortId int64) string {
+	t := tools.NewTimeEx(tools.Now())
+	tm := tools.TimeFormat(t.BeginOfToday())
+	return fmt.Sprintf("agent:%v:gold_for_today:%v", shortId, tm)
+}
+
+// RebateScoreKeyForWeek 统计本周返利利润
+func RebateScoreKeyForWeek(shortId int64) string {
+	t := tools.NewTimeEx(tools.Now())
+	tm := tools.TimeFormat(t.StartOfWeek())
+	return fmt.Sprintf("agent:%v:gold_for_week:%v", shortId, tm)
 }
 
 // DeleteAlliancesKey 被删除的联盟
