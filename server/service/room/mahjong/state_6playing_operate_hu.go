@@ -374,26 +374,3 @@ func (s *StatePlaying) huExtra(seatIndex int) (extra []ExtFanType) {
 
 	return
 }
-
-// 算根
-func (s *StatePlaying) huGen(seatIndex int) (count int) {
-	p := s.mahjongPlayers[seatIndex]
-	count = len(p.lightGang) + len(p.darkGang)
-	for pongCard := range p.pong {
-		p.handCards.Range(func(card Card) bool {
-			if pongCard == card.Int32() {
-				count++
-				return true
-			}
-			return false
-		})
-	}
-
-	cardsStat := p.handCards.ConvertStruct()
-	for _, num := range cardsStat {
-		if num == 4 {
-			count++
-		}
-	}
-	return
-}

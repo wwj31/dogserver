@@ -53,6 +53,11 @@ func (s *StateSettlement) Enter() {
 	// 流局
 	if notHu {
 		s.notHu(settlementMsg)
+		for _, player := range s.mahjongPlayers {
+			if player.score <= 0 {
+				s.scoreZeroOver = true
+			}
+		}
 	}
 
 	// 大结算
@@ -77,7 +82,8 @@ func (s *StateSettlement) Enter() {
 
 	// 结算分数为最终金币
 	modifyRspCount := make(map[string]struct{}) // 必须等待所有玩家金币修改成功后，才能发送结算
-	for seat := 0; seat < maxNum; seat++ {
+	for i := 0; i < maxNum; i++ {
+		seat := i
 		player := s.mahjongPlayers[seat]
 		finalScore := player.score
 		s.room.Request(actortype.PlayerId(player.RID), &inner.ModifyGoldReq{
@@ -168,7 +174,9 @@ func (s *StateSettlement) notHu(ntf *outer.MahjongBTESettlementNtf) {
 	// 先把猪儿的钱赔了
 	if len(pigSeats) > 0 {
 		winSeats := s.allSeats(pigSeats...) // 非花猪的位置
-		for _, pigSeat := range winSeats {
+		s.Log().Infow("pig seats", "seats", pigSeats)
+
+		for _, pigSeat := range pigSeats {
 			// 先算这个猪儿需要赔多少分
 			playerPig := s.mahjongPlayers[pigSeat]
 			needSubBaseScore := int64(math.Pow(float64(s.baseScore()), float64(s.fanUpLimit())))
@@ -189,6 +197,7 @@ func (s *StateSettlement) notHu(ntf *outer.MahjongBTESettlementNtf) {
 
 			totalLoseScore := winScore * int64(len(winSeats))
 			playerPig.updateScore(-totalLoseScore)
+			s.Log().Infow("pig!", "pig seat", pigSeat, "totalLoseScore", totalLoseScore, "winner seats", winSeats)
 			// 赢钱的人加分
 			for _, seat := range winSeats {
 				player := s.mahjongPlayers[seat]
@@ -204,14 +213,22 @@ func (s *StateSettlement) notHu(ntf *outer.MahjongBTESettlementNtf) {
 			totalWinScore int64                 // 总赔付
 		)
 
+		baseScore := s.baseScore()
 		for _, tingSeat := range hasTingSeat {
-			// 算出听牌可胡牌的最大番
+			// 算出听牌可胡牌的最大番+根
 			tingCards := allTingCards[tingSeat]
-			maxFan := s.maxFanTingCard(tingCards)
+			card, maxFan := s.maxFanTingCard(tingCards)
+			s.mahjongPlayers[tingSeat].handCards = s.mahjongPlayers[tingSeat].handCards.Insert(card)
+			gen := int32(s.huGen(tingSeat))
+			maxFan += gen
 			maxFan = common.Min(maxFan, s.fanUpLimit())
-			winScore := int64(math.Pow(float64(s.baseScore()), float64(s.fanUpLimit())))
+			ratio := math.Pow(float64(2), float64(maxFan))
+			winScore := baseScore * int64(ratio)
 			allWinner[tingSeat] = winScore
 			totalWinScore += winScore
+			s.Log().Infow("notHu ting",
+				"ting seat", tingSeat, "tingCards", tingCards, "base score", baseScore, "card", card,
+				"max fan", maxFan, "gen", gen, "win score", winScore)
 		}
 
 		// 没叫的挨个赔有叫的
@@ -221,6 +238,8 @@ func (s *StateSettlement) notHu(ntf *outer.MahjongBTESettlementNtf) {
 				for seat, winScore := range allWinner {
 					s.mahjongPlayers[seat].updateScore(winScore)
 					s.mahjongPlayers[notTingSeat].updateScore(-winScore)
+					s.Log().Infow("notHu notTing 1",
+						"notTingSeat", notTingSeat, "seat", seat, "winScore", winScore)
 				}
 			} else {
 				// 不够赔，并且不允许负分，就按照比例赔付
@@ -229,6 +248,8 @@ func (s *StateSettlement) notHu(ntf *outer.MahjongBTESettlementNtf) {
 					exactScore := loserScore * winScore / totalWinScore
 					s.mahjongPlayers[seat].updateScore(exactScore)
 					s.mahjongPlayers[notTingSeat].updateScore(-exactScore)
+					s.Log().Infow("notHu notTing 2",
+						"notTingSeat", notTingSeat, "seat", seat, "winScore", winScore, "totalWinScore", totalWinScore, "exactScore", exactScore)
 				}
 			}
 		}
@@ -236,15 +257,15 @@ func (s *StateSettlement) notHu(ntf *outer.MahjongBTESettlementNtf) {
 }
 
 // 从听牌能胡的牌型中，选出最大番
-func (s *StateSettlement) maxFanTingCard(tingCards map[Card]HuType) int32 {
-	var maxFan int32
-	for _, huType := range tingCards {
-		if maxFan == 0 || int32(huFan[huType]) > maxFan {
-			maxFan = int32(huFan[huType])
+func (s *StateSettlement) maxFanTingCard(tingCards map[Card]HuType) (card Card, maxBaseFan int32) {
+	for c, huType := range tingCards {
+		if maxBaseFan == 0 || int32(huFan[huType]) > maxBaseFan {
+			maxBaseFan = int32(huFan[huType])
+			card = c
 		}
 	}
 
-	return maxFan
+	return
 }
 
 func (s *StateSettlement) afterSettle(ntf *outer.MahjongBTESettlementNtf) {
