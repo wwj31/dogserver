@@ -180,8 +180,13 @@ func (s *StateSettlement) notHu(ntf *outer.MahjongBTESettlementNtf) {
 			// 那么有多少就赔多少，赢的人均分
 			var winScore int64
 			winScore = needSubBaseScore
-			playerPig.updateScore(winScore * int64(len(winSeats)))
 
+			if !s.gameParams().AllowScoreSmallZero {
+				winScore = common.Min(playerPig.score, winScore)
+			}
+
+			totalLoseScore := winScore * int64(len(winSeats))
+			playerPig.updateScore(-totalLoseScore)
 			// 赢钱的人加分
 			for _, seat := range winSeats {
 				player := s.mahjongPlayers[seat]
@@ -192,8 +197,11 @@ func (s *StateSettlement) notHu(ntf *outer.MahjongBTESettlementNtf) {
 
 	// 查大叫
 	if len(hasNotTingSeat) > 0 {
-		allWinner := make(map[int]int64) // 赢钱的位置和需要赢的分
-		var totalWinScore int64          // 总赔付
+		var (
+			allWinner     = make(map[int]int64) // 赢钱的位置和需要赢的分
+			totalWinScore int64                 // 总赔付
+		)
+
 		for _, tingSeat := range hasTingSeat {
 			// 算出听牌可胡牌的最大番
 			tingCards := allTingCards[tingSeat]
@@ -204,14 +212,23 @@ func (s *StateSettlement) notHu(ntf *outer.MahjongBTESettlementNtf) {
 			totalWinScore += winScore
 		}
 
-		// 没叫的挨个赔钱
+		// 没叫的挨个赔有叫的
 		for _, notTingSeat := range hasNotTingSeat {
-			notTingPlayer := s.mahjongPlayers[notTingSeat]
-			// 够赔就直接赔
-			for seat, winScore := range allWinner {
-				s.mahjongPlayers[seat].updateScore(winScore)
+			// 够赔，或者允许负分，直接赔
+			if s.gameParams().AllowScoreSmallZero || s.mahjongPlayers[notTingSeat].score < totalWinScore {
+				for seat, winScore := range allWinner {
+					s.mahjongPlayers[seat].updateScore(winScore)
+					s.mahjongPlayers[notTingSeat].updateScore(-winScore)
+				}
+			} else {
+				// 不够赔，并且不允许负分，就按照比例赔付
+				loserScore := s.mahjongPlayers[notTingSeat].score
+				for seat, winScore := range allWinner {
+					exactScore := loserScore * winScore / totalWinScore
+					s.mahjongPlayers[seat].updateScore(exactScore)
+					s.mahjongPlayers[notTingSeat].updateScore(-exactScore)
+				}
 			}
-			notTingPlayer.updateScore(-totalWinScore)
 		}
 	}
 }
