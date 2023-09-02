@@ -107,7 +107,11 @@ func (s *StateSettlement) Enter() {
 }
 
 func (s *StateSettlement) Leave() {
-	s.Log().Infow("[Mahjong] leave state settlement", "room", s.room.RoomId)
+	s.Log().Infow("[Mahjong] leave state settlement ==================SETTLEMENT==================", "room", s.room.RoomId, "count", s.gameCount)
+	s.Log().Infof(" ")
+	s.Log().Infof(" ")
+	s.Log().Infof(" ")
+
 }
 
 func (s *StateSettlement) Handle(shortId int64, v any) (result any) {
@@ -322,10 +326,6 @@ func (s *StateSettlement) afterSettle(ntf *outer.MahjongBTESettlementNtf) {
 
 	s.clear()           // 分算完清理数据
 	s.nextMasterIndex() // 计算下一局庄家
-
-	s.Log().Infow("==================settlement==================", "count", s.gameCount)
-	s.Log().Infof(" ")
-	s.Log().Infof(" ")
 
 	// 结算给个短暂的时间
 	s.room.AddTimer(tools.XUID(), s.currentStateEndAt, func(dt time.Duration) {

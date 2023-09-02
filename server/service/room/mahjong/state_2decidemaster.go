@@ -24,8 +24,8 @@ func (s *StateDecideMaster) Enter() {
 	s.dices[0] = rand.Int31n(6) + 1
 	s.dices[1] = rand.Int31n(6) + 1
 
-	//s.masterIndex = rand.Intn(maxNum)
-	s.masterIndex = 0
+	s.masterIndex = rand.Intn(maxNum)
+	//s.masterIndex = 0
 
 	// 广播定庄 庄家和骰子
 	s.room.Broadcast(&outer.MahjongBTEDecideMasterNtf{
