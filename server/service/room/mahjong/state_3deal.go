@@ -59,7 +59,7 @@ func (s *StateDeal) Enter() {
 	s.currentStateEndAt = tools.Now().Add(DealShowDuration)
 	s.room.AddTimer(tools.XUID(), s.currentStateEndAt, func(dt time.Duration) {
 		var nextState State
-		if s.room.GameParams.Mahjong.HuanSanZhang == 3 {
+		if s.room.GameParams.Mahjong.HuanSanZhang == 0 {
 			nextState = DecideIgnore // 不换牌，直接定缺
 		} else {
 			nextState = Exchange3

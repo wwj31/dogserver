@@ -270,7 +270,7 @@ type MahjongParams struct {
 	ZiMoJia              int32         `protobuf:"varint,4,opt,name=ZiMoJia,proto3" json:"ZiMoJia,omitempty"`                            // 自摸 0.自摸加番、1.自摸加底
 	FanUpLimit           int32         `protobuf:"varint,5,opt,name=FanUpLimit,proto3" json:"FanUpLimit,omitempty"`                      // 翻数封顶 1、2、3、4、5
 	DianGangHua          int32         `protobuf:"varint,6,opt,name=DianGangHua,proto3" json:"DianGangHua,omitempty"`                    // 点杠花 0.点炮、1.自摸
-	HuanSanZhang         int32         `protobuf:"varint,7,opt,name=HuanSanZhang,proto3" json:"HuanSanZhang,omitempty"`                  // 换三张 0.无换三张、1.同花色换三张、1.任意换三张
+	HuanSanZhang         int32         `protobuf:"varint,7,opt,name=HuanSanZhang,proto3" json:"HuanSanZhang,omitempty"`                  // 换三张 0.无换三张、1.同花色换三张、2.任意换三张
 	YaoJiuDui            bool          `protobuf:"varint,8,opt,name=YaoJiuDui,proto3" json:"YaoJiuDui,omitempty"`                        // 幺九将对
 	MenQingZhongZhang    bool          `protobuf:"varint,9,opt,name=MenQingZhongZhang,proto3" json:"MenQingZhongZhang,omitempty"`        // 门清中张
 	TianDiHu             bool          `protobuf:"varint,10,opt,name=TianDiHu,proto3" json:"TianDiHu,omitempty"`                         // 天地胡

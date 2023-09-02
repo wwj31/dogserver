@@ -84,7 +84,7 @@ func (s *StateExchange3) Handle(shortId int64, v any) (result any) {
 		}
 
 		// 同花色换三张
-		if s.room.GameParams.Mahjong.HuanSanZhang == 0 {
+		if s.room.GameParams.Mahjong.HuanSanZhang == 1 {
 			if Card(msg.Index[0]).Color() != Card(msg.Index[1]).Color() ||
 				Card(msg.Index[1]).Color() != Card(msg.Index[2]).Color() {
 				return outer.ERROR_MAHJONG_EXCHANGE3_COLOR_ERROR
