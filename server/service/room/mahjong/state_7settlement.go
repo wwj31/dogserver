@@ -2,7 +2,6 @@ package mahjong
 
 import (
 	"context"
-	"math"
 	"time"
 
 	"github.com/go-redis/redis/v9"
@@ -171,6 +170,8 @@ func (s *StateSettlement) notHu(ntf *outer.MahjongBTESettlementNtf) {
 		return
 	}
 
+	baseScore := s.baseScore()
+
 	// 先把猪儿的钱赔了
 	if len(pigSeats) > 0 {
 		winSeats := s.allSeats(pigSeats...) // 非花猪的位置
@@ -179,7 +180,8 @@ func (s *StateSettlement) notHu(ntf *outer.MahjongBTESettlementNtf) {
 		for _, pigSeat := range pigSeats {
 			// 先算这个猪儿需要赔多少分
 			playerPig := s.mahjongPlayers[pigSeat]
-			needSubBaseScore := int64(math.Pow(float64(s.baseScore()), float64(s.fanUpLimit())))
+			fan := common.Min(6, int(s.fanUpLimit()))
+			winScore := s.fanScore(fan, baseScore)
 
 			// 猪儿已经没钱，赔不了了
 			if playerPig.score <= 0 {
@@ -188,9 +190,6 @@ func (s *StateSettlement) notHu(ntf *outer.MahjongBTESettlementNtf) {
 
 			// 如果猪儿有钱不够赔，
 			// 那么有多少就赔多少，赢的人均分
-			var winScore int64
-			winScore = needSubBaseScore
-
 			if !s.gameParams().AllowScoreSmallZero {
 				winScore = common.Min(playerPig.score, winScore)
 			}
@@ -213,7 +212,6 @@ func (s *StateSettlement) notHu(ntf *outer.MahjongBTESettlementNtf) {
 			totalWinScore int64                 // 总赔付
 		)
 
-		baseScore := s.baseScore()
 		for _, tingSeat := range hasTingSeat {
 			// 算出听牌可胡牌的最大番+根
 			tingCards := allTingCards[tingSeat]
@@ -222,8 +220,7 @@ func (s *StateSettlement) notHu(ntf *outer.MahjongBTESettlementNtf) {
 			gen := int32(s.huGen(tingSeat))
 			maxFan += gen
 			maxFan = common.Min(maxFan, s.fanUpLimit())
-			ratio := math.Pow(float64(2), float64(maxFan))
-			winScore := baseScore * int64(ratio)
+			winScore := s.fanScore(int(maxFan), baseScore)
 			allWinner[tingSeat] = winScore
 			totalWinScore += winScore
 			s.Log().Infow("notHu ting",

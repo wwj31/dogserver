@@ -2,6 +2,7 @@ package mahjong
 
 import (
 	"fmt"
+	"math"
 	"time"
 
 	"github.com/golang/protobuf/proto"
@@ -191,6 +192,13 @@ func (m *Mahjong) ex3Info(shortId int64) (info *outer.Exchange3Info) {
 		return nil
 	}
 	return p.exchange
+}
+
+// 通过番数获取分
+func (m *Mahjong) fanScore(fan int, baseScore int64) int64 {
+	ratio := math.Pow(float64(2), float64(fan))
+	winScore := baseScore * int64(ratio)
+	return winScore
 }
 
 // 封顶番数

@@ -1,8 +1,6 @@
 package mahjong
 
 import (
-	"math"
-
 	"server/common"
 	"server/proto/outermsg/outer"
 )
@@ -318,8 +316,7 @@ func (s *StatePlaying) huScore(p *mahjongPlayer, ziMo bool) int64 {
 	}
 
 	fan = common.Min(int(s.fanUpLimit()), fan)
-	ratio := math.Pow(float64(2), float64(fan))
-	winScore := baseScore * int64(ratio)
+	winScore := s.fanScore(fan, baseScore)
 	return winScore
 }
 
