@@ -369,13 +369,14 @@ func (m *Mahjong) nextSeatIndexWithoutHu(index int) int {
 
 func (m *Mahjong) newMahjongPlayer(p *room.Player) *mahjongPlayer {
 	return &mahjongPlayer{
-		score:       p.Gold,
-		Player:      p,
-		lightGang:   map[int32]int64{},
-		darkGang:    map[int32]int64{},
-		pong:        map[int32]int64{},
-		gangInfos:   map[int]*gangInfo{},
-		huPeerIndex: -1,
+		score:         p.Gold,
+		Player:        p,
+		lightGang:     map[int32]int64{},
+		darkGang:      map[int32]int64{},
+		pong:          map[int32]int64{},
+		gangInfos:     map[int]*gangInfo{},
+		huPeerIndex:   -1,
+		passHandHuFan: -1,
 	}
 }
 
@@ -497,6 +498,9 @@ func (m *mahjongPlayer) updateScore(val int64) {
 	m.score += val
 	m.totalWinScore += val // 单局总输赢
 	m.finalStatsMsg.TotalScore += val
+}
+func (m *mahjongPlayer) resetPassHand() {
+	m.passHandHuFan = -1
 }
 
 func (m *mahjongPlayer) allCardsToPB(params *outer.MahjongParams, shortId int64, settlement bool) *outer.CardsOfBTE {

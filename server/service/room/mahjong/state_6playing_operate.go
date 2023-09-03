@@ -48,7 +48,7 @@ func (s *StatePlaying) operate(player *mahjongPlayer, seatIndex int, op outer.Ac
 
 				return outer.ERROR_OK
 			} else {
-				player.passHandHuFan = 0 // 这里需要清除过手胡
+				player.resetPassHand() // 这里需要清除过手胡
 				s.Log().Infow("replace pong/gang with pass",
 					"seat", seatIndex, "short", player.ShortId, "op", op, "card", card)
 				op = outer.ActionType_ActionPass

@@ -114,7 +114,7 @@ func (s *StatePlaying) operateGang(p *mahjongPlayer, seatIndex int, card Card, n
 		// 杠分统计数据
 		p.gangTotalScore += winScore // 杠,得分
 		p.updateScore(winScore)      // 总分，实时计算杠分
-		p.passHandHuFan = 0          // 重置过手胡
+		p.resetPassHand()            // 重置过手胡
 
 		s.Log().Infow("win score update by gang", "room", s.room.RoomId,
 			"shortId", p.ShortId, "current score", p.score, "sub score", winScore)

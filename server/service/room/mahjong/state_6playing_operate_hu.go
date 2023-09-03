@@ -47,7 +47,7 @@ func (s *StatePlaying) operateHu(p *mahjongPlayer, seatIndex int, ntf *outer.Mah
 	p.huGen = int32(s.huGen(seatIndex))
 	p.winScore = make(map[int32]int64)
 	p.finalStatsMsg.TotalHu++
-	p.passHandHuFan = 0
+	p.resetPassHand()
 
 	// 胡成功后，删除Gang和Pong(可以一炮多响,但是有人胡了就不能再碰、杠)
 	for seat, act := range s.actionMap {

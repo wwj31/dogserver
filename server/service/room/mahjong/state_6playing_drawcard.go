@@ -56,8 +56,9 @@ func (s *StatePlaying) drawCard(seatIndex int) {
 		pass = true
 	}
 
+	player.resetPassHand()
+
 	// 判断能否胡牌
-	player.passHandHuFan = 0
 
 	var (
 		extra    []ExtFanType
