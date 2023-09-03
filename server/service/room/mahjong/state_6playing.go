@@ -270,13 +270,15 @@ func (s *StatePlaying) nextAction() {
 		nextAct := s.actionMap[actionSeat]
 		nextActionShortIds = append(nextActionShortIds, nextPlayer.ShortId)
 
+		actorMsg := &outer.MahjongBTETurnNtf{}
+
 		if nextAct.isValidAction(outer.ActionType_ActionPlayCard) {
 			expireDuration = playCardExpiration
 			// 打牌操作，需要广播出牌人以及出牌行为
 
 			notifyPlayerMsg.ActionShortId = nextPlayer.ShortId
 			notifyPlayerMsg.ActionType = []outer.ActionType{outer.ActionType_ActionPlayCard}
-			notifyPlayerMsg.Tips = s.tips(nextPlayer)
+			actorMsg.Tips = s.tips(nextPlayer)
 		} else {
 			expireDuration = pongGangHuGuoExpiration
 		}
@@ -285,19 +287,18 @@ func (s *StatePlaying) nextAction() {
 		actionEndAt = tools.Now().Add(expireDuration)
 
 		// 通知行动者
-		s.room.SendToPlayer(nextPlayer.ShortId, &outer.MahjongBTETurnNtf{
-			TotalCards:    int32(s.cards.Len()),
-			ActionShortId: nextPlayer.ShortId,
-			ActionEndAt:   actionEndAt.UnixMilli(),
-			ActionType:    nextAct.acts,
-			HuType:        nextAct.hus,
-			GangCards:     nextAct.gang,
-			NewCard:       nextAct.newCard.Int32(), // 客户端自己取桌面牌最后一张
-			HandCards:     nextPlayer.handCards.ToSlice(),
-		})
+		actorMsg.TotalCards = int32(s.cards.Len())
+		actorMsg.ActionShortId = nextPlayer.ShortId
+		actorMsg.ActionEndAt = actionEndAt.UnixMilli()
+		actorMsg.ActionType = nextAct.acts
+		actorMsg.HuType = nextAct.hus
+		actorMsg.GangCards = nextAct.gang
+		actorMsg.NewCard = nextAct.newCard.Int32() // 客户端自己取桌面牌最后一张
+		actorMsg.HandCards = nextPlayer.handCards.ToSlice()
+		s.room.SendToPlayer(nextPlayer.ShortId, actorMsg)
 
 		s.Log().Color(logger.White).Infow("new action", "room", s.room.RoomId, "next seats", nextActionSeats,
-			"current action", nextAct, "action map", s.actionMap, "actionEndAt", actionEndAt)
+			"current action", nextAct, "action map", s.actionMap, "actionEndAt", actionEndAt, "actor ntf", actorMsg.String())
 	}
 
 	s.currentActionEndAt = actionEndAt
