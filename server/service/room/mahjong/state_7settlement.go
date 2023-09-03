@@ -432,8 +432,11 @@ func (s *StateSettlement) profitRange(winner *mahjongPlayer) *outer.RangeParams 
 		if !param.Valid {
 			continue
 		}
+
+		minLimit := param.Min * 1000
+		MaxLimit := param.Max * 1000
 		totalWin := winner.finalStatsMsg.TotalScore
-		if param.Min < totalWin && totalWin <= param.Max {
+		if minLimit < totalWin && totalWin <= MaxLimit {
 			return param
 		}
 	}
