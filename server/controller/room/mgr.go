@@ -38,10 +38,6 @@ var _ = router.Reg(func(mgr *room.Mgr, msg *inner.CreateRoomReq) any {
 		}
 	}
 
-	if gameParams.Mahjong.PlayCountLimit == 16 {
-		gameParams.Mahjong.PlayCountLimit = 1
-	}
-
 	newRoomInfo := rdsop.NewRoomInfo{
 		RoomId:         roomId,
 		CreatorShortId: msg.CreatorShortId,
@@ -78,5 +74,7 @@ var _ = router.Reg(func(mgr *room.Mgr, msg *inner.CreateRoomReq) any {
 		rdsop.AddAllianceRoom(roomId, msg.AllianceId)
 		newRoomInfo.SetInfoToRedis()
 	}
+
+	log.Infow("create room", "msg", msg.String(), "new room", newRoomInfo)
 	return &inner.CreateRoomRsp{RoomInfo: roomInfoRsp.RoomInfo}
 })

@@ -3,9 +3,11 @@ package room
 import (
 	"context"
 	"fmt"
+	"reflect"
+
 	"github.com/gogo/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
-	"reflect"
+
 	"server/common/rds"
 
 	"server/common/log"
@@ -66,6 +68,7 @@ func (m *Mgr) OnHandle(msg actor.Message) {
 		return
 	}
 
+	log.Infow("input", "mgr id", m.appId, "source", msg.GetSourceId(), "msg", reflect.TypeOf(pt), "data", pt.String())
 	m.currentMsg = msg
 	if routerErr := router.Dispatch(m, pt); routerErr != nil {
 		log.Warnw("roomMgr dispatch the message failed", "err", routerErr)
