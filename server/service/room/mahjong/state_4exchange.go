@@ -83,17 +83,24 @@ func (s *StateExchange3) Handle(shortId int64, v any) (result any) {
 			return outer.ERROR_MAHJONG_EXCHANGE3_INDEX_EQUAL
 		}
 
-		// 同花色换三张
-		if s.room.GameParams.Mahjong.HuanSanZhang == 1 {
-			if Card(msg.Index[0]).Color() != Card(msg.Index[1]).Color() ||
-				Card(msg.Index[1]).Color() != Card(msg.Index[2]).Color() {
-				return outer.ERROR_MAHJONG_EXCHANGE3_COLOR_ERROR
-			}
-		}
-
 		player, _ := s.findMahjongPlayer(shortId)
 		if player == nil {
 			return outer.ERROR_PLAYER_NOT_IN_ROOM
+		}
+
+		// 同花色换三张
+		if s.room.GameParams.Mahjong.HuanSanZhang == 1 {
+			l := int32(player.handCards.Len())
+			if msg.Index[0] >= l || msg.Index[1] >= l || msg.Index[2] >= l {
+				return outer.ERROR_MAHJONG_EXCHANGE3_INDEX_ERROR
+			}
+
+			card1 := player.handCards[msg.Index[0]]
+			card2 := player.handCards[msg.Index[1]]
+			card3 := player.handCards[msg.Index[2]]
+			if card1.Color() != card2.Color() || card2.Color() != card3.Color() {
+				return outer.ERROR_MAHJONG_EXCHANGE3_COLOR_ERROR
+			}
 		}
 
 		// 不能重复操作
