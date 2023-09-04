@@ -383,7 +383,10 @@ func (s *StateSettlement) profit(bigWinner bool) (totalProfit int64) {
 				winScore = player.finalStatsMsg.TotalScore
 			}
 		}
-		winners = append(winners, winner)
+
+		if winners != nil {
+			winners = append(winners, winner)
+		}
 	} else {
 		for i, player := range s.mahjongPlayers {
 			if player.finalStatsMsg.TotalScore > 0 {
@@ -435,6 +438,11 @@ func (s *StateSettlement) profitRange(winner *mahjongPlayer) *outer.RangeParams 
 
 		minLimit := param.Min * 1000
 		MaxLimit := param.Max * 1000
+		if winner.finalStatsMsg == nil {
+			s.Log().Warnw("final stats msg is nil", "short", winner.ShortId)
+			continue
+		}
+
 		totalWin := winner.finalStatsMsg.TotalScore
 		if minLimit < totalWin && totalWin <= MaxLimit {
 			return param
