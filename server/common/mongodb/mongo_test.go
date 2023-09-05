@@ -19,7 +19,7 @@ func TestMongo(t *testing.T) {
 		return
 	}
 
-	if err := Ins.CreateCollection("testColl"); err != nil {
+	if err := Ins.createCollection("testColl"); err != nil {
 		assert.NoError(t, err)
 		return
 	}

@@ -23,10 +23,10 @@ type mongoDB struct {
 	addr         string
 	databaseName string
 	sharding     bool
-	collections  map[string]*mongo.Collection
+	collections  sync.Map // key:collection val:*mongo.Collection
 }
 
-func (m *mongoDB) CreateCollection(name string) error {
+func (m *mongoDB) createCollection(name string) error {
 	err := m.database.CreateCollection(context.Background(), name)
 	commandErr, ok := err.(mongo.CommandError)
 	if ok && commandErr.HasErrorCode(48) {
@@ -49,21 +49,23 @@ func (m *mongoDB) CreateCollection(name string) error {
 	return nil
 }
 
-func (m *mongoDB) Collection(name string) *mongo.Collection {
-	coll := m.collections[name]
-	if coll == nil {
-		if m.database == nil {
-			return nil
-		}
-		if err := m.CreateCollection(name); err != nil {
-			log.Errorw("create collection failed ", "err", err)
-			return nil
-		}
-		coll = m.database.Collection(name)
-		m.collections[name] = coll
+func (m *mongoDB) newCollection(name string) *mongo.Collection {
+	if m.database == nil {
+		return nil
 	}
+	if err := m.createCollection(name); err != nil {
+		log.Errorw("create collection failed ", "err", err)
+		return nil
+	}
+	return m.database.Collection(name)
+}
 
-	return coll
+func (m *mongoDB) Collection(name string) *mongo.Collection {
+	v, ok := m.collections.Load(name)
+	if !ok {
+		v, _ = m.collections.LoadOrStore(name, m.newCollection(name))
+	}
+	return v.(*mongo.Collection)
 }
 
 func (m *mongoDB) CreateIndex(name string, tagStruct interface{}) error {

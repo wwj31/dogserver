@@ -3,12 +3,14 @@ package mongodb
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
+
 	"server/common/log"
-	"time"
 )
 
 type builder struct {
@@ -28,7 +30,6 @@ func (b *builder) Connect() (err error) {
 			return
 		}
 
-		Ins.collections = map[string]*mongo.Collection{}
 		if b.databaseName == "" {
 			err = fmt.Errorf("mongo database is nil")
 			return

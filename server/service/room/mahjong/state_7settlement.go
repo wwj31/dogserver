@@ -463,7 +463,6 @@ func (s *StateSettlement) rebate(totalProfit int64) {
 	for _, player := range s.mahjongPlayers {
 		s.Log().Infow("recur profit start", "start short", player.ShortId)
 		s.recurRebate(divProfit, player.UpShortId, player.ShortId, 0, pip)
-		s.Log().Infow("recur profit done", "end short", player.ShortId)
 	}
 
 	if _, err := pip.Exec(context.Background()); err != nil {
