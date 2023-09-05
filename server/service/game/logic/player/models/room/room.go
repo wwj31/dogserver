@@ -21,10 +21,6 @@ func New(base models.Model) *Room {
 }
 
 func (s *Room) OnLogin(first bool, enterGameRsp *outer.EnterGameRsp) {
-	if first {
-
-	}
-
 	var clear bool
 	// 玩家重登，检查房间是否有效
 	if s.RoomInfo != nil && s.RoomInfo.RoomId != 0 {
