@@ -2,6 +2,7 @@ package role
 
 import (
 	"math/rand"
+
 	"server/rdsop"
 
 	"github.com/spf13/cast"
@@ -42,7 +43,7 @@ func randName() string {
 		name1 = name1Conf.Name1()
 	}
 	if name2Conf != nil {
-		name2 = name2Conf.Name1()
+		name2 = name2Conf.Name2()
 	}
 	return name1 + name2
 }
