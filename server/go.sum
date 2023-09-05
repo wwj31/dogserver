@@ -453,6 +453,8 @@ github.com/ugorji/go/codec v1.2.9 h1:rmenucSohSTiyL09Y+l2OCk+FrMxGMzho2+tjr5ticU
 github.com/ugorji/go/codec v1.2.9/go.mod h1:UNopzCgEMSXjBc6AOMqYvWC1ktqTAfzJZUZgYf6w6lg=
 github.com/wwj31/dogactor v1.4.20 h1:wKWj+zBg5wWTv3prVga6cql0wh2MTLiWzHJHE9ZFdPA=
 github.com/wwj31/dogactor v1.4.20/go.mod h1:wFjIOSa5ulA4eLyHShuVAHCmIByQIehZbvCoLQA3oH4=
+github.com/wwj31/dogactor v1.4.21 h1:+sUJejQZzQApdtypCSCR4QFDZX/oxN032XVym4dgXCA=
+github.com/wwj31/dogactor v1.4.21/go.mod h1:wFjIOSa5ulA4eLyHShuVAHCmIByQIehZbvCoLQA3oH4=
 github.com/xdg-go/pbkdf2 v1.0.0 h1:Su7DPu48wXMwC3bs7MCNG+z4FhcyEuz5dlvchbq0B0c=
 github.com/xdg-go/pbkdf2 v1.0.0/go.mod h1:jrpuAogTd400dnrH08LKmI/xc1MbPOebTwRqcT5RDeI=
 github.com/xdg-go/scram v1.1.1 h1:VOMT+81stJgXW3CpHyqHN3AXDYIMsx56mEFrB37Mb/E=

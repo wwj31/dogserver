@@ -58,10 +58,11 @@ func (s *StatePlaying) Enter() {
 	s.canHus = make(map[int]bool)
 	s.HusPongGang = nil
 
-	// 为了统一所有摸牌流程，先把庄家提前获得的第14张牌放入牌堆头部，然后走drawCard流程
+	// 为了统一所有摸牌流程，先把庄家的第14张牌放入牌堆头部，然后走drawCard流程
 	master := s.mahjongPlayers[s.masterIndex]
-	master.handCards = master.handCards.Remove(s.masterCard14)
-	newCards := append(make(Cards, 0, s.cards.Len()+1), s.masterCard14)
+	card := master.handCards[len(master.handCards)-1]
+	master.handCards = master.handCards.Remove(card)
+	newCards := append(make(Cards, 0, s.cards.Len()+1), card)
 	s.cards = append(newCards, s.cards...)
 
 	s.drawCard(s.masterIndex) // 庄家重新摸牌
