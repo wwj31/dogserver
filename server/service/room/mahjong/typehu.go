@@ -52,15 +52,6 @@ const (
 	Dihu                    // 地胡
 )
 
-type ColorType int32
-
-const (
-	ColorUnknown ColorType = iota
-	Wan                    = 1 // 萬
-	Tiao                   = 2 // 条
-	Tong                   = 3 // 筒
-)
-
 var huStr = map[HuType]string{
 	HuInvalid:     "未胡牌",
 	Hu:            "平胡",

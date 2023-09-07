@@ -7,16 +7,12 @@ import (
 	"server/proto/innermsg/inner"
 )
 
-type GamblingType int32
+type GamblingType = int32
 
 const (
-	Mahjong GamblingType = 0
-	NiuNiu  GamblingType = 1
+	Mahjong   GamblingType = 0 // 麻将
+	RunFaster GamblingType = 1 // 跑得快
 )
-
-func (g GamblingType) Int32() int32 {
-	return int32(g)
-}
 
 type Gambling interface {
 	Data(shortId int64) proto.Message

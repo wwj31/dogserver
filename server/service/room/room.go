@@ -58,7 +58,7 @@ type (
 		stopping       bool
 		CurrentMsg     actor.Message
 		RoomId         int64
-		GameType       int32             // 游戏类型 0.血战 1.斗地主
+		GameType       GamblingType      // 游戏类型
 		GameParams     *outer.GameParams // 游戏参数
 		CreatorShortId int64             // 房间创建者
 		AllianceId     int32             // 归属联盟

@@ -7,6 +7,7 @@ import (
 
 	"server/rdsop"
 	"server/service/room/mahjong"
+	"server/service/room/run"
 
 	"server/common"
 	"server/common/actortype"
@@ -49,8 +50,10 @@ var _ = router.Reg(func(mgr *room.Mgr, msg *inner.CreateRoomReq) any {
 
 	var gambling room.Gambling
 	switch msg.GameType {
-	case room.Mahjong.Int32():
+	case room.Mahjong:
 		gambling = mahjong.New(newRoom)
+	case room.RunFaster:
+		gambling = run.New(newRoom)
 	}
 	newRoom.InjectGambling(gambling)
 

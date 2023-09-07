@@ -5,9 +5,17 @@ import (
 )
 
 type (
-	Card     int32
-	Cards    []Card
-	PongGang map[int32]int64
+	Card      int32
+	ColorType int32
+	Cards     []Card
+	PongGang  map[int32]int64
+)
+
+const (
+	ColorUnknown ColorType = iota
+	Wan                    = 1 // 萬
+	Tiao                   = 2 // 条
+	Tong                   = 3 // 筒
 )
 
 const (
