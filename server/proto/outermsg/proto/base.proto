@@ -25,8 +25,8 @@ message PlayerInfo {
 
 // 游戏参数
 message GameParams {
-    MahjongParams Mahjong = 1;
-    NiuNiuParams  NiuNiu  = 2;
+    MahjongParams Mahjong      = 1;
+    FasterRunParams  FasterRun = 2;
 }
 
 // 麻将
@@ -50,8 +50,8 @@ message MahjongParams{
     RebateParams ReBate        = 17; // 抽水相关设置
 }
 
-// 牛牛
-message NiuNiuParams{
+// 跑得快
+message FasterRunParams{
 }
 
 

@@ -88,7 +88,7 @@ var _ = router.Reg(func(p *player.Player, msg *outer.CreateRoomReq) any {
 			return err
 		}
 
-	case outer.GameType_NiuNiu:
+	case outer.GameType_FasterRun:
 	}
 
 	gameParamsBytes, _ := proto.Marshal(msg.GetGameParams())

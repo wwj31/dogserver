@@ -1,0 +1,11 @@
+syntax = "proto3";
+package outer;
+option  go_package = "/outer";
+
+// 跑得快 游戏状态机
+enum FasterRunState {
+    FasterRunStateReady        = 0;   // 准备中状态
+    FasterRunStateDeal         = 1;   // 游戏开始发牌状态
+    FasterRunStatePlaying      = 2;   // 游戏状态
+    FasterRunStateSettlement   = 3;   // 结算
+}

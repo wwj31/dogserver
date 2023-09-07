@@ -31,10 +31,6 @@ func New(r *room.Room) *FasterRun {
 
 const maxNum = 2
 
-type gangInfo struct {
-	loserSeats    map[int32]int64 // 赔付的位置，赔付的分
-	totalWinScore int64           // 本次杠总分
-}
 type (
 	// 跑得快 参与游戏的玩家数据
 	fasterRunPlayer struct {
@@ -187,8 +183,8 @@ func (f *FasterRun) newFasterRunPlayer(p *room.Player) *fasterRunPlayer {
 	}
 }
 
-func (f *FasterRun) gameParams() *outer.MahjongParams {
-	return f.room.GameParams.Mahjong
+func (f *FasterRun) gameParams() *outer.FasterRunParams {
+	return f.room.GameParams.FasterRun
 }
 
 func (f *FasterRun) clear() {
