@@ -1,4 +1,4 @@
-package run
+package fasterrun
 
 type State = int
 

@@ -5,16 +5,14 @@ import (
 
 	"github.com/golang/protobuf/proto"
 
-	"server/rdsop"
-	"server/service/room/mahjong"
-	"server/service/room/run"
-
 	"server/common"
 	"server/common/actortype"
 	"server/common/log"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
+	"server/rdsop"
 	"server/service/room"
+	"server/service/room/mahjong"
 
 	"server/common/router"
 )
@@ -53,7 +51,7 @@ var _ = router.Reg(func(mgr *room.Mgr, msg *inner.CreateRoomReq) any {
 	case room.Mahjong:
 		gambling = mahjong.New(newRoom)
 	case room.RunFaster:
-		gambling = run.New(newRoom)
+		gambling = fasterrun.New(newRoom)
 	}
 	newRoom.InjectGambling(gambling)
 

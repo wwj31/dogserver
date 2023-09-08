@@ -1,4 +1,4 @@
-package run
+package fasterrun
 
 import (
 	"github.com/spf13/cast"
