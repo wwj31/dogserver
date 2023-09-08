@@ -1,16 +1,11 @@
 package fasterrun
 
 import (
-	"fmt"
 	"math/rand"
 	"sort"
 
 	"server/common"
-	"server/common/log"
 )
-
-// MaxCardNum 创建一个41大小的数组，有效索引为11-39,即为牌，值为牌数量
-const MaxCardNum = 41
 
 // RandomPokerCards 获得洗好的一副新牌
 func RandomPokerCards(ignoreCard PokerCards) PokerCards {
@@ -80,85 +75,6 @@ func (c PokerCards) Remove(cards ...PokerCard) PokerCards {
 	}
 
 	return dst
-}
-
-// CanPongTo 判断当前牌组能不能碰
-func (c PokerCards) CanPongTo(card PokerCard) bool {
-	var num int
-	for _, handCard := range c {
-		if handCard == card {
-			num++
-			if num == 2 {
-				return true
-			}
-		}
-	}
-	return false
-}
-
-// Pong 碰,返回去除了碰牌后的新手牌，以及碰牌起始下标
-func (c PokerCards) Pong(card PokerCard) (PokerCards PokerCards, index int, err error) {
-	index = sort.Search(c.Len(), func(i int) bool { return c[i] >= card })
-	if index >= c.Len() || c[index] != card {
-		err = fmt.Errorf("pong failed cannot find index PokerCards:%v index:%v card:%v", c, index, card)
-		return
-	}
-
-	// 找到后把左边一张牌和当前牌，作为碰牌
-	// 检查左边那张牌必须相同
-	if c[index+1] != card {
-		err = fmt.Errorf("pong failed card number != 2:%v index:%v card:%v", c, index, card)
-		return
-	}
-
-	PokerCards = append(PokerCards, c[:index]...)
-	PokerCards = append(PokerCards, c[index+2:]...)
-	return
-}
-
-// CanGangTo 能否杠这张牌
-func (c PokerCards) CanGangTo(card PokerCard) bool {
-	var num int
-	for _, handCard := range c {
-		if handCard == card {
-			num++
-			if num == 3 {
-				return true
-			}
-		}
-	}
-	return false
-}
-
-// HasGang 有没有能杠的牌
-func (c PokerCards) HasGang() (PokerCards PokerCards) {
-	cs := c.ConvertStruct()
-	for i := 11; i < MaxCardNum; i++ {
-		if cs[i] == 4 {
-			PokerCards = append(PokerCards, PokerCard(i))
-		}
-	}
-	return
-}
-
-// Gang 杠,返回去除了杠牌后的新手牌，以及杠的起始下标
-func (c PokerCards) Gang(card PokerCard) (PokerCards PokerCards, index int, err error) {
-	index = sort.Search(c.Len(), func(i int) bool { return c[i] >= card })
-	if index >= c.Len() || c[index] != card {
-		err = fmt.Errorf("gang failed cannot find index PokerCards:%v index:%v card:%v", c, index, card)
-		return
-	}
-
-	// 找到后把左边两张牌和当前牌，作为杠
-	// 检查左边两张牌必须相同
-	if c[index+1] != card || c[index+2] != card {
-		err = fmt.Errorf("gang failed card number != 2:%v index:%v card:%v", c, index, card)
-		return
-	}
-
-	PokerCards = append(PokerCards, c[:index]...)
-	PokerCards = append(PokerCards, c[index+3:]...)
-	return
 }
 
 // ColorCount 当前牌有几个花色
@@ -234,57 +150,6 @@ func (c PokerCards) Range(fn func(card PokerCard) bool) {
 	}
 }
 
-// HighCard 检查是否存在散牌,存在不能组成顺子、刻子、对子的单牌
-func (c PokerCards) HighCard(PokerCardsStat [MaxCardNum]int) bool {
-	if c.Len() == 0 {
-		return false
-	}
-
-	if c.Len() == 1 {
-		return true
-	}
-	var continuous int
-
-	check := func(i int) bool {
-		// 断开连后，如果之前连续是1或者2，那么这两张连着的牌，有一张是单牌，那就构成散牌
-		if 0 < continuous && continuous < 3 {
-			if PokerCardsStat[i-1] == 1 || PokerCardsStat[i-2] == 1 {
-				return true
-			}
-		}
-		return false
-	}
-
-	for i := 11; i < MaxCardNum; i++ {
-		if PokerCardsStat[i] == 0 {
-			if check(i) {
-				return true
-			}
-			continuous = 0
-			continue
-		}
-
-		continuous++
-	}
-
-	return check(MaxCardNum)
-}
-
-// ConvertStruct 转换牌型结构为统计结构，槽位下标表示牌，值表示牌的数量，前11个槽位无用
-// 例如 [40]int{ [0]=0, [1]=0, ... [11]=2, [12]=3, [13]=2, [14]=0, [15]=2, }
-// 表示 一万2张，二万3张，三万2张，四万0张，五万2张
-func (c PokerCards) ConvertStruct() (result [MaxCardNum]int) {
-	for _, card := range c {
-		if card.Int() >= MaxCardNum {
-			log.Errorw("card number out of range ", "card", card)
-			return
-		}
-
-		result[card.Int()]++
-	}
-	return result
-}
-
 // Duizi 找对子
 func (c PokerCards) Duizi() []PokerCards {
 	var result []PokerCards
@@ -319,11 +184,11 @@ func RemoveDuplicate(PokerCardsGroup []PokerCards) []PokerCards {
 	var result []PokerCards
 
 	// 对每个牌组进行处理
-	for _, PokerCards := range PokerCardsGroup {
+	for _, cards := range PokerCardsGroup {
 		// 检查是否已经看到过这个牌组
-		if !uniqueMap[PokerCards[0]] {
-			uniqueMap[PokerCards[0]] = true
-			result = append(result, PokerCards)
+		if !uniqueMap[cards[0]] {
+			uniqueMap[cards[0]] = true
+			result = append(result, cards)
 		}
 	}
 
@@ -353,14 +218,4 @@ func (c PokerCards) Shunzi() []PokerCards {
 
 func min(a, b, c int) int {
 	return common.Min(a, common.Min(b, c))
-}
-
-func (p PongGang) Has1or9() bool {
-	for card := range p {
-		n := card / 10
-		if n == 1 || n == 9 {
-			return true
-		}
-	}
-	return false
 }

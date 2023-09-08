@@ -12,6 +12,7 @@ import (
 	"server/proto/outermsg/outer"
 	"server/rdsop"
 	"server/service/room"
+	"server/service/room/fasterrun"
 	"server/service/room/mahjong"
 
 	"server/common/router"
