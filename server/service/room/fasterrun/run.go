@@ -1,6 +1,7 @@
 package fasterrun
 
 import (
+	"server/common/log"
 	"time"
 
 	"github.com/golang/protobuf/proto"
@@ -14,12 +15,19 @@ import (
 	"server/service/room"
 )
 
+const (
+	ReadyExpiration    = 20 * time.Second // 准备超时时间
+	SettlementDuration = 10 * time.Second // 结算持续时间
+)
+
 func New(r *room.Room) *FasterRun {
 	fasterRun := &FasterRun{
 		room: r,
 		fsm:  room.NewFSM(),
 	}
-	//_ = fasterRun.fsm.Add(&StateReady{Mahjong: fasterRun})      // 准备中
+	n := fasterRun.playerNumber()
+	fasterRun.fasterRunPlayers = make([]*fasterRunPlayer, n, n)
+	_ = fasterRun.fsm.Add(&StateReady{FasterRun: fasterRun}) // 准备中
 	//_ = fasterRun.fsm.Add(&StateDeal{Mahjong: fasterRun})       // 发牌中
 	//_ = fasterRun.fsm.Add(&StatePlaying{Mahjong: fasterRun})    // 游戏中
 	//_ = fasterRun.fsm.Add(&StateSettlement{Mahjong: fasterRun}) // 游戏结束结算界面
@@ -28,8 +36,6 @@ func New(r *room.Room) *FasterRun {
 
 	return fasterRun
 }
-
-const maxNum = 2
 
 type (
 	// 跑得快 参与游戏的玩家数据
@@ -48,7 +54,9 @@ type (
 		currentStateEnterAt time.Time                            // 当前状态的进入时间
 		currentStateEndAt   time.Time                            // 当前状态的结束时间
 		playerAutoReady     func(p *fasterRunPlayer, ready bool) //
-		fasterRunPlayers    [maxNum]*fasterRunPlayer             // 参与游戏的玩家
+
+		fasterRunPlayers []*fasterRunPlayer // 参与游戏的玩家
+		gameCount        int                // 游戏的连续局数
 
 	}
 )
@@ -60,6 +68,17 @@ func (f *FasterRun) SwitchTo(state int) {
 		return
 	}
 	f.currentStateEnterAt = tools.Now()
+}
+
+func (f *FasterRun) playerNumber() int {
+	n := f.gameParams().PlayerNumber
+	if n == 0 {
+		return 2
+	} else if n == 1 {
+		return 3
+	}
+	log.Errorw("the player number is unexpected", "number", n)
+	return 0
 }
 
 func (f *FasterRun) Data(shortId int64) proto.Message {
@@ -189,7 +208,7 @@ func (f *FasterRun) gameParams() *outer.FasterRunParams {
 
 func (f *FasterRun) clear() {
 	// 重置玩家数据
-	for i := 0; i < maxNum; i++ {
+	for i := 0; i < f.playerNumber(); i++ {
 		gamer := f.fasterRunPlayers[i]
 		if gamer != nil {
 			f.fasterRunPlayers[i] = f.newFasterRunPlayer(gamer.Player)
@@ -204,7 +223,7 @@ func (f *FasterRun) allSeats(ignoreSeat ...int) (result []int) {
 		seatMap[seat] = struct{}{}
 	}
 
-	for seatIndex := 0; seatIndex < maxNum; seatIndex++ {
+	for seatIndex := 0; seatIndex < f.playerNumber(); seatIndex++ {
 		if _, ignore := seatMap[seatIndex]; !ignore {
 			result = append(result, seatIndex)
 		}

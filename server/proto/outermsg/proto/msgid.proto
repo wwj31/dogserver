@@ -27,6 +27,16 @@ enum Msg {
     IdKickOutMemberReq = 1475199389;// dispatch to player
     IdKickOutMemberRsp = 1173202408;
     IdFailRsp = 160109657;
+    IdFasterRunReadyReq = 981089639;// dispatch to gambling
+    IdFasterRunReadyRsp = 746203004;
+    IdFasterRunPlayCardReq = 1153954008;// dispatch to gambling
+    IdFasterRunPlayCardRsp = 919067375;
+    IdFasterRunPlayerReadyNtf = 380618607;
+    IdFasterRunReadyNtf = 730116787;
+    IdFasterRunDealNtf = 119725881;
+    IdFasterRunPlayingNtf = 1216242961;
+    IdFasterRunPlayCardNtf = 1136484828;
+    IdFasterRunSettlementNtf = 2110228871;
     IdSetRoleInfoReq = 58140470;// dispatch to player
     IdSetRoleInfoRsp = 1903626880;
     IdBindPhoneReq = 403639403;// dispatch to player

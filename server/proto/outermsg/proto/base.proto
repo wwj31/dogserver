@@ -52,6 +52,25 @@ message MahjongParams{
 
 // 跑得快
 message FasterRunParams{
+    int32 playCountLimit            = 1; // 必须打满多少局才能退出
+    int32 BaseScore                 = 2; // 底分
+    float BaseScoreTimes            = 3; // 倍数
+    int32 PlayerNumber              = 4; // 0.两人房间，1.三人房
+    int32 CardsNumber               = 5; // 0.15张，1.16张
+    int32 DicedeMasterType          = 6; // 选庄 0.随机 1.黑桃三 2.赢家 3.首局黑桃三，之后赢家
+    bool  FirstSpades3              = 7; // 首局必带黑桃3：只能在“黑桃3先出”或“首局黑桃3先出”模式下勾选，因拿到黑桃3当庄时，第一手出牌必须包含黑桃3
+    bool  ShowSpareNumber           = 8; // 显示剩余张数：对局中显示别人的手牌数量
+    bool  DoubleHeartsTen           = 9; // 红桃10翻倍：手牌拿到红桃10的玩家，输赢翻倍（只是每一张牌的输赢翻倍，炸弹输赢不变）
+    bool  PlayTolerance             = 10; // 三张/飞机可少带出完：有牌权的一方出牌时，手牌是三张/飞机但牌带不满，手牌能一次全部出完
+    bool  FollowPlayTolerance       = 11; // 三张/飞机可少带接完：接牌时，当前牌型是三带*或飞机，但自己带牌不满，手牌能一次全部出完
+    bool  SpareOnlyOneWithoutLose   = 12; // 抓单奖分：改名为“剩一张不输分”，勾选后结算时只剩1张手牌，不输分
+    bool  AgainstSpring             = 13; // 反春：勾选后有反春规则，否则没有
+    bool  SpecialThreeCards         = 14; // 三张：勾选后出牌时可直接出三张，否则不能直接出
+    bool  SpecialThreeCardsWithOne  = 15; // 三带一：勾选后出牌时可直接出三带一，否则不能直接出
+    bool  AAAIsBombs                = 16; // AAA是炸弹：只能在16张模式下勾选，勾选后AAA是最大的炸弹（可以用来三带*但不能四带二四带三），否则只算3张
+    bool  AllowScoreSmallZero       = 17; // 是否允许负分
+    bool  BigWinner                 = 18; // 2人模式的抽水对象只有大赢家，3人模式有大赢家和赢家
+    RebateParams ReBate             = 19; // 抽水相关设置
 }
 
 
