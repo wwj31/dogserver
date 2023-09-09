@@ -20,8 +20,6 @@ const (
 )
 
 const (
-	Clubs_A  PokerCard = 101 // 梅花A
-	Clubs_2  PokerCard = 102 // 梅花2
 	Clubs_3  PokerCard = 103 // 梅花3
 	Clubs_4  PokerCard = 104 // 梅花4
 	Clubs_5  PokerCard = 105 // 梅花5
@@ -33,9 +31,9 @@ const (
 	Clubs_J  PokerCard = 111 // 梅花J
 	Clubs_Q  PokerCard = 112 // 梅花Q
 	Clubs_K  PokerCard = 113 // 梅花K
+	Clubs_A  PokerCard = 114 // 梅花A
+	Clubs_2  PokerCard = 115 // 梅花2
 
-	Diamonds_A  PokerCard = 201 // 方块A
-	Diamonds_2  PokerCard = 202 // 方块2
 	Diamonds_3  PokerCard = 203 // 方块3
 	Diamonds_4  PokerCard = 204 // 方块4
 	Diamonds_5  PokerCard = 205 // 方块5
@@ -47,9 +45,9 @@ const (
 	Diamonds_J  PokerCard = 211 // 方块J
 	Diamonds_Q  PokerCard = 212 // 方块Q
 	Diamonds_K  PokerCard = 213 // 方块K
+	Diamonds_A  PokerCard = 214 // 方块A
+	Diamonds_2  PokerCard = 215 // 方块2
 
-	Hearts_A  PokerCard = 301 // 红心A
-	Hearts_2  PokerCard = 302 // 红心2
 	Hearts_3  PokerCard = 303 // 红心3
 	Hearts_4  PokerCard = 304 // 红心4
 	Hearts_5  PokerCard = 305 // 红心5
@@ -61,9 +59,9 @@ const (
 	Hearts_J  PokerCard = 311 // 红心J
 	Hearts_Q  PokerCard = 312 // 红心Q
 	Hearts_K  PokerCard = 313 // 红心K
+	Hearts_A  PokerCard = 314 // 红心A
+	Hearts_2  PokerCard = 315 // 红心2
 
-	Spades_A  PokerCard = 401 // 黑桃A
-	Spades_2  PokerCard = 402 // 黑桃2
 	Spades_3  PokerCard = 403 // 黑桃3
 	Spades_4  PokerCard = 404 // 黑桃4
 	Spades_5  PokerCard = 405 // 黑桃5
@@ -75,6 +73,8 @@ const (
 	Spades_J  PokerCard = 411 // 黑桃J
 	Spades_Q  PokerCard = 412 // 黑桃Q
 	Spades_K  PokerCard = 413 // 黑桃K
+	Spades_A  PokerCard = 414 // 黑桃A
+	Spades_2  PokerCard = 415 // 黑桃2
 )
 
 func (m PokerCard) String() string {

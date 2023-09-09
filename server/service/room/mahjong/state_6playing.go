@@ -341,29 +341,14 @@ func (s *StatePlaying) tips(p *mahjongPlayer) (result []*outer.PlayCardTips) {
 			return nil
 		}
 
-		// 找到能胡的最大番牌
-		var (
-			fan    int
-			huType HuType
-			cards  []int32
-		)
-
-		for c, t := range tingCards {
-			if huFan[t] > fan {
-				fan = huFan[t]
-				huType = t
-				cards = nil
-			}
-
-			if t == huType {
-				cards = append(cards, c.Int32())
-			}
+		tings := make(map[int32]outer.HuType)
+		for card, huType := range tingCards {
+			tings[card.Int32()] = huType.PB()
 		}
 
 		result = append(result, &outer.PlayCardTips{
-			Card:      playCard.Int32(),
-			HuType:    huType.PB(),
-			TingCards: cards,
+			Card:  playCard.Int32(),
+			Tings: tings,
 		})
 	}
 	return result

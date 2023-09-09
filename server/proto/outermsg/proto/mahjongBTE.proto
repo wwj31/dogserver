@@ -186,8 +186,7 @@ message MahjongBTETurnNtf {
 // 出牌提示
 message PlayCardTips {
     int32 Card                = 1; // 提示的牌
-    HuType HuType             = 2; // 能胡的牌型
-    repeated int32  TingCards = 3; // 听牌牌组
+    map<int32, HuType>  Tings = 2; // map<胡的牌，胡牌类型>
 }
 
 // 玩家操作结果通知
