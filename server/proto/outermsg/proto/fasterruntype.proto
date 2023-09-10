@@ -2,10 +2,36 @@ syntax = "proto3";
 package outer;
 option  go_package = "/outer";
 
+// 跑得快 扑克花色
+enum FasterRunPokerColorType {
+    PokerUnknown = 0;
+    Clubs        = 1; // 梅花
+    Diamonds     = 2; // 方块
+    Hearts       = 3; // 红心
+    Spades       = 4; // 黑桃
+}
+
 // 跑得快 游戏状态机
 enum FasterRunState {
     FasterRunStateReady        = 0;   // 准备中状态
     FasterRunStateDeal         = 1;   // 游戏开始发牌状态
     FasterRunStatePlaying      = 2;   // 游戏状态
     FasterRunStateSettlement   = 3;   // 结算
+}
+
+// 跑得快 牌型
+enum FasterRunPokerCardsType {
+    FasterRunPokerCardsTypeUnknown = 0;
+    FasterRunSingle                = 1; // 单张
+    FasterRunPair                  = 2; // 对子
+    FasterRunThree                 = 3; // 三张
+    FasterRunThreeWithOne          = 4; // 三带一
+    FasterRunThreeWithTwo          = 5; // 三带二
+    FasterRunStraight              = 6; // 顺子 5张起
+    FasterRunStraightPair          = 7; // 连对 至少2组点数相同的对子
+    FasterRunPlane                 = 8; // 飞机 至少2组点数相同的三张
+    FasterRunPlaneWithTow          = 9; // 飞机带翅膀，飞机的牌型上，每组三张必须带任意2张牌
+    FasterRunFourWithTwo           = 10; // 四带二 4张点数相同的牌+任意2张
+    FasterRunFourWithThree         = 11; // 四带三 4张点数相同的牌+任意3张
+    FasterRunBombs                 = 12;// 炸弹 4张点数相同的牌
 }

@@ -16,12 +16,3 @@ enum GameType {
     Mahjong     = 0; // 麻将
     FasterRun   = 1; // 跑得快
 }
-
-// 扑克 花色
-enum PokerColorType {
-    PokerUnknown = 0;
-    Clubs        = 1; // 梅花
-    Diamonds     = 2; // 方块
-    Hearts       = 3; // 红心
-    Spades       = 4; // 黑桃
-}

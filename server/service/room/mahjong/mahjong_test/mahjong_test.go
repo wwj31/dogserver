@@ -14,11 +14,9 @@ import (
 	"server/service/room/mahjong"
 )
 
-func TestDiv(t *testing.T) {
-	fmt.Println(4354116 % 100)
-}
 func TestRandomCards(t *testing.T) {
 	cards := mahjong.RandomCards(nil)
+	fmt.Println(cards)
 	cards.Sort()
 	fmt.Println(cards)
 }

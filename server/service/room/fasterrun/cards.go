@@ -2,218 +2,247 @@ package fasterrun
 
 import (
 	"math/rand"
-	"sort"
-
 	"server/common"
+	"server/common/log"
+	"sort"
 )
 
 // RandomPokerCards 获得洗好的一副新牌
-func RandomPokerCards(ignoreCard PokerCards) PokerCards {
-	cards := pokerCards52
+func RandomPokerCards(ignoreCard []PokerCard) PokerCards {
+	cards := make(PokerCards, len(pokerCards52))
+	copy(cards, pokerCards52[:])
 	tail := len(cards)
 	for i := 0; i < len(cards); i++ {
 		idx := rand.Intn(len(cards[:tail]))
 		cards[idx], cards[tail-1] = cards[tail-1], cards[idx]
+		tail--
 	}
 
-	result := PokerCards(cards[:])
 	if len(ignoreCard) > 0 {
-		result = result.Remove(ignoreCard...)
+		cards = cards.Remove(ignoreCard...)
 	}
-	return result
-}
-
-func (c PokerCards) Sort() PokerCards {
-	sort.Slice(c, func(i, j int) bool { return c[i] < c[j] })
-	return c
-}
-
-func (c PokerCards) Len() int {
-	return len(c)
-}
-
-// Insert 插入一组牌
-func (c PokerCards) Insert(cards ...PokerCard) PokerCards {
-	src := c
-	var dst PokerCards
-	for _, card := range cards {
-		dst = PokerCards{}
-		index := sort.Search(src.Len(), func(i int) bool { return src[i] > card })
-		dst = append(dst, src[:index]...)
-		dst = append(dst, card)
-		dst = append(dst, src[index:]...)
-		src = dst
-	}
-	return dst
-}
-
-// Push 尾部追加
-func (c PokerCards) Push(PokerCards ...PokerCard) PokerCards {
-	return append(c, PokerCards...)
-}
-
-// Remove 移除一组牌,移除的牌必须全部在牌中
-func (c PokerCards) Remove(cards ...PokerCard) PokerCards {
-	cardMap := make(map[PokerCard]int) // 统计要移除的牌数量
-	for _, card := range cards {
-		cardMap[card] += 1
-	}
-
-	dst := make(PokerCards, 0, c.Len())
-	for _, card := range c {
-		if cardMap[card] > 0 {
-			cardMap[card] -= 1
-			if cardMap[card] == 0 {
-				delete(cardMap, card)
-			}
-			continue
-		}
-
-		if cardMap[card] == 0 {
-			dst = append(dst, card)
-		}
-	}
-
-	return dst
-}
-
-// ColorCount 当前牌有几个花色
-func (c PokerCards) colors() map[PokerColorType]struct{} {
-	colorMap := make(map[PokerColorType]struct{})
-	c.RangeSplit(func(color PokerColorType, number int) bool {
-		colorMap[color] = struct{}{}
-		return false
-	})
-	return colorMap
-}
-
-// colorPokerCards 获得某个花色的所有牌
-func (c PokerCards) colorPokerCards(color PokerColorType) PokerCards {
-	var cards PokerCards
-	for _, card := range c {
-		if card.Color() == color {
-			cards = append(cards, card)
-		}
-	}
-
 	return cards
 }
 
-func (c PokerCards) Random() PokerCard {
-	if c.Len() == 0 {
-		return PokerCard(0)
+// Remove 移除一组牌,移除的牌必须全部在牌中
+func (p PokerCards) Remove(rmCards ...PokerCard) PokerCards {
+	cardMap := make(map[PokerCard]int) // 统计要移除的牌数量
+	for _, card := range rmCards {
+		cardMap[card] += 1
 	}
-	return c[rand.Intn(len(c))]
-}
 
-// CardIndex 返回第一张找的牌的位置
-func (c PokerCards) CardIndex(dstCard PokerCard) int {
-	for index, card := range c {
-		if card == dstCard {
-			return index
+	var newCards PokerCards
+	for _, card := range p {
+		if cardMap[card] > 0 {
+			cardMap[card]--
+		} else {
+			newCards = append(newCards, card)
 		}
 	}
-	return -1
+	return newCards
 }
 
-func (c PokerCards) ToSlice() (result []int32) {
-	for _, card := range c {
-		result = append(result, card.Int32())
+// PointCards 找出点数的所有牌
+func (p PokerCards) PointCards(point int32) PokerCards {
+	var newCards PokerCards
+	for _, card := range p {
+		if card.Point() == point {
+			newCards = append(newCards, card)
+		}
+	}
+	return newCards
+}
+
+func (p PokerCards) ConvertStruct() (result map[int32]int) {
+	result = map[int32]int{}
+	for _, card := range p {
+		result[card.Point()]++
+	}
+	return result
+}
+
+// ConvertOrderPoint 把点数按照升序排列在结果中
+func (p PokerCards) ConvertOrderPoint(stat map[int32]int) []int32 {
+	var arr []int32
+	for point := range stat {
+		arr = append(arr, point)
+	}
+	sort.Slice(arr, func(i, j int) bool { return arr[i] < arr[j] })
+	return arr
+}
+
+// AnalyzeCards 分析牌型
+func (p PokerCards) AnalyzeCards() (cardsGroup CardsGroup) {
+	if len(p) == 0 {
+		return
+	}
+
+	if len(p) == 1 {
+		cardsGroup.Type = Single
+		cardsGroup.Cards = append(cardsGroup.Cards, p...)
+		return
+	}
+
+	stat := p.ConvertStruct()
+	l := len(p)
+	switch {
+	case l == 2: // 2张，只能组成对子
+		if len(stat) == 1 {
+			cardsGroup.Type = Pair
+			cardsGroup.Cards = append(cardsGroup.Cards, p...)
+		}
+
+	case l == 3: // 3张，只能组成三张
+		if len(stat) == 1 {
+			cardsGroup.Type = Three
+			cardsGroup.Cards = append(cardsGroup.Cards, p...)
+		}
+
+	case l == 4: // 4张，可能组成:炸弹、三带一、连对
+		statLen := len(stat)
+		if statLen == 1 {
+			cardsGroup.Type = Bombs
+			copy(cardsGroup.Cards, p)
+			return
+		}
+
+		if statLen == 2 {
+			for point, num := range stat {
+				if num == 3 {
+					cardsGroup.Type = ThreeWithOne
+					cardsGroup.Cards = p.PointCards(point)
+					cardsGroup.SideCards = p.Remove(cardsGroup.Cards...)
+					return
+				}
+				if num == 2 {
+					cardsGroup.Type = StraightPair
+					copy(cardsGroup.Cards, p)
+					return
+				}
+			}
+		}
+		log.Errorw("AnalyzeCards cards len:4", "cards", p, "stat", stat)
+
+	case l == 5: // 5张 只能组成三带二、顺子
+		// 检查三带二
+		for point, num := range stat {
+			if num == 3 {
+				cardsGroup.Type = ThreeWithTwo
+				cardsGroup.Cards = p.PointCards(point)
+				cardsGroup.SideCards = p.Remove(cardsGroup.Cards...)
+				return
+			}
+		}
+
+		// 检查顺子(只能是5张顺子)
+		var straight5 bool
+		for i := 1; i < l; i++ {
+			if p[i].Point() != p[i-1].Point()+1 {
+				straight5 = false
+				break
+			}
+		}
+		if straight5 {
+			cardsGroup.Type = Straight
+			copy(cardsGroup.Cards, p)
+			return
+		}
+
+	case l >= 5: // 5张及以上，统一判断
+		orderPoints := p.ConvertOrderPoint(stat)
+		if len(orderPoints) == 0 {
+			log.Errorw("AnalyzeCards cards len:5", "cards", p, "stat", stat)
+			cardsGroup.Type = CardsTypeUnknown
+			return
+		}
+
+		var (
+			beginPoint       = orderPoints[0]
+			sequentialMaxNum = 1 // 最大的连续数量(不计相同的牌)
+		)
+
+		for i := 1; i < len(orderPoints); i++ {
+			if orderPoints[i] == beginPoint+1 {
+				sequentialMaxNum++
+			} else {
+				sequentialMaxNum = 1
+			}
+			beginPoint = orderPoints[i]
+		}
+
+		// 最长连续数等于本组牌的长度，只能是顺子
+		if sequentialMaxNum == l {
+			cardsGroup.Type = Straight
+			copy(cardsGroup.Cards, p)
+			return
+		}
+
+		// 最长连续数等于本组牌长度的一半，肯定数连对
+		if sequentialMaxNum*2 == l {
+			cardsGroup.Type = StraightPair
+			copy(cardsGroup.Cards, p)
+			return
+		}
+
+		// 最长连续数等于本组牌长度的1/3，肯定飞机
+		if sequentialMaxNum*3 == l {
+			cardsGroup.Type = Plane
+			copy(cardsGroup.Cards, p)
+			return
+		}
+
+		// 以下牌型用特殊方式检查,四带二、四带三
+		for point, num := range stat {
+			if num == 4 {
+				cards := p.PointCards(point)
+				sideCards := p.Remove(cardsGroup.Cards...)
+				sideCardsLen := len(sideCards)
+				if sideCardsLen == 2 {
+					cardsGroup.Type = FourWithTwo
+					cardsGroup.Cards = cards
+					cardsGroup.SideCards = sideCards
+					return
+				}
+
+				if sideCardsLen == 3 {
+					cardsGroup.Type = FourWithThree
+					cardsGroup.Cards = cards
+					cardsGroup.SideCards = sideCards
+					return
+				}
+			}
+		}
+
+		// 判断飞机带翅膀
+		if sequentialMaxNum >= 2 {
+			// 先找所有三张
+			var planePoints []int32
+			for i := 0; i < len(orderPoints); i++ {
+				if stat[orderPoints[i]] == 3 {
+					if len(planePoints) == 0 || orderPoints[i] == planePoints[len(planePoints)-1]+1 {
+						planePoints = append(planePoints, orderPoints[i])
+					} else {
+						planePoints = []int32{orderPoints[i]}
+					}
+				}
+			}
+
+			if len(planePoints) >= 2 {
+				var planeCards PokerCards
+				for _, point := range planePoints {
+					planeCards = append(planeCards, p.PointCards(point)...)
+				}
+				sideCards := p.Remove(planeCards...)
+				if len(sideCards) == len(planeCards)*2 {
+					cardsGroup.Type = PlaneWithTow
+					cardsGroup.Cards = planeCards
+					cardsGroup.SideCards = sideCards
+					return
+				}
+			}
+		}
 	}
 	return
-}
-
-func (c PokerCards) RangeSplit(fn func(color PokerColorType, number int) bool) {
-	for _, card := range c {
-		if fn(card.Color(), int(card.Point())) {
-			break
-		}
-	}
-}
-
-func (c PokerCards) HasColorCard(color PokerColorType) (has bool) {
-	c.RangeSplit(func(c PokerColorType, n int) bool {
-		if color == c {
-			has = true
-			return true
-		}
-		return false
-	})
-	return has
-}
-
-func (c PokerCards) Range(fn func(card PokerCard) bool) {
-	for _, card := range c {
-		if fn(card) {
-			break
-		}
-	}
-}
-
-// Duizi 找对子
-func (c PokerCards) Duizi() []PokerCards {
-	var result []PokerCards
-	for i := 0; i < len(c)-1; i++ {
-		if c[i] == c[i+1] {
-			result = append(result, PokerCards{c[i], c[i+1]})
-			i++ // 跳过下一个已经配对的牌
-		}
-	}
-	return result
-}
-
-// Kezi 找刻子
-func (c PokerCards) Kezi() []PokerCards {
-	var result []PokerCards
-	for i := 0; i < len(c)-2; i++ {
-		if c[i] == c[i+1] && c[i+1] == c[i+2] {
-			result = append(result, PokerCards{c[i], c[i+1], c[i+2]})
-			// 跳过所有相同的牌
-			for i < len(c)-2 && c[i] == c[i+2] {
-				i++
-			}
-		}
-	}
-	return result
-}
-
-// RemoveDuplicate 去除对子和顺子中重复的牌组
-func RemoveDuplicate(PokerCardsGroup []PokerCards) []PokerCards {
-	// 创建一个 map 来记录已经出现过的牌组
-	uniqueMap := make(map[PokerCard]bool, len(PokerCardsGroup))
-	var result []PokerCards
-
-	// 对每个牌组进行处理
-	for _, cards := range PokerCardsGroup {
-		// 检查是否已经看到过这个牌组
-		if !uniqueMap[cards[0]] {
-			uniqueMap[cards[0]] = true
-			result = append(result, cards)
-		}
-	}
-
-	return result
-}
-
-// Shunzi 找顺子
-func (c PokerCards) Shunzi() []PokerCards {
-	var result []PokerCards
-
-	// 用于保存每个牌的数量
-	cardCount := make(map[PokerCard]int)
-	for _, card := range c {
-		cardCount[card]++
-	}
-
-	// 获取所有可能的顺子
-	for card, count := range cardCount {
-		if card%10 <= 7 && cardCount[card+1] > 0 && cardCount[card+2] > 0 {
-			for i := 0; i < min(count, cardCount[card+1], cardCount[card+2]); i++ {
-				result = append(result, PokerCards{card, card + 1, card + 2})
-			}
-		}
-	}
-	return result
 }
 
 func min(a, b, c int) int {

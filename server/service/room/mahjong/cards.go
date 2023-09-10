@@ -14,18 +14,19 @@ const MaxCardNum = 41
 
 // RandomCards 获得洗好的一副新牌
 func RandomCards(ignoreCard Cards) Cards {
-	cards := cards108
+	cards := make(Cards, len(cards108))
+	copy(cards, cards108[:])
 	tail := len(cards)
 	for i := 0; i < len(cards); i++ {
 		idx := rand.Intn(len(cards[:tail]))
 		cards[idx], cards[tail-1] = cards[tail-1], cards[idx]
+		tail--
 	}
 
-	result := Cards(cards[:])
 	if len(ignoreCard) > 0 {
-		result = result.Remove(ignoreCard...)
+		cards = cards.Remove(ignoreCard...)
 	}
-	return result
+	return cards
 }
 
 func (c Cards) Sort() Cards {
@@ -67,14 +68,9 @@ func (c Cards) Remove(cards ...Card) Cards {
 	dst := make(Cards, 0, c.Len())
 	for _, card := range c {
 		if cardMap[card] > 0 {
-			cardMap[card] -= 1
-			if cardMap[card] == 0 {
-				delete(cardMap, card)
-			}
+			cardMap[card]--
 			continue
-		}
-
-		if cardMap[card] == 0 {
+		} else {
 			dst = append(dst, card)
 		}
 	}
