@@ -71,8 +71,17 @@ func (p PokerCards) ConvertOrderPoint(stat map[int32]int) []int32 {
 	return arr
 }
 
+// FindBigger 找出指定牌型更大的牌
+func (p PokerCards) FindBigger(cardsGroup CardsGroup) (bigger []CardsGroup) {
+	// TODO
+
+	return
+}
+
 // AnalyzeCards 分析牌型
-func (p PokerCards) AnalyzeCards() (cardsGroup CardsGroup) {
+func (p PokerCards) AnalyzeCards(AAAisBomb bool) (cardsGroup CardsGroup) {
+	sort.Slice(&p, func(i, j int) bool { return PokerCard(i).Point() < PokerCard(j).Point() })
+
 	if len(p) == 0 {
 		return
 	}
@@ -94,7 +103,11 @@ func (p PokerCards) AnalyzeCards() (cardsGroup CardsGroup) {
 
 	case l == 3: // 3张，只能组成三张
 		if len(stat) == 1 {
-			cardsGroup.Type = Three
+			if AAAisBomb && p[0].Point() == 14 {
+				cardsGroup.Type = Bombs
+			} else {
+				cardsGroup.Type = Three
+			}
 			cardsGroup.Cards = append(cardsGroup.Cards, p...)
 		}
 
@@ -102,7 +115,7 @@ func (p PokerCards) AnalyzeCards() (cardsGroup CardsGroup) {
 		statLen := len(stat)
 		if statLen == 1 {
 			cardsGroup.Type = Bombs
-			copy(cardsGroup.Cards, p)
+			cardsGroup.Cards = append(cardsGroup.Cards, p...)
 			return
 		}
 
@@ -116,7 +129,7 @@ func (p PokerCards) AnalyzeCards() (cardsGroup CardsGroup) {
 				}
 				if num == 2 {
 					cardsGroup.Type = StraightPair
-					copy(cardsGroup.Cards, p)
+					cardsGroup.Cards = append(cardsGroup.Cards, p...)
 					return
 				}
 			}
@@ -135,7 +148,7 @@ func (p PokerCards) AnalyzeCards() (cardsGroup CardsGroup) {
 		}
 
 		// 检查顺子(只能是5张顺子)
-		var straight5 bool
+		var straight5 = true
 		for i := 1; i < l; i++ {
 			if p[i].Point() != p[i-1].Point()+1 {
 				straight5 = false
@@ -144,11 +157,11 @@ func (p PokerCards) AnalyzeCards() (cardsGroup CardsGroup) {
 		}
 		if straight5 {
 			cardsGroup.Type = Straight
-			copy(cardsGroup.Cards, p)
+			cardsGroup.Cards = append(cardsGroup.Cards, p...)
 			return
 		}
 
-	case l >= 5: // 5张及以上，统一判断
+	case l > 5: // 5张及以上，统一判断
 		orderPoints := p.ConvertOrderPoint(stat)
 		if len(orderPoints) == 0 {
 			log.Errorw("AnalyzeCards cards len:5", "cards", p, "stat", stat)
@@ -173,21 +186,21 @@ func (p PokerCards) AnalyzeCards() (cardsGroup CardsGroup) {
 		// 最长连续数等于本组牌的长度，只能是顺子
 		if sequentialMaxNum == l {
 			cardsGroup.Type = Straight
-			copy(cardsGroup.Cards, p)
+			cardsGroup.Cards = append(cardsGroup.Cards, p...)
 			return
 		}
 
 		// 最长连续数等于本组牌长度的一半，肯定数连对
 		if sequentialMaxNum*2 == l {
 			cardsGroup.Type = StraightPair
-			copy(cardsGroup.Cards, p)
+			cardsGroup.Cards = append(cardsGroup.Cards, p...)
 			return
 		}
 
 		// 最长连续数等于本组牌长度的1/3，肯定飞机
 		if sequentialMaxNum*3 == l {
 			cardsGroup.Type = Plane
-			copy(cardsGroup.Cards, p)
+			cardsGroup.Cards = append(cardsGroup.Cards, p...)
 			return
 		}
 
@@ -244,6 +257,15 @@ func (p PokerCards) AnalyzeCards() (cardsGroup CardsGroup) {
 	}
 	return
 }
+
+func (c CardsGroup) CanCompare(group CardsGroup) bool {
+	if len(c.Cards) == 0 || len(group.Cards) == 0 || c.Type != group.Type || c.Type == CardsTypeUnknown {
+		return false
+	}
+
+	return true
+}
+func (c CardsGroup) Bigger(group CardsGroup) bool { return c.Cards[0].Point() > group.Cards[0].Point() }
 
 func min(a, b, c int) int {
 	return common.Min(a, common.Min(b, c))
