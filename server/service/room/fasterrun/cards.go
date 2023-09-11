@@ -2,9 +2,9 @@ package fasterrun
 
 import (
 	"math/rand"
-	"server/common"
-	"server/common/log"
 	"sort"
+
+	"server/common/log"
 )
 
 // RandomPokerCards 获得洗好的一副新牌
@@ -71,11 +71,153 @@ func (p PokerCards) ConvertOrderPoint(stat map[int32]int) []int32 {
 	return arr
 }
 
-// FindBigger 找出指定牌型更大的牌
-func (p PokerCards) FindBigger(cardsGroup CardsGroup) (bigger []CardsGroup) {
-	// TODO
+// Combination 算出需要n张牌的所有组合
+func (p PokerCards) Combination(n int) (result []PokerCards) {
+	if n == len(p) {
+		result = append(result, p)
+		return
+	}
+	if n > len(p) {
+		return
+	}
+
+	c := PokerCards{}
+	var combHelper func(cards PokerCards)
+	combHelper = func(cards PokerCards) {
+		for i := len(cards) - 1; i >= 0; i-- {
+			c = append(c, cards[i])
+			if len(c) == n {
+				newCards := make(PokerCards, n)
+				copy(newCards, c)
+				result = append(result, newCards)
+			} else {
+				combHelper(cards[:i])
+			}
+			c = c[:len(c)-1]
+		}
+	}
+
+	combHelper(p)
+	return
+}
+
+// StraightGroups 找出所有满足n连顺的牌,只能是顺子，连对，飞机
+func (p PokerCards) StraightGroups(t PokerCardsType, n int) (result []PokerCards) {
+	if t != Straight && t != StraightPair && t != Plane {
+		log.Errorw("StraightGroups args error", "t", t)
+		return nil
+	}
+
+	sameNumber := t - 5 // 顺子1张，连队2张，飞机3张
 
 	return
+}
+
+// FindBigger 找出指定牌型更大的牌
+func (p PokerCards) FindBigger(cardsGroup CardsGroup) (bigger []CardsGroup) {
+	if len(cardsGroup.Cards) == 0 {
+		log.Errorw("find bigger unexpected", "group", cardsGroup)
+		return nil
+	}
+
+	stat := p.ConvertStruct()
+	switch cardsGroup.Type {
+	case Single:
+		for _, card := range p {
+			if card.Point() > cardsGroup.Cards[0].Point() {
+				bigger = append(bigger, CardsGroup{Type: cardsGroup.Type, Cards: PokerCards{card}})
+			}
+		}
+
+	case Pair, Three:
+		n := 2
+		if cardsGroup.Type == Three {
+			n = 3
+		}
+
+		for point, num := range stat {
+			if num >= n && point > cardsGroup.Cards[0].Point() {
+				cards := p.PointCards(point)
+				comb := cards.Combination(len(cards))
+				for _, c := range comb {
+					bigger = append(bigger, CardsGroup{Type: cardsGroup.Type, Cards: c})
+				}
+			}
+		}
+	case ThreeWithOne, ThreeWithTwo:
+		sideN := 1 // 用于找几张需要带的牌
+		if cardsGroup.Type == ThreeWithTwo {
+			sideN = 2
+		}
+
+		for point, num := range stat {
+			if num >= 3 && point > cardsGroup.Cards[0].Point() {
+				cards := p.PointCards(point)
+				comb := cards.Combination(len(cards)) // 满足点数更大的牌组合
+				for _, c := range comb {
+					spareCards := p.Remove(c...)
+					sideCards := spareCards.SideCards(sideN)
+					if len(sideCards) == 0 {
+						continue
+					}
+					bigger = append(bigger, CardsGroup{Type: cardsGroup.Type, Cards: c, SideCards: sideCards})
+				}
+			}
+		}
+	case Straight, StraightPair, Plane:
+		n := int(cardsGroup.Type - 5)
+		seq := len(cardsGroup.Cards) / n
+		groups := p.StraightGroups(cardsGroup.Type, seq)
+		for _, group := range groups {
+			if group[0].Point() > cardsGroup.Cards[0].Point() {
+				bigger = append(bigger, CardsGroup{Type: cardsGroup.Type, Cards: group})
+			}
+		}
+	}
+
+	for point, num := range stat {
+		if num == 4 {
+			bigger = append(bigger, CardsGroup{Type: Bombs, Cards: p.PointCards(point)})
+		}
+	}
+	return
+}
+
+// SideCards 主要用于带牌的找牌规则,尽量找落单的，点数小的牌
+func (p PokerCards) SideCards(n int) (result PokerCards) {
+	stat := p.ConvertStruct()
+
+	var cards PokerCards
+	for point, num := range stat {
+		if num == 1 {
+			cards = append(cards, p.PointCards(point)...)
+		}
+	}
+
+	var nextCards PokerCards
+	if len(cards) <= 4 {
+		sort.Slice(cards, func(i, j int) bool { return cards[i].Point() < cards[j].Point() })
+		for _, card := range cards {
+			result = append(result, card)
+		}
+		if len(result) >= n {
+			result = result[:n]
+			return
+		} else {
+			nextCards = p.Remove(result...)
+		}
+	}
+
+	for i := 0; i < n-len(result); i++ {
+		if len(nextCards) == 0 {
+			return nil
+		}
+
+		randIdx := rand.Intn(len(nextCards))
+		result = append(result, nextCards[randIdx])
+		nextCards = append(nextCards[:randIdx], nextCards[randIdx+1:]...)
+	}
+	return nextCards
 }
 
 // AnalyzeCards 分析牌型
@@ -266,7 +408,3 @@ func (c CardsGroup) CanCompare(group CardsGroup) bool {
 	return true
 }
 func (c CardsGroup) Bigger(group CardsGroup) bool { return c.Cards[0].Point() > group.Cards[0].Point() }
-
-func min(a, b, c int) int {
-	return common.Min(a, common.Min(b, c))
-}

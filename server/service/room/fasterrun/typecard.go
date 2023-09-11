@@ -2,7 +2,9 @@ package fasterrun
 
 import (
 	"fmt"
+
 	"github.com/spf13/cast"
+
 	"server/proto/outermsg/outer"
 )
 
@@ -13,8 +15,8 @@ type (
 	PokerCards     []PokerCard
 	CardsGroup     struct {
 		Type      PokerCardsType // 牌型
-		Cards     []PokerCard    // 主牌
-		SideCards []PokerCard    // 副牌
+		Cards     PokerCards     // 主牌
+		SideCards PokerCards     // 副牌
 	}
 )
 
