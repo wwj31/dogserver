@@ -42,12 +42,17 @@ func (p PokerCards) Remove(rmCards ...PokerCard) PokerCards {
 	return newCards
 }
 
-// PointCards 找出点数的所有牌
-func (p PokerCards) PointCards(point int32) PokerCards {
+// PointCards 找出点数的所有牌 ,n指定数量，如果要所有牌，n不传
+func (p PokerCards) PointCards(point int32, n ...int) PokerCards {
 	var newCards PokerCards
+	var count int
 	for _, card := range p {
 		if card.Point() == point {
 			newCards = append(newCards, card)
+			count++
+			if len(n) > 0 && count == n[0] {
+				return newCards
+			}
 		}
 	}
 	return newCards
@@ -108,8 +113,47 @@ func (p PokerCards) StraightGroups(t PokerCardsType, n int) (result []PokerCards
 		log.Errorw("StraightGroups args error", "t", t)
 		return nil
 	}
+	if n > len(p) {
+		return nil
+	}
 
-	sameNumber := t - 5 // 顺子1张，连队2张，飞机3张
+	same := int(t - 5) // 顺子1张，连队2张，飞机3张
+	stat := p.ConvertStruct()
+	arr := p.ConvertOrderPoint(stat)
+	if len(arr) == 0 {
+		return nil
+	}
+
+	var (
+		seq      = 1
+		seqPoint = arr[0]
+	)
+
+	for i := 1; i < len(arr); i++ {
+		point := arr[i]
+
+		if stat[point] < same {
+			continue
+		}
+
+		if point == seqPoint+1 {
+			seqPoint = point
+			seq++
+			// 满足n顺的条件，就把这组牌加入结果中
+			if seq >= n {
+				var sub PokerCards
+
+				for v := point - int32(n-1); v <= point; v++ {
+					sub = append(sub, p.PointCards(v, same)...)
+				}
+				result = append(result, sub)
+			}
+			continue
+		}
+
+		seq = 1
+		seqPoint = point
+	}
 
 	return
 }

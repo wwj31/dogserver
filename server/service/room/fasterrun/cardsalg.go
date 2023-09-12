@@ -22,9 +22,9 @@ func (p PokerCards) FindBigger(cardsGroup CardsGroup) (bigger []CardsGroup) {
 			}
 		}
 
-	case Pair, Three:
+	case Pair, Trips:
 		n := 2
-		if cardsGroup.Type == Three {
+		if cardsGroup.Type == Trips {
 			n = 3
 		}
 
@@ -37,9 +37,9 @@ func (p PokerCards) FindBigger(cardsGroup CardsGroup) (bigger []CardsGroup) {
 				}
 			}
 		}
-	case ThreeWithOne, ThreeWithTwo:
+	case TripsWithOne, TripsWithTwo:
 		sideN := 1 // 用于找几张需要带的牌
-		if cardsGroup.Type == ThreeWithTwo {
+		if cardsGroup.Type == TripsWithTwo {
 			sideN = 2
 		}
 
@@ -104,7 +104,7 @@ func (p PokerCards) AnalyzeCards(AAAisBomb bool) (cardsGroup CardsGroup) {
 			if AAAisBomb && p[0].Point() == 14 {
 				cardsGroup.Type = Bombs
 			} else {
-				cardsGroup.Type = Three
+				cardsGroup.Type = Trips
 			}
 			cardsGroup.Cards = append(cardsGroup.Cards, p...)
 		}
@@ -120,7 +120,7 @@ func (p PokerCards) AnalyzeCards(AAAisBomb bool) (cardsGroup CardsGroup) {
 		if statLen == 2 {
 			for point, num := range stat {
 				if num == 3 {
-					cardsGroup.Type = ThreeWithOne
+					cardsGroup.Type = TripsWithOne
 					cardsGroup.Cards = p.PointCards(point)
 					cardsGroup.SideCards = p.Remove(cardsGroup.Cards...)
 					return
@@ -138,7 +138,7 @@ func (p PokerCards) AnalyzeCards(AAAisBomb bool) (cardsGroup CardsGroup) {
 		// 检查三带二
 		for point, num := range stat {
 			if num == 3 {
-				cardsGroup.Type = ThreeWithTwo
+				cardsGroup.Type = TripsWithTwo
 				cardsGroup.Cards = p.PointCards(point)
 				cardsGroup.SideCards = p.Remove(cardsGroup.Cards...)
 				return

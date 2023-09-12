@@ -24,9 +24,9 @@ const (
 	CardsTypeUnknown PokerCardsType = iota
 	Single                          = 1  // 单张
 	Pair                            = 2  // 对子
-	Three                           = 3  // 三张
-	ThreeWithOne                    = 4  // 三带一
-	ThreeWithTwo                    = 5  // 三带二
+	Trips                           = 3  // 三张
+	TripsWithOne                    = 4  // 三带一
+	TripsWithTwo                    = 5  // 三带二
 	Straight                        = 6  // 顺子 5张起
 	StraightPair                    = 7  // 连对 至少2组点数相同的对子
 	Plane                           = 8  // 飞机 至少2组点数相同的三张

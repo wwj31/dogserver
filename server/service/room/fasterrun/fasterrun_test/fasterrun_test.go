@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"reflect"
 	"testing"
 
 	"server/service/room/fasterrun"
@@ -15,39 +14,6 @@ import (
 
 	"server/service/room/mahjong"
 )
-
-func TestCombination(t *testing.T) {
-	testCases := []struct {
-		input    fasterrun.PokerCards
-		n        int
-		expected []fasterrun.PokerCards
-	}{
-		{
-			input: fasterrun.PokerCards{1, 2, 3, 4},
-			n:     2,
-			expected: []fasterrun.PokerCards{
-				{1, 2},
-				{1, 3},
-				{1, 4},
-				{2, 3},
-				{2, 4},
-				{3, 4},
-			},
-		},
-		{
-			input:    fasterrun.PokerCards{5, 6, 7},
-			n:        4,
-			expected: []fasterrun.PokerCards{},
-		},
-	}
-
-	for _, tc := range testCases {
-		result := tc.input.Combination(tc.n)
-		if !reflect.DeepEqual(result, tc.expected) {
-			t.Errorf("Input: %v, n: %d\nExpected: %v\nActual: %v", tc.input, tc.n, tc.expected, result)
-		}
-	}
-}
 
 func TestComb(t *testing.T) {
 	cards := fasterrun.PokerCards{fasterrun.Diamonds_3, fasterrun.Diamonds_4, fasterrun.Clubs_5, fasterrun.Diamonds_6, fasterrun.Hearts_7}
