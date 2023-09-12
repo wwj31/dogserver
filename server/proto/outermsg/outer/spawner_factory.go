@@ -113,7 +113,7 @@ var spawner = map[string]factory{
 	"outer.FasterRunFinialSettlement":         func() interface{} { return &FasterRunFinialSettlement{} },
 	"outer.FasterRunFinialPlayerInfo":         func() interface{} { return &FasterRunFinialPlayerInfo{} },
 	"outer.FasterRunDealNtf":                  func() interface{} { return &FasterRunDealNtf{} },
-	"outer.FasterRunCardsType":                func() interface{} { return &FasterRunCardsType{} },
+	"outer.FasterRunCardsGroup":               func() interface{} { return &FasterRunCardsGroup{} },
 	"outer.FailRsp":                           func() interface{} { return &FailRsp{} },
 	"outer.Exchange3Info":                     func() interface{} { return &Exchange3Info{} },
 	"outer.EnterGameRsp":                      func() interface{} { return &EnterGameRsp{} },

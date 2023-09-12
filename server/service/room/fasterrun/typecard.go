@@ -123,8 +123,24 @@ func (c CardsGroup) String() string {
 	return fmt.Sprintf("type:%v cards:%v side cards:%v\n", c.Type, c.Cards, c.SideCards)
 }
 
+func (p PokerCards) ToPB() []int32 {
+	result := make([]int32, 0, len(p))
+	for _, card := range p {
+		result = append(result, card.Int32())
+	}
+	return result
+}
+
 func (c PokerCardsType) ToPB() outer.FasterRunPokerCardsType {
 	return outer.FasterRunPokerCardsType(c)
+}
+
+func (c CardsGroup) ToPB() *outer.FasterRunCardsGroup {
+	return &outer.FasterRunCardsGroup{
+		Type:      c.Type.ToPB(),
+		Cards:     c.Cards.ToPB(),
+		SideCards: c.SideCards.ToPB(),
+	}
 }
 
 var pokerCards52 = [52]PokerCard{

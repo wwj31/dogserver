@@ -32,9 +32,8 @@ message FasterRunPlayerInfo {
     int64               Score          = 5;// 玩家本局拥有的分数
 }
 
-
 // 牌型
-message FasterRunCardsType {
+message FasterRunCardsGroup {
     FasterRunPokerCardsType Type = 1;// 牌型
     repeated int32 Cards         = 2;// 主牌
     repeated int32 SideCards     = 3;// 副牌
@@ -42,10 +41,10 @@ message FasterRunCardsType {
 
 // 历史出牌记录
 message PlayCardsHistory {
-    int64              ShortId = 1; // 出牌人
-    bool               Follow  = 2; // true.跟牌出牌，true.有牌权出牌
-    FasterRunCardsType Records = 3; // 出牌记录,nil表示过
-    int64              PlayAt  = 4; // 出牌时间
+    int64               ShortId = 1; // 出牌人
+    bool                Follow  = 2; // true.跟牌出牌，true.有牌权出牌
+    FasterRunCardsGroup Records = 3; // 出牌记录,nil表示过
+    int64               PlayAt  = 4; // 出牌时间
 }
 
 ////////////////////////////////////////////// 游戏操作请求 //////////////////////////////////////////////
