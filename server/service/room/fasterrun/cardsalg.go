@@ -57,13 +57,49 @@ func (p PokerCards) FindBigger(cardsGroup CardsGroup) (bigger []CardsGroup) {
 				}
 			}
 		}
+
 	case Straight, StraightPair, Plane:
 		n := int(cardsGroup.Type - 5)
 		seq := len(cardsGroup.Cards) / n
 		groups := p.StraightGroups(cardsGroup.Type, seq)
 		for _, group := range groups {
-			if group[0].Point() > cardsGroup.Cards[0].Point() {
-				bigger = append(bigger, CardsGroup{Type: cardsGroup.Type, Cards: group})
+			if group[0].Point() <= cardsGroup.Cards[0].Point() {
+				continue
+			}
+
+			bigger = append(bigger, CardsGroup{Type: cardsGroup.Type, Cards: group})
+		}
+
+	case PlaneWithTwo:
+		seq := len(cardsGroup.Cards) / 3
+		straightGroups := p.StraightGroups(Plane, seq)
+		for _, cards := range straightGroups {
+			if cards[0].Point() <= cardsGroup.Cards[0].Point() {
+				continue
+			}
+
+			spareCards := p.Remove(cards...)
+			sideCards := spareCards.SideCards(seq * 2)
+			if len(sideCards) == seq*2 {
+				bigger = append(bigger, CardsGroup{Type: PlaneWithTwo, Cards: cards, SideCards: sideCards})
+			}
+		}
+
+	case FourWithTwo, FourWithThree:
+		sideCardsNum := 2 // 要找几张副牌
+		if cardsGroup.Type == FourWithThree {
+			sideCardsNum = 3
+		}
+
+		for point, num := range stat {
+			if num < 4 || point <= cardsGroup.Cards[0].Point() {
+				continue
+			}
+			cards := p.PointCards(point)
+			spareCards := p.Remove(cards...)
+			sideCards := spareCards.SideCards(sideCardsNum)
+			if len(sideCards) == sideCardsNum {
+				bigger = append(bigger, CardsGroup{Type: cardsGroup.Type, Cards: cards, SideCards: sideCards})
 			}
 		}
 	}
@@ -245,7 +281,7 @@ func (p PokerCards) AnalyzeCards(AAAisBomb bool) (cardsGroup CardsGroup) {
 				}
 				sideCards := p.Remove(planeCards...)
 				if len(sideCards) == len(planeCards)*2 {
-					cardsGroup.Type = PlaneWithTow
+					cardsGroup.Type = PlaneWithTwo
 					cardsGroup.Cards = planeCards
 					cardsGroup.SideCards = sideCards
 					return

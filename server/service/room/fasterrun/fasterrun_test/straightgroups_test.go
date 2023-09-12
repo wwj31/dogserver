@@ -7,6 +7,7 @@ import (
 	"server/service/room/fasterrun"
 )
 
+// 测试筛查顺子，连对，飞机
 func TestStraightGroups(t *testing.T) {
 	testCases := []struct {
 		input    fasterrun.PokerCards
@@ -27,9 +28,9 @@ func TestStraightGroups(t *testing.T) {
 			},
 		},
 
-		// Straight
+		// Straight2
 		{
-			input: fasterrun.PokerCards{3, 4, 5, 6, 7, 8, 9, 9, 10, 10},
+			input: fasterrun.PokerCards{3, 3, 3, 3, 4, 5, 6, 7, 8, 9, 9, 10, 10, 11},
 			t:     fasterrun.Straight,
 			n:     5,
 			expected: []fasterrun.PokerCards{
@@ -37,6 +38,7 @@ func TestStraightGroups(t *testing.T) {
 				{4, 5, 6, 7, 8},
 				{5, 6, 7, 8, 9},
 				{6, 7, 8, 9, 10},
+				{7, 8, 9, 10, 11},
 			},
 		},
 
@@ -53,6 +55,42 @@ func TestStraightGroups(t *testing.T) {
 			},
 		},
 
+		//StraightPair2
+		{
+			input: fasterrun.PokerCards{3, 3, 4, 5, 5, 6, 6, 7, 8, 9, 9, 10, 10, 10},
+			t:     fasterrun.StraightPair,
+			n:     2,
+			expected: []fasterrun.PokerCards{
+				{5, 5, 6, 6},
+				{9, 9, 10, 10},
+			},
+		},
+
+		//StraightPair3
+		{
+			input: fasterrun.PokerCards{3, 3, 4, 5, 5, 6, 6, 6, 7, 7, 8, 9, 9, 9, 9, 10, 10, 10, 10},
+			t:     fasterrun.StraightPair,
+			n:     2,
+			expected: []fasterrun.PokerCards{
+				{5, 5, 6, 6},
+				{6, 6, 7, 7},
+				{9, 9, 10, 10},
+			},
+		},
+
+		//StraightPair4
+		{
+			input: fasterrun.PokerCards{3, 3, 4, 5, 5, 6, 6, 6, 7, 7, 8, 8, 9, 9, 9, 9, 10, 10, 10, 10},
+			t:     fasterrun.StraightPair,
+			n:     3,
+			expected: []fasterrun.PokerCards{
+				{5, 5, 6, 6, 7, 7},
+				{6, 6, 7, 7, 8, 8},
+				{7, 7, 8, 8, 9, 9},
+				{8, 8, 9, 9, 10, 10},
+			},
+		},
+
 		//Plane
 		{
 			input: fasterrun.PokerCards{3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 7, 8, 9, 9, 9, 10, 10, 10},
@@ -62,6 +100,18 @@ func TestStraightGroups(t *testing.T) {
 				{3, 3, 3, 4, 4, 4},
 				{4, 4, 4, 5, 5, 5},
 				{9, 9, 9, 10, 10, 10},
+			},
+		},
+
+		//Plane2
+		{
+			input: fasterrun.PokerCards{3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 8, 8, 8, 8, 9, 9, 9, 10, 10, 10},
+			t:     fasterrun.Plane,
+			n:     3,
+			expected: []fasterrun.PokerCards{
+				{3, 3, 3, 4, 4, 4, 5, 5, 5},
+				{4, 4, 4, 5, 5, 5, 6, 6, 6},
+				{8, 8, 8, 9, 9, 9, 10, 10, 10},
 			},
 		},
 	}

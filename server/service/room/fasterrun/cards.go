@@ -160,6 +160,11 @@ func (p PokerCards) StraightGroups(t PokerCardsType, n int) (result []PokerCards
 
 // SideCards 主要用于带牌的找牌规则,尽量找落单的，点数小的牌
 func (p PokerCards) SideCards(n int) (result PokerCards) {
+	if n == len(p) {
+		result = make(PokerCards, len(p))
+		copy(result, p)
+		return result
+	}
 	stat := p.ConvertStruct()
 
 	var cards PokerCards
@@ -183,7 +188,8 @@ func (p PokerCards) SideCards(n int) (result PokerCards) {
 		}
 	}
 
-	for i := 0; i < n-len(result); i++ {
+	addNum := n - len(result)
+	for i := 0; i < addNum; i++ {
 		if len(nextCards) == 0 {
 			return nil
 		}
@@ -192,7 +198,8 @@ func (p PokerCards) SideCards(n int) (result PokerCards) {
 		result = append(result, nextCards[randIdx])
 		nextCards = append(nextCards[:randIdx], nextCards[randIdx+1:]...)
 	}
-	return nextCards
+	sort.Slice(result, func(i, j int) bool { return result[i].Point() < result[j].Point() })
+	return result
 }
 
 func (c CardsGroup) CanCompare(group CardsGroup) bool {

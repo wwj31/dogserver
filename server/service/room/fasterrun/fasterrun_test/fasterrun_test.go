@@ -6,20 +6,12 @@ import (
 	"fmt"
 	"testing"
 
-	"server/service/room/fasterrun"
-
 	"github.com/stretchr/testify/assert"
 
 	"server/common/rds"
 
 	"server/service/room/mahjong"
 )
-
-func TestComb(t *testing.T) {
-	cards := fasterrun.PokerCards{fasterrun.Diamonds_3, fasterrun.Diamonds_4, fasterrun.Clubs_5, fasterrun.Diamonds_6, fasterrun.Hearts_7}
-	v := cards.Combination(2)
-	fmt.Println(v)
-}
 
 func TestCardsTest(t *testing.T) {
 	err := rds.NewBuilder().DB(1).OnConnect(func() {
