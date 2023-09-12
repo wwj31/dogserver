@@ -131,6 +131,10 @@ func (p PokerCards) ToPB() []int32 {
 	return result
 }
 
+func (c PokerColorType) ToPB() outer.FasterRunPokerColorType {
+	return outer.FasterRunPokerColorType(c)
+}
+
 func (c PokerCardsType) ToPB() outer.FasterRunPokerCardsType {
 	return outer.FasterRunPokerCardsType(c)
 }
