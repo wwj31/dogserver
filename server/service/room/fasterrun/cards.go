@@ -170,13 +170,12 @@ func (p PokerCards) SideCards(n int) (result PokerCards) {
 	var cards PokerCards
 	for point, num := range stat {
 		if num == 1 {
-			cards = append(cards, p.PointCards(point)...)
+			cards = append(cards, p.PointCards(point)...).Sort()
 		}
 	}
 
 	var nextCards PokerCards
 	if len(cards) <= 4 {
-		sort.Slice(cards, func(i, j int) bool { return cards[i].Point() < cards[j].Point() })
 		for _, card := range cards {
 			result = append(result, card)
 		}
@@ -198,8 +197,27 @@ func (p PokerCards) SideCards(n int) (result PokerCards) {
 		result = append(result, nextCards[randIdx])
 		nextCards = append(nextCards[:randIdx], nextCards[randIdx+1:]...)
 	}
-	sort.Slice(result, func(i, j int) bool { return result[i].Point() < result[j].Point() })
-	return result
+	return result.Sort()
+}
+
+func (p PokerCards) Sort() PokerCards {
+	sort.Slice(p, func(i, j int) bool {
+		iPoint := p[i].Point()
+		jPoint := p[j].Point()
+		if iPoint == jPoint {
+			return p[i].Color() < p[j].Color()
+		}
+		return iPoint < jPoint
+	})
+	return p
+}
+
+func (p PokerCards) ToSlice() []int32 {
+	var arr []int32
+	for _, card := range p {
+		arr = append(arr, card.Int32())
+	}
+	return arr
 }
 
 func (c CardsGroup) CanCompare(group CardsGroup) bool {

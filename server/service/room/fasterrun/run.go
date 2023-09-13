@@ -1,8 +1,9 @@
 package fasterrun
 
 import (
-	"server/common/log"
 	"time"
+
+	"server/common/log"
 
 	"github.com/golang/protobuf/proto"
 	"github.com/wwj31/dogactor/logger"
@@ -16,8 +17,10 @@ import (
 )
 
 const (
-	ReadyExpiration    = 20 * time.Second // 准备超时时间
-	SettlementDuration = 10 * time.Second // 结算持续时间
+	ReadyExpiration       = 20 * time.Second // 准备超时时间
+	DealExpiration        = 3 * time.Second  // 发牌状态持续时间
+	WaitingPlayExpiration = 20 * time.Second // 打牌等待持续时间
+	SettlementDuration    = 10 * time.Second // 结算持续时间
 )
 
 func New(r *room.Room) *FasterRun {
@@ -28,7 +31,7 @@ func New(r *room.Room) *FasterRun {
 	n := fasterRun.playerNumber()
 	fasterRun.fasterRunPlayers = make([]*fasterRunPlayer, n, n)
 	_ = fasterRun.fsm.Add(&StateReady{FasterRun: fasterRun}) // 准备中
-	//_ = fasterRun.fsm.Add(&StateDeal{Mahjong: fasterRun})       // 发牌中
+	_ = fasterRun.fsm.Add(&StateDeal{FasterRun: fasterRun})  // 发牌中
 	//_ = fasterRun.fsm.Add(&StatePlaying{Mahjong: fasterRun})    // 游戏中
 	//_ = fasterRun.fsm.Add(&StateSettlement{Mahjong: fasterRun}) // 游戏结束结算界面
 
@@ -45,6 +48,7 @@ type (
 		totalWinScore int64 // 单局的总输赢
 		ready         bool
 		readyExpireAt time.Time
+		handCards     PokerCards
 		finalStatsMsg *outer.MahjongBTEFinialPlayerInfo
 	}
 
@@ -55,6 +59,7 @@ type (
 		currentStateEndAt   time.Time                            // 当前状态的结束时间
 		playerAutoReady     func(p *fasterRunPlayer, ready bool) //
 
+		masterIndex      int                // 庄家位置 0，1，2
 		fasterRunPlayers []*fasterRunPlayer // 参与游戏的玩家
 		gameCount        int                // 游戏的连续局数
 

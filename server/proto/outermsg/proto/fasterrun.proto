@@ -27,7 +27,7 @@ message FasterRunPlayerInfo {
 
     // 手牌 (梅花103-114 方块203-214 红心303-314 黑桃403-415)
     // 黑桃J:411,黑桃Q:412,黑桃K:413,黑桃A:414 黑桃2:415
-    repeated int32      Cards          = 4;
+    repeated int32      HandCards      = 4;
 
     int64               Score          = 5;// 玩家本局拥有的分数
 }
@@ -58,7 +58,7 @@ message FasterRunReadyRsp {
 
 // 出牌
 message FasterRunPlayCardReq {// tag:gambling
-    int32 Index = 1;// 手牌下标 0开始
+    repeated int32 PlayCards = 1; // 要打的牌(主牌、带的副牌全部一起发)
 }
 message FasterRunPlayCardRsp {
 }
@@ -76,8 +76,8 @@ message FasterRunReadyNtf {
 
 // 开始发牌通知
 message FasterRunDealNtf {
-    repeated int32 Cards   = 1; // 手牌 (萬11-19 条21-29 筒31-39)
-    int32 MasterSeat       = 2; // 庄家位置
+    repeated int32 HandCards  = 1; // 手牌
+    int32          MasterSeat = 2; // 庄家位置
 }
 
 // 开始游戏通知
@@ -86,47 +86,26 @@ message FasterRunPlayingNtf {
 
 // 玩家轮动通知
 message FasterRunPlayCardNtf {
-    int32          TotalCards          = 1; // 剩余总牌数
-    int64          ActionEndAt         = 3; // 操作结束时间(毫秒)
-    bool           FirstPlay           = 4; // true.首轮出牌、false.跟牌
-
-    // 跟牌操作，展示出牌人信息
-    repeated int32 PlayedCard          = 5; // 打出去的牌
-    int64          ShortIdOfPlayed     = 6; // 出牌的人
-
-    // 需要行动的下一位玩家
-    int64          ShortIdOfNextPlay   = 7; // 下一位需要出牌的人
+    int64          WaitingEndAt        = 1; // 等待出牌操作结束时间(毫秒)
+    bool           FirstPlay           = 2; // true.首轮出牌、false.跟牌
+    int64          PlayingShortId      = 3; // 当前需要出牌的人
 }
-
-
 
 // 结算玩家数据
 message FasterRunSettlementPlayerData{
     FasterRunPlayerInfo Player            = 1; //
-
-    // 胡牌信息
-    int32      DianPaoSeatIndex           = 2; // 点炮的人位置，如果是自己，表示自摸
-    map<int32, int64> HuWinScoreSeatIndex = 3; // 胡牌赢得的每家分数 map<赔钱的位置，赔的分>
-
-    // 被杠的信息
-    map<int32,int64> ByDarkGangSeatIndex  = 4; // 被哪些人暗杠，map<杠的玩家位置，赔的分>
-    map<int32,int64> ByLightGangSeatIndex = 5; // 被哪些人明杠，map<杠的玩家位置，赔的分>
-    int32 TotalFan                        = 6; // 总番数
-    int64 TotalScore                      = 7; // 总输赢 负数为输
+    int32 BombsCount                      = 2; // 出过几次炸弹
+    int64 TotalScore                      = 3; // 总输赢 负数为输
 }
 
 // 结算通知
 message FasterRunSettlementNtf {
     int64    EndAt                                     = 1; // 结算结束时间
-    bool     NotHu                                     = 2;  // true.流局
-    bool     HasScoreZero                              = 3;  // 玩家分输光了，提前进入结算(只有在房间选择不允许负分的时候生效)
-    repeated FasterRunSettlementPlayerData PlayerData = 4; // 东南西北四个方位玩家结算数据
+    bool     HasScoreZero                              = 3; // 玩家分输光了，提前进入结算(只有在房间选择不允许负分的时候生效)
+    repeated FasterRunSettlementPlayerData PlayerData  = 4; // 0-2号座位的玩家结算数据
     int32    GameCount                                 = 5; // 游戏局数
     int64    GameSettlementAt                          = 6; // 结算开始时间
-    repeated int32 HuSeatIndex                         = 7; // 胡牌的位置,按胡牌先后位置排序
-    repeated int32 NotTingSeat                         = 8; // 哪些位置没听牌
-    repeated int32 PigSeat                             = 9; // 哪些位置是花猪
-    FasterRunFinialSettlement FinalSettlement         = 10; // 非大结算，值为null
+    FasterRunFinialSettlement FinalSettlement          = 10; // 非大结算，值为null
 }
 
 // 大结算信息
