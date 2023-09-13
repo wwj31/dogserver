@@ -56,7 +56,7 @@ func (s *StateDeal) Enter() {
 		i += handCardsNumber
 
 		s.room.SendToPlayer(player.ShortId, &outer.FasterRunDealNtf{
-			HandCards:  player.handCards.ToSlice(),
+			HandCards:  player.handCards.ToPB(),
 			MasterSeat: int32(s.masterIndex),
 		})
 	}
@@ -70,8 +70,7 @@ func (s *StateDeal) Enter() {
 
 func (s *StateDeal) Leave() {
 	for seatIndex, player := range s.fasterRunPlayers {
-		s.Log().Infow("dealing",
-			"room", s.room.RoomId,
+		s.Log().Infow("dealing", "room", s.room.RoomId,
 			"seat", seatIndex, "player", player.ShortId, "score", player.score,
 			"cards", player.handCards)
 	}

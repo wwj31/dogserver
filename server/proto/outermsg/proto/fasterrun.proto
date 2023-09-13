@@ -14,9 +14,9 @@ message FasterRunGameInfo {
     int32                        GameCount        = 4; // 游戏局数
     repeated FasterRunPlayerInfo Players          = 5; // 分别代表0-2号座位的玩家
     int32                        MasterIndex      = 7; // 庄家位置 (0-2)
-    repeated PlayCardsHistory    History          = 13; // 出牌历史
-    int64                        ActionShortId    = 14; // 当前操作者
-    int64                        ActionEndAt      = 15; // 操作结束时间(毫秒)
+    repeated PlayCardsHistory    History          = 8; // 出牌历史
+    int64                        PlayingShortId   = 9; // 当前等待出牌的人
+    int64                        PlayingEndAt     = 10;// 操作结束时间(毫秒)
 }
 
 // 跑得快 参与游戏的玩家数据
@@ -26,7 +26,7 @@ message FasterRunPlayerInfo {
     int64               ReadyExpireAt  = 3; // 准备超时时间(毫秒)
 
     // 手牌 (梅花103-114 方块203-214 红心303-314 黑桃403-415)
-    // 黑桃J:411,黑桃Q:412,黑桃K:413,黑桃A:414 黑桃2:415
+    // NOTE: 411:黑桃J 412:黑桃Q 413:黑桃K 414:黑桃A 415:黑桃2 其他花色同理
     repeated int32      HandCards      = 4;
 
     int64               Score          = 5;// 玩家本局拥有的分数
@@ -42,7 +42,7 @@ message FasterRunCardsGroup {
 // 历史出牌记录
 message PlayCardsHistory {
     int64               ShortId = 1; // 出牌人
-    bool                Follow  = 2; // true.跟牌出牌，true.有牌权出牌
+    bool                Follow  = 2; // true.跟牌出牌，false.有牌权出牌
     FasterRunCardsGroup Records = 3; // 出牌记录,nil表示过
     int64               PlayAt  = 4; // 出牌时间
 }
@@ -61,6 +61,7 @@ message FasterRunPlayCardReq {// tag:gambling
     repeated int32 PlayCards = 1; // 要打的牌(主牌、带的副牌全部一起发)
 }
 message FasterRunPlayCardRsp {
+    repeated int32 HandCards = 1; // 出牌成功后的最新手牌
 }
 
 ////////////////////////////////////////////// 游戏通知 //////////////////////////////////////////////
@@ -105,7 +106,7 @@ message FasterRunSettlementNtf {
     repeated FasterRunSettlementPlayerData PlayerData  = 4; // 0-2号座位的玩家结算数据
     int32    GameCount                                 = 5; // 游戏局数
     int64    GameSettlementAt                          = 6; // 结算开始时间
-    FasterRunFinialSettlement FinalSettlement          = 10; // 非大结算，值为null
+    FasterRunFinialSettlement FinalSettlement          = 7; // 非大结算，值为null
 }
 
 // 大结算信息

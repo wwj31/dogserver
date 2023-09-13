@@ -30,9 +30,9 @@ func New(r *room.Room) *FasterRun {
 	}
 	n := fasterRun.playerNumber()
 	fasterRun.fasterRunPlayers = make([]*fasterRunPlayer, n, n)
-	_ = fasterRun.fsm.Add(&StateReady{FasterRun: fasterRun}) // 准备中
-	_ = fasterRun.fsm.Add(&StateDeal{FasterRun: fasterRun})  // 发牌中
-	//_ = fasterRun.fsm.Add(&StatePlaying{Mahjong: fasterRun})    // 游戏中
+	_ = fasterRun.fsm.Add(&StateReady{FasterRun: fasterRun})      // 准备中
+	_ = fasterRun.fsm.Add(&StateDeal{FasterRun: fasterRun})       // 发牌中
+	_ = fasterRun.fsm.Add(&StatePlaying{FasterRun: fasterRun})    // 游戏中
 	_ = fasterRun.fsm.Add(&StateSettlement{FasterRun: fasterRun}) // 游戏结束结算界面
 
 	fasterRun.SwitchTo(Ready)
@@ -63,9 +63,17 @@ type (
 
 		masterIndex      int                // 庄家位置 0，1，2
 		fasterRunPlayers []*fasterRunPlayer // 参与游戏的玩家
+		playRecords      []PlayCardsHistory // 出牌历史
 		gameCount        int                // 游戏的连续局数
 		lastWinShortId   int64              // 最后一局的赢家
 
+	}
+
+	PlayCardsHistory struct {
+		shortId int64      // 出牌人
+		follow  bool       // true.跟牌出牌，false.有牌权出牌
+		records CardsGroup // 牌型
+		playAt  time.Time  // 出牌时间
 	}
 )
 
@@ -90,6 +98,11 @@ func (f *FasterRun) playerNumber() int {
 }
 
 func (f *FasterRun) Data(shortId int64) proto.Message {
+	var records []*outer.PlayCardsHistory
+	for _, record := range f.playRecords {
+		records = append(records, record.ToPB())
+	}
+
 	info := &outer.FasterRunGameInfo{
 		State:        outer.FasterRunState(f.fsm.State()),
 		StateEnterAt: f.currentStateEnterAt.UnixMilli(),
@@ -97,6 +110,7 @@ func (f *FasterRun) Data(shortId int64) proto.Message {
 		GameCount:    int32(f.gameCount),
 		Players:      f.playersToPB(shortId, false),
 		MasterIndex:  int32(f.masterIndex),
+		History:      records,
 	}
 	return info
 }
@@ -271,4 +285,13 @@ func (m *fasterRunPlayer) updateScore(val int64) {
 	m.score += val
 	m.totalWinScore += val // 单局总输赢
 	m.finalStatsMsg.TotalScore += val
+}
+
+func (p *PlayCardsHistory) ToPB() *outer.PlayCardsHistory {
+	return &outer.PlayCardsHistory{
+		ShortId: p.shortId,
+		Follow:  p.follow,
+		Records: p.records.ToPB(),
+		PlayAt:  p.playAt.UnixMilli(),
+	}
 }

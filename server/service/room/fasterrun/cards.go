@@ -212,14 +212,6 @@ func (p PokerCards) Sort() PokerCards {
 	return p
 }
 
-func (p PokerCards) ToSlice() []int32 {
-	var arr []int32
-	for _, card := range p {
-		arr = append(arr, card.Int32())
-	}
-	return arr
-}
-
 func (c CardsGroup) CanCompare(group CardsGroup) bool {
 	if len(c.Cards) == 0 || len(group.Cards) == 0 || c.Type != group.Type || c.Type == CardsTypeUnknown {
 		return false
