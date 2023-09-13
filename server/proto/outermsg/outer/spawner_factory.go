@@ -87,7 +87,6 @@ var spawner = map[string]factory{
 	"outer.LoginReq":                          func() interface{} { return &LoginReq{} },
 	"outer.LeaveRoomRsp":                      func() interface{} { return &LeaveRoomRsp{} },
 	"outer.LeaveRoomReq":                      func() interface{} { return &LeaveRoomReq{} },
-	"outer.LatestOperaCard":                   func() interface{} { return &LatestOperaCard{} },
 	"outer.KickOutMemberRsp":                  func() interface{} { return &KickOutMemberRsp{} },
 	"outer.KickOutMemberReq":                  func() interface{} { return &KickOutMemberReq{} },
 	"outer.JoinRoomRsp":                       func() interface{} { return &JoinRoomRsp{} },

@@ -64,12 +64,6 @@ message CardsOfBTE {
     map<int32,int64> Pong          = 4; // 碰
 }
 
-// 最后一位操作牌的人(摸牌、出牌、明杠(下杠))
-message LatestOperaCard {
-    int32 Card     = 1;
-    int64 ShortId  = 2;
-    int32 Typ      = 3; // 1.摸牌、2.出牌、3.杠
-}
 ////////////////////////////////////////////// 游戏操作请求 //////////////////////////////////////////////
 // 准备\取消
 message MahjongBTEReadyReq {// tag:gambling
