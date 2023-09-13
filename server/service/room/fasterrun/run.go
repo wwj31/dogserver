@@ -33,7 +33,7 @@ func New(r *room.Room) *FasterRun {
 	_ = fasterRun.fsm.Add(&StateReady{FasterRun: fasterRun}) // 准备中
 	_ = fasterRun.fsm.Add(&StateDeal{FasterRun: fasterRun})  // 发牌中
 	//_ = fasterRun.fsm.Add(&StatePlaying{Mahjong: fasterRun})    // 游戏中
-	//_ = fasterRun.fsm.Add(&StateSettlement{Mahjong: fasterRun}) // 游戏结束结算界面
+	_ = fasterRun.fsm.Add(&StateSettlement{FasterRun: fasterRun}) // 游戏结束结算界面
 
 	fasterRun.SwitchTo(Ready)
 
@@ -49,7 +49,8 @@ type (
 		ready         bool
 		readyExpireAt time.Time
 		handCards     PokerCards
-		finalStatsMsg *outer.MahjongBTEFinialPlayerInfo
+		BombsCount    int32
+		finalStatsMsg *outer.FasterRunFinialPlayerInfo
 	}
 
 	FasterRun struct {
@@ -58,10 +59,12 @@ type (
 		currentStateEnterAt time.Time                            // 当前状态的进入时间
 		currentStateEndAt   time.Time                            // 当前状态的结束时间
 		playerAutoReady     func(p *fasterRunPlayer, ready bool) //
+		scoreZeroOver       bool                                 // 因为有玩家没分了，而触发的结束
 
 		masterIndex      int                // 庄家位置 0，1，2
 		fasterRunPlayers []*fasterRunPlayer // 参与游戏的玩家
 		gameCount        int                // 游戏的连续局数
+		lastWinShortId   int64              // 最后一局的赢家
 
 	}
 )
@@ -87,10 +90,13 @@ func (f *FasterRun) playerNumber() int {
 }
 
 func (f *FasterRun) Data(shortId int64) proto.Message {
-	info := &outer.MahjongBTEGameInfo{
-		State:        outer.MahjongBTEState(f.fsm.State()),
+	info := &outer.FasterRunGameInfo{
+		State:        outer.FasterRunState(f.fsm.State()),
 		StateEnterAt: f.currentStateEnterAt.UnixMilli(),
 		StateEndAt:   f.currentStateEndAt.UnixMilli(),
+		GameCount:    int32(f.gameCount),
+		Players:      f.playersToPB(shortId, false),
+		MasterIndex:  int32(f.masterIndex),
 	}
 	return info
 }
@@ -144,7 +150,7 @@ func (f *FasterRun) PlayerEnter(roomPlayer *room.Player) {
 	for i, player := range f.fasterRunPlayers {
 		if player == nil {
 			player = f.newFasterRunPlayer(roomPlayer)
-			player.finalStatsMsg = &outer.MahjongBTEFinialPlayerInfo{}
+			player.finalStatsMsg = &outer.FasterRunFinialPlayerInfo{}
 			f.fasterRunPlayers[i] = player
 			if f.playerAutoReady != nil {
 				f.playerAutoReady(player, false)
@@ -173,7 +179,7 @@ func (f *FasterRun) PlayerLeave(quitPlayer *room.Player) {
 	}
 }
 
-// Handle 麻将游戏消息，全部交由当前状态处理
+// Handle 游戏消息，全部交由当前状态处理
 func (f *FasterRun) Handle(shortId int64, v any) any {
 	return f.fsm.CurrentStateHandler().Handle(shortId, v)
 }
@@ -189,6 +195,30 @@ func (f *FasterRun) findFasterRunPlayer(shortId int64) (*fasterRunPlayer, int) {
 		}
 	}
 	return nil, -1
+}
+
+func (f *FasterRun) playersToPB(shortId int64, settlement bool) (players []*outer.FasterRunPlayerInfo) {
+	for _, player := range f.fasterRunPlayers {
+		if player == nil {
+			players = append(players, nil)
+		} else {
+			var handCards []int32
+			if player.ShortId == shortId || settlement {
+				handCards = player.handCards.ToPB()
+			} else {
+				handCards = make([]int32, len(player.handCards))
+			}
+
+			players = append(players, &outer.FasterRunPlayerInfo{
+				ShortId:       player.ShortId,
+				Ready:         player.ready,
+				ReadyExpireAt: player.readyExpireAt.UnixMilli(),
+				HandCards:     handCards,
+				Score:         player.score,
+			})
+		}
+	}
+	return
 }
 
 // 逆时针轮动座位索引,index 当前位置

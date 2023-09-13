@@ -21,6 +21,7 @@ func (s *StateReady) State() int {
 
 func (s *StateReady) Enter() {
 	s.Log().Infow("[FasterRun] enter state ready ", "room", s.room.RoomId)
+	s.gameCount++
 	s.playerAutoReady = s.ready
 
 	var (
