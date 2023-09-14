@@ -14,7 +14,7 @@ message FasterRunGameInfo {
     int32                        GameCount        = 4; // 游戏局数
     repeated FasterRunPlayerInfo Players          = 5; // 分别代表0-2号座位的玩家
     int32                        MasterIndex      = 7; // 庄家位置 (0-2)
-    repeated PlayCardsHistory    History          = 8; // 出牌历史
+    repeated PlayCardsRecord     History          = 8; // 出牌历史
     int64                        PlayingShortId   = 9; // 当前等待出牌的人
     int64                        PlayingEndAt     = 10;// 操作结束时间(毫秒)
 }
@@ -40,11 +40,11 @@ message FasterRunCardsGroup {
 }
 
 // 历史出牌记录
-message PlayCardsHistory {
-    int64               ShortId = 1; // 出牌人
-    bool                Follow  = 2; // true.跟牌出牌，false.有牌权出牌
-    FasterRunCardsGroup Records = 3; // 出牌记录,nil表示过
-    int64               PlayAt  = 4; // 出牌时间
+message PlayCardsRecord {
+    int64               ShortId    = 1; // 出牌人
+    bool                Follow     = 2; // true.跟牌出牌，false.有牌权出牌
+    FasterRunCardsGroup CardsGroup = 3; // 出牌记录,nil表示过
+    int64               PlayAt     = 4; // 出牌时间
 }
 
 ////////////////////////////////////////////// 游戏操作请求 //////////////////////////////////////////////
@@ -96,6 +96,7 @@ message FasterRunPlayCardNtf {
     int64          WaitingEndAt        = 1; // 等待出牌操作结束时间(毫秒)
     bool           FollowPlay          = 2; // true.跟牌、false.牌权出牌
     int64          PlayingShortId      = 3; // 当前需要出牌的人
+    PlayCardsRecord PrevRecord         = 4; // 上一次出牌的人,庄家首次为null
 }
 
 // 结算玩家数据

@@ -25,7 +25,7 @@ func (s *StatePlaying) Enter() {
 
 	s.room.Broadcast(&outer.FasterRunGameStartNtf{})
 
-	s.nextPlayer(s.masterIndex)
+	s.nextPlayer(s.masterIndex, nil)
 }
 
 func (s *StatePlaying) Leave() {
@@ -84,7 +84,8 @@ func (s *StatePlaying) play(player *fasterRunPlayer, cards PokerCards) outer.ERR
 
 	// 如果需要跟牌，检查牌型是否符合跟牌牌型
 	lastValidPlayCards := s.lastValidPlayCards()
-	if lastValidPlayCards != nil && lastValidPlayCards.shortId != player.ShortId {
+	follow := lastValidPlayCards != nil && lastValidPlayCards.shortId != player.ShortId
+	if follow {
 		// 跟牌牌型不同
 		if playCardsGroup.Type != lastValidPlayCards.records.Type {
 			return outer.ERROR_FASTERRUN_PLAY_CARDS_SHOULD_BE_FOLLOW
@@ -97,15 +98,39 @@ func (s *StatePlaying) play(player *fasterRunPlayer, cards PokerCards) outer.ERR
 
 		// 副牌数量不匹配
 		if len(playCardsGroup.SideCards) != len(lastValidPlayCards.records.SideCards) {
+			if s.gameParams().PlayTolerance {
+				// TODO ...
+			}
+
+			if s.gameParams().FollowPlayTolerance {
+				// TODO ...
+			}
 			return outer.ERROR_FASTERRUN_PLAY_CARDS_SIDE_CARD_LEN_ERR
 		}
-
 	}
 
+	player.handCards = player.handCards.Remove(cards...)
+	s.playRecords = append(s.playRecords, PlayCardsRecord{
+		shortId: player.ShortId,
+		follow:  follow,
+		records: playCardsGroup,
+		playAt:  tools.Now(),
+	})
+
+	s.room.Broadcast(&outer.FasterRunPlayCardNtf{
+		WaitingEndAt:   0,
+		FollowPlay:     false,
+		PlayingShortId: 0,
+	})
+
+	seat := s.SeatIndex(player.ShortId)
+	s.nextPlayer(s.nextSeatIndex(seat), &s.playRecords[len(s.playRecords)-1])
+
+	return outer.ERROR_OK
 }
 
 // 下一位打牌的人
-func (s *StatePlaying) nextPlayer(seat int) {
+func (s *StatePlaying) nextPlayer(seat int, lastPlayInfo *PlayCardsRecord) {
 	player := s.fasterRunPlayers[seat]
 
 	var follow bool // 跟牌，还是牌权出牌
@@ -125,10 +150,13 @@ func (s *StatePlaying) nextPlayer(seat int) {
 		WaitingEndAt:   waitingExpiration.UnixMilli(),
 		FollowPlay:     follow,
 		PlayingShortId: player.ShortId,
+		PrevRecord:     lastPlayInfo.ToPB(),
 	}
 	s.room.Broadcast(ntf)
 
 	s.actionTimer(waitingExpiration)
+
+	s.Log().Infow("next play ", "seat", seat, "shortId", player.ShortId, "follow", follow, "prev record", lastPlayInfo)
 }
 
 func (s *StatePlaying) getPlayerAndSeatE(shortId int64) (*fasterRunPlayer, int, outer.ERROR) {

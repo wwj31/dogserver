@@ -63,7 +63,7 @@ type (
 
 		masterIndex        int                // 庄家位置 0，1，2
 		fasterRunPlayers   []*fasterRunPlayer // 参与游戏的玩家
-		playRecords        []PlayCardsHistory // 出牌历史
+		playRecords        []PlayCardsRecord  // 出牌历史
 		gameCount          int                // 游戏的连续局数
 		lastWinShortId     int64              // 最后一局的赢家
 		waitingPlayShortId int64              // 当前等待的出牌人
@@ -71,7 +71,7 @@ type (
 
 	}
 
-	PlayCardsHistory struct {
+	PlayCardsRecord struct {
 		shortId int64      // 出牌人
 		follow  bool       // true.跟牌出牌，false.有牌权出牌
 		records CardsGroup // 牌型
@@ -100,7 +100,7 @@ func (f *FasterRun) playerNumber() int {
 }
 
 // 获得最后一次有效的出牌
-func (f *FasterRun) lastValidPlayCards() *PlayCardsHistory {
+func (f *FasterRun) lastValidPlayCards() *PlayCardsRecord {
 	for i := len(f.playRecords) - 1; i >= 0; i-- {
 		record := f.playRecords[i]
 		if record.records.Type == CardsTypeUnknown {
@@ -301,7 +301,7 @@ func (m *fasterRunPlayer) updateScore(val int64) {
 	m.finalStatsMsg.TotalScore += val
 }
 
-func (p *PlayCardsHistory) ToPB() *outer.PlayCardsHistory {
+func (p *PlayCardsRecord) ToPB() *outer.PlayCardsHistory {
 	return &outer.PlayCardsHistory{
 		ShortId: p.shortId,
 		Follow:  p.follow,
