@@ -131,6 +131,11 @@ func (s *StatePlaying) play(player *fasterRunPlayer, cards PokerCards) outer.ERR
 
 // 下一位打牌的人
 func (s *StatePlaying) nextPlayer(seat int, lastPlayInfo *PlayCardsRecord) {
+	if s.gameOver() {
+		s.SwitchTo(Settlement)
+		return
+	}
+
 	player := s.fasterRunPlayers[seat]
 
 	var follow bool // 跟牌，还是牌权出牌
@@ -140,6 +145,11 @@ func (s *StatePlaying) nextPlayer(seat int, lastPlayInfo *PlayCardsRecord) {
 	lastValidPlay := s.lastValidPlayCards()
 	if lastValidPlay != nil && lastValidPlay.shortId != player.ShortId {
 		follow = true
+	}
+
+	// 如果出的是炸弹，并且转了一圈都没人能大，就结算一次
+	if lastValidPlay.shortId == player.ShortId && lastPlayInfo.cardsGroup.Type == Bombs {
+		// TODO ...炸弹赔分
 	}
 
 	s.waitingPlayShortId = player.ShortId
