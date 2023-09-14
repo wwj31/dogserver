@@ -28,6 +28,9 @@ var _ = router.Reg(func(mgr *room.Mgr, msg *inner.CreateRoomReq) any {
 	if err := proto.Unmarshal(msg.GetGameParams(), gameParams); err != nil {
 		return &inner.Error{ErrorInfo: err.Error()}
 	}
+	if gameParams.Mahjong.PlayCountLimit == 16 {
+		gameParams.Mahjong.PlayCountLimit = 1
+	}
 
 	roomId := msg.RoomId
 	if roomId == 0 {
