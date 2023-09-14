@@ -72,10 +72,10 @@ type (
 	}
 
 	PlayCardsRecord struct {
-		shortId int64      // 出牌人
-		follow  bool       // true.跟牌出牌，false.有牌权出牌
-		records CardsGroup // 牌型
-		playAt  time.Time  // 出牌时间
+		shortId    int64      // 出牌人
+		follow     bool       // true.跟牌出牌，false.有牌权出牌
+		cardsGroup CardsGroup // 牌型
+		playAt     time.Time  // 出牌时间
 	}
 )
 
@@ -103,7 +103,7 @@ func (f *FasterRun) playerNumber() int {
 func (f *FasterRun) lastValidPlayCards() *PlayCardsRecord {
 	for i := len(f.playRecords) - 1; i >= 0; i-- {
 		record := f.playRecords[i]
-		if record.records.Type == CardsTypeUnknown {
+		if record.cardsGroup.Type == CardsTypeUnknown {
 			continue
 		}
 		return &record
@@ -112,7 +112,7 @@ func (f *FasterRun) lastValidPlayCards() *PlayCardsRecord {
 }
 
 func (f *FasterRun) Data(shortId int64) proto.Message {
-	var records []*outer.PlayCardsHistory
+	var records []*outer.PlayCardsRecord
 	for _, record := range f.playRecords {
 		records = append(records, record.ToPB())
 	}
@@ -301,11 +301,11 @@ func (m *fasterRunPlayer) updateScore(val int64) {
 	m.finalStatsMsg.TotalScore += val
 }
 
-func (p *PlayCardsRecord) ToPB() *outer.PlayCardsHistory {
-	return &outer.PlayCardsHistory{
-		ShortId: p.shortId,
-		Follow:  p.follow,
-		Records: p.records.ToPB(),
-		PlayAt:  p.playAt.UnixMilli(),
+func (p *PlayCardsRecord) ToPB() *outer.PlayCardsRecord {
+	return &outer.PlayCardsRecord{
+		ShortId:    p.shortId,
+		Follow:     p.follow,
+		CardsGroup: p.cardsGroup.ToPB(),
+		PlayAt:     p.playAt.UnixMilli(),
 	}
 }

@@ -87,17 +87,17 @@ func (s *StatePlaying) play(player *fasterRunPlayer, cards PokerCards) outer.ERR
 	follow := lastValidPlayCards != nil && lastValidPlayCards.shortId != player.ShortId
 	if follow {
 		// 跟牌牌型不同
-		if playCardsGroup.Type != lastValidPlayCards.records.Type {
+		if playCardsGroup.Type != lastValidPlayCards.cardsGroup.Type {
 			return outer.ERROR_FASTERRUN_PLAY_CARDS_SHOULD_BE_FOLLOW
 		}
 
 		// 主牌必须比跟的牌大
-		if !playCardsGroup.Bigger(lastValidPlayCards.records) {
+		if !playCardsGroup.Bigger(lastValidPlayCards.cardsGroup) {
 			return outer.ERROR_FASTERRUN_PLAY_CARDS_SHOULD_BE_BIGGER
 		}
 
 		// 副牌数量不匹配
-		if len(playCardsGroup.SideCards) != len(lastValidPlayCards.records.SideCards) {
+		if len(playCardsGroup.SideCards) != len(lastValidPlayCards.cardsGroup.SideCards) {
 			if s.gameParams().PlayTolerance {
 				// TODO ...
 			}
@@ -111,10 +111,10 @@ func (s *StatePlaying) play(player *fasterRunPlayer, cards PokerCards) outer.ERR
 
 	player.handCards = player.handCards.Remove(cards...)
 	s.playRecords = append(s.playRecords, PlayCardsRecord{
-		shortId: player.ShortId,
-		follow:  follow,
-		records: playCardsGroup,
-		playAt:  tools.Now(),
+		shortId:    player.ShortId,
+		follow:     follow,
+		cardsGroup: playCardsGroup,
+		playAt:     tools.Now(),
 	})
 
 	s.room.Broadcast(&outer.FasterRunPlayCardNtf{
