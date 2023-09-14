@@ -35,7 +35,7 @@ func RoomList(allianceId int32) (roomIds []int64) {
 
 type NewRoomInfo struct {
 	RoomId         int64             `json:"room_id"`
-	CreatorShortId int64             `json:"creator_short_id""`
+	CreatorShortId int64             `json:"creator_short_id"`
 	AllianceId     int32             `json:"alliance_id"`
 	GameType       int32             `json:"game_type"`
 	Params         *outer.GameParams `json:"params"`
