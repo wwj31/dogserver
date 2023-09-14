@@ -82,13 +82,13 @@ message FasterRunDealNtf {
 }
 
 // 开始游戏通知
-message FasterRunPlayingNtf {
+message FasterRunGameStartNtf {
 }
 
 // 玩家轮动通知
 message FasterRunPlayCardNtf {
     int64          WaitingEndAt        = 1; // 等待出牌操作结束时间(毫秒)
-    bool           FirstPlay           = 2; // true.首轮出牌、false.跟牌
+    bool           FollowPlay          = 2; // true.跟牌、false.牌权出牌
     int64          PlayingShortId      = 3; // 当前需要出牌的人
 }
 

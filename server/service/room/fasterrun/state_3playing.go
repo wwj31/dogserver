@@ -23,6 +23,9 @@ func (s *StatePlaying) Enter() {
 	s.actionTimerId = ""
 	s.currentStateEnterAt = time.Time{}
 
+	s.room.Broadcast(&outer.FasterRunGameStartNtf{})
+
+	s.nextPlayer(s.masterIndex)
 }
 
 func (s *StatePlaying) Leave() {
@@ -49,6 +52,41 @@ func (s *StatePlaying) Handle(shortId int64, v any) (result any) {
 	return outer.ERROR_FASTERRUN_STATE_MSG_INVALID
 }
 
+func (s *StatePlaying) nextPlayer(seat int) {
+	player := s.fasterRunPlayers[seat]
+
+	var (
+		latestPlay *PlayCardsHistory
+		follow     bool // 跟牌，还是牌权出牌
+	)
+	// 反着找最后一个出牌人
+	for i := len(s.playRecords) - 1; i >= 0; i-- {
+		record := s.playRecords[i]
+		if record.records.Type == CardsTypeUnknown {
+			continue
+		}
+		latestPlay = &record
+	}
+
+	// 如果最后一个出牌人不是自己，就需要跟牌
+	if latestPlay != nil && latestPlay.shortId != player.ShortId {
+		follow = true
+	}
+
+	s.waitingPlayShortId = player.ShortId
+	s.waitingPlayFollow = follow
+
+	waitingExpiration := tools.Now().Add(WaitingPlayExpiration)
+	ntf := &outer.FasterRunPlayCardNtf{
+		WaitingEndAt:   waitingExpiration.UnixMilli(),
+		FollowPlay:     follow,
+		PlayingShortId: player.ShortId,
+	}
+	s.room.Broadcast(ntf)
+
+	s.actionTimer(waitingExpiration)
+}
+
 func (s *StatePlaying) getPlayerAndSeatE(shortId int64) (*fasterRunPlayer, int, outer.ERROR) {
 	player, seatIndex := s.findFasterRunPlayer(shortId)
 	if player == nil {
@@ -64,7 +102,7 @@ func (s *StatePlaying) cancelActionTimer() {
 }
 
 // 行动倒计时
-func (s *StatePlaying) actionTimer(expireAt time.Time, seats int) {
+func (s *StatePlaying) actionTimer(expireAt time.Time) {
 	s.cancelActionTimer()
 	s.actionTimerId = s.room.AddTimer(tools.XUID(), expireAt, func(dt time.Duration) {
 	})

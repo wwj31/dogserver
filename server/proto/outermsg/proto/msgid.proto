@@ -34,7 +34,7 @@ enum Msg {
     IdFasterRunPlayerReadyNtf = 380618607;
     IdFasterRunReadyNtf = 730116787;
     IdFasterRunDealNtf = 119725881;
-    IdFasterRunPlayingNtf = 1216242961;
+    IdFasterRunGameStartNtf = 1514861174;
     IdFasterRunPlayCardNtf = 1136484828;
     IdFasterRunSettlementNtf = 2110228871;
     IdSetRoleInfoReq = 58140470;// dispatch to player

@@ -61,11 +61,13 @@ type (
 		playerAutoReady     func(p *fasterRunPlayer, ready bool) //
 		scoreZeroOver       bool                                 // 因为有玩家没分了，而触发的结束
 
-		masterIndex      int                // 庄家位置 0，1，2
-		fasterRunPlayers []*fasterRunPlayer // 参与游戏的玩家
-		playRecords      []PlayCardsHistory // 出牌历史
-		gameCount        int                // 游戏的连续局数
-		lastWinShortId   int64              // 最后一局的赢家
+		masterIndex        int                // 庄家位置 0，1，2
+		fasterRunPlayers   []*fasterRunPlayer // 参与游戏的玩家
+		playRecords        []PlayCardsHistory // 出牌历史
+		gameCount          int                // 游戏的连续局数
+		lastWinShortId     int64              // 最后一局的赢家
+		waitingPlayShortId int64              // 当前等待的出牌人
+		waitingPlayFollow  bool               // 当前等待的出牌人是否是跟牌
 
 	}
 
