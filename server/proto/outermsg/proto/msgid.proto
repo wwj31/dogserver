@@ -31,6 +31,8 @@ enum Msg {
     IdFasterRunReadyRsp = 746203004;
     IdFasterRunPlayCardReq = 1153954008;// dispatch to gambling
     IdFasterRunPlayCardRsp = 919067375;
+    IdFasterRunPassReq = 965852276;// dispatch to gambling
+    IdFasterRunPassRsp = 1200738941;
     IdFasterRunPlayerReadyNtf = 380618607;
     IdFasterRunReadyNtf = 730116787;
     IdFasterRunDealNtf = 119725881;

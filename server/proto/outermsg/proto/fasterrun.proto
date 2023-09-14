@@ -64,6 +64,12 @@ message FasterRunPlayCardRsp {
     repeated int32 HandCards = 1; // 出牌成功后的最新手牌
 }
 
+// 过
+message FasterRunPassReq {// tag:gambling
+}
+message FasterRunPassRsp {
+}
+
 ////////////////////////////////////////////// 游戏通知 //////////////////////////////////////////////
 message FasterRunPlayerReadyNtf {// 房间内玩家准备、取消准备通知
     int64 ShortId = 1;

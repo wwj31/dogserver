@@ -42,9 +42,15 @@ func (s *StatePlaying) Handle(shortId int64, v any) (result any) {
 	s.Log().Infow("playing handle msg", "shortId", shortId, reflect.TypeOf(v).String(), v)
 
 	switch msg := v.(type) {
-	case *outer.FasterRunPlayCardReq: // 打牌
-		// TODO ...
+	case *outer.FasterRunPlayCardReq:
+		if err = s.play(player, int32ArrToPokerCards(msg.PlayCards)); err != outer.ERROR_OK {
+			return err
+		}
 		return &outer.FasterRunPlayCardRsp{HandCards: player.handCards.ToPB()}
+
+	case *outer.FasterRunPassReq: // 过
+		// TODO ...
+		return &outer.FasterRunPassRsp{}
 
 	default:
 		s.Log().Warnw("playing status has received an unknown message", "msg", reflect.TypeOf(msg).String())
@@ -52,6 +58,27 @@ func (s *StatePlaying) Handle(shortId int64, v any) (result any) {
 	return outer.ERROR_FASTERRUN_STATE_MSG_INVALID
 }
 
+// 打牌
+func (s *StatePlaying) play(player *fasterRunPlayer, cards PokerCards) outer.ERROR {
+	if len(cards) == 0 {
+		return outer.ERROR_FASTERRUN_PLAY_CARDS_LEN_EMPTY
+	}
+
+	// 检查是否轮到该玩家出牌
+	if s.waitingPlayShortId != player.ShortId {
+		return outer.ERROR_FASTERRUN_PLAY_CARDS_LEN_EMPTY
+	}
+
+	// 检查要打的牌是否全部在手牌中
+	if !player.handCards.CheckExist(cards...) {
+		s.Log().Warnw("play check exist failed",
+			"short", player.ShortId, "hand cards", player.handCards, "play cards", cards)
+		return outer.ERROR_FASTERRUN_PLAY_CARDS_MISS
+	}
+
+}
+
+// 下一位打牌的人
 func (s *StatePlaying) nextPlayer(seat int) {
 	player := s.fasterRunPlayers[seat]
 
@@ -59,7 +86,7 @@ func (s *StatePlaying) nextPlayer(seat int) {
 		latestPlay *PlayCardsHistory
 		follow     bool // 跟牌，还是牌权出牌
 	)
-	// 反着找最后一个出牌人
+	// 反着找最后一个出牌人，以此决定本次出牌是否有牌权
 	for i := len(s.playRecords) - 1; i >= 0; i-- {
 		record := s.playRecords[i]
 		if record.records.Type == CardsTypeUnknown {
@@ -125,4 +152,11 @@ func (s *StatePlaying) gameOver() bool {
 	}
 
 	return false
+}
+func int32ArrToPokerCards(cards []int32) PokerCards {
+	result := make(PokerCards, 0, len(cards))
+	for _, card := range cards {
+		result = append(result, PokerCard(card))
+	}
+	return result
 }

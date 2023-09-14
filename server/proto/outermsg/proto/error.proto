@@ -64,6 +64,9 @@ enum ERROR {
 
    // 跑得快
    FASTERRUN_STATE_MSG_INVALID           = 300; // 当前状态不受理此消息
+   FASTERRUN_PLAY_CARDS_LEN_EMPTY        = 301; // 请求打牌，发的牌是0张
+   FASTERRUN_PLAY_CARDS_MISS             = 302; // 传入手牌中不存在的牌
+   FASTERRUN_PLAY_NOT_YOUR_TURN          = 303; // 没有轮到你出牌
 }
 
 message FailRsp {

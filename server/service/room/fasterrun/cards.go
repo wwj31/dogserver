@@ -58,6 +58,21 @@ func (p PokerCards) PointCards(point int32, n ...int) PokerCards {
 	return newCards
 }
 
+// CheckExist 检查传入牌是否全部在本牌组中
+func (p PokerCards) CheckExist(cards ...PokerCard) bool {
+	kv := make(map[PokerCard]struct{}, len(cards))
+	for _, card := range cards {
+		kv[card] = struct{}{}
+	}
+
+	for _, card := range p {
+		if _, ok := kv[card]; !ok {
+			return false
+		}
+	}
+	return true
+}
+
 // ConvertStruct 转换成{point:num}
 func (p PokerCards) ConvertStruct() (result map[int32]int) {
 	result = map[int32]int{}
