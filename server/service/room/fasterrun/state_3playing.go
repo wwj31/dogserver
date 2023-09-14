@@ -117,12 +117,6 @@ func (s *StatePlaying) play(player *fasterRunPlayer, cards PokerCards) outer.ERR
 		playAt:     tools.Now(),
 	})
 
-	s.room.Broadcast(&outer.FasterRunPlayCardNtf{
-		WaitingEndAt:   0,
-		FollowPlay:     false,
-		PlayingShortId: 0,
-	})
-
 	seat := s.SeatIndex(player.ShortId)
 	s.nextPlayer(s.nextSeatIndex(seat), &s.playRecords[len(s.playRecords)-1])
 
@@ -147,20 +141,35 @@ func (s *StatePlaying) nextPlayer(seat int, lastPlayInfo *PlayCardsRecord) {
 		follow = true
 	}
 
-	// 如果出的是炸弹，并且转了一圈都没人能大，就结算一次
+	// 如果出的是炸弹，并且转了一圈都没人能大，就算炸弹赢分
+	var bombWinScore *outer.BombsWinScore
 	if lastValidPlay.shortId == player.ShortId && lastPlayInfo.cardsGroup.Type == Bombs {
-		// TODO ...炸弹赔分
+		score := s.bombWinScore()
+		var totalWinScore int64
+		loser := make(map[int32]int64)
+		for seatIdx, runPlayer := range s.fasterRunPlayers {
+			runPlayer.updateScore(-score)
+			loser[int32(seatIdx)] = score
+			player.updateScore(score)
+			totalWinScore += score
+		}
+
+		bombWinScore = &outer.BombsWinScore{
+			WinScore: totalWinScore,
+			Loser:    loser,
+		}
 	}
 
 	s.waitingPlayShortId = player.ShortId
 	s.waitingPlayFollow = follow
 
 	waitingExpiration := tools.Now().Add(WaitingPlayExpiration)
-	ntf := &outer.FasterRunPlayCardNtf{
+	ntf := &outer.FasterRunTurnNtf{
 		WaitingEndAt:   waitingExpiration.UnixMilli(),
 		FollowPlay:     follow,
 		PlayingShortId: player.ShortId,
 		PrevRecord:     lastPlayInfo.ToPB(),
+		BombsWin:       bombWinScore,
 	}
 	s.room.Broadcast(ntf)
 

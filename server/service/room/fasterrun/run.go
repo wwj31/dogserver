@@ -269,6 +269,29 @@ func (f *FasterRun) gameParams() *outer.FasterRunParams {
 	return f.room.GameParams.FasterRun
 }
 
+func (m *FasterRun) baseScore() int64 {
+	base := m.gameParams().BaseScore
+	if base == 0 {
+		base = 1
+	}
+
+	baseScoreTimes := m.gameParams().BaseScoreTimes
+	if baseScoreTimes == 0 {
+		baseScoreTimes = 1.0
+	}
+
+	return int64(float32(base*1000) * baseScoreTimes)
+}
+
+func (m *FasterRun) bombWinScore() int64 {
+	base := m.gameParams().BaseScore
+	if base == 0 {
+		base = 1
+	}
+
+	return int64(float32(base*1000) * 5)
+}
+
 func (f *FasterRun) clear() {
 	// 重置玩家数据
 	for i := 0; i < f.playerNumber(); i++ {

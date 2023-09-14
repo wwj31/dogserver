@@ -92,18 +92,25 @@ message FasterRunGameStartNtf {
 }
 
 // 玩家轮动通知
-message FasterRunPlayCardNtf {
-    int64          WaitingEndAt        = 1; // 等待出牌操作结束时间(毫秒)
-    bool           FollowPlay          = 2; // true.跟牌、false.牌权出牌
-    int64          PlayingShortId      = 3; // 当前需要出牌的人
-    PlayCardsRecord PrevRecord         = 4; // 上一次出牌的人,庄家首次为null
+message FasterRunTurnNtf {
+    int64           WaitingEndAt   = 1; // 等待出牌操作结束时间(毫秒)
+    bool            FollowPlay     = 2; // true.跟牌、false.牌权出牌
+    int64           PlayingShortId = 3; // 当前需要出牌的人
+    PlayCardsRecord PrevRecord     = 4; // 上家的出牌信息,庄家首次为null
+    BombsWinScore   BombsWin       = 5; // 炸弹赢的分
+}
+
+// 炸弹赢的分
+message BombsWinScore {
+    int64 WinScore          = 2; // 赢的分
+    map<int32, int64> Loser = 1; // map<输分座位，输的分> 值为正
 }
 
 // 结算玩家数据
 message FasterRunSettlementPlayerData{
-    FasterRunPlayerInfo Player            = 1; //
-    int32 BombsCount                      = 2; // 出过几次炸弹
-    int64 TotalScore                      = 3; // 总输赢 负数为输
+    FasterRunPlayerInfo Player   = 1; //
+    int32 BombsCount             = 2; // 出过几次炸弹
+    int64 TotalScore             = 3; // 总输赢 负数为输
 }
 
 // 结算通知
