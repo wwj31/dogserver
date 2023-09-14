@@ -99,6 +99,18 @@ func (f *FasterRun) playerNumber() int {
 	return 0
 }
 
+// 获得最后一次有效的出牌
+func (f *FasterRun) lastValidPlayCards() *PlayCardsHistory {
+	for i := len(f.playRecords) - 1; i >= 0; i-- {
+		record := f.playRecords[i]
+		if record.records.Type == CardsTypeUnknown {
+			continue
+		}
+		return &record
+	}
+	return nil
+}
+
 func (f *FasterRun) Data(shortId int64) proto.Message {
 	var records []*outer.PlayCardsHistory
 	for _, record := range f.playRecords {

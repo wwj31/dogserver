@@ -71,9 +71,35 @@ func (s *StatePlaying) play(player *fasterRunPlayer, cards PokerCards) outer.ERR
 
 	// 检查要打的牌是否全部在手牌中
 	if !player.handCards.CheckExist(cards...) {
-		s.Log().Warnw("play check exist failed",
-			"short", player.ShortId, "hand cards", player.handCards, "play cards", cards)
+		s.Log().Warnw("play check exist failed", "short", player.ShortId,
+			"hand cards", player.handCards, "play cards", cards)
 		return outer.ERROR_FASTERRUN_PLAY_CARDS_MISS
+	}
+
+	// 分析牌型，检查牌型是否有效
+	playCardsGroup := cards.AnalyzeCards(s.gameParams().AAAIsBombs)
+	if playCardsGroup.Type == CardsTypeUnknown {
+		return outer.ERROR_FASTERRUN_PLAY_CARDS_INVALID
+	}
+
+	// 如果需要跟牌，检查牌型是否符合跟牌牌型
+	lastValidPlayCards := s.lastValidPlayCards()
+	if lastValidPlayCards != nil && lastValidPlayCards.shortId != player.ShortId {
+		// 跟牌牌型不同
+		if playCardsGroup.Type != lastValidPlayCards.records.Type {
+			return outer.ERROR_FASTERRUN_PLAY_CARDS_SHOULD_BE_FOLLOW
+		}
+
+		// 主牌必须比跟的牌大
+		if !playCardsGroup.Bigger(lastValidPlayCards.records) {
+			return outer.ERROR_FASTERRUN_PLAY_CARDS_SHOULD_BE_BIGGER
+		}
+
+		// 副牌数量不匹配
+		if len(playCardsGroup.SideCards) != len(lastValidPlayCards.records.SideCards) {
+			return outer.ERROR_FASTERRUN_PLAY_CARDS_SIDE_CARD_LEN_ERR
+		}
+
 	}
 
 }
@@ -82,21 +108,12 @@ func (s *StatePlaying) play(player *fasterRunPlayer, cards PokerCards) outer.ERR
 func (s *StatePlaying) nextPlayer(seat int) {
 	player := s.fasterRunPlayers[seat]
 
-	var (
-		latestPlay *PlayCardsHistory
-		follow     bool // 跟牌，还是牌权出牌
-	)
-	// 反着找最后一个出牌人，以此决定本次出牌是否有牌权
-	for i := len(s.playRecords) - 1; i >= 0; i-- {
-		record := s.playRecords[i]
-		if record.records.Type == CardsTypeUnknown {
-			continue
-		}
-		latestPlay = &record
-	}
+	var follow bool // 跟牌，还是牌权出牌
 
+	// 找到最后一次有效出牌，以此决定本次出牌是否有牌权
 	// 如果最后一个出牌人不是自己，就需要跟牌
-	if latestPlay != nil && latestPlay.shortId != player.ShortId {
+	lastValidPlay := s.lastValidPlayCards()
+	if lastValidPlay != nil && lastValidPlay.shortId != player.ShortId {
 		follow = true
 	}
 
