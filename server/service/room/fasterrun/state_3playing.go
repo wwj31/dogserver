@@ -2,6 +2,8 @@ package fasterrun
 
 import (
 	"reflect"
+	"server/common"
+	"sort"
 	"time"
 
 	"github.com/wwj31/dogactor/tools"
@@ -49,13 +51,32 @@ func (s *StatePlaying) Handle(shortId int64, v any) (result any) {
 		return &outer.FasterRunPlayCardRsp{HandCards: player.handCards.ToPB()}
 
 	case *outer.FasterRunPassReq: // 过
-		// TODO ...
+		if !s.waitingPlayFollow {
+			return outer.ERROR_FASTERRUN_PLAY_IS_YOUR_TURN
+		}
+
+		if bigger := player.handCards.FindBigger(s.lastValidPlayCards().cardsGroup); len(bigger) > 0 {
+			return outer.ERROR_FASTERRUN_PLAY_EXIST_BIGGER_CANNOT_PASS
+		}
+		s.pass(player)
 		return &outer.FasterRunPassRsp{}
 
 	default:
 		s.Log().Warnw("playing status has received an unknown message", "msg", reflect.TypeOf(msg).String())
 	}
 	return outer.ERROR_FASTERRUN_STATE_MSG_INVALID
+}
+
+// 过牌
+func (s *StatePlaying) pass(player *fasterRunPlayer) {
+	s.playRecords = append(s.playRecords, PlayCardsRecord{
+		shortId: player.ShortId,
+		follow:  true,
+		playAt:  tools.Now(),
+	})
+
+	seat := s.SeatIndex(player.ShortId)
+	s.nextPlayer(s.nextSeatIndex(seat), &s.playRecords[len(s.playRecords)-1])
 }
 
 // 打牌
@@ -74,6 +95,10 @@ func (s *StatePlaying) play(player *fasterRunPlayer, cards PokerCards) outer.ERR
 		s.Log().Warnw("play check exist failed", "short", player.ShortId,
 			"hand cards", player.handCards, "play cards", cards)
 		return outer.ERROR_FASTERRUN_PLAY_CARDS_MISS
+	}
+
+	if len(s.playRecords) == 0 && !s.checkFirstSpade3(cards) {
+		return outer.ERROR_FASTERRUN_PLAY_FIRST_SPADE3_LIMIT
 	}
 
 	// 分析牌型，检查牌型是否有效
@@ -144,10 +169,14 @@ func (s *StatePlaying) nextPlayer(seat int, lastPlayInfo *PlayCardsRecord) {
 	// 如果出的是炸弹，并且转了一圈都没人能大，就算炸弹赢分
 	var bombWinScore *outer.BombsWinScore
 	if lastValidPlay.shortId == player.ShortId && lastPlayInfo.cardsGroup.Type == Bombs {
-		score := s.bombWinScore()
 		var totalWinScore int64
 		loser := make(map[int32]int64)
 		for seatIdx, runPlayer := range s.fasterRunPlayers {
+			score := s.bombWinScore()
+			// 不允许负分，能减多少减多少
+			if !s.gameParams().AllowScoreSmallZero && runPlayer.score < score {
+				score = common.Min(runPlayer.score, score)
+			}
 			runPlayer.updateScore(-score)
 			loser[int32(seatIdx)] = score
 			player.updateScore(score)
@@ -160,6 +189,7 @@ func (s *StatePlaying) nextPlayer(seat int, lastPlayInfo *PlayCardsRecord) {
 		}
 	}
 
+	// 本次需要出牌的玩家
 	s.waitingPlayShortId = player.ShortId
 	s.waitingPlayFollow = follow
 
@@ -176,6 +206,18 @@ func (s *StatePlaying) nextPlayer(seat int, lastPlayInfo *PlayCardsRecord) {
 	s.actionTimer(waitingExpiration)
 
 	s.Log().Infow("next play ", "seat", seat, "shortId", player.ShortId, "follow", follow, "prev record", lastPlayInfo)
+}
+
+// 首局先出黑桃三检测
+func (s *StatePlaying) checkFirstSpade3(cards PokerCards) bool {
+	if s.gameParams().FirstSpades3 && (s.gameParams().DecideMasterType == 1 || s.gameParams().DecideMasterType == 3) {
+		for _, card := range cards {
+			if card == Spades_3 {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func (s *StatePlaying) getPlayerAndSeatE(shortId int64) (*fasterRunPlayer, int, outer.ERROR) {
@@ -196,6 +238,26 @@ func (s *StatePlaying) cancelActionTimer() {
 func (s *StatePlaying) actionTimer(expireAt time.Time) {
 	s.cancelActionTimer()
 	s.actionTimerId = s.room.AddTimer(tools.XUID(), expireAt, func(dt time.Duration) {
+		player, _ := s.findFasterRunPlayer(s.waitingPlayShortId)
+		var cards PokerCards
+		if s.waitingPlayFollow {
+			latest := s.lastValidPlayCards()
+			biggerCardGroups := player.handCards.FindBigger(latest.cardsGroup)
+			if len(biggerCardGroups) == 0 {
+
+			}
+			sort.Slice(biggerCardGroups, func(i, j int) bool {
+				return biggerCardGroups[i].Cards[0].Point() < biggerCardGroups[i].Cards[0].Point()
+			})
+			cards = append(biggerCardGroups[0].Cards, biggerCardGroups[0].SideCards...)
+		} else {
+			cards = player.handCards.SideCards(1)
+			if len(cards) == 0 {
+				cards = PokerCards{player.handCards[0]}
+			}
+		}
+
+		s.play(player, cards)
 	})
 }
 
@@ -211,6 +273,10 @@ func (s *StatePlaying) gameOver() bool {
 		// NOTE: 玩家每把结算后，会更新playerInfo，所以每把的GoldLine是固定的
 		if player.score <= player.GetGoldLine() {
 			s.scoreZeroOver = true
+			return true
+		}
+
+		if !s.gameParams().AllowScoreSmallZero && player.score <= 0 {
 			return true
 		}
 	}

@@ -44,13 +44,14 @@ type (
 	// 跑得快 参与游戏的玩家数据
 	fasterRunPlayer struct {
 		*room.Player
-		score         int64
-		totalWinScore int64 // 单局的总输赢
-		ready         bool
-		readyExpireAt time.Time
-		handCards     PokerCards
-		BombsCount    int32
-		finalStatsMsg *outer.FasterRunFinialPlayerInfo
+		score          int64
+		totalWinScore  int64 // 单局的总输赢
+		ready          bool
+		readyExpireAt  time.Time
+		handCards      PokerCards
+		BombsCount     int32
+		doubleHearts10 bool // 红桃10 翻倍
+		finalStatsMsg  *outer.FasterRunFinialPlayerInfo
 	}
 
 	FasterRun struct {

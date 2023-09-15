@@ -78,14 +78,17 @@ const (
 	ERROR_MAHJONG_REBATE_PARAM_LIMIT_INVALID  ERROR = 222 // 麻将抽水参数设置错误
 	ERROR_MAHJONG_REBATE_PARAM_RANGE_INVALID  ERROR = 223 // 麻将抽水范围参数设置有交叉
 	// 跑得快
-	ERROR_FASTERRUN_STATE_MSG_INVALID            ERROR = 300 // 当前状态不受理此消息
-	ERROR_FASTERRUN_PLAY_CARDS_LEN_EMPTY         ERROR = 301 // 请求打牌，发的牌是0张
-	ERROR_FASTERRUN_PLAY_CARDS_MISS              ERROR = 302 // 传入手牌中不存在的牌
-	ERROR_FASTERRUN_PLAY_NOT_YOUR_TURN           ERROR = 303 // 没有轮到你出牌
-	ERROR_FASTERRUN_PLAY_CARDS_INVALID           ERROR = 304 // 无效的出牌牌型
-	ERROR_FASTERRUN_PLAY_CARDS_SHOULD_BE_FOLLOW  ERROR = 305 // 出牌牌型不匹配
-	ERROR_FASTERRUN_PLAY_CARDS_SHOULD_BE_BIGGER  ERROR = 306 // 必须出更大的牌
-	ERROR_FASTERRUN_PLAY_CARDS_SIDE_CARD_LEN_ERR ERROR = 307 // 副牌数量不对
+	ERROR_FASTERRUN_STATE_MSG_INVALID             ERROR = 300 // 当前状态不受理此消息
+	ERROR_FASTERRUN_PLAY_CARDS_LEN_EMPTY          ERROR = 301 // 请求打牌，发的牌是0张
+	ERROR_FASTERRUN_PLAY_CARDS_MISS               ERROR = 302 // 传入手牌中不存在的牌
+	ERROR_FASTERRUN_PLAY_NOT_YOUR_TURN            ERROR = 303 // 没有轮到你出牌
+	ERROR_FASTERRUN_PLAY_CARDS_INVALID            ERROR = 304 // 无效的出牌牌型
+	ERROR_FASTERRUN_PLAY_CARDS_SHOULD_BE_FOLLOW   ERROR = 305 // 出牌牌型不匹配
+	ERROR_FASTERRUN_PLAY_CARDS_SHOULD_BE_BIGGER   ERROR = 306 // 必须出更大的牌
+	ERROR_FASTERRUN_PLAY_CARDS_SIDE_CARD_LEN_ERR  ERROR = 307 // 副牌数量不对
+	ERROR_FASTERRUN_PLAY_EXIST_BIGGER_CANNOT_PASS ERROR = 308 // 存在更大的牌，不能过
+	ERROR_FASTERRUN_PLAY_FIRST_SPADE3_LIMIT       ERROR = 309 // 开启了手牌必带黑桃3，请打黑桃3
+	ERROR_FASTERRUN_PLAY_IS_YOUR_TURN             ERROR = 310 // 你的牌权出牌，不能过
 )
 
 // Enum value maps for ERROR.
@@ -150,67 +153,73 @@ var (
 		305: "FASTERRUN_PLAY_CARDS_SHOULD_BE_FOLLOW",
 		306: "FASTERRUN_PLAY_CARDS_SHOULD_BE_BIGGER",
 		307: "FASTERRUN_PLAY_CARDS_SIDE_CARD_LEN_ERR",
+		308: "FASTERRUN_PLAY_EXIST_BIGGER_CANNOT_PASS",
+		309: "FASTERRUN_PLAY_FIRST_SPADE3_LIMIT",
+		310: "FASTERRUN_PLAY_IS_YOUR_TURN",
 	}
 	ERROR_value = map[string]int32{
-		"OK":                                     0,
-		"FAILED":                                 1,
-		"MSG_REQ_PARAM_INVALID":                  2,
-		"LOGIN_TOKEN_INVALID":                    3,
-		"REPEAT_LOGIN":                           4,
-		"INVALID_PHONE_FORMAT":                   5,
-		"INVALID_PASSWORD_FORMAT":                6,
-		"PHONE_WAS_BOUND":                        7,
-		"PHONE_PASSWORD_IS_EMPTY":                8,
-		"PHONE_PASSWORD_ERROR":                   9,
-		"PHONE_NOT_FOUND":                        10,
-		"NEW_ACCOUNT_FAILED":                     11,
-		"GOLD_NOT_ENOUGH":                        12,
-		"NAME_LEN_OUT_OF_RANGE":                  13,
-		"MODIFY_PASSWORD_NOT_PHONE":              14,
-		"CAN_NOT_FIND_PLAYER_INFO":               15,
-		"PLAYER_NOT_IN_ALLIANCE":                 56,
-		"PLAYER_POSITION_LIMIT":                  57,
-		"PLAYER_NOT_IN_CORRECT_ALLIANCE":         58,
-		"CAN_NOT_SET_HIGHER_POSITION":            59,
-		"CAN_NOT_SET_NOT_IN_DOWN_POSITION":       60,
-		"TARGET_IS_NOT_DOWN":                     61,
-		"PLAYER_ALREADY_IN_ALLIANCE":             62,
-		"PLAYER_ALREADY_HAS_UP":                  63,
-		"AGENT_SET_REBATE_ONLY_HIGHER":           64,
-		"AGENT_SET_REBATE_ONLY_OUT_OF_RANGE":     65,
-		"PLAYER_ALREADY_IN_ROOM":                 104,
-		"ROOM_HAS_PLAYER_CAN_NOT_DISBAND":        105,
-		"ROOM_WAS_FULL_CAN_NOT_ENTER":            106,
-		"PLAYER_NOT_IN_ROOM":                     107,
-		"ROOM_CAN_NOT_ENTER":                     108,
-		"ROOM_CAN_NOT_LEAVE":                     109,
-		"ROOM_CAN_NOT_READY":                     100,
-		"ROOM_CAN_NOT_SET_GOLD":                  101,
-		"ROOM_PLAYER_NOT_IN_GAME":                102,
-		"ROOM_CANNOT_ENTER_WITH_GOLD_LINE":       103,
-		"MAHJONG_EXCHANGE3_LEN_ERROR":            200,
-		"MAHJONG_EXCHANGE3_INDEX_ERROR":          201,
-		"MAHJONG_EXCHANGE3_INDEX_EQUAL":          202,
-		"MAHJONG_EXCHANGE3_OPERATED":             203,
-		"MAHJONG_EXCHANGE3_COLOR_ERROR":          204,
-		"MAHJONG_ACTION_PLAYER_NOT_MATCH":        205,
-		"MAHJONG_ACTION_PLAYER_NOT_OPERA":        206,
-		"MAHJONG_HU_INVALID":                     207,
-		"MAHJONG_MUST_OUT_IGNORE_COLOR":          208,
-		"MAHJONG_STATE_MSG_INVALID":              209,
-		"MAHJONG_SPARE_CARDS_WAS_EMPTY":          210,
-		"MAHJONG_REBATE_PARAM_MINMAX_INVALID":    220,
-		"MAHJONG_REBATE_PARAM_REBATE_INVALID":    221,
-		"MAHJONG_REBATE_PARAM_LIMIT_INVALID":     222,
-		"MAHJONG_REBATE_PARAM_RANGE_INVALID":     223,
-		"FASTERRUN_STATE_MSG_INVALID":            300,
-		"FASTERRUN_PLAY_CARDS_LEN_EMPTY":         301,
-		"FASTERRUN_PLAY_CARDS_MISS":              302,
-		"FASTERRUN_PLAY_NOT_YOUR_TURN":           303,
-		"FASTERRUN_PLAY_CARDS_INVALID":           304,
-		"FASTERRUN_PLAY_CARDS_SHOULD_BE_FOLLOW":  305,
-		"FASTERRUN_PLAY_CARDS_SHOULD_BE_BIGGER":  306,
-		"FASTERRUN_PLAY_CARDS_SIDE_CARD_LEN_ERR": 307,
+		"OK":                                      0,
+		"FAILED":                                  1,
+		"MSG_REQ_PARAM_INVALID":                   2,
+		"LOGIN_TOKEN_INVALID":                     3,
+		"REPEAT_LOGIN":                            4,
+		"INVALID_PHONE_FORMAT":                    5,
+		"INVALID_PASSWORD_FORMAT":                 6,
+		"PHONE_WAS_BOUND":                         7,
+		"PHONE_PASSWORD_IS_EMPTY":                 8,
+		"PHONE_PASSWORD_ERROR":                    9,
+		"PHONE_NOT_FOUND":                         10,
+		"NEW_ACCOUNT_FAILED":                      11,
+		"GOLD_NOT_ENOUGH":                         12,
+		"NAME_LEN_OUT_OF_RANGE":                   13,
+		"MODIFY_PASSWORD_NOT_PHONE":               14,
+		"CAN_NOT_FIND_PLAYER_INFO":                15,
+		"PLAYER_NOT_IN_ALLIANCE":                  56,
+		"PLAYER_POSITION_LIMIT":                   57,
+		"PLAYER_NOT_IN_CORRECT_ALLIANCE":          58,
+		"CAN_NOT_SET_HIGHER_POSITION":             59,
+		"CAN_NOT_SET_NOT_IN_DOWN_POSITION":        60,
+		"TARGET_IS_NOT_DOWN":                      61,
+		"PLAYER_ALREADY_IN_ALLIANCE":              62,
+		"PLAYER_ALREADY_HAS_UP":                   63,
+		"AGENT_SET_REBATE_ONLY_HIGHER":            64,
+		"AGENT_SET_REBATE_ONLY_OUT_OF_RANGE":      65,
+		"PLAYER_ALREADY_IN_ROOM":                  104,
+		"ROOM_HAS_PLAYER_CAN_NOT_DISBAND":         105,
+		"ROOM_WAS_FULL_CAN_NOT_ENTER":             106,
+		"PLAYER_NOT_IN_ROOM":                      107,
+		"ROOM_CAN_NOT_ENTER":                      108,
+		"ROOM_CAN_NOT_LEAVE":                      109,
+		"ROOM_CAN_NOT_READY":                      100,
+		"ROOM_CAN_NOT_SET_GOLD":                   101,
+		"ROOM_PLAYER_NOT_IN_GAME":                 102,
+		"ROOM_CANNOT_ENTER_WITH_GOLD_LINE":        103,
+		"MAHJONG_EXCHANGE3_LEN_ERROR":             200,
+		"MAHJONG_EXCHANGE3_INDEX_ERROR":           201,
+		"MAHJONG_EXCHANGE3_INDEX_EQUAL":           202,
+		"MAHJONG_EXCHANGE3_OPERATED":              203,
+		"MAHJONG_EXCHANGE3_COLOR_ERROR":           204,
+		"MAHJONG_ACTION_PLAYER_NOT_MATCH":         205,
+		"MAHJONG_ACTION_PLAYER_NOT_OPERA":         206,
+		"MAHJONG_HU_INVALID":                      207,
+		"MAHJONG_MUST_OUT_IGNORE_COLOR":           208,
+		"MAHJONG_STATE_MSG_INVALID":               209,
+		"MAHJONG_SPARE_CARDS_WAS_EMPTY":           210,
+		"MAHJONG_REBATE_PARAM_MINMAX_INVALID":     220,
+		"MAHJONG_REBATE_PARAM_REBATE_INVALID":     221,
+		"MAHJONG_REBATE_PARAM_LIMIT_INVALID":      222,
+		"MAHJONG_REBATE_PARAM_RANGE_INVALID":      223,
+		"FASTERRUN_STATE_MSG_INVALID":             300,
+		"FASTERRUN_PLAY_CARDS_LEN_EMPTY":          301,
+		"FASTERRUN_PLAY_CARDS_MISS":               302,
+		"FASTERRUN_PLAY_NOT_YOUR_TURN":            303,
+		"FASTERRUN_PLAY_CARDS_INVALID":            304,
+		"FASTERRUN_PLAY_CARDS_SHOULD_BE_FOLLOW":   305,
+		"FASTERRUN_PLAY_CARDS_SHOULD_BE_BIGGER":   306,
+		"FASTERRUN_PLAY_CARDS_SIDE_CARD_LEN_ERR":  307,
+		"FASTERRUN_PLAY_EXIST_BIGGER_CANNOT_PASS": 308,
+		"FASTERRUN_PLAY_FIRST_SPADE3_LIMIT":       309,
+		"FASTERRUN_PLAY_IS_YOUR_TURN":             310,
 	}
 )
 
@@ -343,7 +352,7 @@ var file_error_proto_rawDesc = []byte{
 	0x2e, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x45, 0x52, 0x52, 0x4f, 0x52, 0x52, 0x05, 0x45, 0x72,
 	0x72, 0x6f, 0x72, 0x12, 0x12, 0x0a, 0x04, 0x69, 0x6e, 0x66, 0x6f, 0x18, 0x02, 0x20, 0x01, 0x28,
 	0x09, 0x52, 0x04, 0x69, 0x6e, 0x66, 0x6f, 0x22, 0x09, 0x0a, 0x07, 0x55, 0x6e, 0x6b, 0x6e, 0x6f,
-	0x77, 0x6e, 0x2a, 0xb1, 0x0e, 0x0a, 0x05, 0x45, 0x52, 0x52, 0x4f, 0x52, 0x12, 0x06, 0x0a, 0x02,
+	0x77, 0x6e, 0x2a, 0xa9, 0x0f, 0x0a, 0x05, 0x45, 0x52, 0x52, 0x4f, 0x52, 0x12, 0x06, 0x0a, 0x02,
 	0x4f, 0x4b, 0x10, 0x00, 0x12, 0x0a, 0x0a, 0x06, 0x46, 0x41, 0x49, 0x4c, 0x45, 0x44, 0x10, 0x01,
 	0x12, 0x19, 0x0a, 0x15, 0x4d, 0x53, 0x47, 0x5f, 0x52, 0x45, 0x51, 0x5f, 0x50, 0x41, 0x52, 0x41,
 	0x4d, 0x5f, 0x49, 0x4e, 0x56, 0x41, 0x4c, 0x49, 0x44, 0x10, 0x02, 0x12, 0x17, 0x0a, 0x13, 0x4c,
@@ -458,8 +467,15 @@ var file_error_proto_rawDesc = []byte{
 	0x42, 0x49, 0x47, 0x47, 0x45, 0x52, 0x10, 0xb2, 0x02, 0x12, 0x2b, 0x0a, 0x26, 0x46, 0x41, 0x53,
 	0x54, 0x45, 0x52, 0x52, 0x55, 0x4e, 0x5f, 0x50, 0x4c, 0x41, 0x59, 0x5f, 0x43, 0x41, 0x52, 0x44,
 	0x53, 0x5f, 0x53, 0x49, 0x44, 0x45, 0x5f, 0x43, 0x41, 0x52, 0x44, 0x5f, 0x4c, 0x45, 0x4e, 0x5f,
-	0x45, 0x52, 0x52, 0x10, 0xb3, 0x02, 0x42, 0x08, 0x5a, 0x06, 0x2f, 0x6f, 0x75, 0x74, 0x65, 0x72,
-	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x45, 0x52, 0x52, 0x10, 0xb3, 0x02, 0x12, 0x2c, 0x0a, 0x27, 0x46, 0x41, 0x53, 0x54, 0x45, 0x52,
+	0x52, 0x55, 0x4e, 0x5f, 0x50, 0x4c, 0x41, 0x59, 0x5f, 0x45, 0x58, 0x49, 0x53, 0x54, 0x5f, 0x42,
+	0x49, 0x47, 0x47, 0x45, 0x52, 0x5f, 0x43, 0x41, 0x4e, 0x4e, 0x4f, 0x54, 0x5f, 0x50, 0x41, 0x53,
+	0x53, 0x10, 0xb4, 0x02, 0x12, 0x26, 0x0a, 0x21, 0x46, 0x41, 0x53, 0x54, 0x45, 0x52, 0x52, 0x55,
+	0x4e, 0x5f, 0x50, 0x4c, 0x41, 0x59, 0x5f, 0x46, 0x49, 0x52, 0x53, 0x54, 0x5f, 0x53, 0x50, 0x41,
+	0x44, 0x45, 0x33, 0x5f, 0x4c, 0x49, 0x4d, 0x49, 0x54, 0x10, 0xb5, 0x02, 0x12, 0x20, 0x0a, 0x1b,
+	0x46, 0x41, 0x53, 0x54, 0x45, 0x52, 0x52, 0x55, 0x4e, 0x5f, 0x50, 0x4c, 0x41, 0x59, 0x5f, 0x49,
+	0x53, 0x5f, 0x59, 0x4f, 0x55, 0x52, 0x5f, 0x54, 0x55, 0x52, 0x4e, 0x10, 0xb6, 0x02, 0x42, 0x08,
+	0x5a, 0x06, 0x2f, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (

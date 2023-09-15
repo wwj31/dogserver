@@ -63,14 +63,17 @@ enum ERROR {
 
 
    // 跑得快
-   FASTERRUN_STATE_MSG_INVALID            = 300; // 当前状态不受理此消息
-   FASTERRUN_PLAY_CARDS_LEN_EMPTY         = 301; // 请求打牌，发的牌是0张
-   FASTERRUN_PLAY_CARDS_MISS              = 302; // 传入手牌中不存在的牌
-   FASTERRUN_PLAY_NOT_YOUR_TURN           = 303; // 没有轮到你出牌
-   FASTERRUN_PLAY_CARDS_INVALID           = 304; // 无效的出牌牌型
-   FASTERRUN_PLAY_CARDS_SHOULD_BE_FOLLOW  = 305; // 出牌牌型不匹配
-   FASTERRUN_PLAY_CARDS_SHOULD_BE_BIGGER  = 306; // 必须出更大的牌
-   FASTERRUN_PLAY_CARDS_SIDE_CARD_LEN_ERR = 307; // 副牌数量不对
+   FASTERRUN_STATE_MSG_INVALID             = 300; // 当前状态不受理此消息
+   FASTERRUN_PLAY_CARDS_LEN_EMPTY          = 301; // 请求打牌，发的牌是0张
+   FASTERRUN_PLAY_CARDS_MISS               = 302; // 传入手牌中不存在的牌
+   FASTERRUN_PLAY_NOT_YOUR_TURN            = 303; // 没有轮到你出牌
+   FASTERRUN_PLAY_CARDS_INVALID            = 304; // 无效的出牌牌型
+   FASTERRUN_PLAY_CARDS_SHOULD_BE_FOLLOW   = 305; // 出牌牌型不匹配
+   FASTERRUN_PLAY_CARDS_SHOULD_BE_BIGGER   = 306; // 必须出更大的牌
+   FASTERRUN_PLAY_CARDS_SIDE_CARD_LEN_ERR  = 307; // 副牌数量不对
+   FASTERRUN_PLAY_EXIST_BIGGER_CANNOT_PASS = 308; // 存在更大的牌，不能过
+   FASTERRUN_PLAY_FIRST_SPADE3_LIMIT       = 309; // 开启了手牌必带黑桃3，请打黑桃3
+   FASTERRUN_PLAY_IS_YOUR_TURN             = 310; // 你的牌权出牌，不能过
 }
 
 message FailRsp {
