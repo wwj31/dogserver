@@ -1,6 +1,7 @@
 package fasterrun
 
 import (
+	"fmt"
 	"time"
 
 	"server/common/log"
@@ -276,12 +277,7 @@ func (m *FasterRun) baseScore() int64 {
 		base = 1
 	}
 
-	baseScoreTimes := m.gameParams().BaseScoreTimes
-	if baseScoreTimes == 0 {
-		baseScoreTimes = 1.0
-	}
-
-	return int64(float32(base*1000) * baseScoreTimes)
+	return int64(base * 1000)
 }
 
 func (m *FasterRun) bombWinScore() int64 {
@@ -325,7 +321,17 @@ func (m *fasterRunPlayer) updateScore(val int64) {
 	m.finalStatsMsg.TotalScore += val
 }
 
+func (p *PlayCardsRecord) String() string {
+	if p == nil {
+		return ""
+	}
+	return fmt.Sprintf("{short:%v follow:%v cardsGroup:%v playAt:%v }", p.shortId, p.follow, p.cardsGroup, p.playAt)
+}
 func (p *PlayCardsRecord) ToPB() *outer.PlayCardsRecord {
+	if p == nil {
+		return nil
+	}
+
 	return &outer.PlayCardsRecord{
 		ShortId:    p.shortId,
 		Follow:     p.follow,

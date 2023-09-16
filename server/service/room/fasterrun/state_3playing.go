@@ -87,6 +87,8 @@ func (s *StatePlaying) play(player *fasterRunPlayer, cards PokerCards) outer.ERR
 
 	// 检查是否轮到该玩家出牌
 	if s.waitingPlayShortId != player.ShortId {
+		s.Log().Warnw("play check s.waitingPlayShortId != player.ShortId", "waitingShortId", s.waitingPlayShortId,
+			"shortId", player.ShortId)
 		return outer.ERROR_FASTERRUN_PLAY_CARDS_LEN_EMPTY
 	}
 
@@ -98,6 +100,8 @@ func (s *StatePlaying) play(player *fasterRunPlayer, cards PokerCards) outer.ERR
 	}
 
 	if len(s.playRecords) == 0 && !s.checkFirstSpade3(cards) {
+		s.Log().Warnw("play checkFirstSpade3 failed", "short", player.ShortId,
+			"hand cards", player.handCards, "play cards", cards)
 		return outer.ERROR_FASTERRUN_PLAY_FIRST_SPADE3_LIMIT
 	}
 
@@ -170,7 +174,7 @@ func (s *StatePlaying) nextPlayer(seat int, lastPlayInfo *PlayCardsRecord) {
 
 	// 如果出的是炸弹，并且转了一圈都没人能大，就算炸弹赢分
 	var bombWinScore *outer.BombsWinScore
-	if lastValidPlay.shortId == player.ShortId && lastPlayInfo.cardsGroup.Type == Bombs {
+	if lastPlayInfo != nil && lastValidPlay.shortId == player.ShortId && lastPlayInfo.cardsGroup.Type == Bombs {
 		var totalWinScore int64
 		loser := make(map[int32]int64)
 		for seatIdx, runPlayer := range s.fasterRunPlayers {
@@ -212,11 +216,17 @@ func (s *StatePlaying) nextPlayer(seat int, lastPlayInfo *PlayCardsRecord) {
 
 // 首局先出黑桃三检测
 func (s *StatePlaying) checkFirstSpade3(cards PokerCards) bool {
-	if s.gameParams().FirstSpades3 && (s.gameParams().DecideMasterType == 1 || s.gameParams().DecideMasterType == 3) {
-		for _, card := range cards {
-			if card == Spades_3 {
-				return true
-			}
+	if !s.gameParams().FirstSpades3 {
+		return true
+	}
+
+	if s.gameParams().DecideMasterType != 1 && s.gameParams().DecideMasterType != 3 {
+		return true
+	}
+
+	for _, card := range cards {
+		if card == Spades_3 {
+			return true
 		}
 	}
 	return false
@@ -240,6 +250,7 @@ func (s *StatePlaying) cancelActionTimer() {
 func (s *StatePlaying) actionTimer(expireAt time.Time) {
 	s.cancelActionTimer()
 	s.actionTimerId = s.room.AddTimer(tools.XUID(), expireAt, func(dt time.Duration) {
+		s.Log().Infow("player timeout", "shortId", s.waitingPlayShortId)
 		player, _ := s.findFasterRunPlayer(s.waitingPlayShortId)
 		var cards PokerCards
 		if s.waitingPlayFollow {
