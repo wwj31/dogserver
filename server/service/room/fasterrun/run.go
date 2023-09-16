@@ -20,7 +20,7 @@ import (
 const (
 	ReadyExpiration       = 20 * time.Second // 准备超时时间
 	DealExpiration        = 3 * time.Second  // 发牌状态持续时间
-	WaitingPlayExpiration = 20 * time.Second // 打牌等待持续时间
+	WaitingPlayExpiration = 10 * time.Second // 打牌等待持续时间
 	SettlementDuration    = 10 * time.Second // 结算持续时间
 )
 
@@ -271,8 +271,8 @@ func (f *FasterRun) gameParams() *outer.FasterRunParams {
 	return f.room.GameParams.FasterRun
 }
 
-func (m *FasterRun) baseScore() int64 {
-	base := m.gameParams().BaseScore
+func (f *FasterRun) baseScore() int64 {
+	base := f.gameParams().BaseScore
 	if base == 0 {
 		base = 1
 	}
@@ -280,8 +280,8 @@ func (m *FasterRun) baseScore() int64 {
 	return int64(base * 1000)
 }
 
-func (m *FasterRun) bombWinScore() int64 {
-	base := m.gameParams().BaseScore
+func (f *FasterRun) bombWinScore() int64 {
+	base := f.gameParams().BaseScore
 	if base == 0 {
 		base = 1
 	}
@@ -290,6 +290,11 @@ func (m *FasterRun) bombWinScore() int64 {
 }
 
 func (f *FasterRun) clear() {
+	f.playRecords = nil
+	f.scoreZeroOver = false
+	f.waitingPlayShortId = 0
+	f.waitingPlayFollow = false
+
 	// 重置玩家数据
 	for i := 0; i < f.playerNumber(); i++ {
 		gamer := f.fasterRunPlayers[i]

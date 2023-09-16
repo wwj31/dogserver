@@ -76,6 +76,7 @@ func (s *StatePlaying) pass(player *fasterRunPlayer) {
 	})
 
 	seat := s.SeatIndex(player.ShortId)
+	s.Log().Infow("pass", "seat", seat, "shortId", player.ShortId)
 	s.nextPlayer(s.nextSeatIndex(seat), &s.playRecords[len(s.playRecords)-1])
 }
 
@@ -147,8 +148,9 @@ func (s *StatePlaying) play(player *fasterRunPlayer, cards PokerCards) outer.ERR
 		cardsGroup: playCardsGroup,
 		playAt:     tools.Now(),
 	})
-
 	seat := s.SeatIndex(player.ShortId)
+
+	s.Log().Infow("play cards", "seat", seat, "short", player.ShortId, "play", cards, "hand", player.handCards)
 	s.nextPlayer(s.nextSeatIndex(seat), &s.playRecords[len(s.playRecords)-1])
 
 	return outer.ERROR_OK
@@ -211,7 +213,8 @@ func (s *StatePlaying) nextPlayer(seat int, lastPlayInfo *PlayCardsRecord) {
 
 	s.actionTimer(waitingExpiration)
 
-	s.Log().Infow("next play ", "seat", seat, "shortId", player.ShortId, "follow", follow, "prev record", lastPlayInfo)
+	s.Log().Infow("next player ", "seat", seat, "shortId", player.ShortId, "follow", follow, "hand cards", player.handCards, "prev play", lastPlayInfo)
+	s.Log().Infof(" ")
 }
 
 // 首局先出黑桃三检测
@@ -257,8 +260,10 @@ func (s *StatePlaying) actionTimer(expireAt time.Time) {
 			latest := s.lastValidPlayCards()
 			biggerCardGroups := player.handCards.FindBigger(latest.cardsGroup)
 			if len(biggerCardGroups) == 0 {
-
+				s.pass(player)
+				return
 			}
+
 			sort.Slice(biggerCardGroups, func(i, j int) bool {
 				return biggerCardGroups[i].Cards[0].Point() < biggerCardGroups[i].Cards[0].Point()
 			})
@@ -270,7 +275,10 @@ func (s *StatePlaying) actionTimer(expireAt time.Time) {
 			}
 		}
 
-		s.play(player, cards)
+		err := s.play(player, cards)
+		if err != outer.ERROR_OK {
+			s.Log().Errorw("timeout play failed", "err", err)
+		}
 	})
 }
 
