@@ -53,8 +53,8 @@ message MahjongParams{
 // 跑得快
 message FasterRunParams{
     int32 playCountLimit            = 1; // 必须打满多少局才能退出
-    int32 BaseScore                 = 2; // 底分
-    float BaseScoreTimes            = 3; // 倍数
+    float BaseScore                 = 2; // 底分 0.01~99
+    float BaseScoreTimes            = 3; // 倍数 (不用)
     int32 PlayerNumber              = 4; // 0.两人房间，1.三人房
     int32 CardsNumber               = 5; // 0.15张，1.16张
     int32 DecideMasterType          = 6; // 选庄 0.随机 1.黑桃三 2.赢家 3.首局黑桃三，之后赢家

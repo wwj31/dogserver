@@ -273,7 +273,7 @@ func (f *FasterRun) gameParams() *outer.FasterRunParams {
 
 func (f *FasterRun) baseScore() int64 {
 	base := f.gameParams().BaseScore
-	if base == 0 {
+	if base <= 0 {
 		base = 1
 	}
 
