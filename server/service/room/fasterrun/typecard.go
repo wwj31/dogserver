@@ -140,6 +140,10 @@ func (c PokerCardsType) ToPB() outer.FasterRunPokerCardsType {
 }
 
 func (c CardsGroup) ToPB() *outer.FasterRunCardsGroup {
+	if c.Type == CardsTypeUnknown {
+		return nil
+	}
+
 	return &outer.FasterRunCardsGroup{
 		Type:      c.Type.ToPB(),
 		Cards:     c.Cards.ToPB(),

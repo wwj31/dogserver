@@ -104,6 +104,8 @@ func (s *StatePlaying) play(player *fasterRunPlayer, cards PokerCards) outer.ERR
 	// 分析牌型，检查牌型是否有效
 	playCardsGroup := cards.AnalyzeCards(s.gameParams().AAAIsBombs)
 	if playCardsGroup.Type == CardsTypeUnknown {
+		s.Log().Warnw("play analyze failed invalid cards", "short", player.ShortId,
+			"hand cards", player.handCards, "play cards", cards)
 		return outer.ERROR_FASTERRUN_PLAY_CARDS_INVALID
 	}
 
