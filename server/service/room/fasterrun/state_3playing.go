@@ -108,6 +108,12 @@ func (s *StatePlaying) play(player *fasterRunPlayer, cards PokerCards) outer.ERR
 
 	// 分析牌型，检查牌型是否有效
 	playCardsGroup := cards.AnalyzeCards(s.gameParams().AAAIsBombs)
+	if playCardsGroup.Type == Trips && !s.gameParams().SpecialThreeCards {
+		playCardsGroup.Type = CardsTypeUnknown
+	} else if playCardsGroup.Type == TripsWithOne && !s.gameParams().SpecialThreeCardsWithOne {
+		playCardsGroup.Type = CardsTypeUnknown
+	}
+
 	if playCardsGroup.Type == CardsTypeUnknown {
 		s.Log().Warnw("play analyze failed invalid cards", "short", player.ShortId,
 			"hand cards", player.handCards, "play cards", cards)
@@ -294,10 +300,6 @@ func (s *StatePlaying) gameOver() bool {
 		// NOTE: 玩家每把结算后，会更新playerInfo，所以每把的GoldLine是固定的
 		if player.score <= player.GetGoldLine() {
 			s.scoreZeroOver = true
-			return true
-		}
-
-		if !s.gameParams().AllowScoreSmallZero && player.score <= 0 {
 			return true
 		}
 	}

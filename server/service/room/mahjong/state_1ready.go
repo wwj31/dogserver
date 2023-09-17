@@ -31,6 +31,10 @@ func (s *StateReady) Enter() {
 		resetPlayCount bool
 	)
 
+	if s.gameCount > int(s.gameParams().PlayCountLimit) {
+		resetPlayCount = true
+	}
+
 	// 先把金币<=0的玩家踢出去
 	for seat := 0; seat < maxNum; seat++ {
 		player := s.mahjongPlayers[seat]
@@ -39,19 +43,17 @@ func (s *StateReady) Enter() {
 		}
 
 		if player.Gold <= 0 {
-			// 玩家没分了，如果是最后一把，或者不允许负分，
-			// 就踢出玩家并且设置游戏重置
-			if s.gameCount > int(s.gameParams().PlayCountLimit) || !s.gameParams().AllowScoreSmallZero {
+			// 新一轮游戏，或者不允许负分，都需要踢出玩家
+			if resetPlayCount || !s.gameParams().AllowScoreSmallZero {
 				log.Infow("kick player with ready case gold <= 0", "shortId", player.ShortId, "gold", player.Gold)
 				s.room.PlayerLeave(player.ShortId, true)
-				resetPlayCount = true
 			}
 			continue
 		}
 	}
 
 	// 判断游戏是否需要重置
-	if s.gameCount > int(s.gameParams().PlayCountLimit) || resetPlayCount {
+	if resetPlayCount {
 		s.Log().Infow("reset game count", "current", s.gameCount, "param", s.gameParams().PlayCountLimit, "reset", resetPlayCount)
 		s.gameCount = 1
 	} else {

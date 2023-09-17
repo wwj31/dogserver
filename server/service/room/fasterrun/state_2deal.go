@@ -63,6 +63,7 @@ func (s *StateDeal) Enter() {
 			MasterSeat: int32(s.masterIndex),
 		})
 	}
+	s.spareCards = cards[i:]
 
 	// 发牌动画后，进入下个状态
 	s.currentStateEndAt = tools.Now().Add(DealExpiration)

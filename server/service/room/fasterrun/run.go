@@ -70,7 +70,7 @@ type (
 		lastWinShortId     int64              // 最后一局的赢家
 		waitingPlayShortId int64              // 当前等待的出牌人
 		waitingPlayFollow  bool               // 当前等待的出牌人是否是跟牌
-
+		spareCards         PokerCards         // 剩下没用的牌
 	}
 
 	PlayCardsRecord struct {
@@ -332,6 +332,7 @@ func (p *PlayCardsRecord) String() string {
 	}
 	return fmt.Sprintf("{short:%v follow:%v cardsGroup:%v playAt:%v }", p.shortId, p.follow, p.cardsGroup, p.playAt)
 }
+
 func (p *PlayCardsRecord) ToPB() *outer.PlayCardsRecord {
 	if p == nil {
 		return nil
