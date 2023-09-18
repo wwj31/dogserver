@@ -39,10 +39,77 @@ func (s *StateSettlement) Enter() {
 		GameCount:        int32(s.gameCount),
 		GameSettlementAt: tools.Now().UnixMilli(),
 		PlayerData:       make([]*outer.FasterRunSettlementPlayerData, playerNumber, playerNumber),
+		SpareCards:       s.spareCards.ToPB(),
 	}
 
 	for seat := 0; seat < playerNumber; seat++ {
 		settlementMsg.PlayerData[seat] = &outer.FasterRunSettlementPlayerData{}
+	}
+
+	// 结算输赢分
+	var (
+		winner     *fasterRunPlayer
+		winnerSeat int
+	)
+	for seat, player := range s.fasterRunPlayers {
+		if len(player.handCards) == 0 {
+			winner = player
+			winnerSeat = seat
+			break
+		}
+	}
+
+	if winner != nil {
+		// 春天、反春判断
+		isSpring := s.isSpring()
+		var isAgainstSpring bool
+		if !isSpring && s.gameParams().AgainstSpring {
+			isAgainstSpring = s.isAgainstSpring(winner)
+		}
+		settlementMsg.Spring = isSpring
+		settlementMsg.AgainstSpring = isAgainstSpring
+
+		loserSeats := s.allSeats(winnerSeat)
+		for _, seat := range loserSeats {
+			loser := s.fasterRunPlayers[seat]
+			loseScore := int64(len(loser.handCards)) * s.baseScore()
+
+			// 特殊规则剩一张不输
+			if s.gameParams().SpareOnlyOneWithoutLose && len(loser.handCards) == 1 {
+				continue
+			}
+
+			// 春天和反春的算分
+			if isSpring {
+				loseScore *= 2
+			} else if isAgainstSpring {
+				// 反春，重新算分
+				if seat == s.masterIndex {
+					needNum := 15
+					if s.gameParams().CardsNumber == 1 {
+						needNum = 16
+					}
+					loseScore = int64(needNum) * s.baseScore()
+				}
+				loseScore *= 2
+			}
+
+			// 红桃10，输赢翻倍
+			if winner.doubleHearts10 {
+				loseScore *= 2
+			} else if loser.doubleHearts10 {
+				loseScore *= 2
+			}
+
+			// 不允许负分，能扣多少扣多少
+			if !s.gameParams().AllowScoreSmallZero {
+				loseScore = common.Min(loser.score, loseScore)
+			}
+
+			loser.updateScore(-loseScore)
+			winner.updateScore(loseScore)
+			s.Log().Infow("settle loser", "seat", seat, "loser", loser.ShortId, "score", loseScore)
+		}
 	}
 
 	// 大结算
@@ -62,7 +129,6 @@ func (s *StateSettlement) Enter() {
 			player.finalStatsMsg = &outer.FasterRunFinialPlayerInfo{}
 		}
 		settlementMsg.FinalSettlement = ntf
-
 	}
 
 	// 结算分数为最终金币
@@ -89,7 +155,42 @@ func (s *StateSettlement) Enter() {
 			}
 		})
 	}
+}
 
+// 春天规则
+func (s *StateSettlement) isSpring() bool {
+	master := s.fasterRunPlayers[s.masterIndex]
+	if len(master.handCards) > 0 {
+		return false
+	}
+
+	var fullNum int
+	if s.gameParams().CardsNumber == 0 {
+		fullNum = 15
+	} else {
+		fullNum = 16
+	}
+
+	others := s.allSeats(s.masterIndex)
+	for _, seat := range others {
+		other := s.fasterRunPlayers[seat]
+		if len(other.handCards) != fullNum {
+			return false
+		}
+	}
+
+	return true
+}
+
+// 反春规则
+func (s *StateSettlement) isAgainstSpring(winner *fasterRunPlayer) bool {
+	// 除了第一手是庄稼，其他所有出牌全部是赢的这家，肯定就是反春
+	for i := 1; i < len(s.playRecords); i++ {
+		if s.playRecords[i].shortId != winner.ShortId {
+			return false
+		}
+	}
+	return true
 }
 
 func (s *StateSettlement) Leave() {

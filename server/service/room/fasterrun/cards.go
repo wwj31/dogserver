@@ -10,7 +10,7 @@ import (
 // RandomPokerCards 获得洗好的一副新牌
 func RandomPokerCards(ignoreCard []PokerCard) PokerCards {
 	cards := make(PokerCards, len(pokerCards52))
-	copy(cards, pokerCards52[:])
+	copy(cards, pokerCards52)
 	tail := len(cards)
 	for i := 0; i < len(cards); i++ {
 		idx := rand.Intn(len(cards[:tail]))
@@ -61,11 +61,11 @@ func (p PokerCards) PointCards(point int32, n ...int) PokerCards {
 // CheckExist 检查传入牌是否全部在本牌组中
 func (p PokerCards) CheckExist(cards ...PokerCard) bool {
 	kv := make(map[PokerCard]struct{}, len(cards))
-	for _, card := range cards {
+	for _, card := range p {
 		kv[card] = struct{}{}
 	}
 
-	for _, card := range p {
+	for _, card := range cards {
 		if _, ok := kv[card]; !ok {
 			return false
 		}

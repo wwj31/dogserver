@@ -114,7 +114,7 @@ func (p PokerCards) FindBigger(cardsGroup CardsGroup) (bigger []CardsGroup) {
 
 // AnalyzeCards 分析牌型
 func (p PokerCards) AnalyzeCards(AAAisBomb bool) (cardsGroup CardsGroup) {
-	sort.Slice(&p, func(i, j int) bool { return PokerCard(i).Point() < PokerCard(j).Point() })
+	sort.Slice(p, func(i, j int) bool { return p[i].Point() < p[j].Point() })
 
 	if len(p) == 0 {
 		return

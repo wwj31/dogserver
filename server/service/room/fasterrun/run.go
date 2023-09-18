@@ -1,6 +1,7 @@
 package fasterrun
 
 import (
+	"fmt"
 	"time"
 
 	"server/common/log"
@@ -19,7 +20,7 @@ import (
 const (
 	ReadyExpiration       = 20 * time.Second // 准备超时时间
 	DealExpiration        = 3 * time.Second  // 发牌状态持续时间
-	WaitingPlayExpiration = 20 * time.Second // 打牌等待持续时间
+	WaitingPlayExpiration = 10 * time.Second // 打牌等待持续时间
 	SettlementDuration    = 10 * time.Second // 结算持续时间
 )
 
@@ -44,13 +45,14 @@ type (
 	// 跑得快 参与游戏的玩家数据
 	fasterRunPlayer struct {
 		*room.Player
-		score         int64
-		totalWinScore int64 // 单局的总输赢
-		ready         bool
-		readyExpireAt time.Time
-		handCards     PokerCards
-		BombsCount    int32
-		finalStatsMsg *outer.FasterRunFinialPlayerInfo
+		score          int64
+		totalWinScore  int64 // 单局的总输赢
+		ready          bool
+		readyExpireAt  time.Time
+		handCards      PokerCards
+		BombsCount     int32
+		doubleHearts10 bool // 红桃10 翻倍
+		finalStatsMsg  *outer.FasterRunFinialPlayerInfo
 	}
 
 	FasterRun struct {
@@ -68,7 +70,7 @@ type (
 		lastWinShortId     int64              // 最后一局的赢家
 		waitingPlayShortId int64              // 当前等待的出牌人
 		waitingPlayFollow  bool               // 当前等待的出牌人是否是跟牌
-
+		spareCards         PokerCards         // 剩下没用的牌
 	}
 
 	PlayCardsRecord struct {
@@ -269,22 +271,17 @@ func (f *FasterRun) gameParams() *outer.FasterRunParams {
 	return f.room.GameParams.FasterRun
 }
 
-func (m *FasterRun) baseScore() int64 {
-	base := m.gameParams().BaseScore
-	if base == 0 {
+func (f *FasterRun) baseScore() int64 {
+	base := f.gameParams().BaseScore
+	if base <= 0 {
 		base = 1
 	}
 
-	baseScoreTimes := m.gameParams().BaseScoreTimes
-	if baseScoreTimes == 0 {
-		baseScoreTimes = 1.0
-	}
-
-	return int64(float32(base*1000) * baseScoreTimes)
+	return int64(base * 1000)
 }
 
-func (m *FasterRun) bombWinScore() int64 {
-	base := m.gameParams().BaseScore
+func (f *FasterRun) bombWinScore() int64 {
+	base := f.gameParams().BaseScore
 	if base == 0 {
 		base = 1
 	}
@@ -293,6 +290,11 @@ func (m *FasterRun) bombWinScore() int64 {
 }
 
 func (f *FasterRun) clear() {
+	f.playRecords = nil
+	f.scoreZeroOver = false
+	f.waitingPlayShortId = 0
+	f.waitingPlayFollow = false
+
 	// 重置玩家数据
 	for i := 0; i < f.playerNumber(); i++ {
 		gamer := f.fasterRunPlayers[i]
@@ -324,7 +326,18 @@ func (m *fasterRunPlayer) updateScore(val int64) {
 	m.finalStatsMsg.TotalScore += val
 }
 
+func (p *PlayCardsRecord) String() string {
+	if p == nil {
+		return ""
+	}
+	return fmt.Sprintf("{short:%v follow:%v cardsGroup:%v playAt:%v }", p.shortId, p.follow, p.cardsGroup, p.playAt)
+}
+
 func (p *PlayCardsRecord) ToPB() *outer.PlayCardsRecord {
+	if p == nil {
+		return nil
+	}
+
 	return &outer.PlayCardsRecord{
 		ShortId:    p.shortId,
 		Follow:     p.follow,

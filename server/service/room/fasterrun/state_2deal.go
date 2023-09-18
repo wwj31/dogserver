@@ -45,7 +45,7 @@ func (s *StateDeal) Enter() {
 		}
 	}
 	// 定庄
-	s.masterIndex = s.decideMaster(s.gameParams().DicedeMasterType)
+	s.masterIndex = s.decideMaster(s.gameParams().DecideMasterType)
 
 	s.Log().Infow("[FasterRun] enter state deal", "room", s.room.RoomId,
 		"params", *s.gameParams(), "cards", cards, "master", s.masterIndex)
@@ -53,6 +53,9 @@ func (s *StateDeal) Enter() {
 	var i int
 	for _, player := range s.fasterRunPlayers {
 		player.handCards = append(PokerCards{}, cards[i:i+handCardsNumber]...).Sort()
+		if s.gameParams().DoubleHeartsTen {
+			player.doubleHearts10 = s.existHeart10(player.handCards)
+		}
 		i += handCardsNumber
 
 		s.room.SendToPlayer(player.ShortId, &outer.FasterRunDealNtf{
@@ -60,12 +63,21 @@ func (s *StateDeal) Enter() {
 			MasterSeat: int32(s.masterIndex),
 		})
 	}
+	s.spareCards = cards[i:]
 
 	// 发牌动画后，进入下个状态
 	s.currentStateEndAt = tools.Now().Add(DealExpiration)
 	s.room.AddTimer(tools.XUID(), s.currentStateEndAt, func(dt time.Duration) {
 		s.SwitchTo(Playing)
 	})
+}
+func (s *StateDeal) existHeart10(cards PokerCards) bool {
+	for _, card := range cards {
+		if card == Hearts_10 {
+			return true
+		}
+	}
+	return false
 }
 
 func (s *StateDeal) Leave() {

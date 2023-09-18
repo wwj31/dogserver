@@ -56,16 +56,27 @@ var _ = reg("help", func(arg ...string) {
 // 创建房间
 var _ = reg("c", func(arg ...string) {
 	req := &outer.CreateRoomReq{
-		GameType: outer.GameType_Mahjong,
+		GameType: outer.GameType_FasterRun,
 		GameParams: &outer.GameParams{
-			Mahjong: &outer.MahjongParams{
-				ZiMoJia:           1,
-				DianGangHua:       0,
-				HuanSanZhang:      1,
-				YaoJiuDui:         true,
-				MenQingZhongZhang: true,
-				TianDiHu:          true,
-				DianPaoPingHu:     true,
+			FasterRun: &outer.FasterRunParams{
+				PlayCountLimit:           4,
+				BaseScore:                2,
+				PlayerNumber:             0,
+				CardsNumber:              0,
+				DecideMasterType:         0,
+				FirstSpades3:             false,
+				ShowSpareNumber:          false,
+				DoubleHeartsTen:          false,
+				PlayTolerance:            false,
+				FollowPlayTolerance:      false,
+				SpareOnlyOneWithoutLose:  false,
+				AgainstSpring:            false,
+				SpecialThreeCards:        false,
+				SpecialThreeCardsWithOne: false,
+				AAAIsBombs:               false,
+				AllowScoreSmallZero:      false,
+				BigWinner:                false,
+				ReBate:                   nil,
 			},
 		},
 	}
@@ -124,7 +135,7 @@ var _ = reg("r", func(arg ...string) {
 	}
 	req := &outer.MahjongBTEReadyReq{Ready: ready}
 
-	client.Req(outer.Msg_IdMahjongBTEReadyReq, req)
+	client.Req(outer.Msg_IdFasterRunReadyReq, req)
 })
 
 // 退出房间

@@ -120,7 +120,7 @@ func (m PokerCard) Int() int {
 }
 
 func (c CardsGroup) String() string {
-	return fmt.Sprintf("type:%v cards:%v side cards:%v\n", c.Type, c.Cards, c.SideCards)
+	return fmt.Sprintf("type:%v cards:%v side cards:%v", c.Type, c.Cards, c.SideCards)
 }
 
 func (p PokerCards) ToPB() []int32 {
@@ -140,6 +140,10 @@ func (c PokerCardsType) ToPB() outer.FasterRunPokerCardsType {
 }
 
 func (c CardsGroup) ToPB() *outer.FasterRunCardsGroup {
+	if c.Type == CardsTypeUnknown {
+		return nil
+	}
+
 	return &outer.FasterRunCardsGroup{
 		Type:      c.Type.ToPB(),
 		Cards:     c.Cards.ToPB(),
@@ -147,7 +151,7 @@ func (c CardsGroup) ToPB() *outer.FasterRunCardsGroup {
 	}
 }
 
-var pokerCards52 = [52]PokerCard{
+var pokerCards52 = []PokerCard{
 	Clubs_A, Diamonds_A, Hearts_A, Spades_A,
 	Spades_2,
 	Clubs_3, Diamonds_3, Hearts_3, Spades_3,
