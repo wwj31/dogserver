@@ -76,15 +76,45 @@ func (s *StatePlaying) play(player *fasterRunPlayer, cards PokerCards) outer.ERR
 		return outer.ERROR_FASTERRUN_PLAY_CARDS_MISS
 	}
 
-	// 分析牌型，检查牌型是否有效
-	playCardsGroup := cards.AnalyzeCards(s.gameParams().AAAIsBombs)
-	if playCardsGroup.Type == CardsTypeUnknown {
-		return outer.ERROR_FASTERRUN_PLAY_CARDS_INVALID
-	}
-
 	// 如果需要跟牌，检查牌型是否符合跟牌牌型
 	lastValidPlayCards := s.lastValidPlayCards()
 	follow := lastValidPlayCards != nil && lastValidPlayCards.shortId != player.ShortId
+
+	// 分析牌型，检查牌型是否有效
+	playCardsGroup := cards.AnalyzeCards(s.gameParams().AAAIsBombs)
+
+	// 是否允许三张或三带一
+	if playCardsGroup.Type == Trips && !s.gameParams().SpecialThreeCards {
+		playCardsGroup.Type = CardsTypeUnknown
+	} else if playCardsGroup.Type == TripsWithOne && !s.gameParams().SpecialThreeCardsWithOne {
+		playCardsGroup.Type = CardsTypeUnknown
+	}
+
+	if playCardsGroup.Type == CardsTypeUnknown {
+		// 要保证一手全部打完，所以出牌既是手牌
+		if len(cards) != len(player.handCards) {
+			return outer.ERROR_FASTERRUN_PLAY_CARDS_INVALID
+		}
+
+		if follow {
+			// 跟牌出牌，并且能一手出完的特殊情况
+			if s.gameParams().FollowPlayTolerance {
+				playCardsGroup = s.followPlayTolerance(player.handCards, lastValidPlayCards.cardsGroup)
+			}
+		} else {
+			// 有牌权，并且能一手出完的特殊情况
+			if s.gameParams().PlayTolerance {
+				playCardsGroup = s.playTolerance(player.handCards)
+			}
+		}
+
+		// 特殊牌型判断后，依然是个无效牌，只能返回
+		if playCardsGroup.Type == CardsTypeUnknown {
+			return outer.ERROR_FASTERRUN_PLAY_CARDS_INVALID
+		}
+	}
+
+	// 跟牌模式的校验
 	if follow {
 		// 跟牌牌型不同
 		if playCardsGroup.Type != lastValidPlayCards.cardsGroup.Type {
@@ -98,13 +128,6 @@ func (s *StatePlaying) play(player *fasterRunPlayer, cards PokerCards) outer.ERR
 
 		// 副牌数量不匹配
 		if len(playCardsGroup.SideCards) != len(lastValidPlayCards.cardsGroup.SideCards) {
-			if s.gameParams().PlayTolerance {
-				// TODO ...
-			}
-
-			if s.gameParams().FollowPlayTolerance {
-				// TODO ...
-			}
 			return outer.ERROR_FASTERRUN_PLAY_CARDS_SIDE_CARD_LEN_ERR
 		}
 	}
@@ -217,10 +240,87 @@ func (s *StatePlaying) gameOver() bool {
 
 	return false
 }
+
 func int32ArrToPokerCards(cards []int32) PokerCards {
 	result := make(PokerCards, 0, len(cards))
 	for _, card := range cards {
 		result = append(result, PokerCard(card))
 	}
 	return result
+}
+
+// 三张/飞机可少带出完：有牌权的一方出牌时，手牌是三张/飞机但牌带不满，手牌能一次全部出完
+func (s *StatePlaying) playTolerance(handCards PokerCards) (playCardsGroup CardsGroup) {
+	// 检查手牌能否组成三张或飞机,
+	// 以及分别判断sidecars长度是否小于需要的长度
+
+	// 飞机
+	biggerPlane := handCards.FindBigger(CardsGroup{
+		Type:  Plane,
+		Cards: PokerCards{0},
+	})
+	if len(biggerPlane) > 0 {
+		n := len(biggerPlane[0].Cards) / 3
+		needSideCardsNum := n * 2 // 飞机需要的带牌数量
+		spareCards := handCards.Remove(biggerPlane[0].Cards...)
+		if len(spareCards) <= needSideCardsNum {
+			playCardsGroup.Type = Plane
+			playCardsGroup.Cards = biggerPlane[0].Cards
+			playCardsGroup.SideCards = spareCards
+		}
+		return
+	}
+
+	// 三张
+	biggerTrips := handCards.FindBigger(CardsGroup{
+		Type:  Trips,
+		Cards: PokerCards{0},
+	})
+	if len(biggerTrips) > 0 {
+		needSideCardsNum := 2 // 三带二需要的带牌数量
+		spareCards := handCards.Remove(biggerPlane[0].Cards...)
+		if len(spareCards) <= needSideCardsNum {
+			playCardsGroup.Type = TripsWithTwo
+			playCardsGroup.Cards = biggerPlane[0].Cards
+			playCardsGroup.SideCards = spareCards
+		}
+	}
+	return
+}
+
+func (s *StatePlaying) followPlayTolerance(handCards PokerCards, lastCards CardsGroup) (playCardsGroup CardsGroup) {
+	var (
+		needCardType     PokerCardsType // 需要的牌型
+		needSideCardsNum int            // 需要的带牌张数
+	)
+
+	switch lastCards.Type {
+	case TripsWithOne:
+		needCardType = Trips
+		needSideCardsNum = 1
+
+	case TripsWithTwo:
+		needCardType = Trips
+		needSideCardsNum = 2
+
+	case PlaneWithTwo:
+		needCardType = Plane
+		needSideCardsNum = len(lastCards.SideCards)
+	}
+
+	bigger := handCards.FindBigger(CardsGroup{
+		Type:  needCardType,
+		Cards: PokerCards{0},
+	})
+
+	if len(bigger) > 0 {
+		spareCards := handCards.Remove(bigger[0].Cards...)
+		if len(spareCards) <= needSideCardsNum {
+			playCardsGroup.Type = needCardType
+			playCardsGroup.Cards = bigger[0].Cards
+			playCardsGroup.SideCards = spareCards
+		}
+	}
+
+	return
 }
