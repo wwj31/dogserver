@@ -25,13 +25,13 @@ message PlayerInfo {
 
 // 游戏参数
 message GameParams {
-    MahjongParams Mahjong      = 1;
+    MahjongParams    Mahjong   = 1;
     FasterRunParams  FasterRun = 2;
 }
 
 // 麻将
 message MahjongParams{
-    int32 playCountLimit       = 1; // 必须打满多少局才能退出
+    int32 PlayCountLimit       = 1; // 必须打满多少局才能退出
     int32 BaseScore            = 2; // 底分
     float BaseScoreTimes       = 3; // 倍数 0.1、0.5、1、2
     int32 ZiMoJia              = 4; // 自摸 0.自摸加番、1.自摸加底
@@ -52,7 +52,7 @@ message MahjongParams{
 
 // 跑得快
 message FasterRunParams{
-    int32 playCountLimit            = 1; // 必须打满多少局才能退出
+    int32 PlayCountLimit            = 1; // 必须打满多少局才能退出
     float BaseScore                 = 2; // 底分 0.01~99
     float BaseScoreTimes            = 3; // 倍数 (不用)
     int32 PlayerNumber              = 4; // 0.两人房间，1.三人房
