@@ -10,20 +10,22 @@ import (
 
 func TestFindBigger(t *testing.T) {
 	testCases := []struct {
-		input    fasterrun.PokerCards
-		arg      fasterrun.CardsGroup
-		expected []fasterrun.CardsGroup
+		name  string
+		input fasterrun.PokerCards
+		arg   fasterrun.CardsGroup
+		want  []fasterrun.CardsGroup
 	}{
 
 		// Single
 		{
+			name:  "单张",
 			input: fasterrun.PokerCards{fasterrun.Clubs_10, fasterrun.Clubs_4, fasterrun.Hearts_10, fasterrun.Spades_5},
 			arg: fasterrun.CardsGroup{
 				Type:      fasterrun.Single,
 				Cards:     fasterrun.PokerCards{fasterrun.Clubs_5},
 				SideCards: nil,
 			},
-			expected: []fasterrun.CardsGroup{
+			want: []fasterrun.CardsGroup{
 				{
 					Type:      fasterrun.Single,
 					Cards:     fasterrun.PokerCards{fasterrun.Clubs_10},
@@ -39,13 +41,14 @@ func TestFindBigger(t *testing.T) {
 
 		// Pair
 		{
+			name:  "对子",
 			input: fasterrun.PokerCards{fasterrun.Clubs_10, fasterrun.Clubs_4, fasterrun.Hearts_4, fasterrun.Hearts_10, fasterrun.Spades_6, fasterrun.Diamonds_6, fasterrun.Clubs_5},
 			arg: fasterrun.CardsGroup{
 				Type:      fasterrun.Pair,
 				Cards:     fasterrun.PokerCards{fasterrun.Spades_5, fasterrun.Diamonds_5},
 				SideCards: nil,
 			},
-			expected: []fasterrun.CardsGroup{
+			want: []fasterrun.CardsGroup{
 				{
 					Type:      fasterrun.Pair,
 					Cards:     fasterrun.PokerCards{fasterrun.Clubs_10, fasterrun.Hearts_10},
@@ -58,13 +61,56 @@ func TestFindBigger(t *testing.T) {
 				},
 			},
 		},
+
+		// Trips
+		{
+			name: "三张",
+			input: fasterrun.PokerCards{
+				fasterrun.Clubs_5,
+				fasterrun.Spades_6,
+				fasterrun.Diamonds_6,
+
+				fasterrun.Clubs_9,
+				fasterrun.Hearts_9,
+				fasterrun.Spades_9,
+
+				fasterrun.Clubs_10,
+				fasterrun.Hearts_10,
+				fasterrun.Spades_10,
+			},
+			arg: fasterrun.CardsGroup{
+				Type:      fasterrun.Trips,
+				Cards:     fasterrun.PokerCards{fasterrun.Spades_5, fasterrun.Diamonds_5, fasterrun.Hearts_5},
+				SideCards: nil,
+			},
+			want: []fasterrun.CardsGroup{
+				{
+					Type: fasterrun.Trips,
+					Cards: fasterrun.PokerCards{
+						fasterrun.Clubs_9,
+						fasterrun.Hearts_9,
+						fasterrun.Spades_9,
+					},
+				},
+				{
+					Type: fasterrun.Trips,
+					Cards: fasterrun.PokerCards{
+						fasterrun.Clubs_10,
+						fasterrun.Hearts_10,
+						fasterrun.Spades_10,
+					},
+				},
+			},
+		},
 	}
 
 	for _, tc := range testCases {
-		result := tc.input.FindBigger(tc.arg)
-		if !reflect.DeepEqual(result, tc.expected) {
-			t.Errorf("Input: %v, n: %d\nExpected: %v\nActual: %v", tc.input, tc.arg, tc.expected, result)
-		}
+		t.Run(tc.name, func(t *testing.T) {
+			result := tc.input.FindBigger(tc.arg)
+			if !reflect.DeepEqual(result, tc.want) {
+				t.Errorf("Input: %v, n: %d\nExpected: %v\nActual: %v", tc.input, tc.arg, tc.want, result)
+			}
+		})
 	}
 }
 

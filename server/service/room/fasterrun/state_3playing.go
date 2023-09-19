@@ -114,6 +114,10 @@ func (s *StatePlaying) play(player *fasterRunPlayer, cards PokerCards) outer.ERR
 	// 分析牌型，检查牌型是否有效
 	playCardsGroup := cards.AnalyzeCards(s.gameParams().AAAIsBombs)
 
+	// 主要用于跟牌时，判断是否需要严格校验sideCards
+	// FollowPlayTolerance特殊规则开启情况加，可以不用判断sideCards数量
+	var tolerance bool
+
 	// 是否允许三张或三带一
 	if playCardsGroup.Type == Trips && !s.gameParams().SpecialThreeCards {
 		playCardsGroup.Type = CardsTypeUnknown
@@ -130,7 +134,7 @@ func (s *StatePlaying) play(player *fasterRunPlayer, cards PokerCards) outer.ERR
 		if follow {
 			// 跟牌出牌，并且能一手出完的特殊情况
 			if s.gameParams().FollowPlayTolerance {
-				playCardsGroup = s.followPlayTolerance(player.handCards, lastValidPlayCards.cardsGroup)
+				playCardsGroup, tolerance = s.followPlayTolerance(player.handCards, lastValidPlayCards.cardsGroup)
 			}
 		} else {
 			// 有牌权，并且能一手出完的特殊情况
@@ -159,8 +163,8 @@ func (s *StatePlaying) play(player *fasterRunPlayer, cards PokerCards) outer.ERR
 			return outer.ERROR_FASTERRUN_PLAY_CARDS_SHOULD_BE_BIGGER
 		}
 
-		// 副牌数量不匹配
-		if len(playCardsGroup.SideCards) != len(lastValidPlayCards.cardsGroup.SideCards) {
+		// 副牌数量不匹配(容错的情况下不用校验)
+		if !tolerance && len(playCardsGroup.SideCards) != len(lastValidPlayCards.cardsGroup.SideCards) {
 			return outer.ERROR_FASTERRUN_PLAY_CARDS_SIDE_CARD_LEN_ERR
 		}
 	}
@@ -373,7 +377,7 @@ func (s *StatePlaying) playTolerance(handCards PokerCards) (playCardsGroup Cards
 	return
 }
 
-func (s *StatePlaying) followPlayTolerance(handCards PokerCards, lastCards CardsGroup) (playCardsGroup CardsGroup) {
+func (s *StatePlaying) followPlayTolerance(handCards PokerCards, lastCards CardsGroup) (playCardsGroup CardsGroup, tolerance bool) {
 	var (
 		needCardType     PokerCardsType // 需要的牌型
 		needSideCardsNum int            // 需要的带牌张数
@@ -391,6 +395,9 @@ func (s *StatePlaying) followPlayTolerance(handCards PokerCards, lastCards Cards
 	case PlaneWithTwo:
 		needCardType = Plane
 		needSideCardsNum = len(lastCards.SideCards)
+	default:
+		s.Log().Warnw("lastCards is not valid type", "last cards", lastCards)
+		return
 	}
 
 	bigger := handCards.FindBigger(CardsGroup{
@@ -401,11 +408,12 @@ func (s *StatePlaying) followPlayTolerance(handCards PokerCards, lastCards Cards
 	if len(bigger) > 0 {
 		spareCards := handCards.Remove(bigger[0].Cards...)
 		if len(spareCards) <= needSideCardsNum {
-			playCardsGroup.Type = needCardType
+			playCardsGroup.Type = lastCards.Type
 			playCardsGroup.Cards = bigger[0].Cards
 			playCardsGroup.SideCards = spareCards
 		}
 	}
 
+	tolerance = true
 	return
 }
