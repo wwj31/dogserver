@@ -98,7 +98,6 @@ message FasterRunTurnNtf {
     int64           PlayingShortId = 3; // 当前需要出牌的人
     PlayCardsRecord PrevRecord     = 4; // 上家的出牌信息,庄家首次为null
     BombsWinScore   BombsWin       = 5; // 炸弹赢的分
-    int32           HandCardsLen   = 6; // 出牌后的手牌数量
 }
 
 // 炸弹赢的分
