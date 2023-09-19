@@ -8,9 +8,8 @@ import (
 	"github.com/gogo/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
 
-	"server/common/rds"
-
 	"server/common/log"
+	"server/common/rds"
 	"server/common/router"
 	"server/rdsop"
 )
