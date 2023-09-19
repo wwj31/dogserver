@@ -232,6 +232,7 @@ func (s *StatePlaying) nextPlayer(seat int, lastPlayInfo *PlayCardsRecord) {
 		PlayingShortId: player.ShortId,
 		PrevRecord:     lastPlayInfo.ToPB(),
 		BombsWin:       bombWinScore,
+		HandCardsLen:   int32(len(player.handCards)),
 	}
 	s.room.Broadcast(ntf)
 
