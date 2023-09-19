@@ -38,9 +38,9 @@ func (p PokerCards) FindBigger(cardsGroup CardsGroup) (bigger []CardsGroup) {
 			}
 		}
 	case TripsWithOne, TripsWithTwo:
-		sideN := 1 // 用于找几张需要带的牌
+		sideCardsSize := 1 // 用于找几张需要带的牌
 		if cardsGroup.Type == TripsWithTwo {
-			sideN = 2
+			sideCardsSize = 2
 		}
 
 		for point, num := range stat {
@@ -49,7 +49,7 @@ func (p PokerCards) FindBigger(cardsGroup CardsGroup) (bigger []CardsGroup) {
 				comb := cards.Combination(len(cards)) // 满足点数更大的牌组合
 				for _, c := range comb {
 					spareCards := p.Remove(c...)
-					sideCards := spareCards.SideCards(sideN)
+					sideCards := spareCards.SideCards(sideCardsSize)
 					if len(sideCards) == 0 {
 						continue
 					}
@@ -86,9 +86,9 @@ func (p PokerCards) FindBigger(cardsGroup CardsGroup) (bigger []CardsGroup) {
 		}
 
 	case FourWithTwo, FourWithThree:
-		sideCardsNum := 2 // 要找几张副牌
+		sideCardsSize := 2 // 要找几张副牌
 		if cardsGroup.Type == FourWithThree {
-			sideCardsNum = 3
+			sideCardsSize = 3
 		}
 
 		for point, num := range stat {
@@ -97,8 +97,8 @@ func (p PokerCards) FindBigger(cardsGroup CardsGroup) (bigger []CardsGroup) {
 			}
 			cards := p.PointCards(point)
 			spareCards := p.Remove(cards...)
-			sideCards := spareCards.SideCards(sideCardsNum)
-			if len(sideCards) == sideCardsNum {
+			sideCards := spareCards.SideCards(sideCardsSize)
+			if len(sideCards) == sideCardsSize {
 				bigger = append(bigger, CardsGroup{Type: cardsGroup.Type, Cards: cards, SideCards: sideCards})
 			}
 		}
@@ -204,35 +204,35 @@ func (p PokerCards) AnalyzeCards(AAAisBomb bool) (cardsGroup CardsGroup) {
 		}
 
 		var (
-			beginPoint       = orderPoints[0]
-			sequentialMaxNum = 1 // 最大的连续数量(不计相同的牌)
+			beginPoint         = orderPoints[0]
+			sequentialMaxCount = 1 // 最大的连续数量(不计相同的牌)
 		)
 
 		for i := 1; i < len(orderPoints); i++ {
 			if orderPoints[i] == beginPoint+1 {
-				sequentialMaxNum++
+				sequentialMaxCount++
 			} else {
-				sequentialMaxNum = 1
+				sequentialMaxCount = 1
 			}
 			beginPoint = orderPoints[i]
 		}
 
 		// 最长连续数等于本组牌的长度，只能是顺子
-		if sequentialMaxNum == l {
+		if sequentialMaxCount == l {
 			cardsGroup.Type = Straight
 			cardsGroup.Cards = append(cardsGroup.Cards, p...)
 			return
 		}
 
 		// 最长连续数等于本组牌长度的一半，肯定数连对
-		if sequentialMaxNum*2 == l {
+		if sequentialMaxCount*2 == l {
 			cardsGroup.Type = StraightPair
 			cardsGroup.Cards = append(cardsGroup.Cards, p...)
 			return
 		}
 
 		// 最长连续数等于本组牌长度的1/3，肯定飞机
-		if sequentialMaxNum*3 == l {
+		if sequentialMaxCount*3 == l {
 			cardsGroup.Type = Plane
 			cardsGroup.Cards = append(cardsGroup.Cards, p...)
 			return
@@ -261,7 +261,7 @@ func (p PokerCards) AnalyzeCards(AAAisBomb bool) (cardsGroup CardsGroup) {
 		}
 
 		// 判断飞机带翅膀
-		if sequentialMaxNum >= 2 {
+		if sequentialMaxCount >= 2 {
 			// 先找所有三张
 			var planePoints []int32
 			for i := 0; i < len(orderPoints); i++ {

@@ -8,9 +8,9 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/wwj31/dogactor/logger"
 
-	"server/proto/outermsg/outer"
-
 	"github.com/wwj31/dogactor/tools"
+
+	"server/proto/outermsg/outer"
 
 	"server/proto/innermsg/inner"
 	"server/service/room"
@@ -127,6 +127,13 @@ func (m *Mahjong) SwitchTo(state int) {
 		return
 	}
 	m.currentStateEnterAt = tools.Now()
+}
+
+func (m *Mahjong) toRoomPlayers() (players []*room.Player) {
+	for _, p := range m.mahjongPlayers {
+		players = append(players, p.Player)
+	}
+	return players
 }
 
 func (m *Mahjong) Data(shortId int64) proto.Message {
@@ -472,8 +479,8 @@ func (m *Mahjong) peerRecordsLog() string {
 }
 
 // 算根
-func (s *Mahjong) huGen(seatIndex int) (count int) {
-	p := s.mahjongPlayers[seatIndex]
+func (m *Mahjong) huGen(seatIndex int) (count int) {
+	p := m.mahjongPlayers[seatIndex]
 	count = len(p.lightGang) + len(p.darkGang)
 	for pongCard := range p.pong {
 		p.handCards.Range(func(card Card) bool {

@@ -1,20 +1,14 @@
 package mahjong
 
 import (
-	"context"
 	"time"
 
-	"github.com/go-redis/redis/v9"
+	"github.com/wwj31/dogactor/tools"
 
 	"server/common"
 	"server/common/actortype"
-	"server/common/log"
-	"server/common/rds"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
-	"server/rdsop"
-
-	"github.com/wwj31/dogactor/tools"
 )
 
 // 结算状态
@@ -67,7 +61,7 @@ func (s *StateSettlement) Enter() {
 
 		// 总抽水
 		totalProfit := s.profit(s.gameParams().BigWinner)
-		s.rebate(totalProfit)
+		s.room.Rebate(totalProfit, s.toRoomPlayers())
 
 		ntf := &outer.MahjongBTEFinialSettlement{}
 		for seat := 0; seat < maxNum; seat++ {
@@ -397,7 +391,7 @@ func (s *StateSettlement) profit(bigWinner bool) (totalProfit int64) {
 
 	// 处理每一位赢家抽水
 	for _, winner := range winners {
-		rangeCfg := s.profitRange(winner)
+		rangeCfg := s.room.ProfitRange(winner.finalStatsMsg.TotalScore, s.gameParams().ReBate)
 		winScore := winner.finalStatsMsg.TotalScore
 		if rangeCfg == nil {
 			s.Log().Warnw("winner profit score not in any range",
@@ -420,81 +414,5 @@ func (s *StateSettlement) profit(bigWinner bool) (totalProfit int64) {
 		s.Log().Infow("profit", "winner", winner.ShortId, "current score", winner.score,
 			"baseProfit", baseProfit, "val", val, "winScore", winScore, "profit", profit, "range param", rangeCfg.String())
 	}
-
 	return
-}
-
-// 找出玩家赢分所在区间的参数配置
-func (s *StateSettlement) profitRange(winner *mahjongPlayer) *outer.RangeParams {
-	params := s.gameParams().ReBate
-	if params == nil {
-		return nil
-	}
-
-	for _, param := range []*outer.RangeParams{params.RangeL1, params.RangeL2, params.RangeL3, params.RangeL4} {
-		if !param.Valid {
-			continue
-		}
-
-		minLimit := param.Min * 1000
-		MaxLimit := param.Max * 1000
-		if winner.finalStatsMsg == nil {
-			s.Log().Warnw("final stats msg is nil", "short", winner.ShortId)
-			continue
-		}
-
-		totalWin := winner.finalStatsMsg.TotalScore
-		if minLimit < totalWin && totalWin <= MaxLimit {
-			return param
-		}
-	}
-	return nil
-}
-
-// rebate 返利计算
-func (s *StateSettlement) rebate(totalProfit int64) {
-	divProfit := totalProfit / 4 // 每个玩家那条上级路线，都均分获得利润
-	if divProfit == 0 {
-		s.Log().Infow("profit is zero!!", "total profit", totalProfit)
-		return
-	}
-
-	pip := rds.Ins.Pipeline()
-	for _, player := range s.mahjongPlayers {
-		s.Log().Infow("recur profit start", "start short", player.ShortId)
-		s.recurRebate(divProfit, player.UpShortId, player.ShortId, 0, pip)
-	}
-
-	if _, err := pip.Exec(context.Background()); err != nil {
-		log.Errorw("rebate redis failed", "err", err)
-	}
-}
-
-// 逐层向上返利
-func (s *StateSettlement) recurRebate(profitGold, upShortId, shortId, downShortId int64, addPip redis.Pipeliner) {
-	rebateInfo := rdsop.GetRebateInfo(shortId)
-
-	var (
-		exactPoint      int32 // 确切的获利点位
-		exactProfitGold int64 // 确切的获利
-	)
-
-	// 自己有点位，先分自己一份
-	if rebateInfo.Point > 0 {
-		// 自己的获利=自己的分润-下级的分润
-		exactPoint = common.Max(0, rebateInfo.Point-rebateInfo.DownPoints[downShortId])
-		exactProfitGold = profitGold * int64(exactPoint) / 100
-		rdsop.AddRebateGold(shortId, exactProfitGold, addPip)
-	}
-
-	s.Log().Infow("rebate calculating ...", "room", s.room.RoomId,
-		"short", shortId, "up", upShortId, "down", downShortId,
-		"profitGold", profitGold, "point", exactPoint, "gold", exactProfitGold, "rebateInfo", rebateInfo)
-
-	if upShortId == 0 {
-		return
-	}
-
-	// 向上级递归
-	s.recurRebate(profitGold, rdsop.AgentUp(upShortId), upShortId, shortId, addPip)
 }

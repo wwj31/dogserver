@@ -90,6 +90,13 @@ func (f *FasterRun) SwitchTo(state int) {
 	f.currentStateEnterAt = tools.Now()
 }
 
+func (f *FasterRun) toRoomPlayers() (players []*room.Player) {
+	for _, p := range f.fasterRunPlayers {
+		players = append(players, p.Player)
+	}
+	return players
+}
+
 func (f *FasterRun) playerNumber() int {
 	n := f.gameParams().PlayerNumber
 	if n == 0 {
