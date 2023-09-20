@@ -9,6 +9,7 @@ import (
 	"server/common/actortype"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
+	"server/rdsop"
 )
 
 // 结算状态
@@ -79,9 +80,11 @@ func (s *StateSettlement) Enter() {
 		seat := i
 		player := s.mahjongPlayers[seat]
 		finalScore := player.score
+		presentScore := player.PlayerInfo.Gold
 		s.room.Request(actortype.PlayerId(player.RID), &inner.ModifyGoldReq{
-			SetOrAdd: true,
-			Gold:     finalScore,
+			Set:       true,
+			Gold:      finalScore,
+			SmallZero: true, // 允许扣为负数
 		}).Handle(func(resp any, err error) {
 			modifyRspCount[player.RID] = struct{}{}
 			if err == nil {
@@ -91,6 +94,12 @@ func (s *StateSettlement) Enter() {
 
 			s.Log().Infow("modify gold result", "room", s.room.RoomId, "seat", seat,
 				"player", player.ShortId, "latest gold", player.Gold, "err", err)
+
+			// 记录本场游戏的输赢变化
+			rdsop.SetUpdateGoldRecord(player.ShortId, rdsop.GoldUpdateReason{
+				Type: rdsop.GameWinOrLose, // 游戏输赢记录
+				Gold: finalScore - presentScore,
+			})
 
 			if len(modifyRspCount) == maxNum {
 				s.afterSettle(settlementMsg)

@@ -15,6 +15,8 @@ enum Msg {
     IdRebateScoreRsp = 785042337;
     IdClaimRebateScoreReq = 1016973285;// dispatch to player
     IdClaimRebateScoreRsp = 714976078;
+    IdSetScoreForDownReq = 1875177346;// dispatch to player
+    IdSetScoreForDownRsp = 2042953663;
     IdAllianceInfoNtf = 672428706;
     IdDisbandAllianceReq = 650636160;// dispatch to player
     IdDisbandAllianceRsp = 952633399;
@@ -46,6 +48,8 @@ enum Msg {
     IdModifyPasswordReq = 655389589;// dispatch to player
     IdModifyPasswordRsp = 890276254;
     IdUpdateGoldNtf = 429487156;
+    IdGoldRecordsReq = 1761826110;// dispatch to player
+    IdGoldRecordsRsp = 1459828873;
     IdHeartReq = 31040569;
     IdHeartRsp = 400148124;
     IdLoginReq = 1510628254;// dispatch to login

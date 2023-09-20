@@ -45,3 +45,13 @@ message ClaimRebateScoreReq {// tag:player
 message ClaimRebateScoreRsp {
     int64 Gold  = 1; // 领取了多少分
 }
+
+// 给下级上\下分
+message SetScoreForDownReq {// tag:player
+    int64 ShortId = 1; // 下级的短id
+    int64 Gold    = 2; // 上分发正数，下分发负数 NOTE:(用真实分数比如:10.12发10120)
+}
+message SetScoreForDownRsp {
+    int64 ShortId = 1;
+    int64 Gold    = 2; // 玩家设置后最新分数
+}

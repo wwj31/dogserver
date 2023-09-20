@@ -236,18 +236,24 @@ var _ = router.Reg(func(p *player.Player, msg *inner.RoomKickOutNtf) any {
 	}
 
 	p.Room().SetRoomInfo(nil)
+	p.UpdateInfoToRedis()
 	return nil
 })
 
 // 房间通知结算后修改金币
 var _ = router.Reg(func(p *player.Player, msg *inner.ModifyGoldReq) any {
 	addGold := msg.Gold
-	if msg.SetOrAdd {
+	if msg.Set {
 		addGold = msg.Gold - p.Role().Gold()
 	}
 
+	// 如果不允许扣为负，就检查
+	if !msg.SmallZero && addGold < 0 && p.Role().Gold()+addGold < 0 {
+		return &inner.ModifyGoldRsp{Success: false, Info: p.PlayerInfo()}
+	}
+
 	p.Role().AddGold(addGold)
-	return &inner.ModifyGoldRsp{Info: p.PlayerInfo()}
+	return &inner.ModifyGoldRsp{Success: true, Info: p.PlayerInfo()}
 })
 
 // 转发所有Client游戏消息至房间

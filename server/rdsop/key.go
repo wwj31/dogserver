@@ -99,3 +99,8 @@ func RoomsIncIdKey() string {
 func GMCmdListKey(shortId int64) string {
 	return fmt.Sprintf("gm:cmd:%v", shortId)
 }
+
+// UpdateGoldRecordKey 玩家金币变更记录队列
+func UpdateGoldRecordKey(shortId int64) string {
+	return fmt.Sprintf("goldrecords:%v", shortId)
+}

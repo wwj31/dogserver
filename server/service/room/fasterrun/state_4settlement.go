@@ -132,8 +132,9 @@ func (s *StateSettlement) Enter() {
 		player := s.fasterRunPlayers[seat]
 		finalScore := player.score
 		s.room.Request(actortype.PlayerId(player.RID), &inner.ModifyGoldReq{
-			SetOrAdd: true,
-			Gold:     finalScore,
+			Set:       true,
+			Gold:      finalScore,
+			SmallZero: true, // 允许扣为负数
 		}).Handle(func(resp any, err error) {
 			modifyRspCount[player.RID] = struct{}{}
 			if err == nil {

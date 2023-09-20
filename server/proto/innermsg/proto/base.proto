@@ -46,10 +46,12 @@ message NewPlayerInfo {
 
 // 通知玩家修改最新新币
 message ModifyGoldReq {
-    int64 Gold     = 1;
-    bool  SetOrAdd = 2; // true.Set、 false.Add
+    int64 Gold      = 1;
+    bool  Set       = 2; // true.直接设置为Gold值，false.增加Gold值
+    bool  SmallZero = 3; // 如果是扣分，是否允许扣为负数
 }
 
 message ModifyGoldRsp {
-    PlayerInfo Info = 1;
+    bool Success    = 1; // 是否更新成功
+    PlayerInfo Info = 2;
 }

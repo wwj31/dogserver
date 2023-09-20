@@ -31,6 +31,9 @@ enum ERROR {
    PLAYER_ALREADY_HAS_UP              = 63; // 玩家已有上级
    AGENT_SET_REBATE_ONLY_HIGHER       = 64; // 设置的点位不能小于已有的点位
    AGENT_SET_REBATE_ONLY_OUT_OF_RANGE = 65; // 下级总点位和操作玩家点位
+   AGENT_UP_GOLD_FAILED               = 66; // 上分失败，自己金币不够
+   AGENT_DOWN_GOLD_FAILED             = 67; // 下分失败，下级金币不够
+   AGENT_DOWN_GOLD_PLAYER_IN_ROOM     = 68; // 玩家还在房间中，不能上下分操作
 
    // 房间
    PLAYER_ALREADY_IN_ROOM           = 104; // 玩家已经在房间内，不能重复进入房间

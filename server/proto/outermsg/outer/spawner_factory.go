@@ -17,6 +17,8 @@ func Put(name string, x interface{}) {}
 var spawner = map[string]factory{
 	"outer.UpdateGoldNtf":                     func() interface{} { return &UpdateGoldNtf{} },
 	"outer.Unknown":                           func() interface{} { return &Unknown{} },
+	"outer.SetScoreForDownRsp":                func() interface{} { return &SetScoreForDownRsp{} },
+	"outer.SetScoreForDownReq":                func() interface{} { return &SetScoreForDownReq{} },
 	"outer.SetRoleInfoRsp":                    func() interface{} { return &SetRoleInfoRsp{} },
 	"outer.SetRoleInfoReq":                    func() interface{} { return &SetRoleInfoReq{} },
 	"outer.SetMemberPositionRsp":              func() interface{} { return &SetMemberPositionRsp{} },
@@ -95,6 +97,9 @@ var spawner = map[string]factory{
 	"outer.InviteAllianceReq":                 func() interface{} { return &InviteAllianceReq{} },
 	"outer.HeartRsp":                          func() interface{} { return &HeartRsp{} },
 	"outer.HeartReq":                          func() interface{} { return &HeartReq{} },
+	"outer.GoldRecordsRsp":                    func() interface{} { return &GoldRecordsRsp{} },
+	"outer.GoldRecordsReq":                    func() interface{} { return &GoldRecordsReq{} },
+	"outer.GoldRecords":                       func() interface{} { return &GoldRecords{} },
 	"outer.GameParams":                        func() interface{} { return &GameParams{} },
 	"outer.FasterRunTurnNtf":                  func() interface{} { return &FasterRunTurnNtf{} },
 	"outer.FasterRunSettlementPlayerData":     func() interface{} { return &FasterRunSettlementPlayerData{} },

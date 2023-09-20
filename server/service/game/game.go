@@ -71,8 +71,10 @@ func (s *Game) checkAndPullPlayer(rid string, newInfo *inner.NewPlayerInfo) (pla
 		err := s.System().NewActor(playerId, newPlayer, actor.SetMailBoxSize(300)) //actor.SetLocalized(),
 		expect.Nil(err)
 
-		err = s.Send(playerId, newInfo)
-		expect.Nil(err)
+		if newInfo != nil {
+			err = s.Send(playerId, newInfo)
+			expect.Nil(err)
+		}
 		return playerId, true
 	}
 
