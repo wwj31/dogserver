@@ -161,7 +161,7 @@ var _ = router.Reg(func(p *player.Player, msg *outer.SetScoreForDownReq) any {
 	// 修改下级玩家的分数
 	modifyMsg := &inner.ModifyGoldReq{
 		Gold:      msg.Gold,
-		Set:       true,
+		Set:       false, // 增加分数
 		SmallZero: false, // 上下分操作，不允许扣成负数
 	}
 	result, err := p.RequestWait(actortype.PlayerId(downPlayerInfo.RID), modifyMsg, time.Second)
@@ -189,8 +189,9 @@ var _ = router.Reg(func(p *player.Player, msg *outer.SetScoreForDownReq) any {
 			Gold:        -msg.Gold,
 			DownShortId: msg.ShortId,
 		}, pip)
+
 		// 记录下级的金币变化
-		rdsop.SetUpdateGoldRecord(p.Role().ShortId(), rdsop.GoldUpdateReason{
+		rdsop.SetUpdateGoldRecord(downPlayerInfo.ShortId, rdsop.GoldUpdateReason{
 			Type:      rdsop.UpModifyGold, // 被上级上\下分
 			Gold:      msg.Gold,
 			UpShortId: p.Role().ShortId(),

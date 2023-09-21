@@ -240,7 +240,7 @@ var _ = router.Reg(func(p *player.Player, msg *inner.RoomKickOutNtf) any {
 	return nil
 })
 
-// 房间通知结算后修改金币
+// 修改金币
 var _ = router.Reg(func(p *player.Player, msg *inner.ModifyGoldReq) any {
 	addGold := msg.Gold
 	if msg.Set {

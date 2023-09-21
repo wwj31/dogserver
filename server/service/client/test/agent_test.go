@@ -42,3 +42,14 @@ func TestMembersReq(t *testing.T) {
 	//assert.True(t, ok)
 	//log.Infof("agent members rsp [%v]\n", rsp)
 }
+
+func TestSetScoreForDownReq(t *testing.T) {
+	cli := &client.Client{Addr: *Addr, DeviceID: "wwj1"}
+	Init(cli)
+	rsp, ok := cli.Req(outer.Msg_IdSetScoreForDownReq, &outer.SetScoreForDownReq{
+		ShortId: 1147959,
+		Gold:    -100,
+	}).(*outer.SetScoreForDownRsp)
+	assert.True(t, ok)
+	log.Infof("agent members rsp [%v]\n", rsp)
+}

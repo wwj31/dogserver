@@ -23,6 +23,7 @@ func (s *Role) Gold() int64 { return s.data.Gold }
 func (s *Role) AddGold(v int64) {
 	s.data.Gold = s.data.Gold + v
 	s.Player.SendToClient(&outer.UpdateGoldNtf{Gold: s.data.Gold})
+	s.Player.UpdateInfoToRedis()
 }
 
 func (s *Role) GoldLine() int64     { return s.data.GoldLine }
