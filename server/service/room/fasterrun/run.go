@@ -21,6 +21,7 @@ const (
 	ReadyExpiration       = 20 * time.Second // 准备超时时间
 	DealExpiration        = 3 * time.Second  // 发牌状态持续时间
 	WaitingPlayExpiration = 10 * time.Second // 打牌等待持续时间
+	WaitingPassExpiration = 3 * time.Second  // 不能大，等待短暂的几秒自动过
 	SettlementDuration    = 10 * time.Second // 结算持续时间
 )
 

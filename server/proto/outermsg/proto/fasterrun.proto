@@ -95,9 +95,10 @@ message FasterRunGameStartNtf {
 message FasterRunTurnNtf {
     int64           WaitingEndAt   = 1; // 等待出牌操作结束时间(毫秒)
     bool            FollowPlay     = 2; // true.跟牌、false.牌权出牌
-    int64           PlayingShortId = 3; // 当前需要出牌的人
-    PlayCardsRecord PrevRecord     = 4; // 上家的出牌信息,庄家首次为null
-    BombsWinScore   BombsWin       = 5; // 炸弹赢的分
+    bool            Bigger         = 3; // 如果是跟牌，手牌是否有更大的牌
+    int64           PlayingShortId = 4; // 当前需要出牌的人
+    PlayCardsRecord PrevRecord     = 5; // 上家的出牌信息,庄家首次为null
+    BombsWinScore   BombsWin       = 6; // 炸弹赢的分
 }
 
 // 炸弹赢的分

@@ -193,14 +193,8 @@ func (s *StatePlaying) nextPlayer(seat int, lastPlayInfo *PlayCardsRecord) {
 
 	player := s.fasterRunPlayers[seat]
 
-	var follow bool // 跟牌，还是牌权出牌
-
-	// 找到最后一次有效出牌，以此决定本次出牌是否有牌权
-	// 如果最后一个出牌人不是自己，就需要跟牌
+	// 找到最后一次有效出牌
 	lastValidPlay := s.lastValidPlayCards()
-	if lastValidPlay != nil && lastValidPlay.shortId != player.ShortId {
-		follow = true
-	}
 
 	// 如果出的是炸弹，并且转了一圈都没人能大，就算炸弹赢分
 	var bombWinScore *outer.BombsWinScore
@@ -225,14 +219,28 @@ func (s *StatePlaying) nextPlayer(seat int, lastPlayInfo *PlayCardsRecord) {
 		}
 	}
 
+	waitingExpiration := tools.Now().Add(WaitingPlayExpiration)
+	// 如果最后一个出牌人不是自己，就需要跟牌
+	var follow, bigger bool // 跟牌，还是牌权出牌
+	if lastValidPlay != nil && lastValidPlay.shortId != player.ShortId {
+		follow = true
+
+		// 手牌没有更大的牌了，延迟2秒直接过
+		biggerCardGroups := player.handCards.FindBigger(lastValidPlay.cardsGroup)
+		bigger = len(biggerCardGroups) > 0
+		if !bigger {
+			waitingExpiration = tools.Now().Add(WaitingPassExpiration)
+		}
+	}
+
 	// 本次需要出牌的玩家
 	s.waitingPlayShortId = player.ShortId
 	s.waitingPlayFollow = follow
 
-	waitingExpiration := tools.Now().Add(WaitingPlayExpiration)
 	ntf := &outer.FasterRunTurnNtf{
 		WaitingEndAt:   waitingExpiration.UnixMilli(),
 		FollowPlay:     follow,
+		Bigger:         bigger,
 		PlayingShortId: player.ShortId,
 		PrevRecord:     lastPlayInfo.ToPB(),
 		BombsWin:       bombWinScore,
