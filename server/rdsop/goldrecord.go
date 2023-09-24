@@ -13,10 +13,10 @@ import (
 type GoldUpdateType int32
 
 const (
-	UpModifyGold   = 1 // 被上级上\下分
-	ModifyDownGold = 2 // 对下级上\下分
-	GameWinOrLose  = 3 // 游戏结算输赢
-	Rebate         = 4 // 领取返利
+	UpModifyGold   GoldUpdateType = 1 // 被上级上\下分
+	ModifyDownGold GoldUpdateType = 2 // 对下级上\下分
+	GameWinOrLose  GoldUpdateType = 3 // 游戏结算输赢
+	Rebate         GoldUpdateType = 4 // 领取返利
 )
 
 type GoldUpdateReason struct {
@@ -43,6 +43,10 @@ func SetUpdateGoldRecord(shortId int64, reason GoldUpdateReason, pip ...redis.Pi
 	// 插入新的元素在队列左侧,左边是新的，右边是老的
 	pipeline.LPush(ctx, key, str)
 	pipeline.LTrim(ctx, key, 0, 200)
+
+	if reason.Type == GameWinOrLose {
+		SetPlayerDailyStat(shortId, reason.Gold)
+	}
 }
 
 // GetUpdateGoldRecord 获取玩家金币记录

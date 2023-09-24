@@ -4,12 +4,20 @@ option  go_package = "/outer";
 
 import "base.proto";
 
-// 获取上、下级信息
+// 获取上、下级基础信息
 message AgentMembersReq {// tag:player
 }
 message AgentMembersRsp {
     PlayerInfo UpMember             = 1;
     repeated PlayerInfo DownMembers = 2;
+}
+
+// 获取下级每日游戏信息
+message AgentDownDailyStatReq {// tag:player
+    repeated int64 ShortIds = 1;// 查询的下级ID
+}
+message AgentDownDailyStatRsp {
+    map<int64,PlayerDailyStat> DownDailyStats = 1;
 }
 
 // 获取返利以及下级返利点位相关信息

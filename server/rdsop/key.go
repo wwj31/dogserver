@@ -2,7 +2,6 @@ package rdsop
 
 import (
 	"fmt"
-
 	"github.com/wwj31/dogactor/tools"
 )
 
@@ -26,9 +25,15 @@ func ShortIDKey() string {
 	return "shortid"
 }
 
-// PlayerInfoKey 玩家基础公共信息
+// PlayerInfoKey 玩家基础公共信息key
 func PlayerInfoKey(shortId int64) string {
 	return fmt.Sprintf("playerinfo:%v", shortId)
+}
+
+// PlayerDailyStatKey 玩家每日游戏数据信息key
+func PlayerDailyStatKey(shortId int64) string {
+	_, m, d := tools.Now().Local().Date()
+	return fmt.Sprintf("playerdailystat:%v:%v:%v", shortId, m, d)
 }
 
 // AgentUpKey 玩家的上级代理

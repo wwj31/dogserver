@@ -96,9 +96,10 @@ func (s *StateSettlement) Enter() {
 				"player", player.ShortId, "latest gold", player.Gold, "err", err)
 
 			// 记录本场游戏的输赢变化
+			changes := finalScore - presentScore
 			rdsop.SetUpdateGoldRecord(player.ShortId, rdsop.GoldUpdateReason{
 				Type: rdsop.GameWinOrLose, // 游戏输赢记录
-				Gold: finalScore - presentScore,
+				Gold: changes,
 			})
 
 			if len(modifyRspCount) == maxNum {

@@ -44,6 +44,7 @@ var spawner = map[string]factory{
 	"outer.ReadMailReq":                       func() interface{} { return &ReadMailReq{} },
 	"outer.RangeParams":                       func() interface{} { return &RangeParams{} },
 	"outer.PlayerInfo":                        func() interface{} { return &PlayerInfo{} },
+	"outer.PlayerDailyStat":                   func() interface{} { return &PlayerDailyStat{} },
 	"outer.PlayCardsRecord":                   func() interface{} { return &PlayCardsRecord{} },
 	"outer.PlayCardTips":                      func() interface{} { return &PlayCardTips{} },
 	"outer.ModifyPasswordRsp":                 func() interface{} { return &ModifyPasswordRsp{} },
@@ -143,5 +144,7 @@ var spawner = map[string]factory{
 	"outer.AgentRebateInfoReq":                func() interface{} { return &AgentRebateInfoReq{} },
 	"outer.AgentMembersRsp":                   func() interface{} { return &AgentMembersRsp{} },
 	"outer.AgentMembersReq":                   func() interface{} { return &AgentMembersReq{} },
+	"outer.AgentDownDailyStatRsp":             func() interface{} { return &AgentDownDailyStatRsp{} },
+	"outer.AgentDownDailyStatReq":             func() interface{} { return &AgentDownDailyStatReq{} },
 	"outer.AddMailNotify":                     func() interface{} { return &AddMailNotify{} },
 }

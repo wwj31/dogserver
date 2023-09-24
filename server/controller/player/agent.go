@@ -46,6 +46,14 @@ var _ = router.Reg(func(p *player.Player, msg *outer.AgentMembersReq) any {
 	}
 })
 
+// // 获取下级每日游戏统计信息
+var _ = router.Reg(func(p *player.Player, msg *outer.AgentDownDailyStatReq) any {
+	stats := rdsop.PlayerDailyStat(msg.ShortIds...)
+	return &outer.AgentDownDailyStatRsp{
+		DownDailyStats: stats,
+	}
+})
+
 // 获取自己的以及下级分配的返利信息
 var _ = router.Reg(func(p *player.Player, msg *outer.AgentRebateInfoReq) any {
 	rebate := rdsop.GetRebateInfo(p.Role().ShortId())
