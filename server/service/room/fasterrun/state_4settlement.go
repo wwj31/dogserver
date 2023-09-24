@@ -1,6 +1,7 @@
 package fasterrun
 
 import (
+	"server/rdsop"
 	"time"
 
 	"github.com/wwj31/dogactor/tools"
@@ -131,6 +132,7 @@ func (s *StateSettlement) Enter() {
 		seat := i
 		player := s.fasterRunPlayers[seat]
 		finalScore := player.score
+		presentScore := player.PlayerInfo.Gold
 		s.room.Request(actortype.PlayerId(player.RID), &inner.ModifyGoldReq{
 			Set:       true,
 			Gold:      finalScore,
@@ -145,6 +147,12 @@ func (s *StateSettlement) Enter() {
 			s.Log().Infow("modify gold result", "room", s.room.RoomId, "seat", seat,
 				"player", player.ShortId, "latest gold", player.Gold, "err", err)
 
+			// 记录本场游戏的输赢变化
+			changes := finalScore - presentScore
+			rdsop.SetUpdateGoldRecord(player.ShortId, rdsop.GoldUpdateReason{
+				Type: rdsop.GameWinOrLose, // 游戏输赢记录
+				Gold: changes,
+			})
 			if len(modifyRspCount) == playerNumber {
 				s.afterSettle(settlementMsg)
 			}
