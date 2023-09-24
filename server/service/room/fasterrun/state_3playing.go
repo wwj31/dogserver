@@ -154,12 +154,12 @@ func (s *StatePlaying) play(player *fasterRunPlayer, cards PokerCards) outer.ERR
 	// 跟牌模式的校验
 	if follow {
 		// 跟牌牌型不同
-		if playCardsGroup.Type != lastValidPlayCards.cardsGroup.Type {
+		if playCardsGroup.Type != Bombs && playCardsGroup.Type != lastValidPlayCards.cardsGroup.Type {
 			return outer.ERROR_FASTERRUN_PLAY_CARDS_SHOULD_BE_FOLLOW
 		}
 
-		// 主牌必须比跟的牌大
-		if !playCardsGroup.Bigger(lastValidPlayCards.cardsGroup) {
+		// 主牌必须比跟的牌大, 只有牌型相同才比较，包括炸弹
+		if playCardsGroup.Type == lastValidPlayCards.cardsGroup.Type && !playCardsGroup.Bigger(lastValidPlayCards.cardsGroup) {
 			return outer.ERROR_FASTERRUN_PLAY_CARDS_SHOULD_BE_BIGGER
 		}
 
