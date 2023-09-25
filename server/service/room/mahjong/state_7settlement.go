@@ -62,7 +62,12 @@ func (s *StateSettlement) Enter() {
 
 		// 总抽水
 		totalProfit := s.profit(s.gameParams().BigWinner)
-		s.room.Rebate(totalProfit, s.toRoomPlayers())
+		record := &outer.RebateDetailInfo{
+			Type:      outer.GameType_Mahjong,
+			BaseScore: float32(s.gameParams().BaseScore),
+			CreateAt:  tools.Now().UnixMilli(),
+		}
+		s.room.Rebate(record, totalProfit, s.toRoomPlayers())
 
 		ntf := &outer.MahjongBTEFinialSettlement{}
 		for seat := 0; seat < maxNum; seat++ {

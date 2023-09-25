@@ -3,6 +3,7 @@ package outer;
 option  go_package = "/outer";
 
 import "base.proto";
+import "type.proto";
 
 // 获取上、下级基础信息
 message AgentMembersReq {// tag:player
@@ -20,6 +21,18 @@ message AgentDownDailyStatRsp {
     map<int64,PlayerDailyStat> DownDailyStats = 1;
 }
 
+// 给下级上\下分
+message SetScoreForDownReq {// tag:player
+    int64 ShortId = 1; // 下级的短id
+    int64 Gold    = 2; // 上分发正数，下分发负数 NOTE:(用真实分数比如:10.12发10120)
+}
+message SetScoreForDownRsp {
+    int64 ShortId = 1;
+    int64 Gold    = 2; // 玩家设置后最新分数
+}
+
+///////////////////////////////////////////////// 返利 相关 /////////////////////////////////////////////////
+
 // 获取返利以及下级返利点位相关信息
 message AgentRebateInfoReq {// tag:player
 }
@@ -28,7 +41,22 @@ message AgentRebateInfoRsp {
     map<int64, int32> DownPoints = 2; // 每一位下级的返利点位 map<shortId,Points>
 }
 
-// 给下级分配点位
+// 返利详情信息
+message RebateDetailInfo {
+    int64    ShortId   = 1; // 贡献者
+    GameType Type      = 2; // 游戏类型
+    float    BaseScore = 3; // 底分
+    int64    Gold      = 4; // 贡献的分
+    int64    CreateAt  = 5; // 发生时间(毫秒)
+}
+// 获取返利详情
+message AgentRebateDetailInfoReq {// tag:player
+}
+message AgentRebateDetailInfoRsp {
+    repeated RebateDetailInfo Infos = 1;//
+}
+
+// 给下级分配返利点位
 message SetAgentDownRebateReq {// tag:player
     int64 ShortId = 1; // 下级的短id
     int32 Rebate  = 2; // 分配给他的点位
@@ -52,14 +80,4 @@ message ClaimRebateScoreReq {// tag:player
 }
 message ClaimRebateScoreRsp {
     int64 Gold  = 1; // 领取了多少分
-}
-
-// 给下级上\下分
-message SetScoreForDownReq {// tag:player
-    int64 ShortId = 1; // 下级的短id
-    int64 Gold    = 2; // 上分发正数，下分发负数 NOTE:(用真实分数比如:10.12发10120)
-}
-message SetScoreForDownRsp {
-    int64 ShortId = 1;
-    int64 Gold    = 2; // 玩家设置后最新分数
 }

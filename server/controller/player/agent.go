@@ -107,7 +107,7 @@ var _ = router.Reg(func(p *player.Player, msg *outer.ClaimRebateScoreReq) any {
 
 	p.Role().AddGold(gold)
 	pip := rds.Ins.Pipeline()
-	rdsop.AddRebateGold(p.Role().ShortId(), -gold, pip)
+	rdsop.IncRebateGold(p.Role().ShortId(), -gold, pip)
 
 	rdsop.SetUpdateGoldRecord(
 		p.Role().ShortId(),

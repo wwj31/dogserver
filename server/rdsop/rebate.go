@@ -2,11 +2,13 @@ package rdsop
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"time"
 
 	"github.com/go-redis/redis/v9"
 	"github.com/spf13/cast"
+	"github.com/wwj31/dogactor/tools"
 
 	"server/common"
 	"server/common/log"
@@ -91,12 +93,14 @@ func SetRebateInfo(shortId, downShortId int64, point int32) (err outer.ERROR) {
 	return
 }
 
-// AddRebateGold 给玩家加返利分数
-func AddRebateGold(shortId, score int64, pip redis.Pipeliner) {
-	ctx := context.Background()
+func IncRebateGold(shortId, score int64, pip redis.Pipeliner) {
+	pip.IncrBy(context.Background(), RebateGoldKey(shortId), score)
+}
 
-	// 累计返利
-	pip.IncrBy(ctx, RebateGoldKey(shortId), score)
+// RecordRebateGold 给玩家加返利分数
+func RecordRebateGold(info string, shortId, score int64, pip redis.Pipeliner) {
+	ctx := context.Background()
+	IncRebateGold(shortId, score, pip)
 
 	// 今日统计返利
 	statTodayKey := RebateScoreKeyForToday(shortId)
@@ -107,6 +111,41 @@ func AddRebateGold(shortId, score int64, pip redis.Pipeliner) {
 	statWeekKey := RebateScoreKeyForWeek(shortId)
 	pip.IncrBy(ctx, statWeekKey, score)
 	pip.Expire(ctx, statWeekKey, 7*24*time.Hour)
+
+	// 统计每笔返利详情
+	statDetailKey := RebateScoreKeyForDetail(shortId, tools.Now().Local().Format("2006-01-02"))
+	pip.LPush(ctx, statDetailKey, info)
+	pip.Expire(ctx, statWeekKey, 5*24*time.Hour)
+}
+
+// GetRebateRecordOf3Day 获得玩家3天的返利记录详情
+func GetRebateRecordOf3Day(shortId int64) (records []*outer.RebateDetailInfo) {
+	ctx := context.Background()
+	pip := rds.Ins.Pipeline()
+	var lists []*redis.StringSliceCmd
+	for i := 0; i < 3; i++ {
+		day := tools.Now().Local().Add(-time.Duration(i) * 24 * time.Hour).Format("2006-01-02")
+		statDetailKey := RebateScoreKeyForDetail(shortId, day)
+		lists = append(lists, pip.LRange(ctx, statDetailKey, 0, -1))
+	}
+	_, err := pip.Exec(ctx)
+	if err != nil {
+		log.Errorw("GetRebateRecordOf3Day redis pip failed", "err", err, "shortId", shortId)
+		return
+	}
+
+	for _, list := range lists {
+		for _, info := range list.Val() {
+			v := &outer.RebateDetailInfo{}
+			e := json.Unmarshal([]byte(info), v)
+			if e != nil {
+				log.Warnw("json unmarshal failed", "info", info)
+				continue
+			}
+			records = append(records, v)
+		}
+	}
+	return
 }
 
 // GetRebateGold 玩家返利分数
@@ -142,7 +181,7 @@ func GetRebateGold(shortId int64) (gold, goldOfToday, goldOfWeek int64) {
 	goldOfToday = cast.ToInt64(cmds[1].Val())
 	goldOfWeek = cast.ToInt64(cmds[2].Val())
 
-	log.Errorw("get rebate gold ", "short", shortId, "cmd len", cmds,
+	log.Infow("get rebate gold ", "short", shortId, "cmd len", cmds,
 		"gold", gold, "goldOfToday", goldOfToday, "goldOfWeek", goldOfWeek,
 		"rebateGoldKey", rebateGoldKey,
 		"rebateScoreKeyForToday", rebateScoreKeyForToday,

@@ -1,8 +1,9 @@
 package fasterrun
 
 import (
-	"server/rdsop"
 	"time"
+
+	"server/rdsop"
 
 	"github.com/wwj31/dogactor/tools"
 
@@ -115,7 +116,14 @@ func (s *StateSettlement) Enter() {
 
 		// 总抽水
 		totalProfit := s.profit(s.gameParams().BigWinner)
-		s.room.Rebate(totalProfit, s.toRoomPlayers())
+
+		// 记录返利信息
+		record := &outer.RebateDetailInfo{
+			Type:      outer.GameType_FasterRun,
+			BaseScore: s.gameParams().BaseScore,
+			CreateAt:  tools.Now().UnixMilli(),
+		}
+		s.room.Rebate(record, totalProfit, s.toRoomPlayers())
 
 		ntf := &outer.FasterRunFinialSettlement{}
 		for seat := 0; seat < playerNumber; seat++ {

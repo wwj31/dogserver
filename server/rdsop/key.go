@@ -2,6 +2,7 @@ package rdsop
 
 import (
 	"fmt"
+
 	"github.com/wwj31/dogactor/tools"
 )
 
@@ -32,8 +33,7 @@ func PlayerInfoKey(shortId int64) string {
 
 // PlayerDailyStatKey 玩家每日游戏数据信息key
 func PlayerDailyStatKey(shortId int64) string {
-	_, m, d := tools.Now().Local().Date()
-	return fmt.Sprintf("playerdailystat:%v:%v:%v", shortId, m, d)
+	return fmt.Sprintf("playerdailystat:%v:%v", shortId, tools.Now().Local().Format("2006-01-02"))
 }
 
 // AgentUpKey 玩家的上级代理
@@ -58,19 +58,20 @@ func RebateGoldKey(shortId int64) string {
 
 // RebateScoreKeyForToday 统计今日返利利润
 func RebateScoreKeyForToday(shortId int64) string {
-	t := tools.NewTimeEx(tools.Now())
-	tm := t.BeginOfToday().Format("2006-01-02")
-	return fmt.Sprintf("agent:%v:gold_for_today:%v", shortId, tm)
+	return fmt.Sprintf("agent:%v:rebate:gold_for_today:%v", shortId, tools.Now().Local().Format("2006-01-02"))
 }
 
 // RebateScoreKeyForWeek 统计本周返利利润
 func RebateScoreKeyForWeek(shortId int64) string {
-	t := tools.NewTimeEx(tools.Now())
-	tm := t.StartOfWeek().Format("2006-01-02")
-	return fmt.Sprintf("agent:%v:gold_for_week:%v", shortId, tm)
+	return fmt.Sprintf("agent:%v:rebate:gold_for_week:%v", shortId, tools.Now().Local().Format("2006-01-02"))
 }
 
-// DeleteAlliancesKey 被删除的联盟
+// RebateScoreKeyForDetail 每笔返利记录信息
+func RebateScoreKeyForDetail(shortId int64, date string) string {
+	return fmt.Sprintf("agent:%v:rebate:gold_for_detail:%v", shortId, date)
+}
+
+// DeleteAlliancesKey 被删除的联盟bi
 func DeleteAlliancesKey() string {
 	return fmt.Sprintf("alliance:deleted")
 }

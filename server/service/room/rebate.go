@@ -34,7 +34,7 @@ func (r *Room) ProfitRange(score int64, rebate *outer.RebateParams) *outer.Range
 }
 
 // Rebate 返利计算
-func (r *Room) Rebate(totalProfit int64, players []*Player) {
+func (r *Room) Rebate(record *outer.RebateDetailInfo, totalProfit int64, players []*Player) {
 	divProfit := totalProfit / int64(len(players)) // 每个玩家那条上级路线，都均分获得利润
 	if divProfit == 0 {
 		r.Log().Infow("profit is zero!!", "total profit", totalProfit)
@@ -42,9 +42,10 @@ func (r *Room) Rebate(totalProfit int64, players []*Player) {
 	}
 
 	pip := rds.Ins.Pipeline()
+	// 本局参与游戏的玩家，挨个、逐层向上级返利
 	for _, player := range players {
 		r.Log().Infow("recur profit start", "start short", player.ShortId)
-		r.recurRebate(divProfit, player.UpShortId, player.ShortId, 0, pip)
+		r.recurRebate(record, divProfit, player.UpShortId, player.ShortId, 0, pip)
 	}
 
 	if _, err := pip.Exec(context.Background()); err != nil {
@@ -52,8 +53,7 @@ func (r *Room) Rebate(totalProfit int64, players []*Player) {
 	}
 }
 
-// 逐层向上返利
-func (r *Room) recurRebate(profitGold, upShortId, shortId, downShortId int64, addPip redis.Pipeliner) {
+func (r *Room) recurRebate(record *outer.RebateDetailInfo, profitGold, upShortId, shortId, downShortId int64, addPip redis.Pipeliner) {
 	rebateInfo := rdsop.GetRebateInfo(shortId)
 
 	var (
@@ -61,12 +61,13 @@ func (r *Room) recurRebate(profitGold, upShortId, shortId, downShortId int64, ad
 		exactProfitGold int64 // 确切的获利
 	)
 
-	// 自己有点位，先分自己一份
 	if rebateInfo.Point > 0 {
 		// 自己的获利=自己的分润-下级的分润
 		exactPoint = common.Max(0, rebateInfo.Point-rebateInfo.DownPoints[downShortId])
-		exactProfitGold = profitGold * int64(exactPoint) / 100
-		rdsop.AddRebateGold(shortId, exactProfitGold, addPip)
+		exactProfitGold = profitGold * int64(exactPoint) / 100 // 实际分润的金币
+		record.Gold = exactProfitGold
+		record.ShortId = shortId
+		rdsop.RecordRebateGold(common.JsonMarshal(record), shortId, exactProfitGold, addPip)
 	}
 
 	r.Log().Infow("rebate calculating ...", "room", r.RoomId,
@@ -78,5 +79,5 @@ func (r *Room) recurRebate(profitGold, upShortId, shortId, downShortId int64, ad
 	}
 
 	// 向上级递归
-	r.recurRebate(profitGold, rdsop.AgentUp(upShortId), upShortId, shortId, addPip)
+	r.recurRebate(record, profitGold, rdsop.AgentUp(upShortId), upShortId, shortId, addPip)
 }
