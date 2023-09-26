@@ -79,14 +79,15 @@ func SetRebateInfo(shortId, downShortId int64, point int32) (err outer.ERROR) {
 			}
 			downRebateInfo.Point = point
 
+			pip := rds.Ins.Pipeline()
+			ctx := context.Background()
 			// 更新下级点位
-			str := common.JsonMarshal(downRebateInfo)
-			rds.Ins.Set(context.Background(), AgentRebateKey(downShortId), str, -1)
-
+			pip.Set(ctx, AgentRebateKey(downShortId), common.JsonMarshal(downRebateInfo), -1)
 			// 更新自己管理的下级
-			str = common.JsonMarshal(rebateInfo)
-			rds.Ins.Set(context.Background(), AgentRebateKey(shortId), str, -1)
-			log.Infow("set rebate info success", "short", shortId, "downShort", downShortId, "points", rebateInfo.DownPoints)
+			pip.Set(ctx, AgentRebateKey(shortId), common.JsonMarshal(rebateInfo), -1)
+			_, err := pip.Exec(ctx)
+			log.Infow("set rebate info success", "short", shortId, "downShort", downShortId,
+				"points", rebateInfo.DownPoints, "err", err)
 		})
 	})
 
@@ -115,7 +116,7 @@ func RecordRebateGold(info string, shortId, score int64, pip redis.Pipeliner) {
 	// 统计每笔返利详情
 	statDetailKey := RebateScoreKeyForDetail(shortId, tools.Now().Local().Format("2006-01-02"))
 	pip.LPush(ctx, statDetailKey, info)
-	pip.Expire(ctx, statWeekKey, 7*24*time.Hour)
+	pip.Expire(ctx, statDetailKey, 11*24*time.Hour)
 }
 
 // GetRebateRecordOf3Day 获得玩家3天的返利记录详情
@@ -123,7 +124,7 @@ func GetRebateRecordOf3Day(shortId int64) (records []*outer.RebateDetailInfo) {
 	ctx := context.Background()
 	pip := rds.Ins.Pipeline()
 	var lists []*redis.StringSliceCmd
-	for i := 0; i < 3; i++ {
+	for i := 0; i < 10; i++ {
 		day := tools.Now().Local().Add(-time.Duration(i) * 24 * time.Hour).Format("2006-01-02")
 		statDetailKey := RebateScoreKeyForDetail(shortId, day)
 		lists = append(lists, pip.LRange(ctx, statDetailKey, 0, -1))
