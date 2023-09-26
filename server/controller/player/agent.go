@@ -88,6 +88,13 @@ var _ = router.Reg(func(p *player.Player, msg *outer.SetAgentDownRebateReq) any 
 	}
 })
 
+// 获取返利详情信息
+var _ = router.Reg(func(p *player.Player, msg *outer.AgentRebateDetailInfoReq) any {
+	// 最近三天的每一笔返利信息
+	records := rdsop.GetRebateRecordOf3Day(p.Role().ShortId())
+	return &outer.AgentRebateDetailInfoRsp{Infos: records}
+})
+
 // 获取自己可领的返利分数信息
 var _ = router.Reg(func(p *player.Player, msg *outer.RebateScoreReq) any {
 	gold, goldOfToday, goldOfWeek := rdsop.GetRebateGold(p.Role().ShortId())
