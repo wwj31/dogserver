@@ -115,7 +115,7 @@ func RecordRebateGold(info string, shortId, score int64, pip redis.Pipeliner) {
 	// 统计每笔返利详情
 	statDetailKey := RebateScoreKeyForDetail(shortId, tools.Now().Local().Format("2006-01-02"))
 	pip.LPush(ctx, statDetailKey, info)
-	pip.Expire(ctx, statWeekKey, 5*24*time.Hour)
+	pip.Expire(ctx, statWeekKey, 7*24*time.Hour)
 }
 
 // GetRebateRecordOf3Day 获得玩家3天的返利记录详情

@@ -1,16 +1,18 @@
 package gateway
 
 import (
+	"time"
+
 	gogo "github.com/gogo/protobuf/proto"
 	"github.com/golang/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
 	"github.com/wwj31/dogactor/network"
+
 	"server/common"
 	"server/common/actortype"
 	"server/common/log"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
-	"time"
 )
 
 // InnerHandler 处理其他服务向gateway发送的消息
