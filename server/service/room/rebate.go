@@ -70,9 +70,9 @@ func (r *Room) recurRebate(record *outer.RebateDetailInfo, profitGold, upShortId
 		rdsop.RecordRebateGold(common.JsonMarshal(record), shortId, exactProfitGold, addPip)
 	}
 
-	r.Log().Infow("rebate calculating ...", "room", r.RoomId,
-		"short", shortId, "up", upShortId, "down", downShortId,
-		"profitGold", profitGold, "point", exactPoint, "gold", exactProfitGold, "rebateInfo", rebateInfo)
+	r.Log().Infow("rebate calculating ...", "room", r.RoomId, "game", r.GameType,
+		"short", shortId, "up", upShortId, "down", downShortId, "rebateInfo", rebateInfo,
+		"profitGold", profitGold, "point", exactPoint, "gold", exactProfitGold)
 
 	if upShortId == 0 {
 		return
