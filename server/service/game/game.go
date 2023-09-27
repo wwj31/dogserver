@@ -53,7 +53,7 @@ func (s *Game) OnHandle(msg actor.Message) {
 
 	switch pbMsg := actMsg.(type) {
 	case *inner.PullPlayer:
-		playerId, loading := s.checkAndPullPlayer(pbMsg.RID, pbMsg.NewData)
+		playerId, loading := s.checkAndPullPlayer(pbMsg.RID)
 		if !loading {
 			_ = s.Response(msg.GetRequestId(), &inner.Ok{})
 		} else {
@@ -64,17 +64,12 @@ func (s *Game) OnHandle(msg actor.Message) {
 	}
 }
 
-func (s *Game) checkAndPullPlayer(rid string, newInfo *inner.NewPlayerInfo) (playerId actortype.ActorId, loading bool) {
+func (s *Game) checkAndPullPlayer(rid string) (playerId actortype.ActorId, loading bool) {
 	playerId = actortype.PlayerId(rid)
 	if !s.System().HasActor(playerId) {
 		newPlayer := player.New(rid, s)
 		err := s.System().NewActor(playerId, newPlayer, actor.SetMailBoxSize(300)) //actor.SetLocalized(),
 		expect.Nil(err)
-
-		if newInfo != nil {
-			err = s.Send(playerId, newInfo)
-			expect.Nil(err)
-		}
 		return playerId, true
 	}
 

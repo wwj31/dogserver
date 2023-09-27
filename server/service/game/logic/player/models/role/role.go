@@ -51,7 +51,6 @@ func randName() string {
 func (s *Role) OnLogin(first bool, enterGameRsp *outer.EnterGameRsp) {
 	nowStr := tools.TimeFormat(tools.Now())
 	if first {
-		//first
 		s.data.CreateAt = nowStr
 		s.data.Phone = s.Player.Role().Phone()
 		s.data.Name = randName()

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"server/common/actortype"
 	"server/rdsop"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -147,16 +148,18 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 				dispatchGameId = s.getGameNode()
 			}
 
-			_, err = s.RequestWait(dispatchGameId, &inner.PullPlayer{
-				RID: acc.LastLoginRID,
-				NewData: &inner.NewPlayerInfo{
+			_, err = s.RequestWait(dispatchGameId, &inner.PullPlayer{RID: acc.LastLoginRID})
+			if err != nil {
+				log.Errorw("pull the player send to game failed ", "err", err, "game", dispatchGameId)
+				return
+			}
+
+			// 如果是新玩家，给创建好的player发送初始化信息
+			if newPlayer {
+				_, err = s.RequestWait(actortype.PlayerId(acc.LastLoginRID), &inner.NewPlayerInfoReq{
 					AccountInfo: acc.ToPb(),
 					ShortId:     acc.Roles[acc.LastLoginRID].ShorID,
-				},
-			})
-			if err != nil {
-				log.Errorw("send to game failed ", "err", err, "game", dispatchGameId)
-				return
+				})
 			}
 
 			rds.Ins.Set(context.Background(), rdsop.GameNodeKey(acc.LastShortID), dispatchGameId, 7*24*time.Hour)

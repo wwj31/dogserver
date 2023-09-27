@@ -36,12 +36,14 @@ message GateMsgWrapper{
 
 message PullPlayer{
     string  RID            = 1;
-    NewPlayerInfo NewData  = 2;
 }
 
-message NewPlayerInfo {
+// 新玩家信息
+message NewPlayerInfoReq {
     Account AccountInfo = 1;
     int64   ShortId     = 2;
+}
+message NewPlayerInfoRsp {
 }
 
 // 通知玩家修改最新新币

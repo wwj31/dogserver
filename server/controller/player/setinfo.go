@@ -8,10 +8,10 @@ import (
 )
 
 // 新玩家信息
-var _ = router.Reg(func(player *player.Player, msg *inner.NewPlayerInfo) any {
+var _ = router.Reg(func(player *player.Player, msg *inner.NewPlayerInfoReq) any {
 	player.Role().SetShortId(msg.ShortId)
 	player.Role().SetUID(msg.AccountInfo.UID)
-	return nil
+	return &inner.NewPlayerInfoRsp{}
 })
 
 // 设置信息
