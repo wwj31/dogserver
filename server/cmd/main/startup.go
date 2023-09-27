@@ -146,17 +146,17 @@ func newProtoIndex() *tools.ProtoIndex {
 
 func newLogin(system *actor.System) {
 	loginActor := login.New()
-	_ = system.NewActor(actortype.LoginActor, loginActor, actor.SetMailBoxSize(2000))
+	_ = system.NewActor(actortype.LoginActor, loginActor, actor.SetMailBoxSize(500))
 }
 
 func newGateway(appId int32, system *actor.System) {
 	gateActor := gateway.New()
-	_ = system.NewActor(actortype.GatewayName(appId), gateActor, actor.SetMailBoxSize(2000))
+	_ = system.NewActor(actortype.GatewayName(appId), gateActor, actor.SetMailBoxSize(1000))
 }
 
 func newGame(appId int32, system *actor.System) {
 	gameActor := game.New(appId)
-	_ = system.NewActor(actortype.GameName(appId), gameActor, actor.SetMailBoxSize(1000))
+	_ = system.NewActor(actortype.GameName(appId), gameActor, actor.SetMailBoxSize(200))
 }
 
 func newDoor(system *actor.System) {

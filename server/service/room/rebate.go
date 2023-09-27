@@ -23,8 +23,8 @@ func (r *Room) ProfitRange(score int64, rebate *outer.RebateParams) *outer.Range
 			continue
 		}
 
-		minLimit := param.Min * 1000
-		MaxLimit := param.Max * 1000
+		minLimit := param.Min * common.Gold1000Times
+		MaxLimit := param.Max * common.Gold1000Times
 
 		if minLimit < score && score <= MaxLimit {
 			return param

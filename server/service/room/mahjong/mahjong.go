@@ -10,6 +10,7 @@ import (
 
 	"github.com/wwj31/dogactor/tools"
 
+	"server/common"
 	"server/proto/outermsg/outer"
 
 	"server/proto/innermsg/inner"
@@ -402,7 +403,7 @@ func (m *Mahjong) baseScore() int64 {
 		baseScoreTimes = 1.0
 	}
 
-	return int64(float32(base*1000) * baseScoreTimes)
+	return int64(float32(base*common.Gold1000Times) * baseScoreTimes)
 }
 
 func (m *Mahjong) clear() {

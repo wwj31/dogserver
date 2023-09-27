@@ -2,8 +2,9 @@ package common
 
 import (
 	"fmt"
-	"github.com/golang/protobuf/proto"
 	"strings"
+
+	"github.com/golang/protobuf/proto"
 
 	"github.com/spf13/cast"
 	"github.com/wwj31/dogactor/actor"

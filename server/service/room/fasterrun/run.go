@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"server/common"
 	"server/common/log"
 
 	"github.com/golang/protobuf/proto"
@@ -285,7 +286,7 @@ func (f *FasterRun) baseScore() int64 {
 		base = 1
 	}
 
-	return int64(base * 1000)
+	return int64(base * common.Gold1000Times)
 }
 
 func (f *FasterRun) bombWinScore() int64 {
@@ -294,7 +295,7 @@ func (f *FasterRun) bombWinScore() int64 {
 		base = 1
 	}
 
-	return int64(float32(base*1000) * 5)
+	return int64(float32(base*common.Gold1000Times) * 5)
 }
 
 func (f *FasterRun) clear() {

@@ -4,6 +4,7 @@ import (
 	"reflect"
 
 	"github.com/golang/protobuf/proto"
+
 	"server/common/log"
 	"server/proto/outermsg/outer"
 )
