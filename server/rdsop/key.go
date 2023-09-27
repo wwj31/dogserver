@@ -33,7 +33,7 @@ func PlayerInfoKey(shortId int64) string {
 
 // PlayerDailyStatKey 玩家每日游戏数据信息key
 func PlayerDailyStatKey(shortId int64) string {
-	return fmt.Sprintf("playerdailystat:%v:%v", shortId, tools.Now().Local().Format("2006-01-02"))
+	return fmt.Sprintf("playerdailystat:%v:%v", shortId, tools.Now().Local().Format(tools.StdDateFormat))
 }
 
 // AgentUpKey 玩家的上级代理
@@ -58,12 +58,12 @@ func RebateGoldKey(shortId int64) string {
 
 // RebateScoreKeyForToday 统计今日返利利润
 func RebateScoreKeyForToday(shortId int64) string {
-	return fmt.Sprintf("agent:%v:rebate:gold_for_today:%v", shortId, tools.Now().Local().Format("2006-01-02"))
+	return fmt.Sprintf("agent:%v:rebate:gold_for_today:%v", shortId, tools.Now().Local().Format(tools.StdDateFormat))
 }
 
 // RebateScoreKeyForWeek 统计本周返利利润
 func RebateScoreKeyForWeek(shortId int64) string {
-	return fmt.Sprintf("agent:%v:rebate:gold_for_week:%v", shortId, tools.Now().Local().Format("2006-01-02"))
+	return fmt.Sprintf("agent:%v:rebate:gold_for_week:%v", shortId, tools.Now().Local().Format(tools.StdDateFormat))
 }
 
 // RebateScoreKeyForDetail 每笔返利记录信息

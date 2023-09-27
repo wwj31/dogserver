@@ -106,17 +106,17 @@ func RecordRebateGold(info string, shortId, score int64, pip redis.Pipeliner) {
 	// 今日统计返利
 	statTodayKey := RebateScoreKeyForToday(shortId)
 	pip.IncrBy(ctx, statTodayKey, score)
-	pip.Expire(ctx, statTodayKey, 24*time.Hour)
+	pip.Expire(ctx, statTodayKey, tools.Day)
 
 	// 本周统计统计返利
 	statWeekKey := RebateScoreKeyForWeek(shortId)
 	pip.IncrBy(ctx, statWeekKey, score)
-	pip.Expire(ctx, statWeekKey, 7*24*time.Hour)
+	pip.Expire(ctx, statWeekKey, 7*tools.Day)
 
 	// 统计每笔返利详情
-	statDetailKey := RebateScoreKeyForDetail(shortId, tools.Now().Local().Format("2006-01-02"))
+	statDetailKey := RebateScoreKeyForDetail(shortId, tools.Now().Local().Format(tools.StdDateFormat))
 	pip.LPush(ctx, statDetailKey, info)
-	pip.Expire(ctx, statDetailKey, 11*24*time.Hour)
+	pip.Expire(ctx, statDetailKey, 11*tools.Day)
 }
 
 // GetRebateRecordOf3Day 获得玩家3天的返利记录详情
@@ -125,7 +125,7 @@ func GetRebateRecordOf3Day(shortId int64) (records []*outer.RebateDetailInfo) {
 	pip := rds.Ins.Pipeline()
 	var lists []*redis.StringSliceCmd
 	for i := 0; i < 10; i++ {
-		day := tools.Now().Local().Add(-time.Duration(i) * 24 * time.Hour).Format("2006-01-02")
+		day := tools.Now().Local().Add(-time.Duration(i) * tools.Day).Format(tools.StdDateFormat)
 		statDetailKey := RebateScoreKeyForDetail(shortId, day)
 		lists = append(lists, pip.LRange(ctx, statDetailKey, 0, -1))
 	}
