@@ -7,6 +7,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
 	"github.com/wwj31/dogactor/network"
+	"github.com/wwj31/dogactor/tools"
 
 	"server/common"
 	"server/common/actortype"
@@ -40,7 +41,7 @@ func (g *GateWay) InnerHandler(m actor.Message) gogo.Message {
 		if actortype.RID(session.PlayerId) == msg.RID {
 			session.PlayerId = ""
 			_ = session.SendMsg(g.protoData(&outer.FailRsp{Error: outer.ERROR_REPEAT_LOGIN}))
-			g.AddTimer("", time.Now().Add(3*time.Second), func(dt time.Duration) {
+			g.AddTimer(tools.UUID(), time.Now().Add(2*time.Second), func(dt time.Duration) {
 				session.Stop()
 			})
 			log.Infow("kick player ", "gateway", g.ID(), "session", gSession.String(), "RID", session.PlayerId)
