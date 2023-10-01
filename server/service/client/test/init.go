@@ -28,8 +28,8 @@ func newProtoIndex() *tools.ProtoIndex {
 }
 
 var (
-	Addr = flag.String("Addr", "ws://localhost:7001/", "Addr")
-	//Addr = flag.String("Addr", "ws://1.14.17.15:7001/", "Addr")
+	//Addr = flag.String("Addr", "ws://localhost:7001/", "Addr")
+	Addr = flag.String("Addr", "ws://1.14.17.15:7001/", "Addr")
 )
 
 func Init(cli *client.Client) {

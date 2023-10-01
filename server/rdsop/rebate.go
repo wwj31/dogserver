@@ -26,6 +26,7 @@ func GetRebateInfo(shortId int64) RebateInfo {
 	str, _ := rds.Ins.Get(context.Background(), AgentRebateKey(shortId)).Result()
 	var result RebateInfo
 	if str == "" {
+		result.DownPoints = map[int64]int32{}
 		return result
 	}
 
@@ -56,16 +57,9 @@ func rebateSetSyncKey(id int64) string {
 // SetRebateInfo 设置下级玩家返利信息
 func SetRebateInfo(shortId, downShortId int64, point int32) (err outer.ERROR) {
 	rds.LockDo(rebateSetSyncKey(shortId), func() {
-		rebateInfo := GetRebateInfo(downShortId)
+		rebateInfo := GetRebateInfo(shortId)
 		rebateInfo.DownPoints[downShortId] = point
-
-		// 获得点位最高的下级
-		var HighestPoint int32
-		for _, p := range rebateInfo.DownPoints {
-			HighestPoint = common.Max(HighestPoint, p)
-		}
-
-		if rebateInfo.Point < HighestPoint {
+		if rebateInfo.Point < point {
 			err = outer.ERROR_AGENT_SET_REBATE_ONLY_OUT_OF_RANGE
 			return
 		}
@@ -166,7 +160,9 @@ func GetRebateGold(shortId int64) (gold, goldOfToday, goldOfWeek int64) {
 	cmds = append(cmds, pip.Get(ctx, rebateScoreKeyForWeek))
 	_, err := pip.Exec(ctx)
 	if err != nil {
-		log.Errorw("get rebate gold failed", "err", err)
+		if err != redis.Nil {
+			log.Errorw("get rebate gold failed", "err", err)
+		}
 		return
 	}
 
