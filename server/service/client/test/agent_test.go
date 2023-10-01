@@ -53,3 +53,14 @@ func TestSetScoreForDownReq(t *testing.T) {
 	assert.True(t, ok)
 	log.Infof("agent members rsp [%v]\n", rsp)
 }
+
+func TestSetAgentDownRebateReq(t *testing.T) {
+	cli := &client.Client{Addr: *Addr, DeviceID: "test1"}
+	Init(cli)
+	rsp, ok := cli.Req(outer.Msg_IdSetAgentDownRebateReq, &outer.SetAgentDownRebateReq{
+		ShortId: 1612475,
+		Rebate:  10,
+	}).(*outer.SetAgentDownRebateRsp)
+	assert.True(t, ok)
+	log.Infof("agent SetAgentDownRebate rsp [%v]\n", rsp)
+}
