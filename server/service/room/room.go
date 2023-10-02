@@ -299,12 +299,14 @@ func (r *Room) Info() *inner.RoomInfo {
 
 // GamblingData 游戏数据
 func (r *Room) GamblingData(shortId int64) []byte {
-	data, err := proto.Marshal(r.gambling.Data(shortId))
+	data := r.gambling.Data(shortId)
+	payload, err := proto.Marshal(data)
 	if err != nil {
 		r.Log().Errorw("gambling data marshal failed", "room", r.RoomId, "param", r.GameParams.String())
 	}
 
-	return data
+	r.Log().Infow("gambling data", "room id ", r.RoomId, "data", data.String())
+	return payload
 }
 
 func (p *Player) InnerPB(seatIdx int32) *inner.RoomPlayerInfo {
