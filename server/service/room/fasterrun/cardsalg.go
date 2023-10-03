@@ -31,7 +31,7 @@ func (p PokerCards) FindBigger(cardsGroup CardsGroup) (bigger []CardsGroup) {
 		for point, num := range stat {
 			if num >= n && point > cardsGroup.Cards[0].Point() {
 				cards := p.PointCards(point)
-				comb := cards.Combination(len(cards))
+				comb := cards.Combination(n)
 				for _, c := range comb {
 					bigger = append(bigger, CardsGroup{Type: cardsGroup.Type, Cards: c})
 				}

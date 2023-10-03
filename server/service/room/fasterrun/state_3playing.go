@@ -289,9 +289,13 @@ func (s *StatePlaying) cancelActionTimer() {
 func (s *StatePlaying) actionTimer(expireAt time.Time) {
 	s.cancelActionTimer()
 	s.actionTimerId = s.room.AddTimer(tools.XUID(), expireAt, func(dt time.Duration) {
-		s.Log().Infow("player timeout", "shortId", s.waitingPlayShortId)
 		player, _ := s.findFasterRunPlayer(s.waitingPlayShortId)
 		var cards PokerCards
+
+		defer func() {
+			s.Log().Infow("player timeout", "shortId", s.waitingPlayShortId, "cards", cards)
+		}()
+
 		if s.waitingPlayFollow {
 			latest := s.lastValidPlayCards()
 			biggerCardGroups := player.handCards.FindBigger(latest.cardsGroup)

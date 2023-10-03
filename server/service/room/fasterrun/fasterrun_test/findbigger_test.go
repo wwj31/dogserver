@@ -185,4 +185,11 @@ func TestFindBiggerStraight(t *testing.T) {
 		Cards: fasterrun.PokerCards{6, 7, 8, 9, 10},
 	})
 	fmt.Println(bigger)
+
+	cards = fasterrun.PokerCards{106, 206, 107, 307, 407, 108, 310, 411, 212, 412, 313}
+	bigger = cards.FindBigger(fasterrun.CardsGroup{
+		Type:  fasterrun.Pair,
+		Cards: fasterrun.PokerCards{203, 303},
+	})
+	fmt.Println(bigger)
 }
