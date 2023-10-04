@@ -376,10 +376,7 @@ func (s *StateSettlement) finalSettlement() bool {
 
 // profit 抽水
 func (s *StateSettlement) profit(bigWinner bool) (totalProfit int64) {
-	var (
-		winners []*mahjongPlayer
-	)
-
+	var winners []*mahjongPlayer
 	if bigWinner {
 		var (
 			winScore int64
@@ -393,9 +390,7 @@ func (s *StateSettlement) profit(bigWinner bool) (totalProfit int64) {
 			}
 		}
 
-		if winners != nil {
-			winners = append(winners, winner)
-		}
+		winners = append(winners, winner)
 	} else {
 		for i, player := range s.mahjongPlayers {
 			if player.finalStatsMsg.TotalScore > 0 {
