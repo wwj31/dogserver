@@ -410,14 +410,15 @@ func (s *StateSettlement) profit(bigWinner bool) (totalProfit int64) {
 		}
 
 		// 检查是否达到抽水最低要求
-		if winScore < rangeCfg.MinimumRebate {
+		minimumRebate := rangeCfg.MinimumRebate * common.Gold1000Times
+		if winScore < minimumRebate {
 			s.Log().Warnw("the winner win the score did not meet the expected score",
 				"big winners", winner.ShortId, "win", winScore)
 			continue
 		}
 
-		baseProfit := (winScore * rangeCfg.RebateRatio) / 100 // 基础抽水
-		profit := baseProfit + rangeCfg.MinimumGuarantee      // +抽水保底值
+		baseProfit := (winScore * rangeCfg.RebateRatio) / 100                     // 基础抽水
+		profit := baseProfit + (rangeCfg.MinimumGuarantee * common.Gold1000Times) // +抽水保底值
 		totalProfit += profit
 		val := winner.score - profit
 		winner.score = common.Max(0, val)
