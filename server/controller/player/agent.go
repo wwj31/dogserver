@@ -61,7 +61,7 @@ var _ = router.Reg(func(p *player.Player, msg *outer.AgentRebateInfoReq) any {
 
 	allPlaying := rdsop.GetTodayPlaying()
 	// 下级信息
-	var infos []*outer.AgentRebateInfo
+	var infos []*outer.AgentDownRebateInfo
 	downs := rdsop.AgentDown(p.Role().ShortId(), 1) // 获取直属下级
 	for _, downShortId := range downs {
 		if downShortId == p.Role().ShortId() {
@@ -77,7 +77,8 @@ var _ = router.Reg(func(p *player.Player, msg *outer.AgentRebateInfoReq) any {
 			}
 		}
 
-		infos = append(infos, &outer.AgentRebateInfo{
+		infos = append(infos, &outer.AgentDownRebateInfo{
+			ShortId:        downShortId,
 			TodayGold:      t,
 			YesterdayGold:  y,
 			WeekGold:       w,
