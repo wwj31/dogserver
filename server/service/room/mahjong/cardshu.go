@@ -91,29 +91,46 @@ func (c Cards) IsHu(lightGang, darkGang, pong map[int32]int64, triggerCard Card,
 	return c.upgrade(colors, lightGang, darkGang, pong, typ, triggerCard, params)
 }
 
-func (c Cards) qingYiSeUpgrade(colors map[int]struct{}, typ HuType) HuType {
+func (c Cards) qingYiSeUpgrade(colors map[int]struct{}, lightGang, darkGang, pong map[int32]int64, typ HuType) HuType {
 	if typ == HuInvalid {
 		return typ
 	}
-	if len(colors) == 1 {
-		switch typ {
-		case Hu:
-			return QingYiSe
-		case DuiDuiHu:
-			return QingDui
-		case QiDui:
-			return QingQiDui
-		case LongQiDui:
-			return QingLongQiDui
+	if len(colors) > 1 {
+		return typ
+	}
+
+	// 分别判断碰、杠集合中，是否所有牌的颜色都和手牌color一致
+	for _, set := range []map[int32]int64{lightGang, darkGang, pong} {
+		if set == nil {
+			continue
+		}
+
+		for card, _ := range set {
+			color := Card(card).Color()
+			if _, exist := colors[int(color)]; !exist {
+				return typ
+			}
 		}
 	}
+
+	switch typ {
+	case Hu:
+		return QingYiSe
+	case DuiDuiHu:
+		return QingDui
+	case QiDui:
+		return QingQiDui
+	case LongQiDui:
+		return QingLongQiDui
+	}
+
 	return typ
 }
 
 // 传入花色，传入明杠
 func (c Cards) upgrade(colors map[int]struct{}, lightGang, darkGang, pong map[int32]int64, typ HuType, triggerCard Card, params *outer.MahjongParams) HuType {
 	// 判断清一色升级牌型
-	typ = c.qingYiSeUpgrade(colors, typ)
+	typ = c.qingYiSeUpgrade(colors, lightGang, darkGang, pong, typ)
 
 	switch typ {
 	case DuiDuiHu, QiDui, LongQiDui: // 对对胡->将对对、七对\龙七对->将七对

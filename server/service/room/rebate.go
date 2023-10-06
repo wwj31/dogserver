@@ -42,10 +42,13 @@ func (r *Room) Rebate(record *outer.RebateDetailInfo, totalProfit int64, players
 	}
 
 	pip := rds.Ins.Pipeline()
-	// 本局参与游戏的玩家，挨个、逐层向上级返利
+	// 本局参与游戏的玩家挨个地、逐层地、依次向上级返利
 	for _, player := range players {
-		r.Log().Infow("recur profit start", "start short", player.ShortId)
+		r.Log().Infow("recur profit start", "start short", player.ShortId, "profit", divProfit)
 		r.recurRebate(record, divProfit, player.UpShortId, player.ShortId, 0, pip)
+
+		// 统计玩家贡献（界面中的抽水统计）
+		rdsop.SetContribute(player.ShortId, divProfit)
 	}
 
 	if _, err := pip.Exec(context.Background()); err != nil {

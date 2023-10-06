@@ -128,6 +128,7 @@ func (s *StateSettlement) Enter() {
 		ntf := &outer.FasterRunFinialSettlement{}
 		for seat := 0; seat < playerNumber; seat++ {
 			player := s.fasterRunPlayers[seat]
+			rdsop.SetTodayPlaying(player.ShortId)
 			ntf.PlayerInfo = append(ntf.PlayerInfo, player.finalStatsMsg)
 			player.finalStatsMsg = &outer.FasterRunFinialPlayerInfo{}
 		}

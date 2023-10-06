@@ -17,6 +17,8 @@ func Put(name string, x interface{}) {}
 var spawner = map[string]factory{
 	"outer.UpdateGoldNtf":                     func() interface{} { return &UpdateGoldNtf{} },
 	"outer.Unknown":                           func() interface{} { return &Unknown{} },
+	"outer.TotalContributeRsp":                func() interface{} { return &TotalContributeRsp{} },
+	"outer.TotalContributeReq":                func() interface{} { return &TotalContributeReq{} },
 	"outer.SetScoreForDownRsp":                func() interface{} { return &SetScoreForDownRsp{} },
 	"outer.SetScoreForDownReq":                func() interface{} { return &SetScoreForDownReq{} },
 	"outer.SetRoleInfoRsp":                    func() interface{} { return &SetRoleInfoRsp{} },
@@ -143,6 +145,7 @@ var spawner = map[string]factory{
 	"outer.AllianceInfoNtf":                   func() interface{} { return &AllianceInfoNtf{} },
 	"outer.AgentRebateInfoRsp":                func() interface{} { return &AgentRebateInfoRsp{} },
 	"outer.AgentRebateInfoReq":                func() interface{} { return &AgentRebateInfoReq{} },
+	"outer.AgentRebateInfo":                   func() interface{} { return &AgentRebateInfo{} },
 	"outer.AgentRebateDetailInfoRsp":          func() interface{} { return &AgentRebateDetailInfoRsp{} },
 	"outer.AgentRebateDetailInfoReq":          func() interface{} { return &AgentRebateDetailInfoReq{} },
 	"outer.AgentMembersRsp":                   func() interface{} { return &AgentMembersRsp{} },

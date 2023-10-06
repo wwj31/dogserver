@@ -2,6 +2,7 @@ package player
 
 import (
 	"context"
+	"github.com/spf13/cast"
 	"reflect"
 	"time"
 
@@ -57,9 +58,38 @@ var _ = router.Reg(func(p *player.Player, msg *outer.AgentDownDailyStatReq) any 
 // 获取自己的以及下级分配的返利信息
 var _ = router.Reg(func(p *player.Player, msg *outer.AgentRebateInfoReq) any {
 	rebate := rdsop.GetRebateInfo(p.Role().ShortId())
+
+	allPlaying := rdsop.GetTodayPlaying()
+	// 下级信息
+	var infos []*outer.AgentRebateInfo
+	downs := rdsop.AgentDown(p.Role().ShortId(), 1) // 获取直属下级
+	for _, downShortId := range downs {
+		if downShortId == p.Role().ShortId() {
+			continue
+		}
+
+		t, y, w := rdsop.GetContribute(downShortId)
+		downAll := rdsop.AgentDown(downShortId)
+		playingCount := 0
+		for _, id := range downAll {
+			if _, exist := allPlaying[id]; exist {
+				playingCount++
+			}
+		}
+
+		infos = append(infos, &outer.AgentRebateInfo{
+			TodayGold:      t,
+			YesterdayGold:  y,
+			WeekGold:       w,
+			TotalPlayers:   int32(len(downAll)),
+			TodayPlayCount: int32(playingCount),
+			DownPoint:      rebate.DownPoints[downShortId],
+		})
+	}
+
 	return &outer.AgentRebateInfoRsp{
 		OwnRebatePoints: rebate.Point,
-		DownPoints:      rebate.DownPoints,
+		RebateInfos:     infos,
 	}
 })
 
@@ -86,6 +116,18 @@ var _ = router.Reg(func(p *player.Player, msg *outer.SetAgentDownRebateReq) any 
 		ShortId: msg.ShortId,
 		Rebate:  msg.Rebate,
 	}
+})
+
+// 团队总抽水
+var _ = router.Reg(func(p *player.Player, msg *outer.TotalContributeReq) any {
+	allDowns := rdsop.AgentDown(p.Role().ShortId())
+
+	var total int64
+	for _, shortId := range allDowns {
+		key := rdsop.ContributeScoreKey(shortId)
+		total += cast.ToInt64(rds.Ins.Get(context.Background(), key).Val())
+	}
+	return &outer.TotalContributeRsp{TotalGold: total}
 })
 
 // 获取返利详情信息

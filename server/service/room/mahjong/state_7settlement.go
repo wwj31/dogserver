@@ -72,6 +72,7 @@ func (s *StateSettlement) Enter() {
 		ntf := &outer.MahjongBTEFinialSettlement{}
 		for seat := 0; seat < maxNum; seat++ {
 			player := s.mahjongPlayers[seat]
+			rdsop.SetTodayPlaying(player.ShortId)
 			ntf.PlayerInfo = append(ntf.PlayerInfo, player.finalStatsMsg)
 			player.finalStatsMsg = &outer.MahjongBTEFinialPlayerInfo{}
 		}

@@ -10,6 +10,8 @@ import (
 	"server/proto/outermsg/outer"
 )
 
+// 统计玩家金币的每一笔变更记录
+
 type GoldUpdateType int32
 
 const (

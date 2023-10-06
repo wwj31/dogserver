@@ -46,29 +46,49 @@ func AgentDownKey(shortId int64) string {
 	return fmt.Sprintf("agent:%v:down", shortId)
 }
 
-// AgentRebateKey 抽水返利信息
+// AgentRebateKey 抽水返利点位信息
 func AgentRebateKey(shortId int64) string {
 	return fmt.Sprintf("agent:%v:rebate", shortId)
 }
 
 // RebateGoldKey 返利利润
 func RebateGoldKey(shortId int64) string {
-	return fmt.Sprintf("agent:%v:gold", shortId)
+	return fmt.Sprintf("rebate:%v:gold", shortId)
 }
 
 // RebateScoreKeyForToday 统计今日返利利润
 func RebateScoreKeyForToday(shortId int64) string {
-	return fmt.Sprintf("agent:%v:rebate:gold_for_today:%v", shortId, tools.Now().Local().Format(tools.StdDateFormat))
+	return fmt.Sprintf("rebate:%v:gold_for_day:%v", shortId, tools.Now().Local().Format(tools.StdDateFormat))
 }
 
 // RebateScoreKeyForWeek 统计本周返利利润
 func RebateScoreKeyForWeek(shortId int64) string {
-	return fmt.Sprintf("agent:%v:rebate:gold_for_week:%v", shortId, tools.Now().Local().Format(tools.StdDateFormat))
+	weekStart := tools.NewTimeEx(tools.Now()).StartOfWeek()
+	return fmt.Sprintf("rebate:%v:gold_for_week:%v", shortId, weekStart.Local().Format(tools.StdDateFormat))
 }
 
 // RebateScoreKeyForDetail 每笔返利记录信息
 func RebateScoreKeyForDetail(shortId int64, date string) string {
-	return fmt.Sprintf("agent:%v:rebate:gold_for_detail:%v", shortId, date)
+	return fmt.Sprintf("rebate:%v:gold_for_detail:%v", shortId, date)
+}
+
+// ContributeScoreKeyForToday 今日业绩
+func ContributeScoreKeyForToday(shortId int64) string {
+	return fmt.Sprintf("contribute:%v:gold_for_day:%v", shortId, tools.Now().Local().Format(tools.StdDateFormat))
+}
+func ContributeScoreKeyForYesterday(shortId int64) string {
+	return fmt.Sprintf("contribute:%v:gold_for_day:%v", shortId, tools.Now().Local().Add(-tools.Day).Format(tools.StdDateFormat))
+}
+
+// ContributeScoreKeyForWeek 本周业绩
+func ContributeScoreKeyForWeek(shortId int64) string {
+	weekStart := tools.NewTimeEx(tools.Now()).StartOfWeek()
+	return fmt.Sprintf("contribute:%v:gold_for_week:%v", shortId, weekStart.Local().Format(tools.StdDateFormat))
+}
+
+// ContributeScoreKey 总业绩
+func ContributeScoreKey(shortId int64) string {
+	return fmt.Sprintf("contribute:%v", shortId)
 }
 
 // DeleteAlliancesKey 被删除的联盟bi

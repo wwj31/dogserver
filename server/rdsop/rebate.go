@@ -16,6 +16,8 @@ import (
 	"server/proto/outermsg/outer"
 )
 
+// 统计玩家的各种返利信息，以及返利相关的操作
+
 type RebateInfo struct {
 	Point      int32           `json:"point"`      // 自己的返利点
 	DownPoints map[int64]int32 `json:"downPoints"` // 给下级分的返利点
@@ -97,12 +99,12 @@ func RecordRebateGold(info string, shortId, score int64, pip redis.Pipeliner) {
 	ctx := context.Background()
 	IncRebateGold(shortId, score, pip)
 
-	// 今日统计返利
+	// 统计今日返利
 	statTodayKey := RebateScoreKeyForToday(shortId)
 	pip.IncrBy(ctx, statTodayKey, score)
 	pip.Expire(ctx, statTodayKey, tools.Day)
 
-	// 本周统计统计返利
+	// 统计本周返利
 	statWeekKey := RebateScoreKeyForWeek(shortId)
 	pip.IncrBy(ctx, statWeekKey, score)
 	pip.Expire(ctx, statWeekKey, 7*tools.Day)

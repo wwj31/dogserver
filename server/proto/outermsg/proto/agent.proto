@@ -36,9 +36,26 @@ message SetScoreForDownRsp {
 // 获取返利以及下级返利点位相关信息
 message AgentRebateInfoReq {// tag:player
 }
+
+message AgentRebateInfo {
+    int64 TodayGold      = 1; // 今日抽水
+    int64 YesterdayGold  = 2; // 昨日抽水
+    int64 WeekGold       = 3; // 本周抽水
+    int32 TotalPlayers   = 4; // 关系链总人数
+    int32 TodayPlayCount = 5; // 今日游戏次数
+    int32 DownPoint      = 6; // 返利点位
+}
 message AgentRebateInfoRsp {
-    int32 OwnRebatePoints        = 1; // 自己的返利点位 0~100%
-    map<int64, int32> DownPoints = 2; // 每一位下级的返利点位 map<shortId,Points>
+    int32 OwnRebatePoints                = 1; // 自己的返利点位 0~100%
+    repeated AgentRebateInfo RebateInfos = 2;
+}
+
+// 团队总抽水
+message TotalContributeReq {// tag:player
+}
+
+message TotalContributeRsp {
+    int64 TotalGold = 1;// 团队总抽水
 }
 
 // 返利详情信息
