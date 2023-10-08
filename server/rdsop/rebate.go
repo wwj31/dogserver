@@ -81,9 +81,9 @@ func SetRebateInfo(shortId, downShortId int64, point int32) (err outer.ERROR) {
 			pip.Set(ctx, AgentRebateKey(downShortId), common.JsonMarshal(downRebateInfo), -1)
 			// 更新自己管理的下级
 			pip.Set(ctx, AgentRebateKey(shortId), common.JsonMarshal(rebateInfo), -1)
-			_, err := pip.Exec(ctx)
+			_, er := pip.Exec(ctx)
 			log.Infow("set rebate info success", "short", shortId, "downShort", downShortId,
-				"points", rebateInfo.DownPoints, "err", err)
+				"points", rebateInfo.DownPoints, "err", er)
 		})
 	})
 
