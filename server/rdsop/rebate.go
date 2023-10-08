@@ -60,7 +60,6 @@ func rebateSetSyncKey(id int64) string {
 func SetRebateInfo(shortId, downShortId int64, point int32) (err outer.ERROR) {
 	rds.LockDo(rebateSetSyncKey(shortId), func() {
 		rebateInfo := GetRebateInfo(shortId)
-		rebateInfo.DownPoints[downShortId] = point
 		if rebateInfo.Point < point {
 			err = outer.ERROR_AGENT_SET_REBATE_ONLY_OUT_OF_RANGE
 			return
@@ -74,6 +73,7 @@ func SetRebateInfo(shortId, downShortId int64, point int32) (err outer.ERROR) {
 				return
 			}
 			downRebateInfo.Point = point
+			rebateInfo.DownPoints[downShortId] = point
 
 			pip := rds.Ins.Pipeline()
 			ctx := context.Background()
