@@ -61,6 +61,11 @@ func RebateScoreKeyForToday(shortId int64) string {
 	return fmt.Sprintf("rebate:%v:gold_for_day:%v", shortId, tools.Now().Local().Format(tools.StdDateFormat))
 }
 
+// RebateScoreKeyForYesterday 统计昨日返利利润
+func RebateScoreKeyForYesterday(shortId int64) string {
+	return fmt.Sprintf("rebate:%v:gold_for_day:%v", shortId, tools.Now().Add(-tools.Day).Local().Format(tools.StdDateFormat))
+}
+
 // RebateScoreKeyForWeek 统计本周返利利润
 func RebateScoreKeyForWeek(shortId int64) string {
 	weekStart := tools.NewTimeEx(tools.Now()).StartOfWeek()

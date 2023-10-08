@@ -140,17 +140,18 @@ var _ = router.Reg(func(p *player.Player, msg *outer.AgentRebateDetailInfoReq) a
 
 // 获取自己可领的返利分数信息
 var _ = router.Reg(func(p *player.Player, msg *outer.RebateScoreReq) any {
-	gold, goldOfToday, goldOfWeek := rdsop.GetRebateGold(p.Role().ShortId())
+	gold, goldOfToday, goldOfYesterday, goldOfWeek := rdsop.GetRebateGold(p.Role().ShortId())
 	return &outer.RebateScoreRsp{
-		Gold:        gold,
-		GoldOfToday: goldOfToday,
-		GoldOfWeek:  goldOfWeek,
+		Gold:            gold,
+		GoldOfToday:     goldOfToday,
+		GoldOfYesterday: goldOfYesterday,
+		GoldOfWeek:      goldOfWeek,
 	}
 })
 
 // 领取返利分
 var _ = router.Reg(func(p *player.Player, msg *outer.ClaimRebateScoreReq) any {
-	gold, _, _ := rdsop.GetRebateGold(p.Role().ShortId())
+	gold, _, _, _ := rdsop.GetRebateGold(p.Role().ShortId())
 	if gold <= 0 {
 		return outer.ERROR_MSG_REQ_PARAM_INVALID
 	}

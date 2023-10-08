@@ -146,27 +146,23 @@ func GetRebateRecordOf3Day(shortId int64) (records []*outer.RebateDetailInfo) {
 }
 
 // GetRebateGold 玩家返利分数
-func GetRebateGold(shortId int64) (gold, goldOfToday, goldOfWeek int64) {
+func GetRebateGold(shortId int64) (gold, goldOfToday, goldOfYesterday, goldOfWeek int64) {
 	pip := rds.Ins.Pipeline()
 	ctx := context.Background()
 
 	var (
-		cmds                   []*redis.StringCmd
-		rebateGoldKey          = RebateGoldKey(shortId)
-		rebateScoreKeyForToday = RebateScoreKeyForToday(shortId)
-		rebateScoreKeyForWeek  = RebateScoreKeyForWeek(shortId)
+		cmds                       []*redis.StringCmd
+		rebateGoldKey              = RebateGoldKey(shortId)
+		rebateScoreKeyForToday     = RebateScoreKeyForToday(shortId)
+		rebateScoreKeyForYesterday = RebateScoreKeyForYesterday(shortId)
+		rebateScoreKeyForWeek      = RebateScoreKeyForWeek(shortId)
 	)
 
 	cmds = append(cmds, pip.Get(ctx, rebateGoldKey))
 	cmds = append(cmds, pip.Get(ctx, rebateScoreKeyForToday))
+	cmds = append(cmds, pip.Get(ctx, rebateScoreKeyForYesterday))
 	cmds = append(cmds, pip.Get(ctx, rebateScoreKeyForWeek))
-	_, err := pip.Exec(ctx)
-	if err != nil {
-		if err != redis.Nil {
-			log.Errorw("get rebate gold failed", "err", err)
-		}
-		return
-	}
+	pip.Exec(ctx)
 
 	if len(cmds) < 3 {
 		log.Errorw("get rebate gold unexpected outcome", "short", shortId, "cmd len", cmds,
@@ -178,10 +174,14 @@ func GetRebateGold(shortId int64) (gold, goldOfToday, goldOfWeek int64) {
 
 	gold = cast.ToInt64(cmds[0].Val())
 	goldOfToday = cast.ToInt64(cmds[1].Val())
-	goldOfWeek = cast.ToInt64(cmds[2].Val())
+	goldOfYesterday = cast.ToInt64(cmds[2].Val())
+	goldOfWeek = cast.ToInt64(cmds[3].Val())
 
 	log.Infow("get rebate gold ", "short", shortId, "cmd len", cmds,
-		"gold", gold, "goldOfToday", goldOfToday, "goldOfWeek", goldOfWeek,
+		"gold", gold,
+		"goldOfToday", goldOfToday,
+		"goldOfYesterday", goldOfYesterday,
+		"goldOfWeek", goldOfWeek,
 		"rebateGoldKey", rebateGoldKey,
 		"rebateScoreKeyForToday", rebateScoreKeyForToday,
 		"rebateScoreKeyForWeek", rebateScoreKeyForWeek)
