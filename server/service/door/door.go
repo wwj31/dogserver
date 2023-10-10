@@ -43,6 +43,9 @@ func (s *Door) OnInit() {
 
 	gm := s.ginEngine.Group("/gm")
 	gm.GET("gold", addGold)
+	gm.GET("master", setMaster)
+	gm.GET("time", setTime)
+	gm.GET("cleartime", clearTime)
 
 	health := s.ginEngine.Group("/health")
 	health.GET("/alive", func(ctx *gin.Context) {

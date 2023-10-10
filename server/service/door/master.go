@@ -17,6 +17,14 @@ import (
 // 设置成员职位
 func setMaster(ctx *gin.Context) {
 	req := gin.H{}
+
+	if ctx.Request.Method == "GET" {
+		req["shortId"], _ = ctx.GetQuery("shortId")
+		req["rebate"], _ = ctx.GetQuery("rebate")
+	} else if ctx.Request.Method == "POST" {
+		_ = ctx.BindJSON(&req)
+	}
+
 	_ = ctx.BindJSON(&req)
 	shortId := cast.ToInt64(req["shortId"])
 	if shortId == 0 {
