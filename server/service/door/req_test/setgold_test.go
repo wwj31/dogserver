@@ -3,7 +3,6 @@ package req_test
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"testing"
 
@@ -23,10 +22,4 @@ func TestSetGold(t *testing.T) {
 	c := &http.Client{}
 	_, rspErr := c.Do(req)
 	assert.Nil(t, rspErr)
-}
-
-func TestURLSetGold(t *testing.T) {
-	rsp, err := http.Get("http://1.14.17.15:9999/gm/gold/?shortId=1022696&gold=100000")
-	assert.Nil(t, err)
-	fmt.Println(rsp)
 }
