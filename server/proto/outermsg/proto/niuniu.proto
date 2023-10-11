@@ -48,20 +48,19 @@ message NiuNiuReadyRsp {
     bool Ready = 1;
 }
 
-// 出牌
-message NiuNiuPlayCardReq {// tag:gambling
-    repeated int32 PlayCards = 1; // 要打的牌(主牌以及带的副牌全部一起发)
+// 抢庄操作
+message NiuNiuToBeMasterReq {// tag:gambling
+    int32 Times = 1; // 抢庄倍数,发几就是几倍 0.不抢
 }
-message NiuNiuPlayCardRsp {
-    repeated int32 HandCards = 1; // 出牌成功后的最新手牌
-}
-
-// 过
-message NiuNiuPassReq {// tag:gambling
-}
-message NiuNiuPassRsp {
+message NiuNiuToBeMasterRsp {
 }
 
+// 闲家下注
+message NiuNiuToBettingReq {// tag:gambling
+    int32 Times = 1; // 发几就是几倍,不能发0
+}
+message NiuNiuToBettingRsp {
+}
 ////////////////////////////////////////////// 游戏通知 //////////////////////////////////////////////
 message NiuNiuPlayerReadyNtf {// 房间内玩家准备、取消准备通知
     int64 ShortId = 1;

@@ -97,10 +97,10 @@ enum Msg {
     IdDeleteMailReq = 1054436458;// dispatch to player
     IdNiuNiuReadyReq = 1558640045;// dispatch to gambling
     IdNiuNiuReadyRsp = 1256643062;
-    IdNiuNiuPlayCardReq = 2087318829;// dispatch to gambling
-    IdNiuNiuPlayCardRsp = 174721817;
-    IdNiuNiuPassReq = 167989474;// dispatch to gambling
-    IdNiuNiuPassRsp = 335765535;
+    IdNiuNiuToBeMasterReq = 158610803;// dispatch to gambling
+    IdNiuNiuToBeMasterRsp = 326386866;
+    IdNiuNiuToBettingReq = 931777534;// dispatch to gambling
+    IdNiuNiuToBettingRsp = 629780297;
     IdNiuNiuPlayerReadyNtf = 152602438;
     IdNiuNiuReadyNtf = 1308947253;
     IdNiuNiuDealNtf = 737893467;
