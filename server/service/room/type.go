@@ -12,6 +12,7 @@ type GamblingType = int32
 const (
 	Mahjong   GamblingType = 0 // 麻将
 	RunFaster GamblingType = 1 // 跑得快
+	NiuNiu    GamblingType = 2 // 牛牛
 )
 
 type Gambling interface {

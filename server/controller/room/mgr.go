@@ -14,6 +14,7 @@ import (
 	"server/service/room"
 	"server/service/room/fasterrun"
 	"server/service/room/mahjong"
+	"server/service/room/niuniu"
 
 	"server/common/router"
 )
@@ -53,6 +54,8 @@ var _ = router.Reg(func(mgr *room.Mgr, msg *inner.CreateRoomReq) any {
 		gambling = mahjong.New(newRoom)
 	case room.RunFaster:
 		gambling = fasterrun.New(newRoom)
+	case room.NiuNiu:
+		gambling = niuniu.New(newRoom)
 	}
 	newRoom.InjectGambling(gambling)
 
