@@ -1,0 +1,26 @@
+syntax = "proto3";
+package outer;
+option  go_package = "/outer";
+
+// 跑得快 扑克花色
+enum NiuNiuPokerColorType {
+    NiuNiuPokerUnknown = 0;
+    NiuNiuClubs        = 1; // 梅花
+    NiuNiuDiamonds     = 2; // 方块
+    NiuNiuHearts       = 3; // 红心
+    NiuNiuSpades       = 4; // 黑桃
+}
+
+// 跑得快 游戏状态机
+enum NiuNiuState {
+    NiuNiuStateReady        = 0;   // 准备中状态
+    NiuNiuStateDeal         = 1;   // 游戏开始发牌状态
+    NiuNiuStatePlaying      = 2;   // 游戏状态
+    NiuNiuStateSettlement   = 3;   // 结算
+}
+
+// 跑得快 牌型
+enum NiuNiuPokerCardsType {
+    NiuNiuPokerCardsTypeUnknown = 0;
+
+}

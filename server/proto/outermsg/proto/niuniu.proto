@@ -1,0 +1,121 @@
+syntax = "proto3";
+package outer;
+option  go_package = "/outer";
+
+import "niuniutype.proto";
+
+// 跑的快 协议 (Faster Run)
+
+// 牛牛 游戏数据
+message NiuNiuGameInfo {
+    NiuNiuState               State            = 1; // 当前状态
+    int64                     StateEnterAt     = 2; // 当前状态的进入时间(毫秒)
+    int64                     StateEndAt       = 3; // 当前状态的结束时间(毫秒)
+    int32                     GameCount        = 4; // 游戏局数
+    repeated NiuNiuPlayerInfo Players          = 5; // 分别代表0-2号座位的玩家
+    int32                     MasterIndex      = 7; // 庄家位置 (0-2)
+    int64                     PlayingShortId   = 9; // 当前等待出牌的人
+    int64                     PlayingEndAt     = 10;// 操作结束时间(毫秒)
+}
+
+// 牛牛 参与游戏的玩家数据
+message NiuNiuPlayerInfo {
+    int64               ShortId        = 1; // 参与者短ID
+    bool                Ready          = 2; // true.准备、false.未准备
+    int64               ReadyExpireAt  = 3; // 准备超时时间(毫秒)
+
+    // 手牌 (梅花103-114 方块203-214 红心303-314 黑桃403-415)
+    // NOTE: 411:黑桃J 412:黑桃Q 413:黑桃K 414:黑桃A 415:黑桃2 其他花色同理
+    repeated int32      HandCards      = 4;
+
+    int64               Score          = 5;// 玩家本局拥有的分数
+}
+
+// 牌型数据
+message NiuNiuCardsGroup {
+    NiuNiuPokerCardsType Type = 1;// 牌型
+    repeated int32 Cards         = 2;// 主牌
+    repeated int32 SideCards     = 3;// 副牌
+}
+
+
+////////////////////////////////////////////// 游戏操作请求 //////////////////////////////////////////////
+// 准备\取消
+message NiuNiuReadyReq {// tag:gambling
+    bool Ready = 1; // true.准备、false.取消准备
+}
+message NiuNiuReadyRsp {
+    bool Ready = 1;
+}
+
+// 出牌
+message NiuNiuPlayCardReq {// tag:gambling
+    repeated int32 PlayCards = 1; // 要打的牌(主牌以及带的副牌全部一起发)
+}
+message NiuNiuPlayCardRsp {
+    repeated int32 HandCards = 1; // 出牌成功后的最新手牌
+}
+
+// 过
+message NiuNiuPassReq {// tag:gambling
+}
+message NiuNiuPassRsp {
+}
+
+////////////////////////////////////////////// 游戏通知 //////////////////////////////////////////////
+message NiuNiuPlayerReadyNtf {// 房间内玩家准备、取消准备通知
+    int64 ShortId = 1;
+    bool  Ready   = 2; // true.准备、false.未准备
+}
+
+// 进入准备中，（房间初始状态， 结算结束后会通知）
+message NiuNiuReadyNtf {
+    int64 ReadyExpireAt = 1;// 结算后重新进入准备状态，所有玩家统一准备超时时间(毫秒)
+}
+
+// 开始发牌通知
+message NiuNiuDealNtf {
+    repeated int32 HandCards  = 1; // 手牌
+    int32          MasterSeat = 2; // 庄家位置
+}
+
+// 开始游戏通知
+message NiuNiuGameStartNtf {
+}
+
+// 玩家轮动通知
+message NiuNiuTurnNtf {
+    int64           WaitingEndAt   = 1; // 等待出牌操作结束时间(毫秒)
+    bool            FollowPlay     = 2; // true.跟牌、false.牌权出牌
+    bool            Bigger         = 3; // 如果是跟牌，手牌是否有更大的牌
+    int64           PlayingShortId = 4; // 当前需要出牌的人
+}
+
+// 结算玩家数据
+message NiuNiuSettlementPlayerData{
+    NiuNiuPlayerInfo Player   = 1; //
+    int32 BombsCount             = 2; // 出过几次炸弹
+    int64 TotalScore             = 3; // 总输赢 负数为输
+}
+
+// 结算通知
+message NiuNiuSettlementNtf {
+    int64    EndAt                                     = 1; // 结算结束时间
+    bool     HasScoreZero                              = 2; // 玩家分输光了，提前进入结算(只有在房间选择不允许负分的时候生效)
+    repeated NiuNiuSettlementPlayerData PlayerData  = 3; // 0-2号座位的玩家结算数据
+    int32    GameCount                                 = 4; // 游戏局数
+    int64    GameSettlementAt                          = 5; // 结算开始时间
+    repeated int32 SpareCards                          = 6; // 剩余没用的牌
+    bool     Spring                                    = 7; // 是否是春天
+    bool     AgainstSpring                             = 8; // 是否是反春
+    NiuNiuFinialSettlement FinalSettlement          = 10; // 非大结算，值为null
+}
+
+// 大结算信息
+message NiuNiuFinialSettlement {
+    repeated NiuNiuFinialPlayerInfo PlayerInfo = 1; // 东南西北4个玩家的大结算信息
+}
+
+message NiuNiuFinialPlayerInfo {
+    int64 TotalScore     = 1; // 总输赢，负分表示输
+}

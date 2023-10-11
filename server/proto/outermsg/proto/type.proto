@@ -15,4 +15,5 @@ enum Position {
 enum GameType {
     Mahjong     = 0; // 麻将
     FasterRun   = 1; // 跑得快
+    NiuNiu      = 2; // 牛牛
 }
