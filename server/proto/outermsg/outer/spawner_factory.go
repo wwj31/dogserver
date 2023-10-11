@@ -50,7 +50,6 @@ var spawner = map[string]factory{
 	"outer.PlayerDailyStat":                   func() interface{} { return &PlayerDailyStat{} },
 	"outer.PlayCardsRecord":                   func() interface{} { return &PlayCardsRecord{} },
 	"outer.PlayCardTips":                      func() interface{} { return &PlayCardTips{} },
-	"outer.NiuNiuTurnNtf":                     func() interface{} { return &NiuNiuTurnNtf{} },
 	"outer.NiuNiuToBettingRsp":                func() interface{} { return &NiuNiuToBettingRsp{} },
 	"outer.NiuNiuToBettingReq":                func() interface{} { return &NiuNiuToBettingReq{} },
 	"outer.NiuNiuToBeMasterRsp":               func() interface{} { return &NiuNiuToBeMasterRsp{} },

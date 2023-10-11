@@ -82,17 +82,9 @@ message NiuNiuDealNtf {
 message NiuNiuGameStartNtf {
 }
 
-// 玩家轮动通知
-message NiuNiuTurnNtf {
-    int64           WaitingEndAt   = 1; // 等待出牌操作结束时间(毫秒)
-    bool            FollowPlay     = 2; // true.跟牌、false.牌权出牌
-    bool            Bigger         = 3; // 如果是跟牌，手牌是否有更大的牌
-    int64           PlayingShortId = 4; // 当前需要出牌的人
-}
-
-// 结算玩家数据
+// 亮牌结算玩家数据
 message NiuNiuSettlementPlayerData{
-    NiuNiuPlayerInfo Player   = 1; //
+    NiuNiuPlayerInfo Player      = 1; //
     int32 BombsCount             = 2; // 出过几次炸弹
     int64 TotalScore             = 3; // 总输赢 负数为输
 }
