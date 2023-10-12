@@ -3,8 +3,6 @@ package niuniu
 import (
 	"math/rand"
 	"sort"
-
-	"server/common/log"
 )
 
 // RandomPokerCards 获得洗好的一副新牌
@@ -42,7 +40,7 @@ func (p PokerCards) Remove(rmCards ...PokerCard) PokerCards {
 	return newCards
 }
 
-// PointCards 找出点数的所有牌 ,n指定数量，如果要所有牌，n不传
+// PointCards 找出点数的所有牌,n指定数量,如果要所有牌,n不传
 func (p PokerCards) PointCards(point int32, n ...int) PokerCards {
 	var newCards PokerCards
 	var count int
@@ -122,99 +120,6 @@ func (p PokerCards) Combination(n int) (result []PokerCards) {
 	return
 }
 
-// StraightGroups 找出所有满足n连顺的牌,只能是顺子，连对，飞机
-func (p PokerCards) StraightGroups(t PokerCardsType, n int) (result []PokerCards) {
-	if t != Straight && t != StraightPair && t != Plane {
-		log.Errorw("StraightGroups args error", "t", t)
-		return nil
-	}
-	if n > len(p) {
-		return nil
-	}
-
-	same := int(t - 5) // 顺子1张，连队2张，飞机3张
-	stat := p.ConvertStruct()
-	arr := p.ConvertOrderPoint(stat)
-	if len(arr) == 0 {
-		return nil
-	}
-
-	var (
-		seq      = 1
-		seqPoint = arr[0]
-	)
-
-	for i := 1; i < len(arr); i++ {
-		point := arr[i]
-
-		if stat[point] < same {
-			continue
-		}
-
-		if point == seqPoint+1 {
-			seqPoint = point
-			seq++
-			// 满足n顺的条件，就把这组牌加入结果中
-			if seq >= n {
-				var sub PokerCards
-
-				for v := point - int32(n-1); v <= point; v++ {
-					sub = append(sub, p.PointCards(v, same)...)
-				}
-				result = append(result, sub)
-			}
-			continue
-		}
-
-		seq = 1
-		seqPoint = point
-	}
-
-	return
-}
-
-// SideCards 主要用于带牌的找牌规则,尽量找落单的，点数小的牌
-func (p PokerCards) SideCards(n int) (result PokerCards) {
-	if n == len(p) {
-		result = make(PokerCards, len(p))
-		copy(result, p)
-		return result
-	}
-	stat := p.ConvertStruct()
-
-	var cards PokerCards
-	for point, num := range stat {
-		if num == 1 {
-			cards = append(cards, p.PointCards(point)...).Sort()
-		}
-	}
-
-	var nextCards PokerCards
-	if len(cards) <= 4 {
-		for _, card := range cards {
-			result = append(result, card)
-		}
-		if len(result) >= n {
-			result = result[:n]
-			return
-		} else {
-			nextCards = p.Remove(result...)
-		}
-	}
-
-	addNum := n - len(result)
-	for i := 0; i < addNum; i++ {
-		if len(nextCards) == 0 {
-			return nil
-		}
-
-		randIdx := rand.Intn(len(nextCards))
-		result = append(result, nextCards[randIdx])
-		nextCards = append(nextCards[:randIdx], nextCards[randIdx+1:]...)
-	}
-	return result.Sort()
-}
-
 func (p PokerCards) Sort() PokerCards {
 	sort.Slice(p, func(i, j int) bool {
 		iPoint := p[i].Point()
@@ -228,7 +133,7 @@ func (p PokerCards) Sort() PokerCards {
 }
 
 func (c CardsGroup) CanCompare(group CardsGroup) bool {
-	if len(c.Cards) == 0 || len(group.Cards) == 0 || c.Type != group.Type || c.Type == CardsTypeUnknown {
+	if len(c.Cards) == 0 || len(group.Cards) == 0 || c.Type != group.Type || c.Type == PokerCardsUnknown {
 		return false
 	}
 

@@ -162,8 +162,10 @@ func (p PokerCards) AnalyzeCards(AAAisBomb bool) (cardsGroup CardsGroup) {
 					return
 				}
 				if num == 2 {
-					cardsGroup.Type = StraightPair
-					cardsGroup.Cards = append(cardsGroup.Cards, p...)
+					if isComb(p.ConvertOrderPoint(stat)) {
+						cardsGroup.Type = StraightPair
+						cardsGroup.Cards = append(cardsGroup.Cards, p...)
+					}
 					return
 				}
 			}
@@ -225,7 +227,7 @@ func (p PokerCards) AnalyzeCards(AAAisBomb bool) (cardsGroup CardsGroup) {
 		}
 
 		// 最长连续数等于本组牌长度的一半，肯定数连对
-		if sequentialMaxCount*2 == l {
+		if sequentialMaxCount*2 == l && isComb(p.ConvertOrderPoint(stat)) {
 			cardsGroup.Type = StraightPair
 			cardsGroup.Cards = append(cardsGroup.Cards, p...)
 			return
@@ -290,4 +292,23 @@ func (p PokerCards) AnalyzeCards(AAAisBomb bool) (cardsGroup CardsGroup) {
 		}
 	}
 	return
+}
+
+// 判断一堆点数是否连续
+func isComb(arr []int32) bool {
+	if len(arr) < 2 {
+		return false
+	}
+
+	comb := true
+	for i := 0; i < len(arr); i++ {
+		if i+1 >= len(arr) {
+			break
+		}
+
+		if arr[i] != arr[i+1]-1 {
+			comb = false
+		}
+	}
+	return comb
 }

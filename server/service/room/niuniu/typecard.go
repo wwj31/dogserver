@@ -21,19 +21,24 @@ type (
 )
 
 const (
-	CardsTypeUnknown PokerCardsType = iota
-	Single                          = 1  // 单张
-	Pair                            = 2  // 对子
-	Trips                           = 3  // 三张
-	TripsWithOne                    = 4  // 三带一
-	TripsWithTwo                    = 5  // 三带二
-	Straight                        = 6  // 顺子 5张起
-	StraightPair                    = 7  // 连对 至少2组点数相同的对子
-	Plane                           = 8  // 飞机 至少2组点数相同的三张
-	PlaneWithTwo                    = 9  // 飞机带翅膀，飞机的牌型上，每组三张必须带任意2张牌
-	FourWithTwo                     = 10 // 四带二 4张点数相同的牌+任意2张
-	FourWithThree                   = 11 // 四带三 4张点数相同的牌+任意3张
-	Bombs                           = 12 // 炸弹 4张点数相同的牌
+	PokerCardsUnknown PokerCardsType = iota
+	Niu1Type                         = 1  // 牛1
+	Niu2Type                         = 2  // 牛2
+	Niu3Type                         = 3  // 牛3
+	Niu4Type                         = 4  // 牛4
+	Niu5Type                         = 5  // 牛5
+	Niu6Type                         = 6  // 牛6
+	Niu7Type                         = 7  // 牛7
+	Niu8Type                         = 8  // 牛8
+	Niu9Type                         = 9  // 牛9
+	NiuNiuType                       = 10 // 牛牛
+	StraightNiuType                  = 11 // 顺子牛
+	FiveColorNiuType                 = 12 // 五花牛
+	SameColorNiuType                 = 13 // 同花牛
+	HuluNiuType                      = 14 // 葫芦牛
+	BombNiuType                      = 15 // 炸弹牛
+	FiveSmallNiuType                 = 16 // 五小牛
+	ColorStraightType                = 17 // 同花顺
 )
 
 const (
@@ -45,6 +50,8 @@ const (
 )
 
 const (
+	Clubs_A  PokerCard = 101 // 梅花A
+	Clubs_2  PokerCard = 102 // 梅花2
 	Clubs_3  PokerCard = 103 // 梅花3
 	Clubs_4  PokerCard = 104 // 梅花4
 	Clubs_5  PokerCard = 105 // 梅花5
@@ -56,8 +63,9 @@ const (
 	Clubs_J  PokerCard = 111 // 梅花J
 	Clubs_Q  PokerCard = 112 // 梅花Q
 	Clubs_K  PokerCard = 113 // 梅花K
-	Clubs_A  PokerCard = 114 // 梅花A
 
+	Diamonds_A  PokerCard = 201 // 方块A
+	Diamonds_2  PokerCard = 202 // 方块2
 	Diamonds_3  PokerCard = 203 // 方块3
 	Diamonds_4  PokerCard = 204 // 方块4
 	Diamonds_5  PokerCard = 205 // 方块5
@@ -69,8 +77,9 @@ const (
 	Diamonds_J  PokerCard = 211 // 方块J
 	Diamonds_Q  PokerCard = 212 // 方块Q
 	Diamonds_K  PokerCard = 213 // 方块K
-	Diamonds_A  PokerCard = 214 // 方块A
 
+	Hearts_A  PokerCard = 301 // 红心A
+	Hearts_2  PokerCard = 302 // 红心2
 	Hearts_3  PokerCard = 303 // 红心3
 	Hearts_4  PokerCard = 304 // 红心4
 	Hearts_5  PokerCard = 305 // 红心5
@@ -82,8 +91,9 @@ const (
 	Hearts_J  PokerCard = 311 // 红心J
 	Hearts_Q  PokerCard = 312 // 红心Q
 	Hearts_K  PokerCard = 313 // 红心K
-	Hearts_A  PokerCard = 314 // 红心A
 
+	Spades_A  PokerCard = 401 // 黑桃A
+	Spades_2  PokerCard = 402 // 黑桃2
 	Spades_3  PokerCard = 403 // 黑桃3
 	Spades_4  PokerCard = 404 // 黑桃4
 	Spades_5  PokerCard = 405 // 黑桃5
@@ -95,8 +105,6 @@ const (
 	Spades_J  PokerCard = 411 // 黑桃J
 	Spades_Q  PokerCard = 412 // 黑桃Q
 	Spades_K  PokerCard = 413 // 黑桃K
-	Spades_A  PokerCard = 414 // 黑桃A
-	Spades_2  PokerCard = 415 // 黑桃2
 )
 
 func (m PokerCard) String() string {
@@ -140,7 +148,7 @@ func (c PokerCardsType) ToPB() outer.FasterRunPokerCardsType {
 }
 
 func (c CardsGroup) ToPB() *outer.FasterRunCardsGroup {
-	if c.Type == CardsTypeUnknown {
+	if c.Type == PokerCardsUnknown {
 		return nil
 	}
 
@@ -153,7 +161,7 @@ func (c CardsGroup) ToPB() *outer.FasterRunCardsGroup {
 
 var pokerCards52 = []PokerCard{
 	Clubs_A, Diamonds_A, Hearts_A, Spades_A,
-	Spades_2,
+	Clubs_2, Diamonds_2, Hearts_2, Spades_2,
 	Clubs_3, Diamonds_3, Hearts_3, Spades_3,
 	Clubs_4, Diamonds_4, Hearts_4, Spades_4,
 	Clubs_5, Diamonds_5, Hearts_5, Spades_5,
