@@ -29,17 +29,16 @@ func (s *StateSettlement) Enter() {
 		"master", s.masterIndex, "game count", s.gameCount, "endAt", s.currentStateEndAt.UnixMilli())
 
 	playerNumber := s.playerNumber()
-	settlementMsg := &outer.FasterRunSettlementNtf{
+	settlementMsg := &outer.NiuNiuSettlementNtf{
 		EndAt:            s.currentStateEndAt.UnixMilli(),
 		HasScoreZero:     s.scoreZeroOver,
 		GameCount:        int32(s.gameCount),
 		GameSettlementAt: tools.Now().UnixMilli(),
-		PlayerData:       make([]*outer.FasterRunSettlementPlayerData, playerNumber, playerNumber),
-		SpareCards:       s.spareCards.ToPB(),
+		PlayerData:       make([]*outer.NiuNiuSettlementPlayerData, playerNumber, playerNumber),
 	}
 
 	for seat := 0; seat < playerNumber; seat++ {
-		settlementMsg.PlayerData[seat] = &outer.FasterRunSettlementPlayerData{}
+		settlementMsg.PlayerData[seat] = &outer.NiuNiuSettlementPlayerData{}
 	}
 
 	// 结算输赢分
@@ -47,7 +46,7 @@ func (s *StateSettlement) Enter() {
 		winner     *niuniuPlayer
 		winnerSeat int
 	)
-	for seat, player := range s.fasterRunPlayers {
+	for seat, player := range s.niuniuPlayers {
 		if len(player.handCards) == 0 {
 			winner = player
 			winnerSeat = seat
@@ -56,46 +55,10 @@ func (s *StateSettlement) Enter() {
 	}
 
 	if winner != nil {
-		// 春天、反春判断
-		isSpring := s.isSpring()
-		var isAgainstSpring bool
-		if !isSpring && s.gameParams().AgainstSpring {
-			isAgainstSpring = s.isAgainstSpring(winner)
-		}
-		settlementMsg.Spring = isSpring
-		settlementMsg.AgainstSpring = isAgainstSpring
-
 		loserSeats := s.allSeats(winnerSeat)
 		for _, seat := range loserSeats {
-			loser := s.fasterRunPlayers[seat]
+			loser := s.niuniuPlayers[seat]
 			loseScore := int64(len(loser.handCards)) * s.baseScore()
-
-			// 特殊规则剩一张不输
-			if s.gameParams().SpareOnlyOneWithoutLose && len(loser.handCards) == 1 {
-				continue
-			}
-
-			// 春天和反春的算分
-			if isSpring {
-				loseScore *= 2
-			} else if isAgainstSpring {
-				// 反春，重新算分
-				if seat == s.masterIndex {
-					needNum := 15
-					if s.gameParams().CardsNumber == 1 {
-						needNum = 16
-					}
-					loseScore = int64(needNum) * s.baseScore()
-				}
-				loseScore *= 2
-			}
-
-			// 红桃10，输赢翻倍
-			if winner.doubleHearts10 {
-				loseScore *= 2
-			} else if loser.doubleHearts10 {
-				loseScore *= 2
-			}
 
 			// 不允许负分，能扣多少扣多少
 			if !s.gameParams().AllowScoreSmallZero {
@@ -125,12 +88,12 @@ func (s *StateSettlement) Enter() {
 		}
 		s.room.Rebate(record, totalProfit, s.toRoomPlayers())
 
-		ntf := &outer.FasterRunFinialSettlement{}
+		ntf := &outer.NiuNiuFinialSettlement{}
 		for seat := 0; seat < playerNumber; seat++ {
-			player := s.fasterRunPlayers[seat]
+			player := s.niuniuPlayers[seat]
 			rdsop.SetTodayPlaying(player.ShortId)
 			ntf.PlayerInfo = append(ntf.PlayerInfo, player.finalStatsMsg)
-			player.finalStatsMsg = &outer.FasterRunFinialPlayerInfo{}
+			player.finalStatsMsg = &outer.NiuNiuFinialPlayerInfo{}
 		}
 		settlementMsg.FinalSettlement = ntf
 	}
@@ -139,7 +102,7 @@ func (s *StateSettlement) Enter() {
 	modifyRspCount := make(map[string]struct{}) // 必须等待所有玩家金币修改成功后，才能发送结算
 	for i := 0; i < playerNumber; i++ {
 		seat := i
-		player := s.fasterRunPlayers[seat]
+		player := s.niuniuPlayers[seat]
 		finalScore := player.score
 		presentScore := player.PlayerInfo.Gold
 		s.room.Request(actortype.PlayerId(player.RID), &inner.ModifyGoldReq{
@@ -169,44 +132,9 @@ func (s *StateSettlement) Enter() {
 	}
 }
 
-// 春天规则
-func (s *StateSettlement) isSpring() bool {
-	master := s.fasterRunPlayers[s.masterIndex]
-	if len(master.handCards) > 0 {
-		return false
-	}
-
-	var fullNum int
-	if s.gameParams().CardsNumber == 0 {
-		fullNum = 15
-	} else {
-		fullNum = 16
-	}
-
-	others := s.allSeats(s.masterIndex)
-	for _, seat := range others {
-		other := s.fasterRunPlayers[seat]
-		if len(other.handCards) != fullNum {
-			return false
-		}
-	}
-
-	return true
-}
-
-// 反春规则
-func (s *StateSettlement) isAgainstSpring(winner *niuniuPlayer) bool {
-	// 除了第一手是庄稼，其他所有出牌全部是赢的这家，肯定就是反春
-	for i := 1; i < len(s.playRecords); i++ {
-		if s.playRecords[i].shortId != winner.ShortId {
-			return false
-		}
-	}
-	return true
-}
-
 func (s *StateSettlement) Leave() {
-	s.Log().Infow("[NiuNiu] leave state settlement ==================SETTLEMENT==================", "room", s.room.RoomId, "count", s.gameCount)
+	s.Log().Infow("[NiuNiu] leave state settlement ==================SETTLEMENT==================", "room",
+		s.room.RoomId, "count", s.gameCount)
 	s.Log().Infof(" ")
 	s.Log().Infof(" ")
 	s.Log().Infof(" ")
@@ -217,12 +145,11 @@ func (s *StateSettlement) Handle(shortId int64, v any) (result any) {
 	return outer.ERROR_MAHJONG_STATE_MSG_INVALID
 }
 
-func (s *StateSettlement) afterSettle(ntf *outer.FasterRunSettlementNtf) {
+func (s *StateSettlement) afterSettle(ntf *outer.NiuNiuSettlementNtf) {
 	allPlayerInfo := s.playersToPB(0, true) // 组装结算消息
 
-	for seat, player := range s.fasterRunPlayers {
+	for seat, player := range s.niuniuPlayers {
 		ntf.PlayerData[seat].Player = allPlayerInfo[seat]
-		ntf.PlayerData[seat].BombsCount = player.BombsCount
 		ntf.PlayerData[seat].TotalScore = player.totalWinScore
 	}
 
@@ -258,9 +185,9 @@ func (s *StateSettlement) profit(bigWinner bool) (totalProfit int64) {
 			winner   *niuniuPlayer
 		)
 
-		for i, player := range s.fasterRunPlayers {
+		for i, player := range s.niuniuPlayers {
 			if player.finalStatsMsg.TotalScore > winScore {
-				winner = s.fasterRunPlayers[i]
+				winner = s.niuniuPlayers[i]
 				winScore = player.finalStatsMsg.TotalScore
 			}
 		}
@@ -269,9 +196,9 @@ func (s *StateSettlement) profit(bigWinner bool) (totalProfit int64) {
 			winners = append(winners, winner)
 		}
 	} else {
-		for i, player := range s.fasterRunPlayers {
+		for i, player := range s.niuniuPlayers {
 			if player.finalStatsMsg.TotalScore > 0 {
-				winners = append(winners, s.fasterRunPlayers[i])
+				winners = append(winners, s.niuniuPlayers[i])
 			}
 		}
 	}

@@ -35,6 +35,7 @@ message PlayerDailyStat {
 message GameParams {
     MahjongParams    Mahjong   = 1;
     FasterRunParams  FasterRun = 2;
+    NiuNiuParams     NiuNiu    = 3;
 }
 
 // 麻将
@@ -76,6 +77,17 @@ message FasterRunParams{
     bool  SpecialThreeCards         = 14; // 三张：勾选后出牌时可直接出三张，否则不能直接出
     bool  SpecialThreeCardsWithOne  = 15; // 三带一：勾选后出牌时可直接出三带一，否则不能直接出
     bool  AAAIsBombs                = 16; // AAA是炸弹：只能在16张模式下勾选，勾选后AAA是最大的炸弹（可以用来三带*但不能四带二四带三），否则只算3张
+    bool  AllowScoreSmallZero       = 17; // 是否允许负分
+    bool  BigWinner                 = 18; // 2人模式的抽水对象只有大赢家，3人模式有大赢家和赢家
+    RebateParams ReBate             = 19; // 抽水相关设置
+}
+
+// 牛牛
+message NiuNiuParams{
+    int32 PlayCountLimit            = 1; // 必须打满多少局才能退出
+    float BaseScore                 = 2; // 底分 0.01~99
+    float BaseScoreTimes            = 3; // 倍数 (不用)
+    int32 PlayerNumber              = 4; // 0.两人房间，1.三人房
     bool  AllowScoreSmallZero       = 17; // 是否允许负分
     bool  BigWinner                 = 18; // 2人模式的抽水对象只有大赢家，3人模式有大赢家和赢家
     RebateParams ReBate             = 19; // 抽水相关设置

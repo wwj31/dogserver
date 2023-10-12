@@ -77,6 +77,10 @@ enum ERROR {
    FASTERRUN_PLAY_EXIST_BIGGER_CANNOT_PASS = 308; // 存在更大的牌，不能过
    FASTERRUN_PLAY_FIRST_SPADE3_LIMIT       = 309; // 开启了手牌必带黑桃3，请打黑桃3
    FASTERRUN_PLAY_IS_YOUR_TURN             = 310; // 你的牌权出牌，不能过
+
+   // 牛牛
+   NIUNIU_STATE_MSG_INVALID             = 400; // 当前状态不受理此消息
+
 }
 
 message FailRsp {

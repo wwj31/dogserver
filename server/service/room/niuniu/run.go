@@ -19,42 +19,37 @@ import (
 )
 
 const (
-	ReadyExpiration       = 20 * time.Second // 准备超时时间
-	DealExpiration        = 3 * time.Second  // 发牌状态持续时间
-	WaitingPlayExpiration = 10 * time.Second // 打牌等待持续时间
-	WaitingPassExpiration = 3 * time.Second  // 不能大，等待短暂的几秒自动过
-	SettlementDuration    = 10 * time.Second // 结算持续时间
+	ReadyExpiration    = 20 * time.Second // 准备超时时间
+	DealExpiration     = 3 * time.Second  // 发牌状态持续时间
+	SettlementDuration = 10 * time.Second // 结算持续时间
 )
 
 func New(r *room.Room) *NiuNiu {
-	fasterRun := &NiuNiu{
+	niuniu := &NiuNiu{
 		room: r,
 		fsm:  room.NewFSM(),
 	}
-	n := fasterRun.playerNumber()
-	fasterRun.fasterRunPlayers = make([]*niuniuPlayer, n, n)
-	_ = fasterRun.fsm.Add(&StateReady{NiuNiu: fasterRun})      // 准备中
-	_ = fasterRun.fsm.Add(&StateDeal{NiuNiu: fasterRun})       // 发牌中
-	_ = fasterRun.fsm.Add(&StatePlaying{NiuNiu: fasterRun})    // 游戏中
-	_ = fasterRun.fsm.Add(&StateSettlement{NiuNiu: fasterRun}) // 游戏结束结算界面
+	n := niuniu.playerNumber()
+	niuniu.niuniuPlayers = make([]*niuniuPlayer, n, n)
+	_ = niuniu.fsm.Add(&StateReady{NiuNiu: niuniu})      // 准备中
+	_ = niuniu.fsm.Add(&StateDeal{NiuNiu: niuniu})       // 发牌中
+	_ = niuniu.fsm.Add(&StateSettlement{NiuNiu: niuniu}) // 游戏结束结算界面
 
-	fasterRun.SwitchTo(Ready)
+	niuniu.SwitchTo(Ready)
 
-	return fasterRun
+	return niuniu
 }
 
 type (
 	// 跑得快 参与游戏的玩家数据
 	niuniuPlayer struct {
 		*room.Player
-		score          int64
-		totalWinScore  int64 // 单局的总输赢
-		ready          bool
-		readyExpireAt  time.Time
-		handCards      PokerCards
-		BombsCount     int32
-		doubleHearts10 bool // 红桃10 翻倍
-		finalStatsMsg  *outer.FasterRunFinialPlayerInfo
+		score         int64
+		totalWinScore int64 // 单局的总输赢
+		ready         bool
+		readyExpireAt time.Time
+		handCards     PokerCards
+		finalStatsMsg *outer.NiuNiuFinialPlayerInfo
 	}
 
 	NiuNiu struct {
@@ -65,14 +60,9 @@ type (
 		playerAutoReady     func(p *niuniuPlayer, ready bool) //
 		scoreZeroOver       bool                              // 因为有玩家没分了，而触发的结束
 
-		masterIndex        int               // 庄家位置 0，1，2
-		fasterRunPlayers   []*niuniuPlayer   // 参与游戏的玩家
-		playRecords        []PlayCardsRecord // 出牌历史
-		gameCount          int               // 游戏的连续局数
-		lastWinShortId     int64             // 最后一局的赢家
-		waitingPlayShortId int64             // 当前等待的出牌人
-		waitingPlayFollow  bool              // 当前等待的出牌人是否是跟牌
-		spareCards         PokerCards        // 剩下没用的牌
+		masterIndex   int             // 庄家位置 0，1，2
+		niuniuPlayers []*niuniuPlayer // 参与游戏的玩家
+		gameCount     int             // 游戏的连续局数
 	}
 
 	PlayCardsRecord struct {
@@ -93,7 +83,7 @@ func (f *NiuNiu) SwitchTo(state int) {
 }
 
 func (f *NiuNiu) toRoomPlayers() (players []*room.Player) {
-	for _, p := range f.fasterRunPlayers {
+	for _, p := range f.niuniuPlayers {
 		players = append(players, p.Player)
 	}
 	return players
@@ -110,38 +100,20 @@ func (f *NiuNiu) playerNumber() int {
 	return 0
 }
 
-// 获得最后一次有效的出牌
-func (f *NiuNiu) lastValidPlayCards() *PlayCardsRecord {
-	for i := len(f.playRecords) - 1; i >= 0; i-- {
-		record := f.playRecords[i]
-		if record.cardsGroup.Type == CardsTypeUnknown {
-			continue
-		}
-		return &record
-	}
-	return nil
-}
-
 func (f *NiuNiu) Data(shortId int64) proto.Message {
-	var records []*outer.PlayCardsRecord
-	for _, record := range f.playRecords {
-		records = append(records, record.ToPB())
-	}
-
-	info := &outer.FasterRunGameInfo{
-		State:        outer.FasterRunState(f.fsm.State()),
+	info := &outer.NiuNiuGameInfo{
+		State:        outer.NiuNiuState(f.fsm.State()),
 		StateEnterAt: f.currentStateEnterAt.UnixMilli(),
 		StateEndAt:   f.currentStateEndAt.UnixMilli(),
 		GameCount:    int32(f.gameCount),
 		Players:      f.playersToPB(shortId, false),
 		MasterIndex:  int32(f.masterIndex),
-		History:      records,
 	}
 	return info
 }
 
 func (f *NiuNiu) SeatIndex(shortId int64) int {
-	for seatIndex, player := range f.fasterRunPlayers {
+	for seatIndex, player := range f.niuniuPlayers {
 		if player != nil && player.ShortId == shortId {
 			return seatIndex
 		}
@@ -186,11 +158,11 @@ func (f *NiuNiu) CanSetGold(p *inner.PlayerInfo) bool {
 }
 
 func (f *NiuNiu) PlayerEnter(roomPlayer *room.Player) {
-	for i, player := range f.fasterRunPlayers {
+	for i, player := range f.niuniuPlayers {
 		if player == nil {
-			player = f.newFasterRunPlayer(roomPlayer)
-			player.finalStatsMsg = &outer.FasterRunFinialPlayerInfo{}
-			f.fasterRunPlayers[i] = player
+			player = f.newNiuNiuPlayer(roomPlayer)
+			player.finalStatsMsg = &outer.NiuNiuFinialPlayerInfo{}
+			f.niuniuPlayers[i] = player
 			if f.playerAutoReady != nil {
 				f.playerAutoReady(player, false)
 			}
@@ -208,10 +180,10 @@ func (f *NiuNiu) readyAfterTimeout(player *niuniuPlayer, expireAt time.Time) {
 }
 
 func (f *NiuNiu) PlayerLeave(quitPlayer *room.Player) {
-	for idx, player := range f.fasterRunPlayers {
+	for idx, player := range f.niuniuPlayers {
 		if player != nil && player.ShortId == quitPlayer.ShortId {
 			f.room.CancelTimer(quitPlayer.RID)
-			f.fasterRunPlayers[idx] = nil
+			f.niuniuPlayers[idx] = nil
 			f.Log().Infow("player leave mahjong", "shortId", player.ShortId, "seat", idx, "gold", player.Gold)
 			return
 		}
@@ -227,8 +199,8 @@ func (f *NiuNiu) Log() *logger.Logger {
 	return f.room.Log()
 }
 
-func (f *NiuNiu) findFasterRunPlayer(shortId int64) (*niuniuPlayer, int) {
-	for i, player := range f.fasterRunPlayers {
+func (f *NiuNiu) findNiuNiuPlayer(shortId int64) (*niuniuPlayer, int) {
+	for i, player := range f.niuniuPlayers {
 		if player != nil && player.ShortId == shortId {
 			return player, i
 		}
@@ -236,8 +208,8 @@ func (f *NiuNiu) findFasterRunPlayer(shortId int64) (*niuniuPlayer, int) {
 	return nil, -1
 }
 
-func (f *NiuNiu) playersToPB(shortId int64, settlement bool) (players []*outer.FasterRunPlayerInfo) {
-	for _, player := range f.fasterRunPlayers {
+func (f *NiuNiu) playersToPB(shortId int64, settlement bool) (players []*outer.NiuNiuPlayerInfo) {
+	for _, player := range f.niuniuPlayers {
 		if player == nil {
 			players = append(players, nil)
 		} else {
@@ -248,7 +220,7 @@ func (f *NiuNiu) playersToPB(shortId int64, settlement bool) (players []*outer.F
 				handCards = make([]int32, len(player.handCards))
 			}
 
-			players = append(players, &outer.FasterRunPlayerInfo{
+			players = append(players, &outer.NiuNiuPlayerInfo{
 				ShortId:       player.ShortId,
 				Ready:         player.ready,
 				ReadyExpireAt: player.readyExpireAt.UnixMilli(),
@@ -269,15 +241,15 @@ func (f *NiuNiu) nextSeatIndex(index int) int {
 	return index
 }
 
-func (f *NiuNiu) newFasterRunPlayer(p *room.Player) *niuniuPlayer {
+func (f *NiuNiu) newNiuNiuPlayer(p *room.Player) *niuniuPlayer {
 	return &niuniuPlayer{
 		score:  p.Gold,
 		Player: p,
 	}
 }
 
-func (f *NiuNiu) gameParams() *outer.FasterRunParams {
-	return f.room.GameParams.FasterRun
+func (f *NiuNiu) gameParams() *outer.NiuNiuParams {
+	return f.room.GameParams.NiuNiu
 }
 
 func (f *NiuNiu) baseScore() int64 {
@@ -299,17 +271,14 @@ func (f *NiuNiu) bombWinScore() int64 {
 }
 
 func (f *NiuNiu) clear() {
-	f.playRecords = nil
 	f.scoreZeroOver = false
-	f.waitingPlayShortId = 0
-	f.waitingPlayFollow = false
 
 	// 重置玩家数据
 	for i := 0; i < f.playerNumber(); i++ {
-		gamer := f.fasterRunPlayers[i]
+		gamer := f.niuniuPlayers[i]
 		if gamer != nil {
-			f.fasterRunPlayers[i] = f.newFasterRunPlayer(gamer.Player)
-			f.fasterRunPlayers[i].finalStatsMsg = gamer.finalStatsMsg
+			f.niuniuPlayers[i] = f.newNiuNiuPlayer(gamer.Player)
+			f.niuniuPlayers[i].finalStatsMsg = gamer.finalStatsMsg
 		}
 	}
 }

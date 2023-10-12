@@ -145,7 +145,7 @@ func GetRebateRecordOf3Day(shortId int64) (records []*outer.RebateDetailInfo) {
 	return
 }
 
-// GetRebateGold 玩家返利分数
+// GetRebateGold 获得玩家 当前/今日/昨日/本周 的返利总分
 func GetRebateGold(shortId int64) (gold, goldOfToday, goldOfYesterday, goldOfWeek int64) {
 	pip := rds.Ins.Pipeline()
 	ctx := context.Background()

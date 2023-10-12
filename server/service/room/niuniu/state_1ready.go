@@ -4,8 +4,6 @@ import (
 	"reflect"
 	"time"
 
-	"server/common/log"
-
 	"server/proto/outermsg/outer"
 )
 
@@ -35,7 +33,7 @@ func (s *StateReady) Enter() {
 
 	// 先把金币<=0的玩家踢出去
 	for seat := 0; seat < s.playerNumber(); seat++ {
-		player := s.fasterRunPlayers[seat]
+		player := s.niuniuPlayers[seat]
 		if player == nil {
 			continue
 		}
@@ -43,7 +41,7 @@ func (s *StateReady) Enter() {
 		if player.Gold <= 0 {
 			// 新一轮游戏，或者不允许负分，都需要踢出玩家
 			if resetPlayCount || !s.gameParams().AllowScoreSmallZero {
-				log.Infow("kick player with ready case gold <= 0", "shortId", player.ShortId, "gold", player.Gold)
+				s.Log().Infow("kick player with ready case gold <= 0", "shortId", player.ShortId, "gold", player.Gold)
 				s.room.PlayerLeave(player.ShortId, true)
 			}
 			continue
@@ -60,7 +58,7 @@ func (s *StateReady) Enter() {
 
 	// 设置每个玩家的准备状态
 	for seat := 0; seat < s.playerNumber(); seat++ {
-		player := s.fasterRunPlayers[seat]
+		player := s.niuniuPlayers[seat]
 		if player == nil {
 			continue
 		}
@@ -71,7 +69,7 @@ func (s *StateReady) Enter() {
 	// 只有重置后的第一局才需要自动准备
 	if s.gameCount == 1 {
 		readyExpireAt := time.Now().Add(ReadyExpiration)
-		s.room.Broadcast(&outer.FasterRunReadyNtf{ReadyExpireAt: readyExpireAt.UnixMilli()})
+		s.room.Broadcast(&outer.NiuNiuReadyNtf{ReadyExpireAt: readyExpireAt.UnixMilli()})
 	}
 }
 
@@ -80,7 +78,7 @@ func (s *StateReady) Leave() {
 }
 
 func (s *StateReady) Handle(shortId int64, v any) (result any) {
-	player, _ := s.findFasterRunPlayer(shortId)
+	player, _ := s.findNiuNiuPlayer(shortId)
 	if player == nil {
 		s.Log().Warnw("player not in room", "roomId", s.room.RoomId, "shortId", shortId)
 		return outer.ERROR_PLAYER_NOT_IN_ROOM
@@ -97,7 +95,7 @@ func (s *StateReady) Handle(shortId int64, v any) (result any) {
 }
 
 func (s *StateReady) checkAllReady() bool {
-	for _, player := range s.fasterRunPlayers {
+	for _, player := range s.niuniuPlayers {
 		if player == nil || !player.ready {
 			return false
 		}
