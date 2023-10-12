@@ -120,6 +120,20 @@ func (p PokerCards) Combination(n int) (result []PokerCards) {
 	return
 }
 
+func (p PokerCards) isColorSame() (same bool) {
+	if len(p) <= 1 {
+		return false
+	}
+
+	color := p[0].Color()
+	for i := 1; i < len(p); i++ {
+		if color != p[i].Color() {
+			return false
+		}
+	}
+	return true
+}
+
 func (p PokerCards) Sort() PokerCards {
 	sort.Slice(p, func(i, j int) bool {
 		iPoint := p[i].Point()
@@ -139,4 +153,9 @@ func (c CardsGroup) CanCompare(group CardsGroup) bool {
 
 	return true
 }
-func (c CardsGroup) Bigger(group CardsGroup) bool { return c.Cards[0].Point() > group.Cards[0].Point() }
+func (c CardsGroup) Bigger(group CardsGroup) bool {
+	if group.Type == StraightNiuType || group.Type == ColorStraightType {
+		return c.Cards[0].Point() > group.Cards[0].Point()
+	}
+	return c.Cards[len(c.Cards)].Point() > group.Cards[len(group.Cards)].Point()
+}
