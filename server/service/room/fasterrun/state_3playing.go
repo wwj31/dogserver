@@ -253,7 +253,7 @@ func (s *StatePlaying) nextPlayer(seat int, lastPlayInfo *PlayCardsRecord) {
 
 	s.actionTimer(waitingExpiration)
 
-	s.Log().Infow("next player ", "seat", seat, "shortId", player.ShortId, "follow", follow, "hand cards", player.handCards, "prev play", lastPlayInfo)
+	s.Log().Infow("next player ", "seat", seat, "shortId", player.ShortId, "follow", follow, "hand cards", player.handCards, "prev play", lastPlayInfo, "ntf", ntf.String())
 	s.Log().Infof(" ")
 }
 
