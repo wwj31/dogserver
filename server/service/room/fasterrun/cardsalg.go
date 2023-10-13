@@ -106,7 +106,9 @@ func (p PokerCards) FindBigger(cardsGroup CardsGroup) (bigger []CardsGroup) {
 
 	for point, num := range stat {
 		if num == 4 {
-			bigger = append(bigger, CardsGroup{Type: Bombs, Cards: p.PointCards(point)})
+			if cardsGroup.Type != Bombs || point > cardsGroup.Cards[0].Point() {
+				bigger = append(bigger, CardsGroup{Type: Bombs, Cards: p.PointCards(point)})
+			}
 		}
 	}
 	return
