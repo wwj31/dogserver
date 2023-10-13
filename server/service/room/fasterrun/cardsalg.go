@@ -284,7 +284,7 @@ func (p PokerCards) AnalyzeCards(AAAisBomb bool) (cardsGroup CardsGroup) {
 					planeCards = append(planeCards, p.PointCards(point)...)
 				}
 				sideCards := p.Remove(planeCards...)
-				if len(sideCards) == len(planeCards)*2 {
+				if len(sideCards) == len(planePoints)*2 {
 					cardsGroup.Type = PlaneWithTwo
 					cardsGroup.Cards = planeCards
 					cardsGroup.SideCards = sideCards
