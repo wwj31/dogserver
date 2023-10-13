@@ -175,42 +175,52 @@ func (p PokerCards) StraightGroups(t PokerCardsType, n int) (result []PokerCards
 
 // SideCards 主要用于带牌的找牌规则,尽量找落单的，点数小的牌
 func (p PokerCards) SideCards(n int) (result PokerCards) {
+	if len(p) == 0 {
+		return
+	}
+
 	if n == len(p) {
 		result = make(PokerCards, len(p))
 		copy(result, p)
 		return result
 	}
+
 	stat := p.ConvertStruct()
+	orders := p.ConvertOrderPoint(stat)
 
-	var cards PokerCards
-	for point, num := range stat {
-		if num == 1 {
-			cards = append(cards, p.PointCards(point)...).Sort()
+	var (
+		combCount = 0
+		val       = orders[0]
+	)
+
+	// 优先找不连续的单牌，加入结果中
+	for i := 1; i < len(orders); i++ {
+		if val == orders[i]+1 {
+			combCount++
+			continue
+		}
+
+		if combCount == 1 {
+			result = append(result, p.PointCards(orders[i-1])...)
 		}
 	}
 
-	var nextCards PokerCards
-	if len(cards) <= 4 {
-		for _, card := range cards {
-			result = append(result, card)
-		}
-		if len(result) >= n {
-			result = result[:n]
-			return
-		} else {
-			nextCards = p.Remove(result...)
-		}
-	}
+	// 如果结果
 
 	addNum := n - len(result)
+	if addNum == 0 {
+		return result.Sort()
+	}
+
+	spare := p.Remove(result...)
 	for i := 0; i < addNum; i++ {
-		if len(nextCards) == 0 {
+		if len(spare) == 0 {
 			return nil
 		}
 
-		randIdx := rand.Intn(len(nextCards))
-		result = append(result, nextCards[randIdx])
-		nextCards = append(nextCards[:randIdx], nextCards[randIdx+1:]...)
+		randIdx := rand.Intn(len(spare))
+		result = append(result, spare[randIdx])
+		spare = append(spare[:randIdx], spare[randIdx+1:]...)
 	}
 	return result.Sort()
 }

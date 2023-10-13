@@ -200,22 +200,26 @@ func (s *StatePlaying) nextPlayer(seat int, lastPlayInfo *PlayCardsRecord) {
 	var bombWinScore *outer.BombsWinScore
 	if lastPlayInfo != nil && lastValidPlay.shortId == player.ShortId && lastPlayInfo.cardsGroup.Type == Bombs {
 		var totalWinScore int64
-		loser := make(map[int32]int64)
-		for seatIdx, runPlayer := range s.fasterRunPlayers {
+		losers := make(map[int32]int64)
+		for seatIdx, loserPlayer := range s.fasterRunPlayers {
+			if loserPlayer.ShortId == player.ShortId {
+				continue
+			}
+
 			score := s.bombWinScore()
 			// 不允许负分，能减多少减多少
-			if !s.gameParams().AllowScoreSmallZero && runPlayer.score < score {
-				score = common.Min(runPlayer.score, score)
+			if !s.gameParams().AllowScoreSmallZero && loserPlayer.score < score {
+				score = common.Min(loserPlayer.score, score)
 			}
-			runPlayer.updateScore(-score)
-			loser[int32(seatIdx)] = score
+			loserPlayer.updateScore(-score)
+			losers[int32(seatIdx)] = score
 			player.updateScore(score)
 			totalWinScore += score
 		}
 
 		bombWinScore = &outer.BombsWinScore{
 			WinScore: totalWinScore,
-			Loser:    loser,
+			Loser:    losers,
 		}
 	}
 
