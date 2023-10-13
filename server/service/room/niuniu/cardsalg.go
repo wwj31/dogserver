@@ -89,8 +89,58 @@ func (p PokerCards) AnalyzeCards() (cardsGroup CardsGroup) {
 		cardsGroup.Cards = p
 		return
 	}
-	// TODO
 
+	// 牛1~牛10
+	var (
+		cards       = make(PokerCards, 3, 3) // 主牌
+		total10Func func(n int) (found bool)
+	)
+
+	total10Func = func(n int) bool {
+		for i := 0; i < len(p); i++ {
+			cards[n] = p[i]
+			if n == 2 {
+				var totalPoint int32
+				for _, card := range cards {
+					// 牛牛特殊规则，JQK判断点数，都作为10点
+					point := card.Point()
+					if point == 11 || point == 12 || point == 13 {
+						point = 10
+					}
+					totalPoint += point
+				}
+
+				if totalPoint%10 == 0 {
+					return true
+				}
+			} else if total10Func(n + 1) {
+				return true
+			}
+		}
+		return false
+	}
+
+	if found := total10Func(0); found {
+		cardsGroup.Cards = cards
+		cardsGroup.SideCards = p.Remove(cards...)
+		var totalPoint int32
+		for _, card := range cardsGroup.SideCards {
+			// 牛牛特殊规则，JQK判断点数，都作为10点
+			point := card.Point()
+			if point == 11 || point == 12 || point == 13 {
+				point = 10
+			}
+			totalPoint += point
+			niuniuType := totalPoint % 10
+			if niuniuType == 0 {
+				niuniuType = 10
+			}
+			cardsGroup.Type = PokerCardsType(niuniuType)
+		}
+
+		return
+
+	}
 	return
 }
 

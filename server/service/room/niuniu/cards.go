@@ -153,9 +153,16 @@ func (c CardsGroup) CanCompare(group CardsGroup) bool {
 
 	return true
 }
-func (c CardsGroup) Bigger(group CardsGroup) bool {
+
+func (c CardsGroup) GreaterThan(group CardsGroup) bool {
+	if c.Type != group.Type {
+		return c.Type > group.Type
+	}
+
+	// 顺子和同花顺，比较最左的牌点数
 	if group.Type == StraightNiuType || group.Type == ColorStraightType {
 		return c.Cards[0].Point() > group.Cards[0].Point()
 	}
+
 	return c.Cards[len(c.Cards)].Point() > group.Cards[len(group.Cards)].Point()
 }

@@ -23,11 +23,10 @@ func (s *StateDeal) State() int {
 	return Deal
 }
 
-func (s *StateDeal) Enter() {
-	var ignoreCards PokerCards
-	var handCardsNumber int
+const handCardsSize = 5
 
-	cards := RandomPokerCards(ignoreCards)
+func (s *StateDeal) Enter() {
+	cards := RandomPokerCards(nil)
 	testCardsStr := rds.Ins.Get(context.Background(), "niuniu_testcards").Val()
 	if testCardsStr != "" {
 		testCards := PokerCards{}
@@ -42,8 +41,8 @@ func (s *StateDeal) Enter() {
 
 	var i int
 	for _, player := range s.niuniuPlayers {
-		player.handCards = append(PokerCards{}, cards[i:i+handCardsNumber]...).Sort()
-		i += handCardsNumber
+		player.handCards = append(PokerCards{}, cards[i:i+handCardsSize]...).Sort()
+		i += handCardsSize
 
 		s.room.SendToPlayer(player.ShortId, &outer.FasterRunDealNtf{
 			HandCards:  player.handCards.ToPB(),
@@ -56,14 +55,6 @@ func (s *StateDeal) Enter() {
 	s.room.AddTimer(tools.XUID(), s.currentStateEndAt, func(dt time.Duration) {
 		s.SwitchTo(DecideMaster)
 	})
-}
-func (s *StateDeal) existHeart10(cards PokerCards) bool {
-	for _, card := range cards {
-		if card == Hearts_10 {
-			return true
-		}
-	}
-	return false
 }
 
 func (s *StateDeal) Leave() {
