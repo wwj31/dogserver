@@ -192,9 +192,7 @@ func (s *StateSettlement) profit(bigWinner bool) (totalProfit int64) {
 			}
 		}
 
-		if winners != nil {
-			winners = append(winners, winner)
-		}
+		winners = append(winners, winner)
 	} else {
 		for i, player := range s.niuniuPlayers {
 			if player.finalStatsMsg.TotalScore > 0 {

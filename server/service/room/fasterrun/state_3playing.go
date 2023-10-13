@@ -164,7 +164,7 @@ func (s *StatePlaying) play(player *fasterRunPlayer, cards PokerCards) outer.ERR
 		}
 
 		// 副牌数量不匹配(容错的情况下不用校验)
-		if !tolerance && len(playCardsGroup.SideCards) != len(lastValidPlayCards.cardsGroup.SideCards) {
+		if playCardsGroup.Type != Bombs && !tolerance && len(playCardsGroup.SideCards) != len(lastValidPlayCards.cardsGroup.SideCards) {
 			return outer.ERROR_FASTERRUN_PLAY_CARDS_SIDE_CARD_LEN_ERR
 		}
 	}
@@ -198,7 +198,7 @@ func (s *StatePlaying) nextPlayer(seat int, lastPlayInfo *PlayCardsRecord) {
 
 	// 如果出的是炸弹，并且转了一圈都没人能大，就算炸弹赢分
 	var bombWinScore *outer.BombsWinScore
-	if lastPlayInfo != nil && lastValidPlay.shortId == player.ShortId && lastPlayInfo.cardsGroup.Type == Bombs {
+	if lastPlayInfo != nil && lastValidPlay.shortId == player.ShortId && lastValidPlay.cardsGroup.Type == Bombs {
 		var totalWinScore int64
 		losers := make(map[int32]int64)
 		for seatIdx, loserPlayer := range s.fasterRunPlayers {
@@ -253,7 +253,9 @@ func (s *StatePlaying) nextPlayer(seat int, lastPlayInfo *PlayCardsRecord) {
 
 	s.actionTimer(waitingExpiration)
 
-	s.Log().Infow("next player ", "seat", seat, "shortId", player.ShortId, "follow", follow, "hand cards", player.handCards, "prev play", lastPlayInfo, "ntf", ntf.String())
+	s.Log().Infow("next player ",
+		"seat", seat, "shortId", player.ShortId, "follow", follow, "lastValidPlay", lastValidPlay.String(),
+		"hand cards", player.handCards, "prev play", lastPlayInfo, "ntf", ntf.String())
 	s.Log().Infof(" ")
 }
 
