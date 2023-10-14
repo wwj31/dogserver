@@ -72,6 +72,7 @@ func (s *StateSettlement) Enter() {
 
 			// 特殊规则剩一张不输
 			if s.gameParams().SpareOnlyOneWithoutLose && len(loser.handCards) == 1 {
+				s.Log().Infow("SpareOnlyOneWithoutLose ", "shortId", loser.ShortId)
 				continue
 			}
 
@@ -265,7 +266,9 @@ func (s *StateSettlement) profit(bigWinner bool) (totalProfit int64) {
 			}
 		}
 
-		winners = append(winners, winner)
+		if winner != nil {
+			winners = append(winners, winner)
+		}
 	} else {
 		for i, player := range s.fasterRunPlayers {
 			if player.finalStatsMsg.TotalScore > 0 {
@@ -276,7 +279,6 @@ func (s *StateSettlement) profit(bigWinner bool) (totalProfit int64) {
 
 	// 处理每一位赢家抽水
 	for _, winner := range winners {
-		s.Log().Debugw("panic ???????????", "winner", winner, "room", s.room)
 		rangeCfg := s.room.ProfitRange(winner.finalStatsMsg.TotalScore, s.gameParams().ReBate)
 		winScore := winner.finalStatsMsg.TotalScore
 		if rangeCfg == nil {
