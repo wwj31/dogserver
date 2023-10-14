@@ -240,7 +240,13 @@ func (p PokerCards) AnalyzeCards(AAAisBomb bool) (cardsGroup CardsGroup) {
 		}
 
 		// 最长连续数等于本组牌长度的1/3，肯定飞机
-		if sequentialMaxCount*3 == l {
+		allStatIs3 := true
+		for _, num := range stat {
+			if num != 3 {
+				allStatIs3 = false
+			}
+		}
+		if sequentialMaxCount*3 == l && allStatIs3 {
 			cardsGroup.Type = Plane
 			cardsGroup.Cards = append(cardsGroup.Cards, p...)
 			return
@@ -273,34 +279,70 @@ func (p PokerCards) AnalyzeCards(AAAisBomb bool) (cardsGroup CardsGroup) {
 			// 先找所有三张
 			var planePoints []int32
 			for i := 0; i < len(orderPoints); i++ {
-				if stat[orderPoints[i]] == 3 {
-					if len(planePoints) == 0 || orderPoints[i] == planePoints[len(planePoints)-1]+1 {
-						planePoints = append(planePoints, orderPoints[i])
-					} else {
-						planePoints = []int32{orderPoints[i]}
-					}
+				if stat[orderPoints[i]] >= 3 {
+					planePoints = append(planePoints, orderPoints[i])
 				}
 			}
 
-			if len(planePoints) >= 2 {
+			consArr := findConsecutiveSequences(planePoints)
+			for _, seqArr := range consArr {
+			again:
+				// 判断连续数的长度
 				var planeCards PokerCards
-				for _, point := range planePoints {
-					planeCards = append(planeCards, p.PointCards(point)...)
+				for _, point := range seqArr {
+					pointCards := p.PointCards(point)
+					// 如果有4张，只取3张
+					if len(pointCards) == 4 {
+						pointCards = pointCards[1:]
+					}
+					planeCards = append(planeCards, pointCards...)
 				}
 				sideCards := p.Remove(planeCards...)
-				if len(sideCards) == len(planePoints)*2 {
-					cardsGroup.Type = PlaneWithTwo
-					cardsGroup.Cards = planeCards
-					cardsGroup.SideCards = sideCards
-					return
+				if len(sideCards) != len(seqArr)*2 {
+					if len(seqArr) > 2 {
+						seqArr = seqArr[1:]
+						goto again
+					}
 				}
+
+				cardsGroup.Type = PlaneWithTwo
+				cardsGroup.Cards = planeCards
+				cardsGroup.SideCards = sideCards
+				return
 			}
 		}
 	}
 	return
 }
 
-// 判断一堆点数是否连续
+// 拆分arr中，所有连续的数组,并根据数组最后一个元素进行降序排序 FROM ChatGPT-4
+func findConsecutiveSequences(arr []int32) [][]int32 {
+	var sequences [][]int32
+
+	for i := 0; i < len(arr); i++ {
+		seq := []int32{arr[i]}
+		for j := i + 1; j < len(arr); j++ {
+			if arr[j] == arr[j-1]+1 {
+				seq = append(seq, arr[j])
+			} else {
+				break
+			}
+			i = j // Update the outer loop counter to avoid duplicate sequences
+		}
+		if len(seq) > 1 {
+			sequences = append(sequences, seq)
+		}
+	}
+
+	// Sort the sequences slice in descending order based on the last element of each sub-slice
+	sort.Slice(sequences, func(i, j int) bool {
+		return sequences[i][len(sequences[i])-1] > sequences[j][len(sequences[j])-1]
+	})
+
+	return sequences
+}
+
+// 判断一堆点数是否连续， 必须传入升序数组
 func isComb(arr []int32) bool {
 	if len(arr) < 2 {
 		return false
