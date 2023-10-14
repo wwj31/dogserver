@@ -1,6 +1,7 @@
 package fasterrun
 
 import (
+	"server/common"
 	"sort"
 
 	"server/common/log"
@@ -188,7 +189,8 @@ func (p PokerCards) AnalyzeCards(AAAisBomb bool) (cardsGroup CardsGroup) {
 		// 检查顺子(只能是5张顺子)
 		var straight5 = true
 		for i := 1; i < l; i++ {
-			if p[i].Point() != p[i-1].Point()+1 {
+			// 2点不能组成顺子
+			if p[i].Point() == 15 || p[i].Point() != p[i-1].Point()+1 {
 				straight5 = false
 				break
 			}
@@ -210,13 +212,15 @@ func (p PokerCards) AnalyzeCards(AAAisBomb bool) (cardsGroup CardsGroup) {
 		var (
 			beginPoint         = orderPoints[0]
 			sequentialMaxCount = 1 // 最大的连续数量(不计相同的牌)
+			seq                = 1
 		)
 
 		for i := 1; i < len(orderPoints); i++ {
 			if orderPoints[i] == beginPoint+1 {
-				sequentialMaxCount++
+				seq++
 			} else {
-				sequentialMaxCount = 1
+				sequentialMaxCount = common.Max(sequentialMaxCount, seq)
+				seq = 1
 			}
 			beginPoint = orderPoints[i]
 		}

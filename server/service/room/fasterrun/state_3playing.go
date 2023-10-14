@@ -169,6 +169,10 @@ func (s *StatePlaying) play(player *fasterRunPlayer, cards PokerCards) outer.ERR
 		}
 	}
 
+	if playCardsGroup.Type == Bombs {
+		player.BombsCount++
+	}
+
 	player.handCards = player.handCards.Remove(cards...)
 	s.playRecords = append(s.playRecords, PlayCardsRecord{
 		shortId:    player.ShortId,
@@ -201,6 +205,7 @@ func (s *StatePlaying) nextPlayer(seat int, lastPlayInfo *PlayCardsRecord) {
 	if lastPlayInfo != nil && lastValidPlay.shortId == player.ShortId && lastValidPlay.cardsGroup.Type == Bombs {
 		var totalWinScore int64
 		losers := make(map[int32]int64)
+		scores := make(map[int32]int64)
 		for seatIdx, loserPlayer := range s.fasterRunPlayers {
 			if loserPlayer.ShortId == player.ShortId {
 				continue
@@ -217,9 +222,14 @@ func (s *StatePlaying) nextPlayer(seat int, lastPlayInfo *PlayCardsRecord) {
 			totalWinScore += score
 		}
 
+		for seatIdx, loserPlayer := range s.fasterRunPlayers {
+			scores[int32(seatIdx)] = loserPlayer.score
+		}
+
 		bombWinScore = &outer.BombsWinScore{
 			WinScore: totalWinScore,
 			Loser:    losers,
+			Scores:   scores,
 		}
 	}
 

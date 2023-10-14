@@ -105,6 +105,7 @@ message FasterRunTurnNtf {
 message BombsWinScore {
     int64 WinScore          = 1; // 赢的分
     map<int32, int64> Loser = 2; // map<输分座位，输的分> 值为正
+    map<int32,int64> scores = 3; // 每个位置玩家的最新分数
 }
 
 // 结算玩家数据
