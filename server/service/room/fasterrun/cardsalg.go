@@ -224,6 +224,7 @@ func (p PokerCards) AnalyzeCards(AAAisBomb bool) (cardsGroup CardsGroup) {
 			}
 			beginPoint = orderPoints[i]
 		}
+		sequentialMaxCount = common.Max(sequentialMaxCount, seq)
 
 		// 最长连续数等于本组牌的长度，只能是顺子
 		if sequentialMaxCount == l {
@@ -256,7 +257,7 @@ func (p PokerCards) AnalyzeCards(AAAisBomb bool) (cardsGroup CardsGroup) {
 		for point, num := range stat {
 			if num == 4 {
 				cards := p.PointCards(point)
-				sideCards := p.Remove(cardsGroup.Cards...)
+				sideCards := p.Remove(cards...)
 				sideCardsLen := len(sideCards)
 				if sideCardsLen == 2 {
 					cardsGroup.Type = FourWithTwo

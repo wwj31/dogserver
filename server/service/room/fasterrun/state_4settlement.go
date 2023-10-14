@@ -214,7 +214,7 @@ func (s *StateSettlement) Leave() {
 }
 
 func (s *StateSettlement) Handle(shortId int64, v any) (result any) {
-	return outer.ERROR_MAHJONG_STATE_MSG_INVALID
+	return outer.ERROR_FASTERRUN_STATE_MSG_INVALID
 }
 
 func (s *StateSettlement) afterSettle(ntf *outer.FasterRunSettlementNtf) {
@@ -276,6 +276,7 @@ func (s *StateSettlement) profit(bigWinner bool) (totalProfit int64) {
 
 	// 处理每一位赢家抽水
 	for _, winner := range winners {
+		s.Log().Debugw("panic ???????????", "winner", winner, "room", s.room)
 		rangeCfg := s.room.ProfitRange(winner.finalStatsMsg.TotalScore, s.gameParams().ReBate)
 		winScore := winner.finalStatsMsg.TotalScore
 		if rangeCfg == nil {
