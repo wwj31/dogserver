@@ -227,7 +227,7 @@ func (p PokerCards) AnalyzeCards(AAAisBomb bool) (cardsGroup CardsGroup) {
 		sequentialMaxCount = common.Max(sequentialMaxCount, seq)
 
 		// 最长连续数等于本组牌的长度，只能是顺子
-		if sequentialMaxCount == l {
+		if sequentialMaxCount == l && len(p.PointCards(15)) == 0 {
 			cardsGroup.Type = Straight
 			cardsGroup.Cards = append(cardsGroup.Cards, p...)
 			return
