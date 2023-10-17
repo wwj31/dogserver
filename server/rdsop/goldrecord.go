@@ -56,7 +56,7 @@ func SetUpdateGoldRecord(shortId int64, reason GoldUpdateReason, pip ...redis.Pi
 
 // GetUpdateGoldRecord 获取玩家金币记录
 func GetUpdateGoldRecord(shortId, start, end int64) (records []GoldUpdateReason, totalLen int64) {
-	if start <= end && start >= 0 {
+	if start > end && start < 0 {
 		return
 	}
 

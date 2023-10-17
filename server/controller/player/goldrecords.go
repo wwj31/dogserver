@@ -21,6 +21,7 @@ var _ = router.Reg(func(p *player.Player, msg *outer.GoldRecordsReq) any {
 		pbRecords = append(pbRecords, &outer.GoldRecords{
 			GoldUpdateType: record.Type.ToPB(),
 			Gold:           record.Gold,
+			AfterGold:      record.AfterGold,
 			UpShortId:      record.UpShortId,
 			DownShortId:    record.DownShortId,
 			GameType:       record.GameType,

@@ -49,10 +49,11 @@ enum ReasonType {
 message GoldRecords {
     ReasonType GoldUpdateType = 1; // 变动愿意
     int64 Gold                = 2; // 变动值(正数为增加，负数为减少)
-    int64 UpShortId           = 3; // 上级ID 用于"被"上级 上下分
-    int64 DownShortId         = 4; // 下级ID 用于"对"下级 上下分
-    int32 GameType            = 5; // 游戏类型 0.麻将 1.跑得快 用于游戏中输赢
-    int64 OccurAt             = 6; // 发生时间(毫秒)
+    int64 AfterGold           = 3; // 变动后的值
+    int64 UpShortId           = 4; // 上级ID 用于"被"上级 上下分
+    int64 DownShortId         = 5; // 下级ID 用于"对"下级 上下分
+    int32 GameType            = 6; // 游戏类型 0.麻将 1.跑得快 用于游戏中输赢
+    int64 OccurAt             = 7; // 发生时间(毫秒)
 }
 
 // 请求金币变动记录
