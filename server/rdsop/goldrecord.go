@@ -2,6 +2,7 @@ package rdsop
 
 import (
 	"context"
+	"time"
 
 	"github.com/go-redis/redis/v9"
 
@@ -24,9 +25,11 @@ const (
 type GoldUpdateReason struct {
 	Type        GoldUpdateType // 变更类型
 	Gold        int64          // 增加的值(负数为减少)
+	AfterGold   int64          // 变动后的值
 	UpShortId   int64          // 上级ID 用于"被"上级 上下分
 	DownShortId int64          // 下级ID 用于"对"下级 上下分
 	GameType    int32          // 游戏类型 0.麻将 1.跑得快 用于游戏中输赢
+	OccurAt     time.Time      // 发生时间
 }
 
 // SetUpdateGoldRecord 金币变化相关的记录

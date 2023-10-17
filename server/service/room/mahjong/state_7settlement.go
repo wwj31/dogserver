@@ -104,8 +104,10 @@ func (s *StateSettlement) Enter() {
 			// 记录本场游戏的输赢变化
 			changes := finalScore - presentScore
 			rdsop.SetUpdateGoldRecord(player.ShortId, rdsop.GoldUpdateReason{
-				Type: rdsop.GameWinOrLose, // 血战麻将游戏输赢记录
-				Gold: changes,
+				Type:      rdsop.GameWinOrLose, // 血战麻将游戏输赢记录
+				Gold:      changes,
+				AfterGold: finalScore,
+				OccurAt:   tools.Now(),
 			})
 
 			if len(modifyRspCount) == maxNum {

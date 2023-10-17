@@ -10,7 +10,7 @@ import (
 
 // 获取金币变动记录
 var _ = router.Reg(func(p *player.Player, msg *outer.GoldRecordsReq) any {
-	if msg.StartIndex < 0 || msg.StartIndex <= msg.EndIndex {
+	if msg.StartIndex < 0 || msg.StartIndex > msg.EndIndex {
 		log.Warnw("GoldRecordsReq param err", "msg", msg.String())
 		return outer.ERROR_MSG_REQ_PARAM_INVALID
 	}
@@ -24,6 +24,7 @@ var _ = router.Reg(func(p *player.Player, msg *outer.GoldRecordsReq) any {
 			UpShortId:      record.UpShortId,
 			DownShortId:    record.DownShortId,
 			GameType:       record.GameType,
+			OccurAt:        record.OccurAt.UnixMilli(),
 		})
 	}
 

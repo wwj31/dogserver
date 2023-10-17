@@ -2,9 +2,11 @@ package player
 
 import (
 	"context"
-	"github.com/spf13/cast"
 	"reflect"
 	"time"
+
+	"github.com/spf13/cast"
+	"github.com/wwj31/dogactor/tools"
 
 	"server/common"
 	"server/common/actortype"
@@ -160,9 +162,16 @@ var _ = router.Reg(func(p *player.Player, msg *outer.ClaimRebateScoreReq) any {
 	pip := rds.Ins.Pipeline()
 	rdsop.IncRebateGold(p.Role().ShortId(), -gold, pip)
 
+	reason := rdsop.GoldUpdateReason{
+		Type:      rdsop.Rebate,
+		Gold:      gold,
+		AfterGold: p.Role().Gold(),
+		OccurAt:   tools.Now(),
+	}
 	rdsop.SetUpdateGoldRecord(
 		p.Role().ShortId(),
-		rdsop.GoldUpdateReason{Type: rdsop.Rebate, Gold: gold}, pip,
+		reason,
+		pip,
 	)
 	_, err := pip.Exec(context.Background())
 	if err != nil {
@@ -246,14 +255,18 @@ var _ = router.Reg(func(p *player.Player, msg *outer.SetScoreForDownReq) any {
 		rdsop.SetUpdateGoldRecord(p.Role().ShortId(), rdsop.GoldUpdateReason{
 			Type:        rdsop.ModifyDownGold, // 对下级上下分
 			Gold:        -msg.Gold,
+			AfterGold:   p.Role().Gold(),
 			DownShortId: msg.ShortId,
+			OccurAt:     tools.Now(),
 		}, pip)
 
 		// 记录下级的金币变化
 		rdsop.SetUpdateGoldRecord(downPlayerInfo.ShortId, rdsop.GoldUpdateReason{
 			Type:      rdsop.UpModifyGold, // 被上级上\下分
 			Gold:      msg.Gold,
+			AfterGold: rsp.Info.Gold,
 			UpShortId: p.Role().ShortId(),
+			OccurAt:   tools.Now(),
 		}, pip)
 
 		if _, err := pip.Exec(context.Background()); err != nil {
