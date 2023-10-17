@@ -21,6 +21,7 @@ import (
 const (
 	ReadyExpiration    = 20 * time.Second // 准备超时时间
 	DealExpiration     = 3 * time.Second  // 发牌状态持续时间
+	MasterExpiration   = 10 * time.Second // 抢庄状态持续时间
 	SettlementDuration = 10 * time.Second // 结算持续时间
 )
 

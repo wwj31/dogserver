@@ -144,6 +144,7 @@ func (p PokerCards) AnalyzeCards() (cardsGroup CardsGroup) {
 	return
 }
 
+// 是否包含JQk
 func isJQK(point int32) bool {
 	return point == 11 || point == 12 || point == 13
 }

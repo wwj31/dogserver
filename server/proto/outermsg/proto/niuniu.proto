@@ -75,7 +75,6 @@ message NiuNiuReadyNtf {
 // 开始发牌通知
 message NiuNiuDealNtf {
     repeated int32 HandCards  = 1; // 手牌
-    int32          MasterSeat = 2; // 庄家位置
 }
 
 // 开始游戏通知

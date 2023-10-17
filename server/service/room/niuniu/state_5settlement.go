@@ -142,7 +142,7 @@ func (s *StateSettlement) Leave() {
 }
 
 func (s *StateSettlement) Handle(shortId int64, v any) (result any) {
-	return outer.ERROR_MAHJONG_STATE_MSG_INVALID
+	return outer.ERROR_NIUNIU_STATE_MSG_INVALID
 }
 
 func (s *StateSettlement) afterSettle(ntf *outer.NiuNiuSettlementNtf) {
