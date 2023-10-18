@@ -25,7 +25,11 @@ func (s *StateMaster) State() int {
 
 func (s *StateMaster) Enter() {
 	l := len(s.room.Players)
-	s.timesSeats = make([]int32, -1, l)
+	s.timesSeats = make([]int32, l, l)
+	for i := 0; i < l; i++ {
+		s.timesSeats[i] = -1
+	}
+
 	s.timeout = tools.UUID()
 	s.room.AddTimer(tools.UUID(), tools.Now().Add(MasterExpiration), func(dt time.Duration) {
 		for i, seat := range s.timesSeats {
