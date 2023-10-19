@@ -64,6 +64,7 @@ func (s *StateBetting) Handle(shortId int64, v any) (result any) {
 			return outer.ERROR_NIUNIU_BETTING_OUT_OF_RANGE
 		}
 
+		// 抢过庄的，不能选1倍数
 		seat := s.SeatIndex(shortId)
 		if s.timesSeats[seat] > 0 && req.Times == 1 {
 			return outer.ERROR_NIUNIU_BETTING_HAS_BE_MASTER
