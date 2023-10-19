@@ -104,7 +104,10 @@ enum Msg {
     IdNiuNiuPlayerReadyNtf = 152602438;
     IdNiuNiuReadyNtf = 1308947253;
     IdNiuNiuDealNtf = 737893467;
-    IdNiuNiuGameStartNtf = 1563469855;
+    IdNiuNiuMasterNtf = 1000873259;
+    IdNiuNiuSelectMasterNtf = 1278476036;
+    IdNiuNiuBettingNtf = 1079068677;
+    IdNiuNiuSelectBettingNtf = 1199372733;
     IdNiuNiuSettlementNtf = 2082388696;
     IdCreateRoomReq = 2001014089;// dispatch to player
     IdCreateRoomRsp = 222637993;

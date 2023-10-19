@@ -82,6 +82,8 @@ enum ERROR {
    NIUNIU_STATE_MSG_INVALID             = 400; // 当前状态不受理此消息
    NIUNIU_GOLD_NOT_ENOUGH_MASTER        = 401; // 分小于底分200倍，不能抢庄
    NIUNIU_MASTER_OUT_OF_RANGE           = 402; // 抢庄超过倍数范围
+   NIUNIU_BETTING_OUT_OF_RANGE          = 403; // 不在正确的押注范围内
+   NIUNIU_BETTING_HAS_BE_MASTER         = 404; // 抢过庄的，不能押1倍
 
 }
 

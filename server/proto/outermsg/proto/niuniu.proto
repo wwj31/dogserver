@@ -12,10 +12,10 @@ message NiuNiuGameInfo {
     int64                     StateEnterAt     = 2; // 当前状态的进入时间(毫秒)
     int64                     StateEndAt       = 3; // 当前状态的结束时间(毫秒)
     int32                     GameCount        = 4; // 游戏局数
-    repeated NiuNiuPlayerInfo Players          = 5; // 分别代表0-2号座位的玩家
-    int32                     MasterIndex      = 7; // 庄家位置 (0-2)
-    int64                     PlayingShortId   = 9; // 当前等待出牌的人
-    int64                     PlayingEndAt     = 10;// 操作结束时间(毫秒)
+    repeated NiuNiuPlayerInfo Players          = 5; // 分别代表座位的玩家
+    int32                     MasterIndex      = 7; // 庄家位置
+    repeated int32            MasterTimes      = 11;// 每个人的抢庄倍数
+    repeated int32            BetTimes         = 12;// 每个人的押注倍数
 }
 
 // 牛牛 参与游戏的玩家数据
@@ -77,8 +77,27 @@ message NiuNiuDealNtf {
     repeated int32 HandCards  = 1; // 手牌
 }
 
-// 开始游戏通知
-message NiuNiuGameStartNtf {
+// 开始抢庄通知
+message NiuNiuMasterNtf {
+    int64 ExpireAt = 1;// 抢庄结束时间(毫秒)
+}
+
+// 抢庄操作广播
+message NiuNiuSelectMasterNtf {
+    int64 ShortId = 1;
+    int32 Times   = 2; // 抢庄倍数
+}
+
+// 开始押注通知
+message NiuNiuBettingNtf {
+    int64 ExpireAt   = 1;// 押注结束时间(毫秒)
+    int32 MasterSeat = 2;// 抢庄结束后，确定的庄家位置
+}
+
+// 押注操作广播
+message NiuNiuSelectBettingNtf {
+    int64 ShortId = 1;
+    int32 Times   = 2; // 押注倍数
 }
 
 // 亮牌结算玩家数据

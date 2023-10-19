@@ -22,6 +22,7 @@ const (
 	ReadyExpiration    = 20 * time.Second // 准备超时时间
 	DealExpiration     = 3 * time.Second  // 发牌状态持续时间
 	MasterExpiration   = 10 * time.Second // 抢庄状态持续时间
+	BettingExpiration  = 10 * time.Second // 押注状态持续时间
 	SettlementDuration = 10 * time.Second // 结算持续时间
 )
 
@@ -64,6 +65,8 @@ type (
 		masterIndex   int             // 庄家位置 0，1，2
 		niuniuPlayers []*niuniuPlayer // 参与游戏的玩家
 		gameCount     int             // 游戏的连续局数
+		timesSeats    []int32         // 每个位置抢庄的倍数
+		betSeats      []int32         // 每个位置押注的倍数
 	}
 
 	PlayCardsRecord struct {
@@ -109,6 +112,8 @@ func (f *NiuNiu) Data(shortId int64) proto.Message {
 		GameCount:    int32(f.gameCount),
 		Players:      f.playersToPB(shortId, false),
 		MasterIndex:  int32(f.masterIndex),
+		MasterTimes:  f.timesSeats,
+		BetTimes:     f.betSeats,
 	}
 	return info
 }

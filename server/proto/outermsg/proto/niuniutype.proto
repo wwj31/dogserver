@@ -15,8 +15,10 @@ enum NiuNiuPokerColorType {
 enum NiuNiuState {
     NiuNiuStateReady        = 0;   // 准备中状态
     NiuNiuStateDeal         = 1;   // 游戏开始发牌状态
-    NiuNiuStatePlaying      = 2;   // 游戏状态
-    NiuNiuStateSettlement   = 3;   // 结算
+    NiuNiuStateToBeMaster   = 2;   // 抢庄状态
+    NiuNiuStateBetting      = 3;   // 押注状态
+    NiuNiuStatePlaying      = 4;   // 游戏状态
+    NiuNiuStateSettlement   = 5;   // 结算
 }
 
 // 跑得快 牌型

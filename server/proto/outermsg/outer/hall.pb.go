@@ -460,7 +460,7 @@ type GoldRecords struct {
 	UpShortId      int64      `protobuf:"varint,4,opt,name=UpShortId,proto3" json:"UpShortId,omitempty"`                                 // 上级ID 用于"被"上级 上下分
 	DownShortId    int64      `protobuf:"varint,5,opt,name=DownShortId,proto3" json:"DownShortId,omitempty"`                             // 下级ID 用于"对"下级 上下分
 	GameType       int32      `protobuf:"varint,6,opt,name=GameType,proto3" json:"GameType,omitempty"`                                   // 游戏类型 0.麻将 1.跑得快 用于游戏中输赢
-	OccurAt        int64      `protobuf:"varint,7,opt,name=OccurAt,proto3" json:"OccurAt,omitempty"`                                     // 发生时间(毫秒)
+	OccurAt        int64      `protobuf:"varint,7,opt,name=OccurAt,proto3" json:"OccurAt,omitempty"`                                     // 发生时间(毫秒) 值小于等于0，都表示无效值
 }
 
 func (x *GoldRecords) Reset() {

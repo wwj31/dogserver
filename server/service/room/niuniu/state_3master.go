@@ -15,8 +15,7 @@ import (
 
 type StateMaster struct {
 	*NiuNiu
-	timesSeats []int32 // 每个位置抢的倍数
-	timeout    string
+	timeout string
 }
 
 func (s *StateMaster) State() int {
@@ -24,14 +23,16 @@ func (s *StateMaster) State() int {
 }
 
 func (s *StateMaster) Enter() {
-	l := len(s.room.Players)
+	// 每位玩家初始的抢庄状态为-1，表示没有操作
+	l := s.playerNumber()
 	s.timesSeats = make([]int32, l, l)
 	for i := 0; i < l; i++ {
 		s.timesSeats[i] = -1
 	}
 
 	s.timeout = tools.UUID()
-	s.room.AddTimer(tools.UUID(), tools.Now().Add(MasterExpiration), func(dt time.Duration) {
+	expireAt := tools.Now().Add(MasterExpiration)
+	s.room.AddTimer(s.timeout, expireAt, func(dt time.Duration) {
 		for i, seat := range s.timesSeats {
 			if seat == -1 {
 				s.timesSeats[i] = 0
@@ -39,6 +40,8 @@ func (s *StateMaster) Enter() {
 		}
 		s.decideMaster()
 	})
+
+	s.room.Broadcast(&outer.NiuNiuMasterNtf{ExpireAt: expireAt.UnixMilli()})
 	s.Log().Infow("[NiuNiu] enter state master ", "room", s.room.RoomId)
 }
 

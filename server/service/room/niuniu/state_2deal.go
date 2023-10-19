@@ -36,8 +36,7 @@ func (s *StateDeal) Enter() {
 		}
 	}
 
-	s.Log().Infow("[NiuNiu] enter state deal", "room", s.room.RoomId,
-		"params", *s.gameParams(), "cards", cards)
+	s.Log().Infow("[NiuNiu] enter state deal", "room", s.room.RoomId, "params", *s.gameParams(), "cards", cards)
 
 	var i int
 	for _, player := range s.niuniuPlayers {
