@@ -133,8 +133,8 @@ type NiuNiuPlayerInfo struct {
 	ShortId       int64 `protobuf:"varint,1,opt,name=ShortId,proto3" json:"ShortId,omitempty"`             // 参与者短ID
 	Ready         bool  `protobuf:"varint,2,opt,name=Ready,proto3" json:"Ready,omitempty"`                 // true.准备、false.未准备
 	ReadyExpireAt int64 `protobuf:"varint,3,opt,name=ReadyExpireAt,proto3" json:"ReadyExpireAt,omitempty"` // 准备超时时间(毫秒)
-	// 手牌 (梅花103-114 方块203-214 红心303-314 黑桃403-415)
-	// NOTE: 411:黑桃J 412:黑桃Q 413:黑桃K 414:黑桃A 415:黑桃2 其他花色同理
+	// 手牌 (梅花101-113 方块201-213 红心301-313 黑桃401-413)
+	// NOTE: 401:黑桃A 402:黑桃2 411:黑桃J 412:黑桃Q 413:黑桃K 其他花色同理
 	HandCards []int32 `protobuf:"varint,4,rep,packed,name=HandCards,proto3" json:"HandCards,omitempty"`
 	Score     int64   `protobuf:"varint,5,opt,name=Score,proto3" json:"Score,omitempty"` // 玩家本局拥有的分数
 }
@@ -538,6 +538,83 @@ func (*NiuNiuToBettingRsp) Descriptor() ([]byte, []int) {
 	return file_niuniu_proto_rawDescGZIP(), []int{8}
 }
 
+// 亮牌
+type NiuNiuShowCardsReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *NiuNiuShowCardsReq) Reset() {
+	*x = NiuNiuShowCardsReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_niuniu_proto_msgTypes[9]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *NiuNiuShowCardsReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*NiuNiuShowCardsReq) ProtoMessage() {}
+
+func (x *NiuNiuShowCardsReq) ProtoReflect() protoreflect.Message {
+	mi := &file_niuniu_proto_msgTypes[9]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use NiuNiuShowCardsReq.ProtoReflect.Descriptor instead.
+func (*NiuNiuShowCardsReq) Descriptor() ([]byte, []int) {
+	return file_niuniu_proto_rawDescGZIP(), []int{9}
+}
+
+type NiuNiuShowCardsRsp struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *NiuNiuShowCardsRsp) Reset() {
+	*x = NiuNiuShowCardsRsp{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_niuniu_proto_msgTypes[10]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *NiuNiuShowCardsRsp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*NiuNiuShowCardsRsp) ProtoMessage() {}
+
+func (x *NiuNiuShowCardsRsp) ProtoReflect() protoreflect.Message {
+	mi := &file_niuniu_proto_msgTypes[10]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use NiuNiuShowCardsRsp.ProtoReflect.Descriptor instead.
+func (*NiuNiuShowCardsRsp) Descriptor() ([]byte, []int) {
+	return file_niuniu_proto_rawDescGZIP(), []int{10}
+}
+
 // //////////////////////////////////////////// 游戏通知 //////////////////////////////////////////////
 type NiuNiuPlayerReadyNtf struct {
 	state         protoimpl.MessageState
@@ -551,7 +628,7 @@ type NiuNiuPlayerReadyNtf struct {
 func (x *NiuNiuPlayerReadyNtf) Reset() {
 	*x = NiuNiuPlayerReadyNtf{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_niuniu_proto_msgTypes[9]
+		mi := &file_niuniu_proto_msgTypes[11]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -564,7 +641,7 @@ func (x *NiuNiuPlayerReadyNtf) String() string {
 func (*NiuNiuPlayerReadyNtf) ProtoMessage() {}
 
 func (x *NiuNiuPlayerReadyNtf) ProtoReflect() protoreflect.Message {
-	mi := &file_niuniu_proto_msgTypes[9]
+	mi := &file_niuniu_proto_msgTypes[11]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -577,7 +654,7 @@ func (x *NiuNiuPlayerReadyNtf) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NiuNiuPlayerReadyNtf.ProtoReflect.Descriptor instead.
 func (*NiuNiuPlayerReadyNtf) Descriptor() ([]byte, []int) {
-	return file_niuniu_proto_rawDescGZIP(), []int{9}
+	return file_niuniu_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *NiuNiuPlayerReadyNtf) GetShortId() int64 {
@@ -606,7 +683,7 @@ type NiuNiuReadyNtf struct {
 func (x *NiuNiuReadyNtf) Reset() {
 	*x = NiuNiuReadyNtf{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_niuniu_proto_msgTypes[10]
+		mi := &file_niuniu_proto_msgTypes[12]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -619,7 +696,7 @@ func (x *NiuNiuReadyNtf) String() string {
 func (*NiuNiuReadyNtf) ProtoMessage() {}
 
 func (x *NiuNiuReadyNtf) ProtoReflect() protoreflect.Message {
-	mi := &file_niuniu_proto_msgTypes[10]
+	mi := &file_niuniu_proto_msgTypes[12]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -632,7 +709,7 @@ func (x *NiuNiuReadyNtf) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NiuNiuReadyNtf.ProtoReflect.Descriptor instead.
 func (*NiuNiuReadyNtf) Descriptor() ([]byte, []int) {
-	return file_niuniu_proto_rawDescGZIP(), []int{10}
+	return file_niuniu_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *NiuNiuReadyNtf) GetReadyExpireAt() int64 {
@@ -654,7 +731,7 @@ type NiuNiuDealNtf struct {
 func (x *NiuNiuDealNtf) Reset() {
 	*x = NiuNiuDealNtf{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_niuniu_proto_msgTypes[11]
+		mi := &file_niuniu_proto_msgTypes[13]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -667,7 +744,7 @@ func (x *NiuNiuDealNtf) String() string {
 func (*NiuNiuDealNtf) ProtoMessage() {}
 
 func (x *NiuNiuDealNtf) ProtoReflect() protoreflect.Message {
-	mi := &file_niuniu_proto_msgTypes[11]
+	mi := &file_niuniu_proto_msgTypes[13]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -680,7 +757,7 @@ func (x *NiuNiuDealNtf) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NiuNiuDealNtf.ProtoReflect.Descriptor instead.
 func (*NiuNiuDealNtf) Descriptor() ([]byte, []int) {
-	return file_niuniu_proto_rawDescGZIP(), []int{11}
+	return file_niuniu_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *NiuNiuDealNtf) GetHandCards() []int32 {
@@ -702,7 +779,7 @@ type NiuNiuMasterNtf struct {
 func (x *NiuNiuMasterNtf) Reset() {
 	*x = NiuNiuMasterNtf{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_niuniu_proto_msgTypes[12]
+		mi := &file_niuniu_proto_msgTypes[14]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -715,7 +792,7 @@ func (x *NiuNiuMasterNtf) String() string {
 func (*NiuNiuMasterNtf) ProtoMessage() {}
 
 func (x *NiuNiuMasterNtf) ProtoReflect() protoreflect.Message {
-	mi := &file_niuniu_proto_msgTypes[12]
+	mi := &file_niuniu_proto_msgTypes[14]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -728,7 +805,7 @@ func (x *NiuNiuMasterNtf) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NiuNiuMasterNtf.ProtoReflect.Descriptor instead.
 func (*NiuNiuMasterNtf) Descriptor() ([]byte, []int) {
-	return file_niuniu_proto_rawDescGZIP(), []int{12}
+	return file_niuniu_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *NiuNiuMasterNtf) GetExpireAt() int64 {
@@ -751,7 +828,7 @@ type NiuNiuSelectMasterNtf struct {
 func (x *NiuNiuSelectMasterNtf) Reset() {
 	*x = NiuNiuSelectMasterNtf{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_niuniu_proto_msgTypes[13]
+		mi := &file_niuniu_proto_msgTypes[15]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -764,7 +841,7 @@ func (x *NiuNiuSelectMasterNtf) String() string {
 func (*NiuNiuSelectMasterNtf) ProtoMessage() {}
 
 func (x *NiuNiuSelectMasterNtf) ProtoReflect() protoreflect.Message {
-	mi := &file_niuniu_proto_msgTypes[13]
+	mi := &file_niuniu_proto_msgTypes[15]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -777,7 +854,7 @@ func (x *NiuNiuSelectMasterNtf) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NiuNiuSelectMasterNtf.ProtoReflect.Descriptor instead.
 func (*NiuNiuSelectMasterNtf) Descriptor() ([]byte, []int) {
-	return file_niuniu_proto_rawDescGZIP(), []int{13}
+	return file_niuniu_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *NiuNiuSelectMasterNtf) GetShortId() int64 {
@@ -807,7 +884,7 @@ type NiuNiuBettingNtf struct {
 func (x *NiuNiuBettingNtf) Reset() {
 	*x = NiuNiuBettingNtf{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_niuniu_proto_msgTypes[14]
+		mi := &file_niuniu_proto_msgTypes[16]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -820,7 +897,7 @@ func (x *NiuNiuBettingNtf) String() string {
 func (*NiuNiuBettingNtf) ProtoMessage() {}
 
 func (x *NiuNiuBettingNtf) ProtoReflect() protoreflect.Message {
-	mi := &file_niuniu_proto_msgTypes[14]
+	mi := &file_niuniu_proto_msgTypes[16]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -833,7 +910,7 @@ func (x *NiuNiuBettingNtf) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NiuNiuBettingNtf.ProtoReflect.Descriptor instead.
 func (*NiuNiuBettingNtf) Descriptor() ([]byte, []int) {
-	return file_niuniu_proto_rawDescGZIP(), []int{14}
+	return file_niuniu_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *NiuNiuBettingNtf) GetExpireAt() int64 {
@@ -863,7 +940,7 @@ type NiuNiuSelectBettingNtf struct {
 func (x *NiuNiuSelectBettingNtf) Reset() {
 	*x = NiuNiuSelectBettingNtf{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_niuniu_proto_msgTypes[15]
+		mi := &file_niuniu_proto_msgTypes[17]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -876,7 +953,7 @@ func (x *NiuNiuSelectBettingNtf) String() string {
 func (*NiuNiuSelectBettingNtf) ProtoMessage() {}
 
 func (x *NiuNiuSelectBettingNtf) ProtoReflect() protoreflect.Message {
-	mi := &file_niuniu_proto_msgTypes[15]
+	mi := &file_niuniu_proto_msgTypes[17]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -889,7 +966,7 @@ func (x *NiuNiuSelectBettingNtf) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NiuNiuSelectBettingNtf.ProtoReflect.Descriptor instead.
 func (*NiuNiuSelectBettingNtf) Descriptor() ([]byte, []int) {
-	return file_niuniu_proto_rawDescGZIP(), []int{15}
+	return file_niuniu_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *NiuNiuSelectBettingNtf) GetShortId() int64 {
@@ -906,7 +983,119 @@ func (x *NiuNiuSelectBettingNtf) GetTimes() int32 {
 	return 0
 }
 
-// 亮牌结算玩家数据
+// 开始搓牌通知
+type NiuNiuShowCardsNtf struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	ExpireAt  int64   `protobuf:"varint,1,opt,name=ExpireAt,proto3" json:"ExpireAt,omitempty"`          // 押注结束时间(毫秒)
+	HandCards []int32 `protobuf:"varint,2,rep,packed,name=HandCards,proto3" json:"HandCards,omitempty"` // 自己的最新手牌
+}
+
+func (x *NiuNiuShowCardsNtf) Reset() {
+	*x = NiuNiuShowCardsNtf{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_niuniu_proto_msgTypes[18]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *NiuNiuShowCardsNtf) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*NiuNiuShowCardsNtf) ProtoMessage() {}
+
+func (x *NiuNiuShowCardsNtf) ProtoReflect() protoreflect.Message {
+	mi := &file_niuniu_proto_msgTypes[18]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use NiuNiuShowCardsNtf.ProtoReflect.Descriptor instead.
+func (*NiuNiuShowCardsNtf) Descriptor() ([]byte, []int) {
+	return file_niuniu_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *NiuNiuShowCardsNtf) GetExpireAt() int64 {
+	if x != nil {
+		return x.ExpireAt
+	}
+	return 0
+}
+
+func (x *NiuNiuShowCardsNtf) GetHandCards() []int32 {
+	if x != nil {
+		return x.HandCards
+	}
+	return nil
+}
+
+// 亮牌通知
+type NiuNiuFinishShowCardsNtf struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	ShortId   int64   `protobuf:"varint,1,opt,name=ShortId,proto3" json:"ShortId,omitempty"`            // 亮牌的玩家
+	HandCards []int32 `protobuf:"varint,2,rep,packed,name=HandCards,proto3" json:"HandCards,omitempty"` // 自己的最新手牌
+}
+
+func (x *NiuNiuFinishShowCardsNtf) Reset() {
+	*x = NiuNiuFinishShowCardsNtf{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_niuniu_proto_msgTypes[19]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *NiuNiuFinishShowCardsNtf) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*NiuNiuFinishShowCardsNtf) ProtoMessage() {}
+
+func (x *NiuNiuFinishShowCardsNtf) ProtoReflect() protoreflect.Message {
+	mi := &file_niuniu_proto_msgTypes[19]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use NiuNiuFinishShowCardsNtf.ProtoReflect.Descriptor instead.
+func (*NiuNiuFinishShowCardsNtf) Descriptor() ([]byte, []int) {
+	return file_niuniu_proto_rawDescGZIP(), []int{19}
+}
+
+func (x *NiuNiuFinishShowCardsNtf) GetShortId() int64 {
+	if x != nil {
+		return x.ShortId
+	}
+	return 0
+}
+
+func (x *NiuNiuFinishShowCardsNtf) GetHandCards() []int32 {
+	if x != nil {
+		return x.HandCards
+	}
+	return nil
+}
+
+// 结算玩家数据
 type NiuNiuSettlementPlayerData struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -920,7 +1109,7 @@ type NiuNiuSettlementPlayerData struct {
 func (x *NiuNiuSettlementPlayerData) Reset() {
 	*x = NiuNiuSettlementPlayerData{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_niuniu_proto_msgTypes[16]
+		mi := &file_niuniu_proto_msgTypes[20]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -933,7 +1122,7 @@ func (x *NiuNiuSettlementPlayerData) String() string {
 func (*NiuNiuSettlementPlayerData) ProtoMessage() {}
 
 func (x *NiuNiuSettlementPlayerData) ProtoReflect() protoreflect.Message {
-	mi := &file_niuniu_proto_msgTypes[16]
+	mi := &file_niuniu_proto_msgTypes[20]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -946,7 +1135,7 @@ func (x *NiuNiuSettlementPlayerData) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NiuNiuSettlementPlayerData.ProtoReflect.Descriptor instead.
 func (*NiuNiuSettlementPlayerData) Descriptor() ([]byte, []int) {
-	return file_niuniu_proto_rawDescGZIP(), []int{16}
+	return file_niuniu_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *NiuNiuSettlementPlayerData) GetPlayer() *NiuNiuPlayerInfo {
@@ -970,7 +1159,7 @@ func (x *NiuNiuSettlementPlayerData) GetTotalScore() int64 {
 	return 0
 }
 
-// 结算通知
+// 全部亮牌结算通知
 type NiuNiuSettlementNtf struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -990,7 +1179,7 @@ type NiuNiuSettlementNtf struct {
 func (x *NiuNiuSettlementNtf) Reset() {
 	*x = NiuNiuSettlementNtf{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_niuniu_proto_msgTypes[17]
+		mi := &file_niuniu_proto_msgTypes[21]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1003,7 +1192,7 @@ func (x *NiuNiuSettlementNtf) String() string {
 func (*NiuNiuSettlementNtf) ProtoMessage() {}
 
 func (x *NiuNiuSettlementNtf) ProtoReflect() protoreflect.Message {
-	mi := &file_niuniu_proto_msgTypes[17]
+	mi := &file_niuniu_proto_msgTypes[21]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1016,7 +1205,7 @@ func (x *NiuNiuSettlementNtf) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NiuNiuSettlementNtf.ProtoReflect.Descriptor instead.
 func (*NiuNiuSettlementNtf) Descriptor() ([]byte, []int) {
-	return file_niuniu_proto_rawDescGZIP(), []int{17}
+	return file_niuniu_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *NiuNiuSettlementNtf) GetEndAt() int64 {
@@ -1094,7 +1283,7 @@ type NiuNiuFinialSettlement struct {
 func (x *NiuNiuFinialSettlement) Reset() {
 	*x = NiuNiuFinialSettlement{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_niuniu_proto_msgTypes[18]
+		mi := &file_niuniu_proto_msgTypes[22]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1107,7 +1296,7 @@ func (x *NiuNiuFinialSettlement) String() string {
 func (*NiuNiuFinialSettlement) ProtoMessage() {}
 
 func (x *NiuNiuFinialSettlement) ProtoReflect() protoreflect.Message {
-	mi := &file_niuniu_proto_msgTypes[18]
+	mi := &file_niuniu_proto_msgTypes[22]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1120,7 +1309,7 @@ func (x *NiuNiuFinialSettlement) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NiuNiuFinialSettlement.ProtoReflect.Descriptor instead.
 func (*NiuNiuFinialSettlement) Descriptor() ([]byte, []int) {
-	return file_niuniu_proto_rawDescGZIP(), []int{18}
+	return file_niuniu_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *NiuNiuFinialSettlement) GetPlayerInfo() []*NiuNiuFinialPlayerInfo {
@@ -1141,7 +1330,7 @@ type NiuNiuFinialPlayerInfo struct {
 func (x *NiuNiuFinialPlayerInfo) Reset() {
 	*x = NiuNiuFinialPlayerInfo{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_niuniu_proto_msgTypes[19]
+		mi := &file_niuniu_proto_msgTypes[23]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1154,7 +1343,7 @@ func (x *NiuNiuFinialPlayerInfo) String() string {
 func (*NiuNiuFinialPlayerInfo) ProtoMessage() {}
 
 func (x *NiuNiuFinialPlayerInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_niuniu_proto_msgTypes[19]
+	mi := &file_niuniu_proto_msgTypes[23]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1167,7 +1356,7 @@ func (x *NiuNiuFinialPlayerInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NiuNiuFinialPlayerInfo.ProtoReflect.Descriptor instead.
 func (*NiuNiuFinialPlayerInfo) Descriptor() ([]byte, []int) {
-	return file_niuniu_proto_rawDescGZIP(), []int{19}
+	return file_niuniu_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *NiuNiuFinialPlayerInfo) GetTotalScore() int64 {
@@ -1232,35 +1421,48 @@ var file_niuniu_proto_rawDesc = []byte{
 	0x6f, 0x42, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x52, 0x65, 0x71, 0x12, 0x14, 0x0a, 0x05, 0x54,
 	0x69, 0x6d, 0x65, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x05, 0x54, 0x69, 0x6d, 0x65,
 	0x73, 0x22, 0x14, 0x0a, 0x12, 0x4e, 0x69, 0x75, 0x4e, 0x69, 0x75, 0x54, 0x6f, 0x42, 0x65, 0x74,
-	0x74, 0x69, 0x6e, 0x67, 0x52, 0x73, 0x70, 0x22, 0x46, 0x0a, 0x14, 0x4e, 0x69, 0x75, 0x4e, 0x69,
-	0x75, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x52, 0x65, 0x61, 0x64, 0x79, 0x4e, 0x74, 0x66, 0x12,
-	0x18, 0x0a, 0x07, 0x53, 0x68, 0x6f, 0x72, 0x74, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03,
-	0x52, 0x07, 0x53, 0x68, 0x6f, 0x72, 0x74, 0x49, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x52, 0x65, 0x61,
-	0x64, 0x79, 0x18, 0x02, 0x20, 0x01, 0x28, 0x08, 0x52, 0x05, 0x52, 0x65, 0x61, 0x64, 0x79, 0x22,
-	0x36, 0x0a, 0x0e, 0x4e, 0x69, 0x75, 0x4e, 0x69, 0x75, 0x52, 0x65, 0x61, 0x64, 0x79, 0x4e, 0x74,
-	0x66, 0x12, 0x24, 0x0a, 0x0d, 0x52, 0x65, 0x61, 0x64, 0x79, 0x45, 0x78, 0x70, 0x69, 0x72, 0x65,
-	0x41, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0d, 0x52, 0x65, 0x61, 0x64, 0x79, 0x45,
-	0x78, 0x70, 0x69, 0x72, 0x65, 0x41, 0x74, 0x22, 0x2d, 0x0a, 0x0d, 0x4e, 0x69, 0x75, 0x4e, 0x69,
-	0x75, 0x44, 0x65, 0x61, 0x6c, 0x4e, 0x74, 0x66, 0x12, 0x1c, 0x0a, 0x09, 0x48, 0x61, 0x6e, 0x64,
-	0x43, 0x61, 0x72, 0x64, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x05, 0x52, 0x09, 0x48, 0x61, 0x6e,
-	0x64, 0x43, 0x61, 0x72, 0x64, 0x73, 0x22, 0x2d, 0x0a, 0x0f, 0x4e, 0x69, 0x75, 0x4e, 0x69, 0x75,
-	0x4d, 0x61, 0x73, 0x74, 0x65, 0x72, 0x4e, 0x74, 0x66, 0x12, 0x1a, 0x0a, 0x08, 0x45, 0x78, 0x70,
-	0x69, 0x72, 0x65, 0x41, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x08, 0x45, 0x78, 0x70,
-	0x69, 0x72, 0x65, 0x41, 0x74, 0x22, 0x47, 0x0a, 0x15, 0x4e, 0x69, 0x75, 0x4e, 0x69, 0x75, 0x53,
-	0x65, 0x6c, 0x65, 0x63, 0x74, 0x4d, 0x61, 0x73, 0x74, 0x65, 0x72, 0x4e, 0x74, 0x66, 0x12, 0x18,
-	0x0a, 0x07, 0x53, 0x68, 0x6f, 0x72, 0x74, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52,
-	0x07, 0x53, 0x68, 0x6f, 0x72, 0x74, 0x49, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x54, 0x69, 0x6d, 0x65,
-	0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x05, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x22, 0x4e,
-	0x0a, 0x10, 0x4e, 0x69, 0x75, 0x4e, 0x69, 0x75, 0x42, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x4e,
-	0x74, 0x66, 0x12, 0x1a, 0x0a, 0x08, 0x45, 0x78, 0x70, 0x69, 0x72, 0x65, 0x41, 0x74, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x03, 0x52, 0x08, 0x45, 0x78, 0x70, 0x69, 0x72, 0x65, 0x41, 0x74, 0x12, 0x1e,
-	0x0a, 0x0a, 0x4d, 0x61, 0x73, 0x74, 0x65, 0x72, 0x53, 0x65, 0x61, 0x74, 0x18, 0x02, 0x20, 0x01,
-	0x28, 0x05, 0x52, 0x0a, 0x4d, 0x61, 0x73, 0x74, 0x65, 0x72, 0x53, 0x65, 0x61, 0x74, 0x22, 0x48,
-	0x0a, 0x16, 0x4e, 0x69, 0x75, 0x4e, 0x69, 0x75, 0x53, 0x65, 0x6c, 0x65, 0x63, 0x74, 0x42, 0x65,
-	0x74, 0x74, 0x69, 0x6e, 0x67, 0x4e, 0x74, 0x66, 0x12, 0x18, 0x0a, 0x07, 0x53, 0x68, 0x6f, 0x72,
-	0x74, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x07, 0x53, 0x68, 0x6f, 0x72, 0x74,
-	0x49, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28,
-	0x05, 0x52, 0x05, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x22, 0x8d, 0x01, 0x0a, 0x1a, 0x4e, 0x69, 0x75,
+	0x74, 0x69, 0x6e, 0x67, 0x52, 0x73, 0x70, 0x22, 0x14, 0x0a, 0x12, 0x4e, 0x69, 0x75, 0x4e, 0x69,
+	0x75, 0x53, 0x68, 0x6f, 0x77, 0x43, 0x61, 0x72, 0x64, 0x73, 0x52, 0x65, 0x71, 0x22, 0x14, 0x0a,
+	0x12, 0x4e, 0x69, 0x75, 0x4e, 0x69, 0x75, 0x53, 0x68, 0x6f, 0x77, 0x43, 0x61, 0x72, 0x64, 0x73,
+	0x52, 0x73, 0x70, 0x22, 0x46, 0x0a, 0x14, 0x4e, 0x69, 0x75, 0x4e, 0x69, 0x75, 0x50, 0x6c, 0x61,
+	0x79, 0x65, 0x72, 0x52, 0x65, 0x61, 0x64, 0x79, 0x4e, 0x74, 0x66, 0x12, 0x18, 0x0a, 0x07, 0x53,
+	0x68, 0x6f, 0x72, 0x74, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x07, 0x53, 0x68,
+	0x6f, 0x72, 0x74, 0x49, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x52, 0x65, 0x61, 0x64, 0x79, 0x18, 0x02,
+	0x20, 0x01, 0x28, 0x08, 0x52, 0x05, 0x52, 0x65, 0x61, 0x64, 0x79, 0x22, 0x36, 0x0a, 0x0e, 0x4e,
+	0x69, 0x75, 0x4e, 0x69, 0x75, 0x52, 0x65, 0x61, 0x64, 0x79, 0x4e, 0x74, 0x66, 0x12, 0x24, 0x0a,
+	0x0d, 0x52, 0x65, 0x61, 0x64, 0x79, 0x45, 0x78, 0x70, 0x69, 0x72, 0x65, 0x41, 0x74, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x03, 0x52, 0x0d, 0x52, 0x65, 0x61, 0x64, 0x79, 0x45, 0x78, 0x70, 0x69, 0x72,
+	0x65, 0x41, 0x74, 0x22, 0x2d, 0x0a, 0x0d, 0x4e, 0x69, 0x75, 0x4e, 0x69, 0x75, 0x44, 0x65, 0x61,
+	0x6c, 0x4e, 0x74, 0x66, 0x12, 0x1c, 0x0a, 0x09, 0x48, 0x61, 0x6e, 0x64, 0x43, 0x61, 0x72, 0x64,
+	0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x05, 0x52, 0x09, 0x48, 0x61, 0x6e, 0x64, 0x43, 0x61, 0x72,
+	0x64, 0x73, 0x22, 0x2d, 0x0a, 0x0f, 0x4e, 0x69, 0x75, 0x4e, 0x69, 0x75, 0x4d, 0x61, 0x73, 0x74,
+	0x65, 0x72, 0x4e, 0x74, 0x66, 0x12, 0x1a, 0x0a, 0x08, 0x45, 0x78, 0x70, 0x69, 0x72, 0x65, 0x41,
+	0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x08, 0x45, 0x78, 0x70, 0x69, 0x72, 0x65, 0x41,
+	0x74, 0x22, 0x47, 0x0a, 0x15, 0x4e, 0x69, 0x75, 0x4e, 0x69, 0x75, 0x53, 0x65, 0x6c, 0x65, 0x63,
+	0x74, 0x4d, 0x61, 0x73, 0x74, 0x65, 0x72, 0x4e, 0x74, 0x66, 0x12, 0x18, 0x0a, 0x07, 0x53, 0x68,
+	0x6f, 0x72, 0x74, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x07, 0x53, 0x68, 0x6f,
+	0x72, 0x74, 0x49, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x05, 0x52, 0x05, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x22, 0x4e, 0x0a, 0x10, 0x4e, 0x69,
+	0x75, 0x4e, 0x69, 0x75, 0x42, 0x65, 0x74, 0x74, 0x69, 0x6e, 0x67, 0x4e, 0x74, 0x66, 0x12, 0x1a,
+	0x0a, 0x08, 0x45, 0x78, 0x70, 0x69, 0x72, 0x65, 0x41, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03,
+	0x52, 0x08, 0x45, 0x78, 0x70, 0x69, 0x72, 0x65, 0x41, 0x74, 0x12, 0x1e, 0x0a, 0x0a, 0x4d, 0x61,
+	0x73, 0x74, 0x65, 0x72, 0x53, 0x65, 0x61, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x0a,
+	0x4d, 0x61, 0x73, 0x74, 0x65, 0x72, 0x53, 0x65, 0x61, 0x74, 0x22, 0x48, 0x0a, 0x16, 0x4e, 0x69,
+	0x75, 0x4e, 0x69, 0x75, 0x53, 0x65, 0x6c, 0x65, 0x63, 0x74, 0x42, 0x65, 0x74, 0x74, 0x69, 0x6e,
+	0x67, 0x4e, 0x74, 0x66, 0x12, 0x18, 0x0a, 0x07, 0x53, 0x68, 0x6f, 0x72, 0x74, 0x49, 0x64, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x07, 0x53, 0x68, 0x6f, 0x72, 0x74, 0x49, 0x64, 0x12, 0x14,
+	0x0a, 0x05, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x05, 0x54,
+	0x69, 0x6d, 0x65, 0x73, 0x22, 0x4e, 0x0a, 0x12, 0x4e, 0x69, 0x75, 0x4e, 0x69, 0x75, 0x53, 0x68,
+	0x6f, 0x77, 0x43, 0x61, 0x72, 0x64, 0x73, 0x4e, 0x74, 0x66, 0x12, 0x1a, 0x0a, 0x08, 0x45, 0x78,
+	0x70, 0x69, 0x72, 0x65, 0x41, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x08, 0x45, 0x78,
+	0x70, 0x69, 0x72, 0x65, 0x41, 0x74, 0x12, 0x1c, 0x0a, 0x09, 0x48, 0x61, 0x6e, 0x64, 0x43, 0x61,
+	0x72, 0x64, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x05, 0x52, 0x09, 0x48, 0x61, 0x6e, 0x64, 0x43,
+	0x61, 0x72, 0x64, 0x73, 0x22, 0x52, 0x0a, 0x18, 0x4e, 0x69, 0x75, 0x4e, 0x69, 0x75, 0x46, 0x69,
+	0x6e, 0x69, 0x73, 0x68, 0x53, 0x68, 0x6f, 0x77, 0x43, 0x61, 0x72, 0x64, 0x73, 0x4e, 0x74, 0x66,
+	0x12, 0x18, 0x0a, 0x07, 0x53, 0x68, 0x6f, 0x72, 0x74, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x03, 0x52, 0x07, 0x53, 0x68, 0x6f, 0x72, 0x74, 0x49, 0x64, 0x12, 0x1c, 0x0a, 0x09, 0x48, 0x61,
+	0x6e, 0x64, 0x43, 0x61, 0x72, 0x64, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x05, 0x52, 0x09, 0x48,
+	0x61, 0x6e, 0x64, 0x43, 0x61, 0x72, 0x64, 0x73, 0x22, 0x8d, 0x01, 0x0a, 0x1a, 0x4e, 0x69, 0x75,
 	0x4e, 0x69, 0x75, 0x53, 0x65, 0x74, 0x74, 0x6c, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x50, 0x6c, 0x61,
 	0x79, 0x65, 0x72, 0x44, 0x61, 0x74, 0x61, 0x12, 0x2f, 0x0a, 0x06, 0x50, 0x6c, 0x61, 0x79, 0x65,
 	0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e,
@@ -1319,7 +1521,7 @@ func file_niuniu_proto_rawDescGZIP() []byte {
 	return file_niuniu_proto_rawDescData
 }
 
-var file_niuniu_proto_msgTypes = make([]protoimpl.MessageInfo, 20)
+var file_niuniu_proto_msgTypes = make([]protoimpl.MessageInfo, 24)
 var file_niuniu_proto_goTypes = []interface{}{
 	(*NiuNiuGameInfo)(nil),             // 0: outer.NiuNiuGameInfo
 	(*NiuNiuPlayerInfo)(nil),           // 1: outer.NiuNiuPlayerInfo
@@ -1330,28 +1532,32 @@ var file_niuniu_proto_goTypes = []interface{}{
 	(*NiuNiuToBeMasterRsp)(nil),        // 6: outer.NiuNiuToBeMasterRsp
 	(*NiuNiuToBettingReq)(nil),         // 7: outer.NiuNiuToBettingReq
 	(*NiuNiuToBettingRsp)(nil),         // 8: outer.NiuNiuToBettingRsp
-	(*NiuNiuPlayerReadyNtf)(nil),       // 9: outer.NiuNiuPlayerReadyNtf
-	(*NiuNiuReadyNtf)(nil),             // 10: outer.NiuNiuReadyNtf
-	(*NiuNiuDealNtf)(nil),              // 11: outer.NiuNiuDealNtf
-	(*NiuNiuMasterNtf)(nil),            // 12: outer.NiuNiuMasterNtf
-	(*NiuNiuSelectMasterNtf)(nil),      // 13: outer.NiuNiuSelectMasterNtf
-	(*NiuNiuBettingNtf)(nil),           // 14: outer.NiuNiuBettingNtf
-	(*NiuNiuSelectBettingNtf)(nil),     // 15: outer.NiuNiuSelectBettingNtf
-	(*NiuNiuSettlementPlayerData)(nil), // 16: outer.NiuNiuSettlementPlayerData
-	(*NiuNiuSettlementNtf)(nil),        // 17: outer.NiuNiuSettlementNtf
-	(*NiuNiuFinialSettlement)(nil),     // 18: outer.NiuNiuFinialSettlement
-	(*NiuNiuFinialPlayerInfo)(nil),     // 19: outer.NiuNiuFinialPlayerInfo
-	(NiuNiuState)(0),                   // 20: outer.NiuNiuState
-	(NiuNiuPokerCardsType)(0),          // 21: outer.NiuNiuPokerCardsType
+	(*NiuNiuShowCardsReq)(nil),         // 9: outer.NiuNiuShowCardsReq
+	(*NiuNiuShowCardsRsp)(nil),         // 10: outer.NiuNiuShowCardsRsp
+	(*NiuNiuPlayerReadyNtf)(nil),       // 11: outer.NiuNiuPlayerReadyNtf
+	(*NiuNiuReadyNtf)(nil),             // 12: outer.NiuNiuReadyNtf
+	(*NiuNiuDealNtf)(nil),              // 13: outer.NiuNiuDealNtf
+	(*NiuNiuMasterNtf)(nil),            // 14: outer.NiuNiuMasterNtf
+	(*NiuNiuSelectMasterNtf)(nil),      // 15: outer.NiuNiuSelectMasterNtf
+	(*NiuNiuBettingNtf)(nil),           // 16: outer.NiuNiuBettingNtf
+	(*NiuNiuSelectBettingNtf)(nil),     // 17: outer.NiuNiuSelectBettingNtf
+	(*NiuNiuShowCardsNtf)(nil),         // 18: outer.NiuNiuShowCardsNtf
+	(*NiuNiuFinishShowCardsNtf)(nil),   // 19: outer.NiuNiuFinishShowCardsNtf
+	(*NiuNiuSettlementPlayerData)(nil), // 20: outer.NiuNiuSettlementPlayerData
+	(*NiuNiuSettlementNtf)(nil),        // 21: outer.NiuNiuSettlementNtf
+	(*NiuNiuFinialSettlement)(nil),     // 22: outer.NiuNiuFinialSettlement
+	(*NiuNiuFinialPlayerInfo)(nil),     // 23: outer.NiuNiuFinialPlayerInfo
+	(NiuNiuState)(0),                   // 24: outer.NiuNiuState
+	(NiuNiuPokerCardsType)(0),          // 25: outer.NiuNiuPokerCardsType
 }
 var file_niuniu_proto_depIdxs = []int32{
-	20, // 0: outer.NiuNiuGameInfo.State:type_name -> outer.NiuNiuState
+	24, // 0: outer.NiuNiuGameInfo.State:type_name -> outer.NiuNiuState
 	1,  // 1: outer.NiuNiuGameInfo.Players:type_name -> outer.NiuNiuPlayerInfo
-	21, // 2: outer.NiuNiuCardsGroup.Type:type_name -> outer.NiuNiuPokerCardsType
+	25, // 2: outer.NiuNiuCardsGroup.Type:type_name -> outer.NiuNiuPokerCardsType
 	1,  // 3: outer.NiuNiuSettlementPlayerData.Player:type_name -> outer.NiuNiuPlayerInfo
-	16, // 4: outer.NiuNiuSettlementNtf.PlayerData:type_name -> outer.NiuNiuSettlementPlayerData
-	18, // 5: outer.NiuNiuSettlementNtf.FinalSettlement:type_name -> outer.NiuNiuFinialSettlement
-	19, // 6: outer.NiuNiuFinialSettlement.PlayerInfo:type_name -> outer.NiuNiuFinialPlayerInfo
+	20, // 4: outer.NiuNiuSettlementNtf.PlayerData:type_name -> outer.NiuNiuSettlementPlayerData
+	22, // 5: outer.NiuNiuSettlementNtf.FinalSettlement:type_name -> outer.NiuNiuFinialSettlement
+	23, // 6: outer.NiuNiuFinialSettlement.PlayerInfo:type_name -> outer.NiuNiuFinialPlayerInfo
 	7,  // [7:7] is the sub-list for method output_type
 	7,  // [7:7] is the sub-list for method input_type
 	7,  // [7:7] is the sub-list for extension type_name
@@ -1475,7 +1681,7 @@ func file_niuniu_proto_init() {
 			}
 		}
 		file_niuniu_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*NiuNiuPlayerReadyNtf); i {
+			switch v := v.(*NiuNiuShowCardsReq); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1487,7 +1693,7 @@ func file_niuniu_proto_init() {
 			}
 		}
 		file_niuniu_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*NiuNiuReadyNtf); i {
+			switch v := v.(*NiuNiuShowCardsRsp); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1499,7 +1705,7 @@ func file_niuniu_proto_init() {
 			}
 		}
 		file_niuniu_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*NiuNiuDealNtf); i {
+			switch v := v.(*NiuNiuPlayerReadyNtf); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1511,7 +1717,7 @@ func file_niuniu_proto_init() {
 			}
 		}
 		file_niuniu_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*NiuNiuMasterNtf); i {
+			switch v := v.(*NiuNiuReadyNtf); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1523,7 +1729,7 @@ func file_niuniu_proto_init() {
 			}
 		}
 		file_niuniu_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*NiuNiuSelectMasterNtf); i {
+			switch v := v.(*NiuNiuDealNtf); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1535,7 +1741,7 @@ func file_niuniu_proto_init() {
 			}
 		}
 		file_niuniu_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*NiuNiuBettingNtf); i {
+			switch v := v.(*NiuNiuMasterNtf); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1547,7 +1753,7 @@ func file_niuniu_proto_init() {
 			}
 		}
 		file_niuniu_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*NiuNiuSelectBettingNtf); i {
+			switch v := v.(*NiuNiuSelectMasterNtf); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1559,7 +1765,7 @@ func file_niuniu_proto_init() {
 			}
 		}
 		file_niuniu_proto_msgTypes[16].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*NiuNiuSettlementPlayerData); i {
+			switch v := v.(*NiuNiuBettingNtf); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1571,7 +1777,7 @@ func file_niuniu_proto_init() {
 			}
 		}
 		file_niuniu_proto_msgTypes[17].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*NiuNiuSettlementNtf); i {
+			switch v := v.(*NiuNiuSelectBettingNtf); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1583,7 +1789,7 @@ func file_niuniu_proto_init() {
 			}
 		}
 		file_niuniu_proto_msgTypes[18].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*NiuNiuFinialSettlement); i {
+			switch v := v.(*NiuNiuShowCardsNtf); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1595,6 +1801,54 @@ func file_niuniu_proto_init() {
 			}
 		}
 		file_niuniu_proto_msgTypes[19].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*NiuNiuFinishShowCardsNtf); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_niuniu_proto_msgTypes[20].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*NiuNiuSettlementPlayerData); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_niuniu_proto_msgTypes[21].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*NiuNiuSettlementNtf); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_niuniu_proto_msgTypes[22].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*NiuNiuFinialSettlement); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_niuniu_proto_msgTypes[23].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*NiuNiuFinialPlayerInfo); i {
 			case 0:
 				return &v.state
@@ -1613,7 +1867,7 @@ func file_niuniu_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_niuniu_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   20,
+			NumMessages:   24,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

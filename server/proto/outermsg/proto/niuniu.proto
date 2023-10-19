@@ -24,8 +24,8 @@ message NiuNiuPlayerInfo {
     bool                Ready          = 2; // true.准备、false.未准备
     int64               ReadyExpireAt  = 3; // 准备超时时间(毫秒)
 
-    // 手牌 (梅花103-114 方块203-214 红心303-314 黑桃403-415)
-    // NOTE: 411:黑桃J 412:黑桃Q 413:黑桃K 414:黑桃A 415:黑桃2 其他花色同理
+    // 手牌 (梅花101-113 方块201-213 红心301-313 黑桃401-413)
+    // NOTE: 401:黑桃A 402:黑桃2 411:黑桃J 412:黑桃Q 413:黑桃K 其他花色同理
     repeated int32      HandCards      = 4;
 
     int64               Score          = 5;// 玩家本局拥有的分数
@@ -61,6 +61,12 @@ message NiuNiuToBettingReq {// tag:gambling
 }
 message NiuNiuToBettingRsp {
 }
+
+// 亮牌
+message NiuNiuShowCardsReq {// tag:gambling
+}
+message NiuNiuShowCardsRsp {
+}
 ////////////////////////////////////////////// 游戏通知 //////////////////////////////////////////////
 message NiuNiuPlayerReadyNtf {// 房间内玩家准备、取消准备通知
     int64 ShortId = 1;
@@ -77,7 +83,7 @@ message NiuNiuDealNtf {
     repeated int32 HandCards  = 1; // 手牌
 }
 
-// 开始抢庄通知
+// 开始抢庄状态通知
 message NiuNiuMasterNtf {
     int64 ExpireAt = 1;// 抢庄结束时间(毫秒)
 }
@@ -88,7 +94,7 @@ message NiuNiuSelectMasterNtf {
     int32 Times   = 2; // 抢庄倍数
 }
 
-// 开始押注通知
+// 开始押注状态通知
 message NiuNiuBettingNtf {
     int64 ExpireAt   = 1;// 押注结束时间(毫秒)
     int32 MasterSeat = 2;// 抢庄结束后，确定的庄家位置
@@ -100,14 +106,26 @@ message NiuNiuSelectBettingNtf {
     int32 Times   = 2; // 押注倍数
 }
 
-// 亮牌结算玩家数据
+// 进入搓牌状态通知
+message NiuNiuShowCardsNtf {
+    int64          ExpireAt   = 1;// 押注结束时间(毫秒)
+    repeated int32 HandCards  = 2; // 自己的最新手牌
+}
+
+// 亮牌通知
+message NiuNiuFinishShowCardsNtf {
+    int64 ShortId             = 1; // 亮牌的玩家
+    repeated int32 HandCards  = 2; // 自己的最新手牌
+}
+
+// 结算玩家数据
 message NiuNiuSettlementPlayerData{
     NiuNiuPlayerInfo Player      = 1; //
     int32 BombsCount             = 2; // 出过几次炸弹
     int64 TotalScore             = 3; // 总输赢 负数为输
 }
 
-// 结算通知
+// 全部亮牌结算通知
 message NiuNiuSettlementNtf {
     int64    EndAt                                     = 1; // 结算结束时间
     bool     HasScoreZero                              = 2; // 玩家分输光了，提前进入结算(只有在房间选择不允许负分的时候生效)

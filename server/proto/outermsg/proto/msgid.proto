@@ -101,6 +101,8 @@ enum Msg {
     IdNiuNiuToBeMasterRsp = 326386866;
     IdNiuNiuToBettingReq = 931777534;// dispatch to gambling
     IdNiuNiuToBettingRsp = 629780297;
+    IdNiuNiuShowCardsReq = 393231737;// dispatch to gambling
+    IdNiuNiuShowCardsRsp = 762339292;
     IdNiuNiuPlayerReadyNtf = 152602438;
     IdNiuNiuReadyNtf = 1308947253;
     IdNiuNiuDealNtf = 737893467;
@@ -108,6 +110,8 @@ enum Msg {
     IdNiuNiuSelectMasterNtf = 1278476036;
     IdNiuNiuBettingNtf = 1079068677;
     IdNiuNiuSelectBettingNtf = 1199372733;
+    IdNiuNiuShowCardsNtf = 648147217;
+    IdNiuNiuFinishShowCardsNtf = 1570829511;
     IdNiuNiuSettlementNtf = 2082388696;
     IdCreateRoomReq = 2001014089;// dispatch to player
     IdCreateRoomRsp = 222637993;

@@ -7,5 +7,6 @@ const (
 	Deal                      // 游戏开始发牌状态
 	DecideMaster              // 抢庄
 	Betting                   // 押注
+	ShowCards                 // 搓牌
 	Settlement                // 结算
 )

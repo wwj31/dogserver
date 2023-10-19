@@ -38,6 +38,7 @@ var MsgIDTags = map[int32]string{
 	1558640045: "gambling",
 	158610803:  "gambling",
 	931777534:  "gambling",
+	393231737:  "gambling",
 	2001014089: "player",
 	1782747149: "player",
 	21167689:   "player",

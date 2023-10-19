@@ -19,11 +19,12 @@ import (
 )
 
 const (
-	ReadyExpiration    = 20 * time.Second // 准备超时时间
-	DealExpiration     = 3 * time.Second  // 发牌状态持续时间
-	MasterExpiration   = 10 * time.Second // 抢庄状态持续时间
-	BettingExpiration  = 10 * time.Second // 押注状态持续时间
-	SettlementDuration = 10 * time.Second // 结算持续时间
+	ReadyExpiration     = 20 * time.Second // 准备超时时间
+	DealExpiration      = 3 * time.Second  // 发牌状态持续时间
+	MasterExpiration    = 10 * time.Second // 抢庄状态持续时间
+	BettingExpiration   = 10 * time.Second // 押注状态持续时间
+	ShowCardsExpiration = 10 * time.Second // 亮牌状态持续时间
+	SettlementDuration  = 10 * time.Second // 结算持续时间
 )
 
 func New(r *room.Room) *NiuNiu {
@@ -67,6 +68,7 @@ type (
 		gameCount     int             // 游戏的连续局数
 		timesSeats    []int32         // 每个位置抢庄的倍数
 		betSeats      []int32         // 每个位置押注的倍数
+		shows         []int           // 亮牌的位置
 	}
 
 	PlayCardsRecord struct {
@@ -110,7 +112,7 @@ func (f *NiuNiu) Data(shortId int64) proto.Message {
 		StateEnterAt: f.currentStateEnterAt.UnixMilli(),
 		StateEndAt:   f.currentStateEndAt.UnixMilli(),
 		GameCount:    int32(f.gameCount),
-		Players:      f.playersToPB(shortId, false),
+		Players:      f.playersToPB(shortId),
 		MasterIndex:  int32(f.masterIndex),
 		MasterTimes:  f.timesSeats,
 		BetTimes:     f.betSeats,
@@ -214,16 +216,32 @@ func (f *NiuNiu) findNiuNiuPlayer(shortId int64) (*niuniuPlayer, int) {
 	return nil, -1
 }
 
-func (f *NiuNiu) playersToPB(shortId int64, settlement bool) (players []*outer.NiuNiuPlayerInfo) {
+func (f *NiuNiu) playersToPB(shortId int64) (players []*outer.NiuNiuPlayerInfo) {
 	for _, player := range f.niuniuPlayers {
 		if player == nil {
 			players = append(players, nil)
 		} else {
-			var handCards []int32
-			if player.ShortId == shortId || settlement {
-				handCards = player.handCards.ToPB()
-			} else {
-				handCards = make([]int32, len(player.handCards))
+			var (
+				handCards []int32
+				state     = f.fsm.State()
+			)
+			switch {
+			case state == Settlement:
+				handCards = player.handCards.ToPB() // 结算时，牌全发
+			case state == ShowCards:
+				// 亮牌状态，是自己或者已经亮牌了，牌全发
+				if player.ShortId == shortId || f.shows[f.SeatIndex(player.ShortId)] == 1 {
+					handCards = player.handCards.ToPB()
+				} else {
+					handCards = make([]int32, len(player.handCards))
+				}
+			case state < ShowCards:
+				// 抢庄、押注状态，自己就发前4张，其他人不发
+				if player.ShortId == shortId {
+					handCards = player.handCards[0:4].ToPB()
+				} else {
+					handCards = make([]int32, 4)
+				}
 			}
 
 			players = append(players, &outer.NiuNiuPlayerInfo{
@@ -237,6 +255,8 @@ func (f *NiuNiu) playersToPB(shortId int64, settlement bool) (players []*outer.N
 	}
 	return
 }
+
+//
 
 // 逆时针轮动座位索引,index 当前位置
 func (f *NiuNiu) nextSeatIndex(index int) int {

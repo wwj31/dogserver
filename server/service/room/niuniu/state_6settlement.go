@@ -148,7 +148,7 @@ func (s *StateSettlement) Handle(shortId int64, v any) (result any) {
 }
 
 func (s *StateSettlement) afterSettle(ntf *outer.NiuNiuSettlementNtf) {
-	allPlayerInfo := s.playersToPB(0, true) // 组装结算消息
+	allPlayerInfo := s.playersToPB(0) // 组装结算消息
 
 	for seat, player := range s.niuniuPlayers {
 		ntf.PlayerData[seat].Player = allPlayerInfo[seat]
