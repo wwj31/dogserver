@@ -83,6 +83,11 @@ func (s *StateBetting) Handle(shortId int64, v any) (result any) {
 			s.SwitchTo(Settlement)
 		}
 
+		s.room.Broadcast(&outer.NiuNiuSelectBettingNtf{
+			ShortId: shortId,
+			Times:   req.Times,
+		})
+
 		return &outer.NiuNiuToBettingRsp{}
 	default:
 		s.Log().Warnw("ready state has received an unknown message", "msg", reflect.TypeOf(req).String())
