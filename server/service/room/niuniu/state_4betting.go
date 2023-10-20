@@ -26,20 +26,23 @@ func (s *StateBetting) Enter() {
 	s.timeout = tools.UUID()
 	expireAt := tools.Now().Add(BettingExpiration)
 	s.room.AddTimer(s.timeout, expireAt, func(dt time.Duration) {
-		for _, player := range s.niuniuPlayers {
-			seat := int32(s.SeatIndex(player.ShortId))
-			times := s.betTimesSeats[seat]
+		for seat, player := range s.niuniuPlayers {
+			if player == nil || !player.ready {
+				continue
+			}
+
+			times := s.betTimesSeats[int32(seat)]
 			if times == 0 {
-				// 抢过庄的闲家，默认是2倍, 没抢过的，默认是1倍
-				if s.masterTimesSeats[seat] > 0 {
-					s.betTimesSeats[seat] = 2
+				// 抢过庄的闲家默认是2倍,没抢过的默认是1倍
+				if s.masterTimesSeats[int32(seat)] > 0 {
+					s.betTimesSeats[int32(seat)] = 2
 				} else {
-					s.betTimesSeats[seat] = 1
+					s.betTimesSeats[int32(seat)] = 1
 				}
 
 				s.room.Broadcast(&outer.NiuNiuSelectBettingNtf{
 					ShortId: player.ShortId,
-					Times:   s.betTimesSeats[seat],
+					Times:   s.betTimesSeats[int32(seat)],
 				})
 			}
 		}
@@ -72,13 +75,17 @@ func (s *StateBetting) Handle(shortId int64, v any) (result any) {
 			return outer.ERROR_NIUNIU_BETTING_HAS_BE_MASTER
 		}
 
+		if _, ok := s.betTimesSeats[seat]; ok {
+			return outer.ERROR_NIUNIU_HAS_BE_BET
+		}
+
 		s.betTimesSeats[seat] = req.Times
 		s.room.Broadcast(&outer.NiuNiuSelectBettingNtf{
 			ShortId: shortId,
 			Times:   s.betTimesSeats[seat],
 		})
 
-		if len(s.betTimesSeats) == len(s.niuniuPlayers) {
+		if len(s.betTimesSeats) == s.participantCount() {
 			s.SwitchTo(Settlement)
 		}
 		return &outer.NiuNiuToBettingRsp{}

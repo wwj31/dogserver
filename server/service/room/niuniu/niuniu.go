@@ -1,7 +1,6 @@
 package niuniu
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/golang/protobuf/proto"
@@ -68,13 +67,6 @@ type (
 		betTimesSeats    map[int32]int32 // 每个位置押注的倍数
 		shows            map[int32]int32 // 亮牌的位置
 	}
-
-	PlayCardsRecord struct {
-		shortId    int64      // 出牌人
-		follow     bool       // true.跟牌出牌，false.有牌权出牌
-		cardsGroup CardsGroup // 牌型
-		playAt     time.Time  // 出牌时间
-	}
 )
 
 func (f *NiuNiu) SwitchTo(state int) {
@@ -126,10 +118,6 @@ func (f *NiuNiu) CanEnter(p *inner.PlayerInfo) bool {
 }
 
 func (f *NiuNiu) CanLeave(p *inner.PlayerInfo) bool {
-	if p.Gold <= 0 {
-		return true
-	}
-
 	if player, _ := f.findNiuNiuPlayer(p.ShortId); player != nil {
 		c, exist := f.playerGameCount[p.ShortId]
 		if !exist {
@@ -148,13 +136,6 @@ func (f *NiuNiu) CanLeave(p *inner.PlayerInfo) bool {
 	}
 
 	return true
-}
-
-func (f *NiuNiu) CanReady(p *inner.PlayerInfo) bool {
-	if f.fsm.State() == Ready {
-		return true
-	}
-	return false
 }
 
 func (f *NiuNiu) CanSetGold(p *inner.PlayerInfo) bool {
@@ -211,6 +192,15 @@ func (f *NiuNiu) findNiuNiuPlayer(shortId int64) (*niuniuPlayer, int) {
 	}
 	return nil, -1
 }
+func (f *NiuNiu) participantCount() int {
+	var c int
+	for _, player := range f.niuniuPlayers {
+		if player != nil && player.ready {
+			c++
+		}
+	}
+	return c
+}
 
 func (f *NiuNiu) playersToPB(shortId int64) (players []*outer.NiuNiuPlayerInfo) {
 	for _, player := range f.niuniuPlayers {
@@ -251,17 +241,6 @@ func (f *NiuNiu) playersToPB(shortId int64) (players []*outer.NiuNiuPlayerInfo) 
 		}
 	}
 	return
-}
-
-//
-
-// 逆时针轮动座位索引,index 当前位置
-func (f *NiuNiu) nextSeatIndex(index int) int {
-	index--
-	if index < 0 {
-		index = 1
-	}
-	return index
 }
 
 func (f *NiuNiu) newNiuNiuPlayer(p *room.Player) *niuniuPlayer {
@@ -312,24 +291,4 @@ func (m *niuniuPlayer) updateScore(val int64) {
 	m.score += val
 	m.totalWinScore += val // 单局总输赢
 	m.finalStatsMsg.TotalScore += val
-}
-
-func (p *PlayCardsRecord) String() string {
-	if p == nil {
-		return ""
-	}
-	return fmt.Sprintf("{short:%v follow:%v cardsGroup:%v playAt:%v }", p.shortId, p.follow, p.cardsGroup, p.playAt)
-}
-
-func (p *PlayCardsRecord) ToPB() *outer.PlayCardsRecord {
-	if p == nil {
-		return nil
-	}
-
-	return &outer.PlayCardsRecord{
-		ShortId:    p.shortId,
-		Follow:     p.follow,
-		CardsGroup: p.cardsGroup.ToPB(),
-		PlayAt:     p.playAt.UnixMilli(),
-	}
 }

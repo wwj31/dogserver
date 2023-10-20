@@ -27,6 +27,8 @@ func (s *StateReady) Enter() {
 }
 
 func (s *StateReady) Leave() {
+	s.onPlayerEnter = nil
+	s.onPlayerLeave = nil
 	s.Log().Infow("[NiuNiu] leave state ready", "room", s.room.RoomId)
 }
 

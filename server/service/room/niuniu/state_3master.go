@@ -31,9 +31,9 @@ func (s *StateMaster) Enter() {
 	s.timeout = tools.UUID()
 	expireAt := tools.Now().Add(MasterExpiration)
 	s.room.AddTimer(s.timeout, expireAt, func(dt time.Duration) {
-		for i, times := range s.masterTimesSeats {
-			if times == -1 {
-				s.masterTimesSeats[i] = 0
+		for seat, player := range s.niuniuPlayers {
+			if player != nil && player.ready && s.masterTimesSeats[int32(seat)] == 0 {
+				s.masterTimesSeats[int32(seat)] = 0
 			}
 		}
 		s.decideMaster()
@@ -91,10 +91,15 @@ func (s *StateMaster) Handle(shortId int64, v any) (result any) {
 			return outer.ERROR_NIUNIU_MASTER_OUT_OF_RANGE
 		}
 
-		s.masterTimesSeats[int32(s.SeatIndex(shortId))] = req.Times
+		seat := int32(s.SeatIndex(shortId))
+		if s.masterTimesSeats[seat] != -1 {
+			return outer.ERROR_NIUNIU_HAS_BE_MASTER
+		}
+
+		s.masterTimesSeats[seat] = req.Times
 
 		// 如果所有人都选择完成，就确定庄家，并且进入下个状态
-		if len(s.masterTimesSeats) == len(s.niuniuPlayers) {
+		if len(s.masterTimesSeats) == s.participantCount() {
 			s.decideMaster()
 		}
 		return &outer.NiuNiuToBeMasterRsp{}

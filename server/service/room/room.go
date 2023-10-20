@@ -161,10 +161,6 @@ func (r *Room) CanLeaveRoom(p *inner.PlayerInfo) bool {
 	return r.gambling.CanLeave(p)
 }
 
-func (r *Room) CanReadyInRoom(p *inner.PlayerInfo) bool {
-	return r.gambling.CanReady(p)
-}
-
 func (r *Room) CanSetGold(p *inner.PlayerInfo) bool {
 	return r.gambling.CanSetGold(p)
 }

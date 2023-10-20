@@ -20,7 +20,6 @@ type Gambling interface {
 	SeatIndex(shortId int64) int
 	CanEnter(p *inner.PlayerInfo) bool
 	CanLeave(p *inner.PlayerInfo) bool
-	CanReady(p *inner.PlayerInfo) bool
 	CanSetGold(p *inner.PlayerInfo) bool
 	PlayerEnter(player *Player)
 	PlayerLeave(player *Player)
