@@ -73,6 +73,7 @@ func (s *StateMaster) decideMaster() {
 	s.masterIndex = selects[rand.Intn(len(selects))]
 	s.SwitchTo(Betting)
 }
+
 func (s *StateMaster) Handle(shortId int64, v any) (result any) {
 	player, _ := s.findNiuNiuPlayer(shortId)
 	if player == nil {
