@@ -21,23 +21,25 @@ func (s *StateBetting) State() int {
 }
 
 func (s *StateBetting) Enter() {
-	l := s.playerNumber()
-	s.betSeats = make([]int32, l, l)
+	s.betTimesSeats = make(map[int32]int32)
 
 	s.timeout = tools.UUID()
 	expireAt := tools.Now().Add(BettingExpiration)
 	s.room.AddTimer(s.timeout, expireAt, func(dt time.Duration) {
-		for seat, times := range s.betSeats {
+		for _, player := range s.niuniuPlayers {
+			seat := int32(s.SeatIndex(player.ShortId))
+			times := s.betTimesSeats[seat]
 			if times == 0 {
-				if s.timesSeats[seat] > 0 {
-					s.betSeats[seat] = 2
+				// 抢过庄的闲家，默认是2倍, 没抢过的，默认是1倍
+				if s.masterTimesSeats[seat] > 0 {
+					s.betTimesSeats[seat] = 2
 				} else {
-					s.betSeats[seat] = 1
+					s.betTimesSeats[seat] = 1
 				}
 
 				s.room.Broadcast(&outer.NiuNiuSelectBettingNtf{
-					ShortId: s.niuniuPlayers[seat].ShortId,
-					Times:   s.betSeats[seat],
+					ShortId: player.ShortId,
+					Times:   s.betTimesSeats[seat],
 				})
 			}
 		}
@@ -54,8 +56,8 @@ func (s *StateBetting) Leave() {
 func (s *StateBetting) Handle(shortId int64, v any) (result any) {
 	player, _ := s.findNiuNiuPlayer(shortId)
 	if player == nil {
-		s.Log().Warnw("player not in room", "roomId", s.room.RoomId, "shortId", shortId)
-		return outer.ERROR_PLAYER_NOT_IN_ROOM
+		s.Log().Warnw("player not in game", "roomId", s.room.RoomId, "shortId", shortId)
+		return outer.ERROR_NIUNIU_NOT_IN_GAMING
 	}
 
 	switch req := v.(type) {
@@ -65,25 +67,18 @@ func (s *StateBetting) Handle(shortId int64, v any) (result any) {
 		}
 
 		// 抢过庄的，不能选1倍数
-		seat := s.SeatIndex(shortId)
-		if s.timesSeats[seat] > 0 && req.Times == 1 {
+		seat := int32(s.SeatIndex(shortId))
+		if s.masterTimesSeats[seat] > 0 && req.Times == 1 {
 			return outer.ERROR_NIUNIU_BETTING_HAS_BE_MASTER
 		}
 
-		s.betSeats[seat] = req.Times
+		s.betTimesSeats[seat] = req.Times
 		s.room.Broadcast(&outer.NiuNiuSelectBettingNtf{
 			ShortId: shortId,
-			Times:   s.betSeats[seat],
+			Times:   s.betTimesSeats[seat],
 		})
 
-		allSelected := true
-		for _, betVal := range s.betSeats {
-			if betVal == 0 {
-				allSelected = false
-			}
-		}
-
-		if allSelected {
+		if len(s.betTimesSeats) == len(s.niuniuPlayers) {
 			s.SwitchTo(Settlement)
 		}
 		return &outer.NiuNiuToBettingRsp{}

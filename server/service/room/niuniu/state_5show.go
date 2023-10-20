@@ -21,8 +21,7 @@ func (s *StateShow) State() int {
 }
 
 func (s *StateShow) Enter() {
-	l := s.playerNumber()
-	s.shows = make([]int, l, l)
+	s.shows = make(map[int32]int32)
 
 	s.timeout = tools.UUID()
 	expireAt := tools.Now().Add(ShowCardsExpiration)
@@ -56,25 +55,18 @@ func (s *StateShow) Handle(shortId int64, v any) (result any) {
 	player, _ := s.findNiuNiuPlayer(shortId)
 	if player == nil {
 		s.Log().Warnw("player not in room", "roomId", s.room.RoomId, "shortId", shortId)
-		return outer.ERROR_PLAYER_NOT_IN_ROOM
+		return outer.ERROR_NIUNIU_NOT_IN_GAMING
 	}
 
 	switch req := v.(type) {
 	case *outer.NiuNiuShowCardsReq: // 亮牌
-		s.shows[s.SeatIndex(shortId)] = 1
+		s.shows[int32(s.SeatIndex(shortId))] = 1
 		s.room.Broadcast(&outer.NiuNiuFinishShowCardsNtf{
 			ShortId:   shortId,
 			HandCards: player.handCards.ToPB(),
 		})
 
-		allShow := true
-		for _, show := range s.shows {
-			if show == 0 {
-				allShow = false
-			}
-		}
-
-		if allShow {
+		if len(s.shows) == len(s.niuniuPlayers) {
 			s.SwitchTo(Settlement)
 		}
 

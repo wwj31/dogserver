@@ -23,19 +23,17 @@ func (s *StateMaster) State() int {
 }
 
 func (s *StateMaster) Enter() {
-	// 每位玩家初始的抢庄状态为-1，表示没有操作
-	l := s.playerNumber()
-	s.timesSeats = make([]int32, l, l)
-	for i := 0; i < l; i++ {
-		s.timesSeats[i] = -1
+	s.masterTimesSeats = make(map[int32]int32)
+	for seat, _ := range s.niuniuPlayers {
+		s.masterTimesSeats[int32(seat)] = -1
 	}
 
 	s.timeout = tools.UUID()
 	expireAt := tools.Now().Add(MasterExpiration)
 	s.room.AddTimer(s.timeout, expireAt, func(dt time.Duration) {
-		for i, seat := range s.timesSeats {
-			if seat == -1 {
-				s.timesSeats[i] = 0
+		for i, times := range s.masterTimesSeats {
+			if times == -1 {
+				s.masterTimesSeats[i] = 0
 			}
 		}
 		s.decideMaster()
@@ -51,14 +49,24 @@ func (s *StateMaster) Leave() {
 
 // 确定庄家
 func (s *StateMaster) decideMaster() {
-	sort.Slice(s.timesSeats, func(i, j int) bool {
-		return s.timesSeats[i] > s.timesSeats[j]
+	var arr []struct {
+		Seat  int32
+		Times int32
+	}
+	for seat, times := range s.masterTimesSeats {
+		arr = append(arr, struct {
+			Seat  int32
+			Times int32
+		}{Seat: seat, Times: times})
+	}
+	sort.Slice(arr, func(i, j int) bool {
+		return arr[i].Times > arr[j].Times
 	})
 
-	selects := []int{0}
-	for i := 1; i < len(s.room.Players); i++ {
-		if s.timesSeats[i] == s.timesSeats[0] {
-			selects = append(selects, i)
+	selects := []int{int(arr[0].Seat)}
+	for i := 1; i < len(arr); i++ {
+		if arr[i].Times == arr[0].Times {
+			selects = append(selects, int(arr[i].Seat))
 		}
 	}
 
@@ -68,8 +76,8 @@ func (s *StateMaster) decideMaster() {
 func (s *StateMaster) Handle(shortId int64, v any) (result any) {
 	player, _ := s.findNiuNiuPlayer(shortId)
 	if player == nil {
-		s.Log().Warnw("player not in room", "roomId", s.room.RoomId, "shortId", shortId)
-		return outer.ERROR_PLAYER_NOT_IN_ROOM
+		s.Log().Warnw("player not in game", "roomId", s.room.RoomId, "shortId", shortId)
+		return outer.ERROR_NIUNIU_NOT_IN_GAMING
 	}
 
 	switch req := v.(type) {
@@ -83,17 +91,10 @@ func (s *StateMaster) Handle(shortId int64, v any) (result any) {
 			return outer.ERROR_NIUNIU_MASTER_OUT_OF_RANGE
 		}
 
-		s.timesSeats[s.SeatIndex(shortId)] = req.Times
+		s.masterTimesSeats[int32(s.SeatIndex(shortId))] = req.Times
 
 		// 如果所有人都选择完成，就确定庄家，并且进入下个状态
-		allSelected := true
-		for _, val := range s.timesSeats {
-			if val == -1 {
-				allSelected = false
-			}
-		}
-
-		if allSelected {
+		if len(s.masterTimesSeats) == len(s.niuniuPlayers) {
 			s.decideMaster()
 		}
 		return &outer.NiuNiuToBeMasterRsp{}

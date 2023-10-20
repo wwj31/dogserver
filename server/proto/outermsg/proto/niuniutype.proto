@@ -24,5 +24,21 @@ enum NiuNiuState {
 // 牛牛 牌型
 enum NiuNiuPokerCardsType {
     NiuNiuPokerCardsTypeUnknown = 0;
-
+    Niu1Type                    = 1;  // 牛1
+    Niu2Type                    = 2;  // 牛2
+    Niu3Type                    = 3;  // 牛3
+    Niu4Type                    = 4;  // 牛4
+    Niu5Type                    = 5;  // 牛5
+    Niu6Type                    = 6;  // 牛6
+    Niu7Type                    = 7;  // 牛7
+    Niu8Type                    = 8;  // 牛8
+    Niu9Type                    = 9;  // 牛9
+    NiuNiuType                  = 10; // 牛牛
+    StraightNiuType             = 11; // 顺子牛
+    FiveColorNiuType            = 12; // 五花牛
+    SameColorNiuType            = 13; // 同花牛
+    HuluNiuType                 = 14; // 葫芦牛
+    BombNiuType                 = 15; // 炸弹牛
+    FiveSmallNiuType            = 16; // 五小牛
+    ColorStraightType           = 17; // 同花顺
 }

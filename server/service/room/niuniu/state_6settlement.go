@@ -26,19 +26,20 @@ func (s *StateSettlement) State() int {
 func (s *StateSettlement) Enter() {
 	s.currentStateEndAt = tools.Now().Add(SettlementDuration)
 	s.Log().Infow("[NiuNiu] enter state settlement", "room", s.room.RoomId,
-		"master", s.masterIndex, "game count", s.gameCount, "endAt", s.currentStateEndAt.UnixMilli())
+		"master", s.masterIndex, "endAt", s.currentStateEndAt.UnixMilli())
 
-	playerNumber := s.playerNumber()
 	settlementMsg := &outer.NiuNiuSettlementNtf{
 		EndAt:            s.currentStateEndAt.UnixMilli(),
 		HasScoreZero:     s.scoreZeroOver,
-		GameCount:        int32(s.gameCount),
 		GameSettlementAt: tools.Now().UnixMilli(),
-		PlayerData:       make([]*outer.NiuNiuSettlementPlayerData, playerNumber, playerNumber),
+		PlayerData:       make([]*outer.NiuNiuSettlementPlayerData, 10, 10),
 	}
 
-	for seat := 0; seat < playerNumber; seat++ {
-		settlementMsg.PlayerData[seat] = &outer.NiuNiuSettlementPlayerData{}
+	for seat := 0; seat < len(s.niuniuPlayers); seat++ {
+		player := s.niuniuPlayers[seat]
+		if player != nil && player.ready {
+			settlementMsg.PlayerData[seat] = &outer.NiuNiuSettlementPlayerData{}
+		}
 	}
 
 	// 结算输赢分
@@ -74,11 +75,10 @@ func (s *StateSettlement) Enter() {
 	// 大结算
 	if s.finalSettlement() || s.scoreZeroOver {
 		s.Log().Infow("final settlement",
-			"scoreZeroOver", s.scoreZeroOver, "game count", s.gameCount, "param", s.gameParams().PlayCountLimit)
-		s.gameCount = int(s.gameParams().PlayCountLimit)
+			"scoreZeroOver", s.scoreZeroOver, "param", s.gameParams().PlayCountLimit)
 
 		// 总抽水
-		totalProfit := s.profit(s.gameParams().BigWinner)
+		totalProfit := s.profit(false)
 
 		// 记录返利信息
 		record := &outer.RebateDetailInfo{
@@ -135,8 +135,7 @@ func (s *StateSettlement) Enter() {
 }
 
 func (s *StateSettlement) Leave() {
-	s.Log().Infow("[NiuNiu] leave state settlement ==================SETTLEMENT==================", "room",
-		s.room.RoomId, "count", s.gameCount)
+	s.Log().Infow("[NiuNiu] leave state settlement ==================SETTLEMENT==================", "room", s.room.RoomId)
 	s.Log().Infof(" ")
 	s.Log().Infof(" ")
 	s.Log().Infof(" ")
@@ -159,7 +158,6 @@ func (s *StateSettlement) afterSettle(ntf *outer.NiuNiuSettlementNtf) {
 		"master", s.masterIndex, "ntf", ntf.String())
 
 	s.room.Broadcast(ntf)
-	s.clear() // 分算完清理数据
 
 	// 结算给个短暂的时间
 	s.room.AddTimer(tools.XUID(), s.currentStateEndAt, func(dt time.Duration) {
@@ -168,11 +166,7 @@ func (s *StateSettlement) afterSettle(ntf *outer.NiuNiuSettlementNtf) {
 }
 
 func (s *StateSettlement) finalSettlement() bool {
-	if int32(s.gameCount) >= s.gameParams().PlayCountLimit {
-		return true
-	}
-
-	return false
+	return true
 }
 
 // profit 抽水

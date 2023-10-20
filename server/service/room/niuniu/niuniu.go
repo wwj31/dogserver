@@ -4,12 +4,10 @@ import (
 	"fmt"
 	"time"
 
-	"server/common"
-	"server/common/log"
-
 	"github.com/golang/protobuf/proto"
 	"github.com/wwj31/dogactor/logger"
 
+	"server/common"
 	"server/proto/outermsg/outer"
 
 	"github.com/wwj31/dogactor/tools"
@@ -32,8 +30,8 @@ func New(r *room.Room) *NiuNiu {
 		room: r,
 		fsm:  room.NewFSM(),
 	}
-	n := niuniu.playerNumber()
-	niuniu.niuniuPlayers = make([]*niuniuPlayer, n, n)
+	niuniu.niuniuPlayers = make([]*niuniuPlayer, 10, 10)
+	niuniu.playerGameCount = make(map[int64]int32)
 	_ = niuniu.fsm.Add(&StateReady{NiuNiu: niuniu})      // 准备中
 	_ = niuniu.fsm.Add(&StateDeal{NiuNiu: niuniu})       // 发牌中
 	_ = niuniu.fsm.Add(&StateSettlement{NiuNiu: niuniu}) // 游戏结束结算界面
@@ -44,7 +42,7 @@ func New(r *room.Room) *NiuNiu {
 }
 
 type (
-	// 跑得快 参与游戏的玩家数据
+	// 牛牛 参与游戏的玩家数据
 	niuniuPlayer struct {
 		*room.Player
 		score         int64
@@ -58,17 +56,16 @@ type (
 	NiuNiu struct {
 		room                *room.Room
 		fsm                 *room.FSM
-		currentStateEnterAt time.Time                         // 当前状态的进入时间
-		currentStateEndAt   time.Time                         // 当前状态的结束时间
-		playerAutoReady     func(p *niuniuPlayer, ready bool) //
-		scoreZeroOver       bool                              // 因为有玩家没分了，而触发的结束
+		currentStateEnterAt time.Time // 当前状态的进入时间
+		currentStateEndAt   time.Time // 当前状态的结束时间
+		scoreZeroOver       bool      // 因为有玩家没分了，而触发的结束
 
-		masterIndex   int             // 庄家位置 0，1，2
-		niuniuPlayers []*niuniuPlayer // 参与游戏的玩家
-		gameCount     int             // 游戏的连续局数
-		timesSeats    []int32         // 每个位置抢庄的倍数
-		betSeats      []int32         // 每个位置押注的倍数
-		shows         []int           // 亮牌的位置
+		playerGameCount  map[int64]int32 // 参与者的游戏次数
+		masterIndex      int             // 庄家位置
+		niuniuPlayers    []*niuniuPlayer // 参与游戏的玩家  seat->player
+		masterTimesSeats map[int32]int32 // 每个位置抢庄的倍数
+		betTimesSeats    map[int32]int32 // 每个位置押注的倍数
+		shows            map[int32]int32 // 亮牌的位置
 	}
 
 	PlayCardsRecord struct {
@@ -95,27 +92,15 @@ func (f *NiuNiu) toRoomPlayers() (players []*room.Player) {
 	return players
 }
 
-func (f *NiuNiu) playerNumber() int {
-	n := f.gameParams().PlayerNumber
-	if n == 0 {
-		return 2
-	} else if n == 1 {
-		return 3
-	}
-	log.Errorw("the player number is unexpected", "number", n)
-	return 0
-}
-
 func (f *NiuNiu) Data(shortId int64) proto.Message {
 	info := &outer.NiuNiuGameInfo{
 		State:        outer.NiuNiuState(f.fsm.State()),
 		StateEnterAt: f.currentStateEnterAt.UnixMilli(),
 		StateEndAt:   f.currentStateEndAt.UnixMilli(),
-		GameCount:    int32(f.gameCount),
 		Players:      f.playersToPB(shortId),
 		MasterIndex:  int32(f.masterIndex),
-		MasterTimes:  f.timesSeats,
-		BetTimes:     f.betSeats,
+		MasterTimes:  f.masterTimesSeats,
+		BetTimes:     f.betTimesSeats,
 	}
 	return info
 }
@@ -130,10 +115,12 @@ func (f *NiuNiu) SeatIndex(shortId int64) int {
 }
 
 func (f *NiuNiu) CanEnter(p *inner.PlayerInfo) bool {
-	if f.fsm.State() == Ready {
-		return true
+	// 还有空位就能进
+	for _, player := range f.niuniuPlayers {
+		if player == nil {
+			return true
+		}
 	}
-
 	return false
 }
 
@@ -142,13 +129,24 @@ func (f *NiuNiu) CanLeave(p *inner.PlayerInfo) bool {
 		return true
 	}
 
-	// 只有准备和结算时可以离开
-	switch f.fsm.State() {
-	case Settlement, Ready:
-		return true
+	if player, _ := f.findNiuNiuPlayer(p.ShortId); player != nil {
+		c, exist := f.playerGameCount[p.ShortId]
+		if !exist {
+			return true
+		}
+		if c < f.gameParams().PlayCountLimit {
+			return false
+		}
+
+		// 只有准备和结算时可以离开
+		switch f.fsm.State() {
+		case Settlement, Ready:
+			return true
+		}
+		return false
 	}
 
-	return false
+	return true
 }
 
 func (f *NiuNiu) CanReady(p *inner.PlayerInfo) bool {
@@ -166,14 +164,12 @@ func (f *NiuNiu) CanSetGold(p *inner.PlayerInfo) bool {
 }
 
 func (f *NiuNiu) PlayerEnter(roomPlayer *room.Player) {
+	// 找个位置就坐下
 	for i, player := range f.niuniuPlayers {
 		if player == nil {
 			player = f.newNiuNiuPlayer(roomPlayer)
 			player.finalStatsMsg = &outer.NiuNiuFinialPlayerInfo{}
 			f.niuniuPlayers[i] = player
-			if f.playerAutoReady != nil {
-				f.playerAutoReady(player, false)
-			}
 			break
 		}
 	}
@@ -190,6 +186,7 @@ func (f *NiuNiu) readyAfterTimeout(player *niuniuPlayer, expireAt time.Time) {
 func (f *NiuNiu) PlayerLeave(quitPlayer *room.Player) {
 	for idx, player := range f.niuniuPlayers {
 		if player != nil && player.ShortId == quitPlayer.ShortId {
+			delete(f.playerGameCount, player.ShortId)
 			f.room.CancelTimer(quitPlayer.RID)
 			f.niuniuPlayers[idx] = nil
 			f.Log().Infow("player leave mahjong", "shortId", player.ShortId, "seat", idx, "gold", player.Gold)
@@ -230,7 +227,7 @@ func (f *NiuNiu) playersToPB(shortId int64) (players []*outer.NiuNiuPlayerInfo) 
 				handCards = player.handCards.ToPB() // 结算时，牌全发
 			case state == ShowCards:
 				// 亮牌状态，是自己或者已经亮牌了，牌全发
-				if player.ShortId == shortId || f.shows[f.SeatIndex(player.ShortId)] == 1 {
+				if player.ShortId == shortId || f.shows[int32(f.SeatIndex(player.ShortId))] == 1 {
 					handCards = player.handCards.ToPB()
 				} else {
 					handCards = make([]int32, len(player.handCards))
@@ -239,8 +236,9 @@ func (f *NiuNiu) playersToPB(shortId int64) (players []*outer.NiuNiuPlayerInfo) 
 				// 抢庄、押注状态，自己就发前4张，其他人不发
 				if player.ShortId == shortId {
 					handCards = player.handCards[0:4].ToPB()
+					handCards = append(handCards, 0)
 				} else {
-					handCards = make([]int32, 4)
+					handCards = make([]int32, 5)
 				}
 			}
 
@@ -296,26 +294,13 @@ func (f *NiuNiu) bombWinScore() int64 {
 	return int64(float32(base*common.Gold1000Times) * 5)
 }
 
-func (f *NiuNiu) clear() {
-	f.scoreZeroOver = false
-
-	// 重置玩家数据
-	for i := 0; i < f.playerNumber(); i++ {
-		gamer := f.niuniuPlayers[i]
-		if gamer != nil {
-			f.niuniuPlayers[i] = f.newNiuNiuPlayer(gamer.Player)
-			f.niuniuPlayers[i].finalStatsMsg = gamer.finalStatsMsg
-		}
-	}
-}
-
 func (f *NiuNiu) allSeats(ignoreSeat ...int) (result []int) {
 	seatMap := map[int]struct{}{}
 	for _, seat := range ignoreSeat {
 		seatMap[seat] = struct{}{}
 	}
 
-	for seatIndex := 0; seatIndex < f.playerNumber(); seatIndex++ {
+	for seatIndex := 0; seatIndex < len(f.room.Players); seatIndex++ {
 		if _, ignore := seatMap[seatIndex]; !ignore {
 			result = append(result, seatIndex)
 		}

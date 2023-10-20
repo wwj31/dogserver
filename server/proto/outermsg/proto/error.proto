@@ -84,6 +84,7 @@ enum ERROR {
    NIUNIU_MASTER_OUT_OF_RANGE           = 402; // 抢庄超过倍数范围
    NIUNIU_BETTING_OUT_OF_RANGE          = 403; // 不在正确的押注范围内
    NIUNIU_BETTING_HAS_BE_MASTER         = 404; // 抢过庄的，不能押1倍
+   NIUNIU_NOT_IN_GAMING                 = 405; // 玩家未参与游戏
 
 }
 

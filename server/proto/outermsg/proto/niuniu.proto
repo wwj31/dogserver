@@ -4,18 +4,17 @@ option  go_package = "/outer";
 
 import "niuniutype.proto";
 
-// 跑的快 协议 (Faster Run)
+// 牛牛 协议 (NiuNiu)
 
 // 牛牛 游戏数据
 message NiuNiuGameInfo {
-    NiuNiuState               State            = 1; // 当前状态
-    int64                     StateEnterAt     = 2; // 当前状态的进入时间(毫秒)
-    int64                     StateEndAt       = 3; // 当前状态的结束时间(毫秒)
-    int32                     GameCount        = 4; // 游戏局数
-    repeated NiuNiuPlayerInfo Players          = 5; // 分别代表座位的玩家
-    int32                     MasterIndex      = 7; // 庄家位置
-    repeated int32            MasterTimes      = 11;// 每个人的抢庄倍数
-    repeated int32            BetTimes         = 12;// 每个人的押注倍数
+    NiuNiuState                 State            = 1; // 当前状态
+    int64                       StateEnterAt     = 2; // 当前状态的进入时间(毫秒)
+    int64                       StateEndAt       = 3; // 当前状态的结束时间(毫秒)
+    repeated NiuNiuPlayerInfo   Players          = 4; // 分别代表座位的玩家,固定发10个位置 下标内容空表示无人
+    int32                       MasterIndex      = 5; // 庄家位置
+    map<int32,int32>            MasterTimes      = 6; // 每个人的抢庄倍数<位置，倍数>
+    map<int32,int32>            BetTimes         = 7; // 每个人的押注倍数<位置，倍数>
 }
 
 // 牛牛 参与游戏的玩家数据
@@ -23,12 +22,13 @@ message NiuNiuPlayerInfo {
     int64               ShortId        = 1; // 参与者短ID
     bool                Ready          = 2; // true.准备、false.未准备
     int64               ReadyExpireAt  = 3; // 准备超时时间(毫秒)
+    int32               GameCount      = 4; // 游戏局数
 
     // 手牌 (梅花101-113 方块201-213 红心301-313 黑桃401-413)
     // NOTE: 401:黑桃A 402:黑桃2 411:黑桃J 412:黑桃Q 413:黑桃K 其他花色同理
-    repeated int32      HandCards      = 4;
+    repeated int32      HandCards      = 5;
 
-    int64               Score          = 5;// 玩家本局拥有的分数
+    int64               Score          = 6;// 玩家本局拥有的分数
 }
 
 // 牌型数据
@@ -121,8 +121,7 @@ message NiuNiuFinishShowCardsNtf {
 // 结算玩家数据
 message NiuNiuSettlementPlayerData{
     NiuNiuPlayerInfo Player      = 1; //
-    int32 BombsCount             = 2; // 出过几次炸弹
-    int64 TotalScore             = 3; // 总输赢 负数为输
+    int64 TotalScore             = 2; // 总输赢 负数为输
 }
 
 // 全部亮牌结算通知

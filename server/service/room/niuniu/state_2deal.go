@@ -26,6 +26,10 @@ func (s *StateDeal) State() int {
 const handCardsSize = 5
 
 func (s *StateDeal) Enter() {
+	for _, player := range s.niuniuPlayers {
+		s.playerGameCount[player.ShortId]++
+	}
+
 	cards := RandomPokerCards(nil)
 	testCardsStr := rds.Ins.Get(context.Background(), "niuniu_testcards").Val()
 	if testCardsStr != "" {
