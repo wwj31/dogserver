@@ -33,11 +33,10 @@ message NiuNiuPlayerInfo {
 
 // 牌型数据
 message NiuNiuCardsGroup {
-    NiuNiuPokerCardsType Type = 1;// 牌型
-    repeated int32 Cards         = 2;// 主牌
-    repeated int32 SideCards     = 3;// 副牌
+    NiuNiuPokerCardsType Type  = 1;// 牌型
+    repeated int32 Cards       = 2;// 主牌
+    repeated int32 SideCards   = 3;// 副牌
 }
-
 
 ////////////////////////////////////////////// 游戏操作请求 //////////////////////////////////////////////
 
@@ -123,18 +122,6 @@ message NiuNiuSettlementPlayerData{
 // 全部亮牌结算通知
 message NiuNiuSettlementNtf {
     int64    EndAt                                     = 1; // 结算结束时间
-    bool     HasScoreZero                              = 2; // 玩家分输光了，提前进入结算(只有在房间选择不允许负分的时候生效)
-    repeated NiuNiuSettlementPlayerData PlayerData     = 3; // 0-2号座位的玩家结算数据
-    int32    GameCount                                 = 4; // 游戏局数
-    int64    GameSettlementAt                          = 5; // 结算开始时间
-    NiuNiuFinialSettlement FinalSettlement             = 10;// 每把都结算
-}
-
-// 大结算信息
-message NiuNiuFinialSettlement {
-    repeated NiuNiuFinialPlayerInfo PlayerInfo = 1; // 东南西北4个玩家的大结算信息
-}
-
-message NiuNiuFinialPlayerInfo {
-    int64 TotalScore     = 1; // 总输赢，负分表示输
+    map<int32,NiuNiuSettlementPlayerData>  PlayerData  = 2; // 座位对应的参与者结算数据
+    int64    GameSettlementAt                          = 3; // 结算开始时间
 }

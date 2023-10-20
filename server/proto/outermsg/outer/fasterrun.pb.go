@@ -1151,7 +1151,7 @@ type FasterRunFinialSettlement struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	PlayerInfo []*FasterRunFinialPlayerInfo `protobuf:"bytes,1,rep,name=PlayerInfo,proto3" json:"PlayerInfo,omitempty"` // 东南西北4个玩家的大结算信息
+	PlayerInfo []*FasterRunFinialPlayerInfo `protobuf:"bytes,1,rep,name=PlayerInfo,proto3" json:"PlayerInfo,omitempty"`
 }
 
 func (x *FasterRunFinialSettlement) Reset() {

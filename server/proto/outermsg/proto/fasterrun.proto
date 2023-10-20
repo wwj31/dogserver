@@ -130,7 +130,7 @@ message FasterRunSettlementNtf {
 
 // 大结算信息
 message FasterRunFinialSettlement {
-    repeated FasterRunFinialPlayerInfo PlayerInfo = 1; // 东南西北4个玩家的大结算信息
+    repeated FasterRunFinialPlayerInfo PlayerInfo = 1;
 }
 
 message FasterRunFinialPlayerInfo {

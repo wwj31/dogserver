@@ -88,18 +88,19 @@ message NiuNiuParams{
     int32 MinPlayPlayerCount        = 2; // 开局人数(2-10) 指至少有多少名玩家，才可以开局
     float BaseScore                 = 3; // 底分 1-100
     float BaseScoreTimes            = 4; // 倍数 (不用)
-    int32 MaxBeMasterTimes          = 5; // 抢庄阶段最高能抢的倍数 范围:1~4
-    int32 PushBetTimes              = 6; // 推注封顶倍数 0.无推注 范围:10~100倍数，选多少倍就发多少倍
-    bool  SpecialStraightNiu        = 7; //  是否算特殊牌型 顺子牛
-    bool  SpecialFiveColorNiu       = 8; //  是否算特殊牌型 五花牛
-    bool  SpecialSameColorNiu       = 9; //  是否算特殊牌型 同花牛
-    bool  SpecialHuluNiu            = 10; // 是否算特殊牌型 葫芦牛
-    bool  SpecialBombNiu            = 11; // 是否算特殊牌型 炸弹牛
-    bool  SpecialFiveSmallNiu       = 12; // 是否算特殊牌型 五小牛
-    bool  SpecialColorStraight      = 13; // 是否算特殊牌型 同花顺
-    bool  LaiZi                     = 14; // 是否算经典王癞
-    bool  AllowScoreSmallZero       = 15; // 是否允许负分
-    RebateParams ReBate             = 16; // 抽水相关设置
+    int32 NiuNiuTimes               = 5; // 牛牛倍数方案，0.普通倍数，1.牛几几倍
+    int32 MaxBeMasterTimes          = 6; // 抢庄阶段最高能抢的倍数 范围:1~4
+    int32 PushBetTimes              = 7; // 推注封顶倍数 0.无推注 范围:10~100倍数，选多少倍就发多少倍
+    bool  SpecialStraightNiu        = 8; //  是否算特殊牌型 顺子牛
+    bool  SpecialFiveColorNiu       = 9; //  是否算特殊牌型 五花牛
+    bool  SpecialSameColorNiu       = 10; // 是否算特殊牌型 同花牛
+    bool  SpecialHuluNiu            = 11; // 是否算特殊牌型 葫芦牛
+    bool  SpecialBombNiu            = 12; // 是否算特殊牌型 炸弹牛
+    bool  SpecialFiveSmallNiu       = 13; // 是否算特殊牌型 五小牛
+    bool  SpecialColorStraight      = 14; // 是否算特殊牌型 同花顺
+    bool  LaiZi                     = 15; // 是否算经典王癞
+    bool  AllowScoreSmallZero       = 16; // 是否允许负分
+    RebateParams ReBate             = 17; // 抽水相关设置
 }
 
 
