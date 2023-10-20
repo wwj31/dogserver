@@ -3,13 +3,9 @@ package niuniu
 import (
 	"time"
 
-	"server/rdsop"
-
 	"github.com/wwj31/dogactor/tools"
 
 	"server/common"
-	"server/common/actortype"
-	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
 )
 
@@ -30,108 +26,14 @@ func (s *StateSettlement) Enter() {
 
 	settlementMsg := &outer.NiuNiuSettlementNtf{
 		EndAt:            s.currentStateEndAt.UnixMilli(),
-		HasScoreZero:     s.scoreZeroOver,
 		GameSettlementAt: tools.Now().UnixMilli(),
-		PlayerData:       make([]*outer.NiuNiuSettlementPlayerData, 10, 10),
+		PlayerData:       make(map[int32]*outer.NiuNiuSettlementPlayerData),
 	}
 
-	for seat := 0; seat < len(s.niuniuPlayers); seat++ {
-		player := s.niuniuPlayers[seat]
-		if player != nil && player.ready {
-			settlementMsg.PlayerData[seat] = &outer.NiuNiuSettlementPlayerData{}
-		}
-	}
+	s.RangePartInPlayer(func(seat int, player *niuniuPlayer) {
+		settlementMsg.PlayerData[int32(seat)] = &outer.NiuNiuSettlementPlayerData{}
+	})
 
-	// 结算输赢分
-	var (
-		winner     *niuniuPlayer
-		winnerSeat int
-	)
-	for seat, player := range s.niuniuPlayers {
-		if len(player.handCards) == 0 {
-			winner = player
-			winnerSeat = seat
-			break
-		}
-	}
-
-	if winner != nil {
-		loserSeats := s.allSeats(winnerSeat)
-		for _, seat := range loserSeats {
-			loser := s.niuniuPlayers[seat]
-			loseScore := int64(len(loser.handCards)) * s.baseScore()
-
-			// 不允许负分，能扣多少扣多少
-			if !s.gameParams().AllowScoreSmallZero {
-				loseScore = common.Min(loser.score, loseScore)
-			}
-
-			loser.updateScore(-loseScore)
-			winner.updateScore(loseScore)
-			s.Log().Infow("settle loser", "seat", seat, "loser", loser.ShortId, "score", loseScore)
-		}
-	}
-
-	// 大结算
-	if s.finalSettlement() || s.scoreZeroOver {
-		s.Log().Infow("final settlement",
-			"scoreZeroOver", s.scoreZeroOver, "param", s.gameParams().PlayCountLimit)
-
-		// 总抽水
-		totalProfit := s.profit(false)
-
-		// 记录返利信息
-		record := &outer.RebateDetailInfo{
-			Type:      outer.GameType_FasterRun,
-			BaseScore: s.gameParams().BaseScore,
-			CreateAt:  tools.Now().UnixMilli(),
-		}
-		s.room.Rebate(record, totalProfit, s.toRoomPlayers())
-
-		ntf := &outer.NiuNiuFinialSettlement{}
-		for seat := 0; seat < playerNumber; seat++ {
-			player := s.niuniuPlayers[seat]
-			rdsop.SetTodayPlaying(player.ShortId)
-			ntf.PlayerInfo = append(ntf.PlayerInfo, player.finalStatsMsg)
-			player.finalStatsMsg = &outer.NiuNiuFinialPlayerInfo{}
-		}
-		settlementMsg.FinalSettlement = ntf
-	}
-
-	// 结算分数为最终金币
-	modifyRspCount := make(map[string]struct{}) // 必须等待所有玩家金币修改成功后，才能发送结算
-	for i := 0; i < playerNumber; i++ {
-		seat := i
-		player := s.niuniuPlayers[seat]
-		finalScore := player.score
-		presentScore := player.PlayerInfo.Gold
-		s.room.Request(actortype.PlayerId(player.RID), &inner.ModifyGoldReq{
-			Set:       true,
-			Gold:      finalScore,
-			SmallZero: true, // 允许扣为负数
-		}).Handle(func(resp any, err error) {
-			modifyRspCount[player.RID] = struct{}{}
-			if err == nil {
-				modifyRsp := resp.(*inner.ModifyGoldRsp)
-				player.PlayerInfo = modifyRsp.Info
-			}
-
-			s.Log().Infow("modify gold result", "room", s.room.RoomId, "seat", seat,
-				"player", player.ShortId, "latest gold", player.Gold, "err", err)
-
-			// 记录本场游戏的输赢变化
-			changes := finalScore - presentScore
-			rdsop.SetUpdateGoldRecord(player.ShortId, rdsop.GoldUpdateReason{
-				Type:      rdsop.GameWinOrLose, // 跑的快游戏输赢记录
-				Gold:      changes,
-				AfterGold: finalScore,
-				OccurAt:   tools.Now(),
-			})
-			if len(modifyRspCount) == playerNumber {
-				s.afterSettle(settlementMsg)
-			}
-		})
-	}
 }
 
 func (s *StateSettlement) Leave() {
@@ -149,10 +51,10 @@ func (s *StateSettlement) Handle(shortId int64, v any) (result any) {
 func (s *StateSettlement) afterSettle(ntf *outer.NiuNiuSettlementNtf) {
 	allPlayerInfo := s.playersToPB(0) // 组装结算消息
 
-	for seat, player := range s.niuniuPlayers {
-		ntf.PlayerData[seat].Player = allPlayerInfo[seat]
-		ntf.PlayerData[seat].TotalScore = player.totalWinScore
-	}
+	s.RangePartInPlayer(func(seat int, player *niuniuPlayer) {
+		ntf.PlayerData[int32(seat)].Player = allPlayerInfo[seat]
+		ntf.PlayerData[int32(seat)].TotalScore = player.totalWinScore
+	})
 
 	s.Log().Infow(" settlement broadcast", "room", s.room.RoomId,
 		"master", s.masterIndex, "ntf", ntf.String())
@@ -170,37 +72,21 @@ func (s *StateSettlement) finalSettlement() bool {
 }
 
 // profit 抽水
-func (s *StateSettlement) profit(bigWinner bool) (totalProfit int64) {
+func (s *StateSettlement) profit() (totalProfit int64) {
 	var (
 		winners []*niuniuPlayer
 	)
 
-	if bigWinner {
-		var (
-			winScore int64
-			winner   *niuniuPlayer
-		)
-
-		for i, player := range s.niuniuPlayers {
-			if player.finalStatsMsg.TotalScore > winScore {
-				winner = s.niuniuPlayers[i]
-				winScore = player.finalStatsMsg.TotalScore
-			}
-		}
-
-		winners = append(winners, winner)
-	} else {
-		for i, player := range s.niuniuPlayers {
-			if player.finalStatsMsg.TotalScore > 0 {
-				winners = append(winners, s.niuniuPlayers[i])
-			}
+	for i, player := range s.niuniuPlayers {
+		if player.totalWinScore > 0 {
+			winners = append(winners, s.niuniuPlayers[i])
 		}
 	}
 
 	// 处理每一位赢家抽水
 	for _, winner := range winners {
-		rangeCfg := s.room.ProfitRange(winner.finalStatsMsg.TotalScore, s.gameParams().ReBate)
-		winScore := winner.finalStatsMsg.TotalScore
+		rangeCfg := s.room.ProfitRange(winner.totalWinScore, s.gameParams().ReBate)
+		winScore := winner.totalWinScore
 		if rangeCfg == nil {
 			s.Log().Warnw("winner profit score not in any range",
 				"big winners", winner.ShortId, "win", winScore)

@@ -49,7 +49,6 @@ type (
 		ready         bool
 		readyExpireAt time.Time
 		handCards     PokerCards
-		finalStatsMsg *outer.NiuNiuFinialPlayerInfo
 	}
 
 	NiuNiu struct {
@@ -158,7 +157,6 @@ func (f *NiuNiu) PlayerEnter(roomPlayer *room.Player) {
 	for i, player := range f.niuniuPlayers {
 		if player == nil {
 			player = f.newNiuNiuPlayer(roomPlayer)
-			player.finalStatsMsg = &outer.NiuNiuFinialPlayerInfo{}
 			f.niuniuPlayers[i] = player
 			if f.onPlayerEnter != nil {
 				f.onPlayerEnter(player)
@@ -294,5 +292,4 @@ func (f *NiuNiu) allSeats(ignoreSeat ...int) (result []int) {
 func (m *niuniuPlayer) updateScore(val int64) {
 	m.score += val
 	m.totalWinScore += val // 单局总输赢
-	m.finalStatsMsg.TotalScore += val
 }
