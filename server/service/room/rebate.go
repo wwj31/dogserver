@@ -45,7 +45,7 @@ func (r *Room) Rebate(record *outer.RebateDetailInfo, totalProfit int64, players
 	// 本局参与游戏的玩家挨个地、逐层地、依次向上级返利
 	for _, player := range players {
 		r.Log().Infow("recur profit start", "start short", player.ShortId, "profit", divProfit)
-		r.recurRebate(record, divProfit, player.UpShortId, player.ShortId, 0, pip)
+		r.recurRebate(record, divProfit, player.UpShortId, player.ShortId, 0, player.ShortId, pip)
 
 		// 统计玩家贡献（界面中的抽水统计）
 		rdsop.SetContribute(player.ShortId, divProfit)
@@ -56,7 +56,7 @@ func (r *Room) Rebate(record *outer.RebateDetailInfo, totalProfit int64, players
 	}
 }
 
-func (r *Room) recurRebate(record *outer.RebateDetailInfo, profitGold, upShortId, shortId, downShortId int64, addPip redis.Pipeliner) {
+func (r *Room) recurRebate(record *outer.RebateDetailInfo, profitGold, upShortId, shortId, downShortId, contributor int64, addPip redis.Pipeliner) {
 	rebateInfo := rdsop.GetRebateInfo(shortId)
 
 	var (
@@ -69,12 +69,12 @@ func (r *Room) recurRebate(record *outer.RebateDetailInfo, profitGold, upShortId
 		exactPoint = common.Max(0, rebateInfo.Point-rebateInfo.DownPoints[downShortId])
 		exactProfitGold = profitGold * int64(exactPoint) / 100 // 实际分润的金币
 		record.Gold = exactProfitGold
-		record.ShortId = shortId
+		record.ShortId = contributor
 		rdsop.RecordRebateGold(common.JsonMarshal(record), shortId, exactProfitGold, addPip)
 	}
 
 	r.Log().Infow("rebate calculating ...", "room", r.RoomId, "game", r.GameType,
-		"short", shortId, "up", upShortId, "down", downShortId, "rebateInfo", rebateInfo,
+		"short", shortId, "up", upShortId, "down", downShortId, "contributor", contributor, "rebateInfo", rebateInfo,
 		"profitGold", profitGold, "point", exactPoint, "gold", exactProfitGold)
 
 	if upShortId == 0 {
@@ -82,5 +82,5 @@ func (r *Room) recurRebate(record *outer.RebateDetailInfo, profitGold, upShortId
 	}
 
 	// 向上级递归
-	r.recurRebate(record, profitGold, rdsop.AgentUp(upShortId), upShortId, shortId, addPip)
+	r.recurRebate(record, profitGold, rdsop.AgentUp(upShortId), upShortId, shortId, contributor, addPip)
 }
