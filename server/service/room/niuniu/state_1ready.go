@@ -37,15 +37,7 @@ func (s *StateReady) Handle(shortId int64, v any) (result any) {
 }
 
 func (s *StateReady) playerEnter(player *niuniuPlayer) {
-	var count int32
-
-	for _, p := range s.niuniuPlayers {
-		if p != nil {
-			count++
-		}
-	}
-
-	if count >= s.gameParams().MinPlayPlayerCount && s.timeId == "" {
+	if s.playerCount() >= s.gameParams().MinPlayPlayerCount && s.timeId == "" {
 		s.timeId = tools.UUID()
 		expireAt := tools.Now().Add(ReadyExpiration)
 		s.room.AddTimer(s.timeId, expireAt, func(dt time.Duration) {
@@ -56,6 +48,13 @@ func (s *StateReady) playerEnter(player *niuniuPlayer) {
 }
 
 func (s *StateReady) playerLeave(player *niuniuPlayer) {
+	if s.playerCount() < s.gameParams().MinPlayPlayerCount && s.timeId != "" {
+		s.room.CancelTimer(s.timeId)
+		s.room.Broadcast(&outer.NiuNiuStopCountDownNtf{})
+	}
+}
+
+func (s *StateReady) playerCount() int32 {
 	var count int32
 
 	for _, p := range s.niuniuPlayers {
@@ -63,9 +62,5 @@ func (s *StateReady) playerLeave(player *niuniuPlayer) {
 			count++
 		}
 	}
-
-	if count < s.gameParams().MinPlayPlayerCount && s.timeId != "" {
-		s.room.CancelTimer(s.timeId)
-		s.room.Broadcast(&outer.NiuNiuStopCountDownNtf{})
-	}
+	return count
 }

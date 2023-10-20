@@ -25,14 +25,11 @@ func (s *StateBetting) Enter() {
 
 	s.timeout = tools.UUID()
 	expireAt := tools.Now().Add(BettingExpiration)
-	s.room.AddTimer(s.timeout, expireAt, func(dt time.Duration) {
-		for seat, player := range s.niuniuPlayers {
-			if player == nil || !player.ready {
-				continue
-			}
+	s.room.Broadcast(&outer.NiuNiuBettingNtf{ExpireAt: expireAt.UnixMilli()})
 
-			times := s.betTimesSeats[int32(seat)]
-			if times == 0 {
+	s.room.AddTimer(s.timeout, expireAt, func(dt time.Duration) {
+		s.RangePartInPlayer(func(seat int, player *niuniuPlayer) {
+			if s.betTimesSeats[int32(seat)] == 0 {
 				// 抢过庄的闲家默认是2倍,没抢过的默认是1倍
 				if s.masterTimesSeats[int32(seat)] > 0 {
 					s.betTimesSeats[int32(seat)] = 2
@@ -45,10 +42,9 @@ func (s *StateBetting) Enter() {
 					Times:   s.betTimesSeats[int32(seat)],
 				})
 			}
-		}
+		})
 		s.SwitchTo(Settlement)
 	})
-	s.room.Broadcast(&outer.NiuNiuBettingNtf{ExpireAt: expireAt.UnixMilli()})
 	s.Log().Infow("[NiuNiu] enter state Betting ", "room", s.room.RoomId)
 }
 

@@ -60,10 +60,10 @@ func (s *StateDeal) Enter() {
 }
 
 func (s *StateDeal) Leave() {
-	for seatIndex, player := range s.niuniuPlayers {
+	s.RangePartInPlayer(func(seat int, player *niuniuPlayer) {
 		s.Log().Infow("dealing", "room", s.room.RoomId,
-			"seat", seatIndex, "player", player.ShortId, "score", player.score, "cards", player.handCards)
-	}
+			"seat", seat, "player", player.ShortId, "score", player.score, "cards", player.handCards)
+	})
 	s.Log().Infow("[NiuNiu] leave state deal", "room", s.room.RoomId)
 }
 

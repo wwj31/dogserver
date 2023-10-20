@@ -24,22 +24,23 @@ func (s *StateMaster) State() int {
 
 func (s *StateMaster) Enter() {
 	s.masterTimesSeats = make(map[int32]int32)
-	for seat, _ := range s.niuniuPlayers {
+	s.RangePartInPlayer(func(seat int, player *niuniuPlayer) {
 		s.masterTimesSeats[int32(seat)] = -1
-	}
+	})
 
 	s.timeout = tools.UUID()
 	expireAt := tools.Now().Add(MasterExpiration)
+	s.room.Broadcast(&outer.NiuNiuMasterNtf{ExpireAt: expireAt.UnixMilli()})
+
 	s.room.AddTimer(s.timeout, expireAt, func(dt time.Duration) {
-		for seat, player := range s.niuniuPlayers {
-			if player != nil && player.ready && s.masterTimesSeats[int32(seat)] == 0 {
-				s.masterTimesSeats[int32(seat)] = 0
+		for seat, v := range s.masterTimesSeats {
+			if v == 0 {
+				s.masterTimesSeats[seat] = 0
 			}
 		}
 		s.decideMaster()
 	})
 
-	s.room.Broadcast(&outer.NiuNiuMasterNtf{ExpireAt: expireAt.UnixMilli()})
 	s.Log().Infow("[NiuNiu] enter state master ", "room", s.room.RoomId)
 }
 

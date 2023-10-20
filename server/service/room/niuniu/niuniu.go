@@ -79,9 +79,10 @@ func (f *NiuNiu) SwitchTo(state int) {
 }
 
 func (f *NiuNiu) toRoomPlayers() (players []*room.Player) {
-	for _, p := range f.niuniuPlayers {
-		players = append(players, p.Player)
-	}
+	f.RangePartInPlayer(func(seat int, player *niuniuPlayer) {
+		players = append(players, player.Player)
+	})
+
 	return players
 }
 
@@ -96,6 +97,13 @@ func (f *NiuNiu) Data(shortId int64) proto.Message {
 		BetTimes:     f.betTimesSeats,
 	}
 	return info
+}
+func (f *NiuNiu) RangePartInPlayer(fn func(seat int, player *niuniuPlayer)) {
+	for seatIndex, player := range f.niuniuPlayers {
+		if player != nil && player.ready {
+			fn(seatIndex, player)
+		}
+	}
 }
 
 func (f *NiuNiu) SeatIndex(shortId int64) int {
@@ -194,11 +202,7 @@ func (f *NiuNiu) findNiuNiuPlayer(shortId int64) (*niuniuPlayer, int) {
 }
 func (f *NiuNiu) participantCount() int {
 	var c int
-	for _, player := range f.niuniuPlayers {
-		if player != nil && player.ready {
-			c++
-		}
-	}
+	f.RangePartInPlayer(func(seat int, player *niuniuPlayer) { c++ })
 	return c
 }
 

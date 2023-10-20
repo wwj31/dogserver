@@ -26,22 +26,26 @@ func (s *StateShow) Enter() {
 	s.timeout = tools.UUID()
 	expireAt := tools.Now().Add(ShowCardsExpiration)
 	s.room.AddTimer(s.timeout, expireAt, func(dt time.Duration) {
-		for seat, v := range s.shows {
-			if v == 0 {
+		s.RangePartInPlayer(func(seat int, player *niuniuPlayer) {
+			if s.shows[int32(seat)] == 0 {
 				s.room.Broadcast(&outer.NiuNiuFinishShowCardsNtf{
-					ShortId:   s.niuniuPlayers[seat].ShortId,
-					HandCards: s.niuniuPlayers[seat].handCards.ToPB(),
+					ShortId:   player.ShortId,
+					HandCards: player.handCards.ToPB(),
 				})
 			}
-		}
+			s.shows[int32(seat)] = 1
+		})
+
 		s.SwitchTo(Settlement)
 	})
 
 	for _, player := range s.niuniuPlayers {
-		s.room.SendToPlayer(player.ShortId, &outer.NiuNiuShowCardsNtf{
-			ExpireAt:  expireAt.UnixMilli(),
-			HandCards: player.handCards.ToPB(),
-		})
+		if player != nil {
+			s.room.SendToPlayer(player.ShortId, &outer.NiuNiuShowCardsNtf{
+				ExpireAt:  expireAt.UnixMilli(),
+				HandCards: player.handCards.ToPB(),
+			})
+		}
 	}
 
 	s.Log().Infow("[NiuNiu] enter state Show ", "room", s.room.RoomId)
@@ -53,7 +57,7 @@ func (s *StateShow) Leave() {
 
 func (s *StateShow) Handle(shortId int64, v any) (result any) {
 	player, _ := s.findNiuNiuPlayer(shortId)
-	if player == nil {
+	if player == nil || !player.ready {
 		s.Log().Warnw("player not in room", "roomId", s.room.RoomId, "shortId", shortId)
 		return outer.ERROR_NIUNIU_NOT_IN_GAMING
 	}
