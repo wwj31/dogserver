@@ -27,7 +27,10 @@ const handCardsSize = 5
 
 func (s *StateDeal) Enter() {
 	for _, player := range s.niuniuPlayers {
-		s.playerGameCount[player.ShortId]++
+		if player != nil {
+			s.playerGameCount[player.ShortId]++
+			player.ready = true
+		}
 	}
 
 	cards := RandomPokerCards(nil)

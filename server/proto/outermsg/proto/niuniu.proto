@@ -40,13 +40,6 @@ message NiuNiuCardsGroup {
 
 
 ////////////////////////////////////////////// 游戏操作请求 //////////////////////////////////////////////
-// 准备\取消
-message NiuNiuReadyReq {// tag:gambling
-    bool Ready = 1; // true.准备、false.取消准备
-}
-message NiuNiuReadyRsp {
-    bool Ready = 1;
-}
 
 // 抢庄操作
 message NiuNiuToBeMasterReq {// tag:gambling
@@ -68,14 +61,17 @@ message NiuNiuShowCardsReq {// tag:gambling
 message NiuNiuShowCardsRsp {
 }
 ////////////////////////////////////////////// 游戏通知 //////////////////////////////////////////////
-message NiuNiuPlayerReadyNtf {// 房间内玩家准备、取消准备通知
-    int64 ShortId = 1;
-    bool  Ready   = 2; // true.准备、false.未准备
-}
-
 // 进入准备中，（房间初始状态， 结算结束后会通知）
 message NiuNiuReadyNtf {
-    int64 ReadyExpireAt = 1;// 结算后重新进入准备状态，所有玩家统一准备超时时间(毫秒)
+}
+
+// 开始准备倒计时通知
+message NiuNiuStartCountDownNtf {
+    int64 ExpireAt = 1;// 满足人数后，进入发牌的时间(毫秒)
+}
+
+// 停止准备倒计时通知
+message NiuNiuStopCountDownNtf {
 }
 
 // 开始发牌通知

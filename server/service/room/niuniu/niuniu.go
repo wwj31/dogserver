@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	ReadyExpiration     = 20 * time.Second // 准备超时时间
+	ReadyExpiration     = 5 * time.Second  // 倒计时进入发牌时间
 	DealExpiration      = 3 * time.Second  // 发牌状态持续时间
 	MasterExpiration    = 10 * time.Second // 抢庄状态持续时间
 	BettingExpiration   = 10 * time.Second // 押注状态持续时间
@@ -58,7 +58,8 @@ type (
 		fsm                 *room.FSM
 		currentStateEnterAt time.Time // 当前状态的进入时间
 		currentStateEndAt   time.Time // 当前状态的结束时间
-		scoreZeroOver       bool      // 因为有玩家没分了，而触发的结束
+		onPlayerEnter       func(p *niuniuPlayer)
+		onPlayerLeave       func(p *niuniuPlayer)
 
 		playerGameCount  map[int64]int32 // 参与者的游戏次数
 		masterIndex      int             // 庄家位置
@@ -170,17 +171,12 @@ func (f *NiuNiu) PlayerEnter(roomPlayer *room.Player) {
 			player = f.newNiuNiuPlayer(roomPlayer)
 			player.finalStatsMsg = &outer.NiuNiuFinialPlayerInfo{}
 			f.niuniuPlayers[i] = player
+			if f.onPlayerEnter != nil {
+				f.onPlayerEnter(player)
+			}
 			break
 		}
 	}
-}
-
-func (f *NiuNiu) readyAfterTimeout(player *niuniuPlayer, expireAt time.Time) {
-	f.room.AddTimer(player.RID, expireAt, func(dt time.Duration) {
-		f.Log().Infow("the player was kicked out of the room due to a timeout in the ready period",
-			"room", f.room.RoomId, "player", player.ShortId)
-		f.room.PlayerLeave(player.ShortId, true)
-	})
 }
 
 func (f *NiuNiu) PlayerLeave(quitPlayer *room.Player) {
@@ -190,6 +186,9 @@ func (f *NiuNiu) PlayerLeave(quitPlayer *room.Player) {
 			f.room.CancelTimer(quitPlayer.RID)
 			f.niuniuPlayers[idx] = nil
 			f.Log().Infow("player leave mahjong", "shortId", player.ShortId, "seat", idx, "gold", player.Gold)
+			if f.onPlayerLeave != nil {
+				f.onPlayerLeave(player)
+			}
 			return
 		}
 	}
