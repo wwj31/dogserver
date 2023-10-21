@@ -59,9 +59,11 @@ func (s *StateSettlement) Enter() {
 		// 春天、反春判断
 		isSpring := s.isSpring()
 		var isAgainstSpring bool
-		if isSpring && s.gameParams().AgainstSpring {
+		if !isSpring && s.gameParams().AgainstSpring {
 			isAgainstSpring = s.isAgainstSpring(winner)
 		}
+		s.Log().Infow("againstspring ",
+			"isAgainstSpring", isAgainstSpring, "isSpring", isSpring, "s.gameParams().AgainstSpring", s.gameParams().AgainstSpring, "s.playRecords", s.playRecords)
 		settlementMsg.Spring = isSpring
 		settlementMsg.AgainstSpring = isAgainstSpring
 
