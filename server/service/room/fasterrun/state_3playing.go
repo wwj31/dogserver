@@ -70,7 +70,7 @@ func (s *StatePlaying) Handle(shortId int64, v any) (result any) {
 
 // 过牌
 func (s *StatePlaying) pass(player *fasterRunPlayer) {
-	s.playRecords = append(s.playRecords, PlayCardsRecord{
+	s.playRecords = append(s.playRecords, playCardsRecord{
 		shortId: player.ShortId,
 		follow:  true,
 		playAt:  tools.Now(),
@@ -174,7 +174,7 @@ func (s *StatePlaying) play(player *fasterRunPlayer, cards PokerCards) outer.ERR
 	}
 
 	player.handCards = player.handCards.Remove(cards...)
-	s.playRecords = append(s.playRecords, PlayCardsRecord{
+	s.playRecords = append(s.playRecords, playCardsRecord{
 		shortId:    player.ShortId,
 		follow:     follow,
 		cardsGroup: playCardsGroup,
@@ -189,7 +189,7 @@ func (s *StatePlaying) play(player *fasterRunPlayer, cards PokerCards) outer.ERR
 }
 
 // 下一位打牌的人
-func (s *StatePlaying) nextPlayer(seat int, lastPlayInfo *PlayCardsRecord) {
+func (s *StatePlaying) nextPlayer(seat int, lastPlayInfo *playCardsRecord) {
 	if s.gameOver() {
 		s.SwitchTo(Settlement)
 		return

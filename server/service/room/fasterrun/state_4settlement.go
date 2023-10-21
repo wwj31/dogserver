@@ -62,8 +62,6 @@ func (s *StateSettlement) Enter() {
 		if !isSpring && s.gameParams().AgainstSpring {
 			isAgainstSpring = s.isAgainstSpring(winner)
 		}
-		s.Log().Infow("againstspring ",
-			"isAgainstSpring", isAgainstSpring, "isSpring", isSpring, "s.gameParams().AgainstSpring", s.gameParams().AgainstSpring, "s.playRecords", s.playRecords)
 		settlementMsg.Spring = isSpring
 		settlementMsg.AgainstSpring = isAgainstSpring
 
@@ -82,15 +80,18 @@ func (s *StateSettlement) Enter() {
 			if isSpring {
 				loseScore *= 2
 			} else if isAgainstSpring {
+				var needNum int
 				// 反春，重新算分
 				if seat == s.masterIndex {
-					needNum := 15
+					needNum = 15
 					if s.gameParams().CardsNumber == 1 {
 						needNum = 16
 					}
 					loseScore = int64(needNum) * s.baseScore()
 				}
 				loseScore *= 2
+				s.Log().Infow("againstspring ",
+					"isAgainstSpring", isAgainstSpring, "isSpring", isSpring, "s.gameParams().AgainstSpring", s.gameParams().AgainstSpring, "needNum", needNum, "loseScore", loseScore)
 			}
 
 			// 红桃10，输赢翻倍
@@ -202,17 +203,25 @@ func (s *StateSettlement) isSpring() bool {
 // 反春规则
 func (s *StateSettlement) isAgainstSpring(winner *fasterRunPlayer) bool {
 	master := s.fasterRunPlayers[s.masterIndex]
+	records := ""
+	for _, record := range s.playRecords {
+		records += record.String()
+	}
+	s.Log().Infow("isAgainstSpring", "winner", winner.ShortId, "master", master.ShortId, "record", records)
 	if master.ShortId == winner.ShortId {
 		return false
 	}
-
-	// 除了第一手是庄家，其他所有出牌全部都不是庄家，肯定就是反春
-	for i := 1; i < len(s.playRecords); i++ {
+	for i := len(s.playRecords) - 1; i > 1; i-- {
 		record := s.playRecords[i]
-		if record.cardsGroup.Type != CardsTypeUnknown && record.shortId == master.ShortId {
+		if record.shortId != winner.ShortId && record.cardsGroup.Type != CardsTypeUnknown {
+			return false
+		}
+
+		if record.shortId == winner.ShortId && record.cardsGroup.Type == CardsTypeUnknown {
 			return false
 		}
 	}
+
 	return true
 }
 

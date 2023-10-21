@@ -67,7 +67,7 @@ type (
 
 		masterIndex        int                // 庄家位置 0，1，2
 		fasterRunPlayers   []*fasterRunPlayer // 参与游戏的玩家
-		playRecords        []PlayCardsRecord  // 出牌历史
+		playRecords        []playCardsRecord  // 出牌历史
 		gameCount          int                // 游戏的连续局数
 		lastWinShortId     int64              // 最后一局的赢家
 		waitingPlayShortId int64              // 当前等待的出牌人
@@ -75,7 +75,7 @@ type (
 		spareCards         PokerCards         // 剩下没用的牌
 	}
 
-	PlayCardsRecord struct {
+	playCardsRecord struct {
 		shortId    int64      // 出牌人
 		follow     bool       // true.跟牌出牌，false.有牌权出牌
 		cardsGroup CardsGroup // 牌型
@@ -111,7 +111,7 @@ func (f *FasterRun) playerNumber() int {
 }
 
 // 获得最后一次有效的出牌
-func (f *FasterRun) lastValidPlayCards() *PlayCardsRecord {
+func (f *FasterRun) lastValidPlayCards() *playCardsRecord {
 	for i := len(f.playRecords) - 1; i >= 0; i-- {
 		record := f.playRecords[i]
 		if record.cardsGroup.Type == CardsTypeUnknown {
@@ -328,14 +328,11 @@ func (m *fasterRunPlayer) updateScore(val int64) {
 	m.finalStatsMsg.TotalScore += val
 }
 
-func (p *PlayCardsRecord) String() string {
-	if p == nil {
-		return ""
-	}
+func (p playCardsRecord) String() string {
 	return fmt.Sprintf("{short:%v follow:%v cardsGroup:%v playAt:%v }", p.shortId, p.follow, p.cardsGroup, p.playAt)
 }
 
-func (p *PlayCardsRecord) ToPB() *outer.PlayCardsRecord {
+func (p *playCardsRecord) ToPB() *outer.PlayCardsRecord {
 	if p == nil {
 		return nil
 	}
