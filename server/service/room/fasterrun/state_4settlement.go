@@ -201,9 +201,15 @@ func (s *StateSettlement) isSpring() bool {
 
 // 反春规则
 func (s *StateSettlement) isAgainstSpring(winner *fasterRunPlayer) bool {
-	// 除了第一手是庄稼，其他所有出牌全部是赢的这家，肯定就是反春
+	master := s.fasterRunPlayers[s.masterIndex]
+	if master.ShortId == winner.ShortId {
+		return false
+	}
+
+	// 除了第一手是庄家，其他所有出牌全部都不是庄家，肯定就是反春
 	for i := 1; i < len(s.playRecords); i++ {
-		if s.playRecords[i].shortId != winner.ShortId {
+		record := s.playRecords[i]
+		if record.cardsGroup.Type != CardsTypeUnknown && record.shortId == master.ShortId {
 			return false
 		}
 	}
