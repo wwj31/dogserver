@@ -328,7 +328,11 @@ func (m *fasterRunPlayer) updateScore(val int64) {
 	m.finalStatsMsg.TotalScore += val
 }
 
-func (p playCardsRecord) String() string {
+func (p *playCardsRecord) String() string {
+	if p == nil {
+		return "{nil}"
+	}
+
 	return fmt.Sprintf("{short:%v follow:%v cardsGroup:%v playAt:%v }", p.shortId, p.follow, p.cardsGroup, p.playAt)
 }
 
