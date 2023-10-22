@@ -33,6 +33,9 @@ func New(r *room.Room) *NiuNiu {
 	niuniu.playerGameCount = make(map[int64]int32)
 	_ = niuniu.fsm.Add(&StateReady{NiuNiu: niuniu})      // 准备中
 	_ = niuniu.fsm.Add(&StateDeal{NiuNiu: niuniu})       // 发牌中
+	_ = niuniu.fsm.Add(&StateMaster{NiuNiu: niuniu})     // 抢庄
+	_ = niuniu.fsm.Add(&StateBetting{NiuNiu: niuniu})    // 押注
+	_ = niuniu.fsm.Add(&StateShow{NiuNiu: niuniu})       // 开牌
 	_ = niuniu.fsm.Add(&StateSettlement{NiuNiu: niuniu}) // 游戏结束结算界面
 
 	niuniu.SwitchTo(Ready)
@@ -225,7 +228,7 @@ func (f *NiuNiu) playersToPB(shortId int64) (players []*outer.NiuNiuPlayerInfo) 
 				}
 			case state < ShowCards:
 				// 抢庄、押注状态，自己就发前4张，其他人不发
-				if player.ShortId == shortId {
+				if player.ShortId == shortId && len(player.handCards) >= 5 {
 					handCards = player.handCards[0:4].ToPB()
 					handCards = append(handCards, 0)
 				} else {

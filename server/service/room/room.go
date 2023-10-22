@@ -21,9 +21,10 @@ import (
 	"server/proto/outermsg/outer"
 )
 
-var gameMaxPlayers = map[int32]int{
-	0: 4,
-	1: 3,
+var gameMaxPlayers = map[GamblingType]int{
+	Mahjong:   4,
+	RunFaster: 3,
+	NiuNiu:    10,
 }
 
 func New(info *rdsop.NewRoomInfo) *Room {

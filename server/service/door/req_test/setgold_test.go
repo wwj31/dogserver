@@ -11,8 +11,8 @@ import (
 
 func TestSetGold(t *testing.T) {
 	b, _ := json.Marshal(map[string]interface{}{
-		"shortId": 1905995,
-		"gold":    1000,
+		"shortId": 2961128,
+		"gold":    1000000,
 	})
 
 	req, err := http.NewRequest(http.MethodPost, "http://localhost:9999/alliance/addgold", bytes.NewReader(b))

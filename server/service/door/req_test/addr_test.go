@@ -1,5 +1,5 @@
 package req_test
 
-//const addr = "localhost"
+const addr = "localhost"
 
-const addr = "1.14.17.15"
+//const addr = "1.14.17.15"
