@@ -178,6 +178,9 @@ func (f *FasterRun) CanSetGold(p *inner.PlayerInfo) bool {
 	return false
 }
 
+func (f *FasterRun) PlayerOnline(shortId int64)  {}
+func (f *FasterRun) PlayerOffline(shortId int64) {}
+
 func (f *FasterRun) PlayerEnter(roomPlayer *room.Player) {
 	for i, player := range f.fasterRunPlayers {
 		if player == nil {
@@ -205,7 +208,7 @@ func (f *FasterRun) PlayerLeave(quitPlayer *room.Player) {
 		if player != nil && player.ShortId == quitPlayer.ShortId {
 			f.room.CancelTimer(quitPlayer.RID)
 			f.fasterRunPlayers[idx] = nil
-			f.Log().Infow("player leave mahjong", "shortId", player.ShortId, "seat", idx, "gold", player.Gold)
+			f.Log().Infow("player leave faster run", "shortId", player.ShortId, "seat", idx, "gold", player.Gold)
 			return
 		}
 	}

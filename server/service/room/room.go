@@ -183,6 +183,15 @@ func (r *Room) FindPlayerByRID(rid string) *Player {
 	return nil
 }
 
+func (r *Room) PlayerOnline(shortId int64) {
+	r.Broadcast(&outer.RoomPlayerOnlineNtf{ShortId: shortId, Online: true}, shortId)
+	r.gambling.PlayerOnline(shortId)
+}
+func (r *Room) PlayerOffline(shortId int64) {
+	r.Broadcast(&outer.RoomPlayerOnlineNtf{ShortId: shortId, Online: false}, shortId)
+	r.gambling.PlayerOffline(shortId)
+}
+
 func (r *Room) PlayerEnter(playerInfo *inner.PlayerInfo) *inner.Error {
 	if r.FindPlayer(playerInfo.ShortId) != nil {
 		return &inner.Error{ErrorCode: int32(outer.ERROR_PLAYER_ALREADY_IN_ROOM)}

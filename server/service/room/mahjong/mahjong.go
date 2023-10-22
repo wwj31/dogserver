@@ -291,6 +291,9 @@ func (m *Mahjong) CanSetGold(p *inner.PlayerInfo) bool {
 	return false
 }
 
+func (f *Mahjong) PlayerOnline(shortId int64)  {}
+func (f *Mahjong) PlayerOffline(shortId int64) {}
+
 func (m *Mahjong) PlayerEnter(roomPlayer *room.Player) {
 	for i, player := range m.mahjongPlayers {
 		if player == nil {
