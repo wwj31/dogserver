@@ -79,14 +79,18 @@ enum ERROR {
    FASTERRUN_PLAY_IS_YOUR_TURN             = 310; // 你的牌权出牌，不能过
 
    // 牛牛
-   NIUNIU_STATE_MSG_INVALID             = 400; // 当前状态不受理此消息
-   NIUNIU_GOLD_NOT_ENOUGH_MASTER        = 401; // 分小于底分200倍，不能抢庄
-   NIUNIU_MASTER_OUT_OF_RANGE           = 402; // 抢庄超过倍数范围
-   NIUNIU_BETTING_OUT_OF_RANGE          = 403; // 不在正确的押注范围内
-   NIUNIU_BETTING_HAS_BE_MASTER         = 404; // 抢过庄的，不能押1倍
-   NIUNIU_NOT_IN_GAMING                 = 405; // 玩家未参与游戏
-   NIUNIU_HAS_BE_BET                    = 406; // 已经押注成功了
-   NIUNIU_HAS_BE_MASTER                 = 407; // 已经抢过庄了
+   NIUNIU_STATE_MSG_INVALID                 = 400; // 当前状态不受理此消息
+   NIUNIU_GOLD_NOT_ENOUGH_MASTER            = 401; // 分小于底分200倍，不能抢庄
+   NIUNIU_MASTER_OUT_OF_RANGE               = 402; // 抢庄超过倍数范围
+   NIUNIU_BETTING_OUT_OF_RANGE              = 403; // 不在正确的押注范围内
+   NIUNIU_BETTING_HAS_BE_MASTER             = 404; // 抢过庄的，不能押1倍
+   NIUNIU_NOT_IN_GAMING                     = 405; // 玩家未参与游戏
+   NIUNIU_HAS_BE_BET                        = 406; // 已经押注成功了
+   NIUNIU_HAS_BE_MASTER                     = 407; // 已经抢过庄了
+   NIUNIU_DISALLOW_PUSH_WITH_NOT_MASTER     = 408; // 没抢庄，不允许推注
+   NIUNIU_DISALLOW_PUSH_WITH_NOT_WIN        = 409; // 上把没赢，不允许推注
+   NIUNIU_DISALLOW_PUSH_WITH_LAST_IS_MASTER = 410; // 上把是庄家，不允许推注
+   NIUNIU_DISALLOW_PUSH_WITH_NOT_BETTING    = 411; // 不是推注判断阶段
 
 }
 

@@ -22,6 +22,12 @@ func (s *StateReady) State() int {
 func (s *StateReady) Enter() {
 	s.onPlayerEnter = s.playerEnter
 	s.onPlayerLeave = s.playerLeave
+
+	s.RangePartInPlayer(func(seat int, player *niuniuPlayer) {
+		if player.Gold <= 0 {
+			s.room.PlayerLeave(player.ShortId, true)
+		}
+	})
 	s.Log().Infow("[NiuNiu] enter state ready ", "room", s.room.RoomId)
 	s.room.Broadcast(&outer.NiuNiuReadyNtf{})
 }

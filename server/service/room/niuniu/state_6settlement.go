@@ -20,6 +20,7 @@ func (s *StateSettlement) State() int {
 }
 
 func (s *StateSettlement) Enter() {
+	s.lastMasterShort = s.niuniuPlayers[s.masterIndex].ShortId
 	s.currentStateEndAt = tools.Now().Add(SettlementDuration)
 	s.Log().Infow("[NiuNiu] enter state settlement", "room", s.room.RoomId,
 		"master", s.masterIndex, "endAt", s.currentStateEndAt.UnixMilli())
@@ -53,7 +54,7 @@ func (s *StateSettlement) afterSettle(ntf *outer.NiuNiuSettlementNtf) {
 
 	s.RangePartInPlayer(func(seat int, player *niuniuPlayer) {
 		ntf.PlayerData[int32(seat)].Player = allPlayerInfo[seat]
-		ntf.PlayerData[int32(seat)].TotalScore = player.totalWinScore
+		ntf.PlayerData[int32(seat)].TotalScore = player.winScore
 	})
 
 	s.Log().Infow(" settlement broadcast", "room", s.room.RoomId,
@@ -78,15 +79,15 @@ func (s *StateSettlement) profit() (totalProfit int64) {
 	)
 
 	for i, player := range s.niuniuPlayers {
-		if player.totalWinScore > 0 {
+		if player.winScore > 0 {
 			winners = append(winners, s.niuniuPlayers[i])
 		}
 	}
 
 	// 处理每一位赢家抽水
 	for _, winner := range winners {
-		rangeCfg := s.room.ProfitRange(winner.totalWinScore, s.gameParams().ReBate)
-		winScore := winner.totalWinScore
+		rangeCfg := s.room.ProfitRange(winner.winScore, s.gameParams().ReBate)
+		winScore := winner.winScore
 		if rangeCfg == nil {
 			s.Log().Warnw("winner profit score not in any range",
 				"big winners", winner.ShortId, "win", winScore)

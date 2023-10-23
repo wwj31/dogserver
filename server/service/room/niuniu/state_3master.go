@@ -71,7 +71,11 @@ func (s *StateMaster) decideMaster() {
 		}
 	}
 
-	s.masterIndex = selects[rand.Intn(len(selects))]
+	randSeat := rand.Intn(len(selects))
+	s.masterIndex = selects[randSeat]
+	if arr[0].Times > 0 {
+		s.pushBetIndex = append(selects[:randSeat], selects[randSeat+1:]...)
+	}
 	s.SwitchTo(Betting)
 }
 

@@ -14,7 +14,7 @@ message NiuNiuGameInfo {
     repeated NiuNiuPlayerInfo   Players          = 4; // 分别代表座位的玩家,固定发10个位置 下标内容空表示无人
     int32                       MasterIndex      = 5; // 庄家位置
     map<int32,int32>            MasterTimes      = 6; // 每个人的抢庄倍数<位置，倍数>
-    map<int32,int32>            BetTimes         = 7; // 每个人的押注倍数<位置，倍数>
+    map<int32,int64>            BetGold          = 7; // 每个人的押注金币<位置，金币>
 }
 
 // 牛牛 参与游戏的玩家数据
@@ -29,6 +29,7 @@ message NiuNiuPlayerInfo {
     repeated int32      HandCards      = 5;
 
     int64               Score          = 6;// 玩家本局拥有的分数
+    bool                CanPushBet     = 7; // 本次押注能否推注(仅在押注阶段用，其余阶段都是false)
 }
 
 // 牌型数据
@@ -49,7 +50,7 @@ message NiuNiuToBeMasterRsp {
 
 // 闲家下注
 message NiuNiuToBettingReq {// tag:gambling
-    int32 Times = 1; // 发几就是几倍,不能发0
+    int64 Gold = 1; // 根据底分和选择的倍数，把押注的金额发过来
 }
 message NiuNiuToBettingRsp {
 }
@@ -91,14 +92,15 @@ message NiuNiuSelectMasterNtf {
 
 // 开始押注状态通知
 message NiuNiuBettingNtf {
-    int64 ExpireAt   = 1;// 押注结束时间(毫秒)
-    int32 MasterSeat = 2;// 抢庄结束后，确定的庄家位置
+    int64 ExpireAt              = 1;// 押注结束时间(毫秒)
+    int32 MasterSeat            = 2;// 抢庄结束后，确定的庄家位置
+    repeated int32 CanPushSeats = 3; // 可以推注的位置
 }
 
 // 押注操作广播
 message NiuNiuSelectBettingNtf {
     int64 ShortId = 1;
-    int32 Times   = 2; // 押注倍数
+    int64 Gold    = 2; // 押注分数
 }
 
 // 进入搓牌状态通知

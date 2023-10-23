@@ -48,7 +48,7 @@ type (
 	niuniuPlayer struct {
 		*room.Player
 		score         int64
-		totalWinScore int64 // 单局的总输赢
+		winScore      int64 // 单局的总输赢
 		ready         bool
 		readyExpireAt time.Time
 		handCards     PokerCards
@@ -64,9 +64,11 @@ type (
 
 		playerGameCount  map[int64]int32 // 参与者的游戏次数
 		masterIndex      int             // 庄家位置
+		lastMasterShort  int64           // 上一把庄家shortId
+		pushBetIndex     []int           // 抢庄后，能推注的玩家位置
 		niuniuPlayers    []*niuniuPlayer // 参与游戏的玩家  seat->player
 		masterTimesSeats map[int32]int32 // 每个位置抢庄的倍数
-		betTimesSeats    map[int32]int32 // 每个位置押注的倍数
+		betGoldSeats     map[int32]int64 // 每个位置押注的分数
 		shows            map[int32]int32 // 亮牌的位置
 	}
 )
@@ -96,7 +98,7 @@ func (n *NiuNiu) Data(shortId int64) proto.Message {
 		Players:      n.playersToPB(shortId),
 		MasterIndex:  int32(n.masterIndex),
 		MasterTimes:  n.masterTimesSeats,
-		BetTimes:     n.betTimesSeats,
+		BetGold:      n.betGoldSeats,
 	}
 	return info
 }
@@ -118,6 +120,9 @@ func (n *NiuNiu) SeatIndex(shortId int64) int {
 }
 
 func (n *NiuNiu) CanEnter(p *inner.PlayerInfo) bool {
+	if p.Gold < n.baseScore() {
+		return false
+	}
 	// 还有空位就能进
 	for _, player := range n.niuniuPlayers {
 		if player == nil {
@@ -250,6 +255,7 @@ func (n *NiuNiu) playersToPB(shortId int64) (players []*outer.NiuNiuPlayerInfo) 
 				ReadyExpireAt: player.readyExpireAt.UnixMilli(),
 				HandCards:     handCards,
 				Score:         player.score,
+				CanPushBet:    n.canPushBet(player.ShortId) == outer.ERROR_OK,
 			})
 		}
 	}
@@ -302,5 +308,43 @@ func (n *NiuNiu) allSeats(ignoreSeat ...int) (result []int) {
 
 func (m *niuniuPlayer) updateScore(val int64) {
 	m.score += val
-	m.totalWinScore += val // 单局总输赢
+	m.winScore += val // 单局总输赢
+}
+
+func (n *NiuNiu) canPushBet(shortId int64) outer.ERROR {
+	if n.fsm.State() == Ready || n.fsm.State() >= ShowCards {
+		return outer.ERROR_NIUNIU_DISALLOW_PUSH_WITH_NOT_BETTING
+	}
+
+	player, seat := n.findNiuNiuPlayer(shortId)
+	// 上把没赢钱，或者赢钱小于5倍底分，不能推注
+	if player.winScore <= 0 || player.winScore < n.baseScore()*5 {
+		return outer.ERROR_NIUNIU_DISALLOW_PUSH_WITH_NOT_WIN
+	}
+
+	// 上把是庄家不能推注
+	if player.ShortId == n.lastMasterShort {
+		return outer.ERROR_NIUNIU_DISALLOW_PUSH_WITH_LAST_IS_MASTER
+	}
+
+	// 发牌和抢庄阶段
+	if n.fsm.State() == Deal {
+		return outer.ERROR_OK
+	}
+
+	// 剩下的判断只可能是在,抢庄和押注阶段
+	var can bool
+	for _, index := range n.pushBetIndex {
+		if seat == index {
+			can = true
+			break
+		}
+	}
+
+	//  没有抢过最大倍数庄，不允许推注
+	if !can {
+		return outer.ERROR_NIUNIU_DISALLOW_PUSH_WITH_NOT_MASTER
+	}
+
+	return outer.ERROR_OK
 }
