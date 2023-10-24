@@ -70,14 +70,15 @@ func (s *StateSettlement) Enter() {
 		s.room.Rebate(record, totalProfit, s.toRoomPlayers())
 
 		ntf := &outer.MahjongBTEFinialSettlement{}
+		var partInShortIds []int64
 		for seat := 0; seat < maxNum; seat++ {
 			player := s.mahjongPlayers[seat]
-			rdsop.SetTodayPlaying(player.ShortId)
+			partInShortIds = append(partInShortIds, player.ShortId)
 			ntf.PlayerInfo = append(ntf.PlayerInfo, player.finalStatsMsg)
 			player.finalStatsMsg = &outer.MahjongBTEFinialPlayerInfo{}
 		}
 		settlementMsg.FinalSettlement = ntf
-
+		rdsop.SetTodayPlaying(partInShortIds...)
 	}
 
 	// 结算分数为最终金币

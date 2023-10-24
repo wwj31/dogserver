@@ -3,8 +3,10 @@ package rdsop
 import (
 	"context"
 	"fmt"
+
 	"github.com/spf13/cast"
 	"github.com/wwj31/dogactor/tools"
+
 	"server/common/log"
 	"server/common/rds"
 )
@@ -46,10 +48,15 @@ func GetContribute(shortId int64) (todayGold, yesterdayGold, weekGold int64) {
 }
 
 // SetTodayPlaying 设置今日参与游戏的人数
-func SetTodayPlaying(shortId int64) {
+func SetTodayPlaying(shortIds ...int64) {
 	key := fmt.Sprintf("playing:%v", tools.Now().Local().Format(tools.StdDateFormat))
-	rds.Ins.SAdd(context.Background(), key, shortId)
-	rds.Ins.Expire(context.Background(), key, 2*tools.Day)
+	pip := rds.Ins.Pipeline()
+
+	ctx := context.Background()
+	pip.SAdd(ctx, key, shortIds)
+	pip.Expire(ctx, key, 2*tools.Day)
+
+	pip.Exec(ctx)
 	return
 }
 

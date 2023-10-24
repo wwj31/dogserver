@@ -112,10 +112,11 @@ func (s *StateSettlement) Enter() {
 	// 结算分数为最终金币
 	modifyRspCount := make(map[string]struct{}) // 必须等待所有玩家金币修改成功后，才能发送结算
 	count := int(s.playerCount())
+	var partInShortIds []int64
 	s.RangePartInPlayer(func(seat int, player *niuniuPlayer) {
 		finalScore := player.score
 		presentScore := player.PlayerInfo.Gold
-		rdsop.SetTodayPlaying(player.ShortId)
+		partInShortIds = append(partInShortIds, player.ShortId)
 		s.room.Request(actortype.PlayerId(player.RID), &inner.ModifyGoldReq{
 			Set:       true,
 			Gold:      finalScore,
@@ -143,6 +144,7 @@ func (s *StateSettlement) Enter() {
 			}
 		})
 	})
+	rdsop.SetTodayPlaying(partInShortIds...)
 
 }
 
