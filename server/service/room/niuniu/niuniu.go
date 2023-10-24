@@ -47,7 +47,7 @@ type (
 	// 牛牛 参与游戏的玩家数据
 	niuniuPlayer struct {
 		*room.Player
-		score         int64
+		score         int64 // 本局参与的分
 		winScore      int64 // 单局的总输赢
 		ready         bool
 		readyExpireAt time.Time
@@ -69,7 +69,7 @@ type (
 		niuniuPlayers    []*niuniuPlayer // 参与游戏的玩家  seat->player
 		masterTimesSeats map[int32]int32 // 每个位置抢庄的倍数
 		betGoldSeats     map[int32]int64 // 每个位置押注的分数
-		shows            map[int32]int32 // 亮牌的位置
+		showCards        map[int32]int32 // 亮牌的位置
 	}
 )
 
@@ -234,7 +234,7 @@ func (n *NiuNiu) playersToPB(shortId int64) (players []*outer.NiuNiuPlayerInfo) 
 				handCards = player.handCards.ToPB() // 结算时，牌全发
 			case state == ShowCards:
 				// 亮牌状态，是自己或者已经亮牌了，牌全发
-				if player.ShortId == shortId || n.shows[int32(n.SeatIndex(player.ShortId))] == 1 {
+				if player.ShortId == shortId || n.showCards[int32(n.SeatIndex(player.ShortId))] == 1 {
 					handCards = player.handCards.ToPB()
 				} else {
 					handCards = make([]int32, len(player.handCards))
@@ -309,6 +309,17 @@ func (n *NiuNiu) allSeats(ignoreSeat ...int) (result []int) {
 func (m *niuniuPlayer) updateScore(val int64) {
 	m.score += val
 	m.winScore += val // 单局总输赢
+}
+
+func (n *NiuNiu) playerCount() int32 {
+	var count int32
+
+	for _, p := range n.niuniuPlayers {
+		if p != nil {
+			count++
+		}
+	}
+	return count
 }
 
 func (n *NiuNiu) canPushBet(shortId int64) outer.ERROR {

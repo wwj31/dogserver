@@ -49,6 +49,49 @@ const (
 	Spades                      = 4 // 黑桃
 )
 
+var CardsTypeTimes = [2]map[PokerCardsType]int32{
+	{
+		PokerCardsUnknown: 1,
+		Niu1Type:          1,
+		Niu2Type:          1,
+		Niu3Type:          1,
+		Niu4Type:          1,
+		Niu5Type:          1,
+		Niu6Type:          1,
+		Niu7Type:          2,
+		Niu8Type:          2,
+		Niu9Type:          2,
+		NiuNiuType:        3,
+		StraightNiuType:   4,
+		FiveColorNiuType:  4,
+		SameColorNiuType:  4,
+		HuluNiuType:       4,
+		BombNiuType:       4,
+		FiveSmallNiuType:  5,
+		ColorStraightType: 5,
+	},
+	{
+		PokerCardsUnknown: 1,
+		Niu1Type:          1,
+		Niu2Type:          2,
+		Niu3Type:          3,
+		Niu4Type:          4,
+		Niu5Type:          5,
+		Niu6Type:          6,
+		Niu7Type:          7,
+		Niu8Type:          8,
+		Niu9Type:          9,
+		NiuNiuType:        10,
+		StraightNiuType:   11,
+		FiveColorNiuType:  11,
+		SameColorNiuType:  12,
+		HuluNiuType:       13,
+		BombNiuType:       14,
+		FiveSmallNiuType:  15,
+		ColorStraightType: 15,
+	},
+}
+
 const (
 	Clubs_A  PokerCard = 101 // 梅花A
 	Clubs_2  PokerCard = 102 // 梅花2
@@ -139,20 +182,20 @@ func (p PokerCards) ToPB() []int32 {
 	return result
 }
 
-func (c PokerColorType) ToPB() outer.FasterRunPokerColorType {
-	return outer.FasterRunPokerColorType(c)
+func (c PokerColorType) ToPB() outer.NiuNiuPokerColorType {
+	return outer.NiuNiuPokerColorType(c)
 }
 
-func (c PokerCardsType) ToPB() outer.FasterRunPokerCardsType {
-	return outer.FasterRunPokerCardsType(c)
+func (c PokerCardsType) ToPB() outer.NiuNiuPokerCardsType {
+	return outer.NiuNiuPokerCardsType(c)
 }
 
-func (c CardsGroup) ToPB() *outer.FasterRunCardsGroup {
+func (c CardsGroup) ToPB() *outer.NiuNiuCardsGroup {
 	if c.Type == PokerCardsUnknown {
 		return nil
 	}
 
-	return &outer.FasterRunCardsGroup{
+	return &outer.NiuNiuCardsGroup{
 		Type:      c.Type.ToPB(),
 		Cards:     c.Cards.ToPB(),
 		SideCards: c.SideCards.ToPB(),

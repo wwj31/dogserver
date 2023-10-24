@@ -115,15 +115,12 @@ message NiuNiuFinishShowCardsNtf {
     repeated int32 HandCards  = 2; // 自己的最新手牌
 }
 
-// 结算玩家数据
-message NiuNiuSettlementPlayerData{
-    NiuNiuPlayerInfo Player      = 1; //
-    int64 TotalScore             = 2; // 总输赢 负数为输
-}
 
 // 全部亮牌结算通知
 message NiuNiuSettlementNtf {
-    int64    EndAt                                     = 1; // 结算结束时间
-    map<int32,NiuNiuSettlementPlayerData>  PlayerData  = 2; // 座位对应的参与者结算数据
-    int64    GameSettlementAt                          = 3; // 结算开始时间
+    int64    GameSettlementAt             = 1; // 结算开始时间
+    int64    EndAt                        = 2; // 结算结束时间
+    repeated NiuNiuPlayerInfo players     = 3; // 亮牌后的信息
+    map<int32,int64> WinScores            = 4; // 每个位置的玩家总输赢,正数是赢，负数是输
+    map<int32,NiuNiuCardsGroup> CardsTypes = 5; // 每个位置的牌型分析
 }

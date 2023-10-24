@@ -54,7 +54,7 @@ func (s *StateBetting) Enter() {
 				})
 			}
 		})
-		s.SwitchTo(Settlement)
+		s.SwitchTo(ShowCards)
 	})
 	s.Log().Infow("[NiuNiu] enter state Betting ", "room", s.room.RoomId)
 }
@@ -80,10 +80,12 @@ func (s *StateBetting) Handle(shortId int64, v any) (result any) {
 			}
 		}
 
+		// 身上钱不够押注
 		if req.Gold < player.Gold {
 			return outer.ERROR_GOLD_NOT_ENOUGH
 		}
 
+		// 操作最大押注金额
 		if req.Gold > s.baseScore()*int64(s.gameParams().PushBetTimes) {
 			return outer.ERROR_NIUNIU_BETTING_OUT_OF_RANGE
 		}
@@ -104,7 +106,7 @@ func (s *StateBetting) Handle(shortId int64, v any) (result any) {
 		})
 
 		if len(s.betGoldSeats) == s.participantCount() {
-			s.SwitchTo(Settlement)
+			s.SwitchTo(ShowCards)
 		}
 		return &outer.NiuNiuToBettingRsp{}
 	default:

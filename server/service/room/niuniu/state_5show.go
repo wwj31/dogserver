@@ -21,19 +21,19 @@ func (s *StateShow) State() int {
 }
 
 func (s *StateShow) Enter() {
-	s.shows = make(map[int32]int32)
+	s.showCards = make(map[int32]int32)
 
 	s.timeout = tools.UUID()
 	expireAt := tools.Now().Add(ShowCardsExpiration)
 	s.room.AddTimer(s.timeout, expireAt, func(dt time.Duration) {
 		s.RangePartInPlayer(func(seat int, player *niuniuPlayer) {
-			if s.shows[int32(seat)] == 0 {
+			if s.showCards[int32(seat)] == 0 {
 				s.room.Broadcast(&outer.NiuNiuFinishShowCardsNtf{
 					ShortId:   player.ShortId,
 					HandCards: player.handCards.ToPB(),
 				})
 			}
-			s.shows[int32(seat)] = 1
+			s.showCards[int32(seat)] = 1
 		})
 
 		s.SwitchTo(Settlement)
@@ -64,13 +64,13 @@ func (s *StateShow) Handle(shortId int64, v any) (result any) {
 
 	switch req := v.(type) {
 	case *outer.NiuNiuShowCardsReq: // 亮牌
-		s.shows[int32(s.SeatIndex(shortId))] = 1
+		s.showCards[int32(s.SeatIndex(shortId))] = 1
 		s.room.Broadcast(&outer.NiuNiuFinishShowCardsNtf{
 			ShortId:   shortId,
 			HandCards: player.handCards.ToPB(),
 		})
 
-		if len(s.shows) == len(s.niuniuPlayers) {
+		if len(s.showCards) == s.participantCount() {
 			s.SwitchTo(Settlement)
 		}
 

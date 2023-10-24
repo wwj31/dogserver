@@ -59,14 +59,3 @@ func (s *StateReady) playerLeave(player *niuniuPlayer) {
 		s.room.Broadcast(&outer.NiuNiuStopCountDownNtf{})
 	}
 }
-
-func (s *StateReady) playerCount() int32 {
-	var count int32
-
-	for _, p := range s.niuniuPlayers {
-		if p != nil {
-			count++
-		}
-	}
-	return count
-}

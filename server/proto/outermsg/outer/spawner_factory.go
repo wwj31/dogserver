@@ -59,7 +59,6 @@ var spawner = map[string]factory{
 	"outer.NiuNiuShowCardsRsp":                func() interface{} { return &NiuNiuShowCardsRsp{} },
 	"outer.NiuNiuShowCardsReq":                func() interface{} { return &NiuNiuShowCardsReq{} },
 	"outer.NiuNiuShowCardsNtf":                func() interface{} { return &NiuNiuShowCardsNtf{} },
-	"outer.NiuNiuSettlementPlayerData":        func() interface{} { return &NiuNiuSettlementPlayerData{} },
 	"outer.NiuNiuSettlementNtf":               func() interface{} { return &NiuNiuSettlementNtf{} },
 	"outer.NiuNiuSelectMasterNtf":             func() interface{} { return &NiuNiuSelectMasterNtf{} },
 	"outer.NiuNiuSelectBettingNtf":            func() interface{} { return &NiuNiuSelectBettingNtf{} },

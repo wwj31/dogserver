@@ -6,7 +6,10 @@ import (
 	"github.com/wwj31/dogactor/tools"
 
 	"server/common"
+	"server/common/actortype"
+	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
+	"server/rdsop"
 )
 
 // 结算状态
@@ -28,11 +31,117 @@ func (s *StateSettlement) Enter() {
 	settlementMsg := &outer.NiuNiuSettlementNtf{
 		EndAt:            s.currentStateEndAt.UnixMilli(),
 		GameSettlementAt: tools.Now().UnixMilli(),
-		PlayerData:       make(map[int32]*outer.NiuNiuSettlementPlayerData),
+		WinScores:        map[int32]int64{},
+		CardsTypes:       map[int32]*outer.NiuNiuCardsGroup{},
 	}
 
+	// 先分别统计输家和赢家,排除庄家
+	var (
+		winners          []int
+		losers           []int
+		playerCardsTypes = map[int]CardsGroup{} // 闲家牌型，计算后加入，防止多次计算
+	)
+
+	master := s.niuniuPlayers[s.masterIndex]
+	masterCardsType := s.niuniuPlayers[s.masterIndex].handCards.AnalyzeCards(s.gameParams()) // 先拿到庄家牌型
+	settlementMsg.CardsTypes[int32(s.masterIndex)] = masterCardsType.ToPB()
 	s.RangePartInPlayer(func(seat int, player *niuniuPlayer) {
-		settlementMsg.PlayerData[int32(seat)] = &outer.NiuNiuSettlementPlayerData{}
+		if seat == s.masterIndex {
+			return
+		}
+
+		// 闲家赢加入winners,闲家输加入losers
+		playerCardsType := player.handCards.AnalyzeCards(s.gameParams())
+		playerCardsTypes[seat] = playerCardsType
+		settlementMsg.CardsTypes[int32(seat)] = playerCardsType.ToPB()
+		if playerCardsType.GreaterThan(masterCardsType) {
+			winners = append(winners, seat)
+		} else {
+			losers = append(losers, seat)
+		}
+	})
+
+	var cardTypeTimes map[PokerCardsType]int32
+	if s.gameParams().NiuNiuTimes < 0 || s.gameParams().NiuNiuTimes > 1 {
+		s.Log().Errorw(" niu niu params times err")
+		cardTypeTimes = CardsTypeTimes[0]
+	} else {
+		cardTypeTimes = CardsTypeTimes[int(s.gameParams().NiuNiuTimes)]
+	}
+
+	// 赢家赢钱计算公式
+	winFunc := func(loseSeat int, winnerCardsGroup CardsGroup) (winScore int64) {
+		return int64(s.masterTimesSeats[int32(s.masterIndex)]) * s.betGoldSeats[int32(loseSeat)] * int64(cardTypeTimes[winnerCardsGroup.Type])
+	}
+
+	// 先计算庄家赢的钱
+	for _, loserSeat := range losers {
+		loser := s.niuniuPlayers[loserSeat]
+		winScore := winFunc(loserSeat, masterCardsType)
+		winScore = common.Min(loser.score, winScore)
+
+		master.updateScore(winScore)
+		s.niuniuPlayers[loserSeat].updateScore(-winScore)
+		settlementMsg.WinScores[int32(loserSeat)] = s.niuniuPlayers[loserSeat].winScore
+	}
+
+	// 统计庄家总共需要输的钱，如果够输直接算分，不够输就按照比例算分
+	var totalMasterLoseScore int64
+	winScores := map[int]int64{} // 每个位置分别需要赔多少钱
+	for _, winSeat := range winners {
+		winScore := winFunc(s.masterIndex, playerCardsTypes[winSeat])
+		totalMasterLoseScore += winScore
+		winScores[winSeat] = winScore
+	}
+
+	if master.score >= totalMasterLoseScore {
+		for seat, score := range winScores {
+			master.updateScore(-score)
+			s.niuniuPlayers[seat].updateScore(score)
+			settlementMsg.WinScores[int32(seat)] = s.niuniuPlayers[seat].winScore
+		}
+	} else {
+		for seat, score := range winScores {
+			winScore := master.score * score / totalMasterLoseScore
+			master.updateScore(-winScore)
+			s.niuniuPlayers[seat].updateScore(winScore)
+			settlementMsg.WinScores[int32(seat)] = s.niuniuPlayers[seat].winScore
+		}
+	}
+
+	// 结算分数为最终金币
+	modifyRspCount := make(map[string]struct{}) // 必须等待所有玩家金币修改成功后，才能发送结算
+	count := int(s.playerCount())
+	s.RangePartInPlayer(func(seat int, player *niuniuPlayer) {
+		finalScore := player.score
+		presentScore := player.PlayerInfo.Gold
+		rdsop.SetTodayPlaying(player.ShortId)
+		s.room.Request(actortype.PlayerId(player.RID), &inner.ModifyGoldReq{
+			Set:       true,
+			Gold:      finalScore,
+			SmallZero: true, // 允许扣为负数
+		}).Handle(func(resp any, err error) {
+			modifyRspCount[player.RID] = struct{}{}
+			if err == nil {
+				modifyRsp := resp.(*inner.ModifyGoldRsp)
+				player.PlayerInfo = modifyRsp.Info
+			}
+
+			s.Log().Infow("modify gold result", "room", s.room.RoomId, "seat", seat,
+				"player", player.ShortId, "latest gold", player.Gold, "err", err)
+
+			// 记录本场游戏的输赢变化
+			changes := finalScore - presentScore
+			rdsop.SetUpdateGoldRecord(player.ShortId, rdsop.GoldUpdateReason{
+				Type:      rdsop.GameWinOrLose, // 跑的快游戏输赢记录
+				Gold:      changes,
+				AfterGold: finalScore,
+				OccurAt:   tools.Now(),
+			})
+			if len(modifyRspCount) == count {
+				s.afterSettle(settlementMsg)
+			}
+		})
 	})
 
 }
@@ -50,15 +159,9 @@ func (s *StateSettlement) Handle(shortId int64, v any) (result any) {
 }
 
 func (s *StateSettlement) afterSettle(ntf *outer.NiuNiuSettlementNtf) {
-	allPlayerInfo := s.playersToPB(0) // 组装结算消息
+	ntf.Players = s.playersToPB(0) // 组装结算消息
 
-	s.RangePartInPlayer(func(seat int, player *niuniuPlayer) {
-		ntf.PlayerData[int32(seat)].Player = allPlayerInfo[seat]
-		ntf.PlayerData[int32(seat)].TotalScore = player.winScore
-	})
-
-	s.Log().Infow(" settlement broadcast", "room", s.room.RoomId,
-		"master", s.masterIndex, "ntf", ntf.String())
+	s.Log().Infow(" settlement broadcast", "room", s.room.RoomId, "master", s.masterIndex, "ntf", ntf.String())
 
 	s.room.Broadcast(ntf)
 

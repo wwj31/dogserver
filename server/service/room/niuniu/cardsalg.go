@@ -2,10 +2,12 @@ package niuniu
 
 import (
 	"sort"
+
+	"server/proto/outermsg/outer"
 )
 
 // AnalyzeCards 分析牌型
-func (p PokerCards) AnalyzeCards() (cardsGroup CardsGroup) {
+func (p PokerCards) AnalyzeCards(params *outer.NiuNiuParams) (cardsGroup CardsGroup) {
 	// 牛牛固定5张牌
 	if len(p) == 5 {
 		return
@@ -17,24 +19,27 @@ func (p PokerCards) AnalyzeCards() (cardsGroup CardsGroup) {
 
 	colorSame := p.isColorSame()
 	if len(stat) == 5 && isComb(orderPoints) {
-		if colorSame {
+		if colorSame && params.SpecialColorStraight {
 			cardsGroup.Type = ColorStraightType
-		} else {
-			cardsGroup.Type = StraightNiuType
+			cardsGroup.Cards = p
+			return
 		}
-		cardsGroup.Cards = p
-		return
+		if params.SpecialStraightNiu {
+			cardsGroup.Type = StraightNiuType
+			cardsGroup.Cards = p
+			return
+		}
 	}
 
 	// 同花牛
-	if colorSame {
+	if colorSame && params.SpecialSameColorNiu {
 		cardsGroup.Type = SameColorNiuType
 		cardsGroup.Cards = p
 		return
 	}
 
 	// 小五牛判断
-	if func() bool {
+	if params.SpecialFiveSmallNiu && func() bool {
 		totalPoint := int32(0)
 		for _, card := range p {
 			if card.Point() >= 5 {
@@ -49,35 +54,39 @@ func (p PokerCards) AnalyzeCards() (cardsGroup CardsGroup) {
 		return
 	}
 
-	// 炸弹牛
-	for point, num := range stat {
-		if num == 4 {
-			cardsGroup.Type = BombNiuType
-			cardsGroup.Cards = p.PointCards(point)
-			cardsGroup.SideCards = p.Remove(cardsGroup.Cards...)
-			return
+	if params.SpecialBombNiu {
+		// 炸弹牛
+		for point, num := range stat {
+			if num == 4 {
+				cardsGroup.Type = BombNiuType
+				cardsGroup.Cards = p.PointCards(point)
+				cardsGroup.SideCards = p.Remove(cardsGroup.Cards...)
+				return
+			}
 		}
 	}
 
 	// 葫芦牛
-	var cards3, cards2 PokerCards
-	for point, num := range stat {
-		if num == 3 {
-			cards3 = p.PointCards(point)
+	if params.SpecialHuluNiu {
+		var cards3, cards2 PokerCards
+		for point, num := range stat {
+			if num == 3 {
+				cards3 = p.PointCards(point)
+			}
+			if num == 2 {
+				cards2 = p.PointCards(point)
+			}
 		}
-		if num == 2 {
-			cards2 = p.PointCards(point)
+		if len(cards3) == 3 && len(cards2) == 2 {
+			cardsGroup.Type = HuluNiuType
+			cardsGroup.Cards = cards3
+			cardsGroup.SideCards = cards2
+			return
 		}
-	}
-	if len(cards3) == 3 && len(cards2) == 2 {
-		cardsGroup.Type = HuluNiuType
-		cardsGroup.Cards = cards3
-		cardsGroup.SideCards = cards2
-		return
 	}
 
 	// 五花牛
-	if func() bool {
+	if params.SpecialFiveColorNiu && func() bool {
 		for _, card := range p {
 			if !isJQK(card.Point()) {
 				return false
