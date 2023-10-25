@@ -6,6 +6,41 @@ import (
 	"server/proto/outermsg/outer"
 )
 
+func (p PokerCards) joker() (cards PokerCards) {
+	for _, card := range p {
+		if card.Point() == 15 || card.Point() == 16 {
+			cards = append(cards, card)
+			if len(cards) == 2 {
+				return
+			}
+		}
+	}
+	return
+}
+
+func (p PokerCards) comprehensiveAnalysis(jokerCards PokerCards, params *outer.NiuNiuParams) (cardsGroup CardsGroup) {
+	cardsWithoutJoker := p.Remove(jokerCards...) // 先获得去除了王的牌
+	var cardsGroups []*CardsGroup
+	for _, joker1Card := range pokerCards52 {
+		newCards := append(cardsWithoutJoker, joker1Card) // 补第一张王
+		if len(newCards) == 4 {
+			for _, joker2Card := range pokerCards52 {
+				newCards = append(cardsWithoutJoker, joker2Card) // 补第二张王
+			}
+			cg := newCards.AnalyzeCards(params)
+			cardsGroups = append(cardsGroups, &cg)
+		} else {
+			cg := newCards.AnalyzeCards(params)
+			cardsGroups = append(cardsGroups, &cg)
+		}
+	}
+	sort.Slice(cardsGroups, func(i, j int) bool {
+		return cardsGroups[j].GreaterThan(*cardsGroups[i])
+	})
+
+	return *cardsGroups[len(cardsGroups)-1]
+}
+
 // AnalyzeCards 分析牌型
 func (p PokerCards) AnalyzeCards(params *outer.NiuNiuParams) (cardsGroup CardsGroup) {
 	// 牛牛固定5张牌
@@ -13,7 +48,12 @@ func (p PokerCards) AnalyzeCards(params *outer.NiuNiuParams) (cardsGroup CardsGr
 		return
 	}
 
+	if jokerCards := p.joker(); len(jokerCards) > 0 {
+		return p.comprehensiveAnalysis(jokerCards, params)
+	}
+
 	sort.Slice(p, func(i, j int) bool { return p[i].Point() < p[j].Point() })
+
 	stat := p.ConvertStruct()
 	orderPoints := p.ConvertOrderPoint(stat)
 
@@ -163,16 +203,16 @@ func isComb(arr []int32) bool {
 	if len(arr) < 2 {
 		return false
 	}
-	add14 := false
 
-	for _, v := range arr {
-		if v == 1 {
-			add14 = true
+	// 如果有A,先把A去掉,判断剩下的牌是否连续
+	// 统计joker的数量
+
+	hasA := false
+	for i := len(arr) - 1; i >= 0; i-- {
+		if arr[i] == 1 {
+			arr = append(arr[:i], arr[i+1:]...)
+			hasA = true
 		}
-	}
-
-	if add14 {
-		arr = append(arr, 14)
 	}
 
 	comb := true
@@ -185,5 +225,17 @@ func isComb(arr []int32) bool {
 			comb = false
 		}
 	}
+
+	// 剩下的牌是连续的，在把A分别作为1和14带入判断
+	if comb && hasA {
+		if arr[0] == 2 || arr[len(arr)-1] == 13 {
+			return true
+		}
+		return false
+	}
 	return comb
+}
+
+func isJoker(point int32) bool {
+	return point == 15 || point == 16
 }

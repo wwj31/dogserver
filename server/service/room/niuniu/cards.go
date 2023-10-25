@@ -6,9 +6,12 @@ import (
 )
 
 // RandomPokerCards 获得洗好的一副新牌
-func RandomPokerCards(ignoreCard []PokerCard) PokerCards {
+func RandomPokerCards(ignoreCard []PokerCard, laizi bool) PokerCards {
 	cards := make(PokerCards, len(pokerCards52))
 	copy(cards, pokerCards52)
+	if laizi {
+		cards = append(cards, Joker1, Joker2)
+	}
 	tail := len(cards)
 	for i := 0; i < len(cards); i++ {
 		idx := rand.Intn(len(cards[:tail]))
@@ -127,6 +130,10 @@ func (p PokerCards) isColorSame() (same bool) {
 
 	color := p[0].Color()
 	for i := 1; i < len(p); i++ {
+		if p[i].Color() == Joker {
+			continue
+		}
+
 		if color != p[i].Color() {
 			return false
 		}
@@ -143,6 +150,7 @@ func (p PokerCards) Sort() PokerCards {
 		}
 		return iPoint < jPoint
 	})
+
 	return p
 }
 
@@ -159,10 +167,14 @@ func (c CardsGroup) GreaterThan(group CardsGroup) bool {
 		return c.Type > group.Type
 	}
 
-	// 顺子和同花顺，比较最左的牌点数
-	if group.Type == StraightNiuType || group.Type == ColorStraightType {
-		return c.Cards[0].Point() > group.Cards[0].Point()
+	// 牌型相同，比主牌点数
+	cBiggest := c.BiggestCard()
+	gBiggest := group.BiggestCard()
+	if cBiggest.Point() != gBiggest.Point() {
+		return cBiggest.Point() > gBiggest.Point()
 	}
 
-	return c.Cards[len(c.Cards)].Point() > group.Cards[len(group.Cards)].Point()
+	// 点数相同，比花色
+	return cBiggest.Color() > gBiggest.Color()
+
 }

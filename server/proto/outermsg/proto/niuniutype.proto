@@ -5,8 +5,8 @@ option  go_package = "/outer";
 // 牛牛 扑克花色
 enum NiuNiuPokerColorType {
     NiuNiuPokerUnknown = 0;
-    NiuNiuClubs        = 1; // 梅花
-    NiuNiuDiamonds     = 2; // 方块
+    NiuNiuDiamonds     = 1; // 方块
+    NiuNiuClubs        = 2; // 梅花
     NiuNiuHearts       = 3; // 红心
     NiuNiuSpades       = 4; // 黑桃
 }

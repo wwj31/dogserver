@@ -43,10 +43,11 @@ const (
 
 const (
 	ColorUnknown PokerColorType = iota
-	Clubs                       = 1 // 梅花
-	Diamonds                    = 2 // 方块
+	Diamonds                    = 1 // 方块
+	Clubs                       = 2 // 梅花
 	Hearts                      = 3 // 红心
 	Spades                      = 4 // 黑桃
+	Joker                       = 5 // 王
 )
 
 var CardsTypeTimes = [2]map[PokerCardsType]int32{
@@ -93,33 +94,33 @@ var CardsTypeTimes = [2]map[PokerCardsType]int32{
 }
 
 const (
-	Clubs_A  PokerCard = 101 // 梅花A
-	Clubs_2  PokerCard = 102 // 梅花2
-	Clubs_3  PokerCard = 103 // 梅花3
-	Clubs_4  PokerCard = 104 // 梅花4
-	Clubs_5  PokerCard = 105 // 梅花5
-	Clubs_6  PokerCard = 106 // 梅花6
-	Clubs_7  PokerCard = 107 // 梅花7
-	Clubs_8  PokerCard = 108 // 梅花8
-	Clubs_9  PokerCard = 109 // 梅花9
-	Clubs_10 PokerCard = 110 // 梅花10
-	Clubs_J  PokerCard = 111 // 梅花J
-	Clubs_Q  PokerCard = 112 // 梅花Q
-	Clubs_K  PokerCard = 113 // 梅花K
+	Diamonds_A  PokerCard = 101 // 方块A
+	Diamonds_2  PokerCard = 102 // 方块2
+	Diamonds_3  PokerCard = 103 // 方块3
+	Diamonds_4  PokerCard = 104 // 方块4
+	Diamonds_5  PokerCard = 105 // 方块5
+	Diamonds_6  PokerCard = 106 // 方块6
+	Diamonds_7  PokerCard = 107 // 方块7
+	Diamonds_8  PokerCard = 108 // 方块8
+	Diamonds_9  PokerCard = 109 // 方块9
+	Diamonds_10 PokerCard = 110 // 方块10
+	Diamonds_J  PokerCard = 111 // 方块J
+	Diamonds_Q  PokerCard = 112 // 方块Q
+	Diamonds_K  PokerCard = 113 // 方块K
 
-	Diamonds_A  PokerCard = 201 // 方块A
-	Diamonds_2  PokerCard = 202 // 方块2
-	Diamonds_3  PokerCard = 203 // 方块3
-	Diamonds_4  PokerCard = 204 // 方块4
-	Diamonds_5  PokerCard = 205 // 方块5
-	Diamonds_6  PokerCard = 206 // 方块6
-	Diamonds_7  PokerCard = 207 // 方块7
-	Diamonds_8  PokerCard = 208 // 方块8
-	Diamonds_9  PokerCard = 209 // 方块9
-	Diamonds_10 PokerCard = 210 // 方块10
-	Diamonds_J  PokerCard = 211 // 方块J
-	Diamonds_Q  PokerCard = 212 // 方块Q
-	Diamonds_K  PokerCard = 213 // 方块K
+	Clubs_A  PokerCard = 201 // 梅花A
+	Clubs_2  PokerCard = 202 // 梅花2
+	Clubs_3  PokerCard = 203 // 梅花3
+	Clubs_4  PokerCard = 204 // 梅花4
+	Clubs_5  PokerCard = 205 // 梅花5
+	Clubs_6  PokerCard = 206 // 梅花6
+	Clubs_7  PokerCard = 207 // 梅花7
+	Clubs_8  PokerCard = 208 // 梅花8
+	Clubs_9  PokerCard = 209 // 梅花9
+	Clubs_10 PokerCard = 210 // 梅花10
+	Clubs_J  PokerCard = 211 // 梅花J
+	Clubs_Q  PokerCard = 212 // 梅花Q
+	Clubs_K  PokerCard = 213 // 梅花K
 
 	Hearts_A  PokerCard = 301 // 红心A
 	Hearts_2  PokerCard = 302 // 红心2
@@ -148,6 +149,9 @@ const (
 	Spades_J  PokerCard = 411 // 黑桃J
 	Spades_Q  PokerCard = 412 // 黑桃Q
 	Spades_K  PokerCard = 413 // 黑桃K
+
+	Joker1 PokerCard = 516 // 小王
+	Joker2 PokerCard = 517 // 大王
 )
 
 func (m PokerCard) String() string {
@@ -172,6 +176,33 @@ func (m PokerCard) Int() int {
 
 func (c CardsGroup) String() string {
 	return fmt.Sprintf("type:%v cards:%v side cards:%v", c.Type, c.Cards, c.SideCards)
+}
+
+func (c CardsGroup) BiggestCard() PokerCard {
+	result := c.Cards[0]
+
+	var A PokerCard
+	for i := 1; i < len(c.Cards); i++ {
+		point := c.Cards[i].Point()
+		if point == 16 || point == 17 {
+			continue
+		}
+
+		if point == 1 {
+			A = c.Cards[i]
+		}
+
+		if result.Point() < point {
+			result = c.Cards[i]
+		}
+	}
+
+	// 如果A作为顺子中的14，那么A最大
+	if result.Point() == 13 && A.Point() == 1 && (c.Type == StraightNiuType || c.Type == ColorStraightType) {
+		return A
+	}
+
+	return result
 }
 
 func (p PokerCards) ToPB() []int32 {

@@ -33,7 +33,7 @@ func (s *StateDeal) Enter() {
 		}
 	}
 
-	cards := RandomPokerCards(nil)
+	cards := RandomPokerCards(nil, s.gameParams().LaiZi)
 	testCardsStr := rds.Ins.Get(context.Background(), "niuniu_testcards").Val()
 	if testCardsStr != "" {
 		testCards := PokerCards{}
@@ -46,11 +46,11 @@ func (s *StateDeal) Enter() {
 	s.Log().Infow("[NiuNiu] enter state deal", "room", s.room.RoomId, "params", *s.gameParams(), "cards", cards)
 
 	var i int
-	for _, player := range s.niuniuPlayers {
-		player.handCards = append(PokerCards{}, cards[i:i+handCardsSize]...).Sort()
+	s.RangePartInPlayer(func(seat int, player *niuniuPlayer) {
+		player.handCards = append(PokerCards{}, cards[i:i+handCardsSize]...)
 		s.room.SendToPlayer(player.ShortId, &outer.NiuNiuDealNtf{HandCards: player.handCards.ToPB()})
 		i += handCardsSize
-	}
+	})
 
 	// 发牌动画后，进入下个状态
 	s.currentStateEndAt = tools.Now().Add(DealExpiration)
