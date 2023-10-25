@@ -34,14 +34,20 @@ func (r *Room) ProfitRange(score int64, rebate *outer.RebateParams) *outer.Range
 }
 
 // Rebate 返利计算
-func (r *Room) Rebate(record *outer.RebateDetailInfo, totalProfit int64, players []*Player) {
+func (r *Room) Rebate(record *outer.RebateDetailInfo, totalProfit int64, players []*Player, hasPip ...redis.Pipeliner) {
 	divProfit := totalProfit / int64(len(players)) // 每个玩家那条上级路线，都均分获得利润
 	if divProfit == 0 {
 		r.Log().Infow("profit is zero!!", "total profit", totalProfit)
 		return
 	}
 
-	pip := rds.Ins.Pipeline()
+	var pip redis.Pipeliner
+	if len(hasPip) > 0 {
+		pip = hasPip[0]
+	} else {
+		pip = rds.Ins.Pipeline()
+	}
+
 	// 本局参与游戏的玩家挨个地、逐层地、依次向上级返利
 	for _, player := range players {
 		r.Log().Infow("recur profit start", "start short", player.ShortId, "profit", divProfit)
@@ -51,8 +57,10 @@ func (r *Room) Rebate(record *outer.RebateDetailInfo, totalProfit int64, players
 		rdsop.SetContribute(player.ShortId, divProfit)
 	}
 
-	if _, err := pip.Exec(context.Background()); err != nil {
-		log.Errorw("rebate redis failed", "err", err)
+	if len(hasPip) == 0 {
+		if _, err := pip.Exec(context.Background()); err != nil {
+			log.Errorw("rebate redis failed", "err", err)
+		}
 	}
 }
 

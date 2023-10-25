@@ -1,15 +1,19 @@
 package niuniu
 
 import (
+	"context"
 	"time"
 
 	"github.com/wwj31/dogactor/tools"
 
 	"server/common"
 	"server/common/actortype"
+	"server/common/log"
+	"server/common/rds"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
 	"server/rdsop"
+	"server/service/room"
 )
 
 // 结算状态
@@ -109,7 +113,10 @@ func (s *StateSettlement) Enter() {
 		}
 	}
 
-	// 结算分数为最终金币
+	/////////////////////////////// 抽水返利 ///////////////////////////////
+	s.profitAndRebate()
+
+	///////////////////// 结算分数为最终金币 //////////////////////////////////
 	modifyRspCount := make(map[string]struct{}) // 必须等待所有玩家金币修改成功后，才能发送结算
 	count := int(s.playerCount())
 	var partInShortIds []int64
@@ -118,9 +125,8 @@ func (s *StateSettlement) Enter() {
 		presentScore := player.PlayerInfo.Gold
 		partInShortIds = append(partInShortIds, player.ShortId)
 		s.room.Request(actortype.PlayerId(player.RID), &inner.ModifyGoldReq{
-			Set:       true,
-			Gold:      finalScore,
-			SmallZero: true, // 允许扣为负数
+			Set:  true,
+			Gold: finalScore,
 		}).Handle(func(resp any, err error) {
 			modifyRspCount[player.RID] = struct{}{}
 			if err == nil {
@@ -145,7 +151,6 @@ func (s *StateSettlement) Enter() {
 		})
 	})
 	rdsop.SetTodayPlaying(partInShortIds...)
-
 }
 
 func (s *StateSettlement) Leave() {
@@ -177,25 +182,58 @@ func (s *StateSettlement) finalSettlement() bool {
 	return true
 }
 
-// profit 抽水
-func (s *StateSettlement) profit() (totalProfit int64) {
+// profit 抽水和返利
+func (s *StateSettlement) profitAndRebate() {
+	// 庄家对每个人的赢分都单独计算抽水
 	var (
-		winners []*niuniuPlayer
+		profitInfos []struct {
+			profitScore int64
+			winner      *niuniuPlayer
+			loser       *niuniuPlayer
+		}
 	)
 
-	for i, player := range s.niuniuPlayers {
-		if player.winScore > 0 {
-			winners = append(winners, s.niuniuPlayers[i])
+	master := s.niuniuPlayers[s.masterIndex]
+	s.RangePartInPlayer(func(seat int, player *niuniuPlayer) {
+		if seat == s.masterIndex {
+			return
 		}
+
+		profitInfo := struct {
+			profitScore int64
+			winner      *niuniuPlayer
+			loser       *niuniuPlayer
+		}{
+			profitScore: player.winScore,
+			winner:      nil,
+			loser:       nil,
+		}
+
+		// 记录每一笔的赢家和输家
+		if player.winScore > 0 {
+			profitInfo.winner = player
+			profitInfo.loser = master
+		} else {
+			profitInfo.winner = master
+			profitInfo.loser = player
+		}
+		profitInfos = append(profitInfos, profitInfo)
+	})
+
+	// 记录返利信息
+	record := &outer.RebateDetailInfo{
+		Type:      outer.GameType_NiuNiu,
+		BaseScore: s.gameParams().BaseScore,
+		CreateAt:  tools.Now().UnixMilli(),
 	}
+	pip := rds.Ins.Pipeline()
 
 	// 处理每一位赢家抽水
-	for _, winner := range winners {
-		rangeCfg := s.room.ProfitRange(winner.winScore, s.gameParams().ReBate)
-		winScore := winner.winScore
+	for _, profit := range profitInfos {
+		rangeCfg := s.room.ProfitRange(profit.profitScore, s.gameParams().ReBate)
+		winScore := profit.profitScore
 		if rangeCfg == nil {
-			s.Log().Warnw("winner profit score not in any range",
-				"big winners", winner.ShortId, "win", winScore)
+			s.Log().Warnw("winner profit score not in any range", "profitScore", profit.profitScore, "rebate", s.gameParams().ReBate.String())
 			continue
 		}
 
@@ -203,17 +241,21 @@ func (s *StateSettlement) profit() (totalProfit int64) {
 		minimumRebate := rangeCfg.MinimumRebate * common.Gold1000Times
 		if winScore < minimumRebate {
 			s.Log().Warnw("the winner win the score did not meet the expected score",
-				"big winners", winner.ShortId, "win", winScore)
+				"winner", profit.winner.ShortId, "win score", winScore, "minimumRebate", minimumRebate)
 			continue
 		}
 
-		baseProfit := (winScore * rangeCfg.RebateRatio) / 100                     // 基础抽水
-		profit := baseProfit + (rangeCfg.MinimumGuarantee * common.Gold1000Times) // +抽水保底值
-		totalProfit += profit
-		val := winner.score - profit
-		winner.score = common.Max(0, val)
-		s.Log().Infow("profit", "winner", winner.ShortId, "current score", winner.score,
-			"baseProfit", baseProfit, "val", val, "winScore", winScore, "profit", profit, "range param", rangeCfg.String())
+		baseProfit := (winScore * rangeCfg.RebateRatio) / 100                        // 基础抽水
+		profitVal := baseProfit + (rangeCfg.MinimumGuarantee * common.Gold1000Times) // +抽水保底值
+		profit.winner.score = common.Max(0, profit.winner.score-profitVal)
+		s.Log().Infow("profit", "winner", profit.winner.ShortId, "current score", profit.winner.score,
+			"baseProfit", baseProfit, "profitVal", profitVal, "winScore", winScore, "profit", profit, "range param", rangeCfg.String())
+
+		s.room.Rebate(record, profitVal, []*room.Player{profit.winner.Player, profit.loser.Player}, pip)
+	}
+
+	if _, err := pip.Exec(context.Background()); err != nil {
+		log.Errorw("rebate redis failed", "err", err)
 	}
 
 	return

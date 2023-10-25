@@ -47,7 +47,7 @@ type (
 	// 牛牛 参与游戏的玩家数据
 	niuniuPlayer struct {
 		*room.Player
-		score         int64 // 本局参与的分
+		score         int64 // 本局参与的实时分
 		winScore      int64 // 单局的总输赢
 		ready         bool
 		readyExpireAt time.Time
