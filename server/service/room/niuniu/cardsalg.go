@@ -22,15 +22,15 @@ func (p PokerCards) comprehensiveAnalysis(jokerCards PokerCards, params *outer.N
 	cardsWithoutJoker := p.Remove(jokerCards...) // 先获得去除了王的牌
 	var cardsGroups []*CardsGroup
 	for _, joker1Card := range pokerCards52 {
-		newCards := append(cardsWithoutJoker, joker1Card) // 补第一张王
+		newCards := append(cardsWithoutJoker, joker1Card)
 		if len(newCards) == 4 {
 			for _, joker2Card := range pokerCards52 {
-				newCards = append(cardsWithoutJoker, joker2Card) // 补第二张王
+				newCards = append(cardsWithoutJoker, joker2Card)
 			}
-			cg := newCards.AnalyzeCards(params)
+			cg := newCards.AnalyzeCards(params) // 两张王的情况
 			cardsGroups = append(cardsGroups, &cg)
 		} else {
-			cg := newCards.AnalyzeCards(params)
+			cg := newCards.AnalyzeCards(params) // 一张王的情况
 			cardsGroups = append(cardsGroups, &cg)
 		}
 	}
@@ -44,7 +44,7 @@ func (p PokerCards) comprehensiveAnalysis(jokerCards PokerCards, params *outer.N
 // AnalyzeCards 分析牌型
 func (p PokerCards) AnalyzeCards(params *outer.NiuNiuParams) (cardsGroup CardsGroup) {
 	// 牛牛固定5张牌
-	if len(p) == 5 {
+	if len(p) != 5 {
 		return
 	}
 
@@ -58,27 +58,30 @@ func (p PokerCards) AnalyzeCards(params *outer.NiuNiuParams) (cardsGroup CardsGr
 	orderPoints := p.ConvertOrderPoint(stat)
 
 	colorSame := p.isColorSame()
-	if len(stat) == 5 && isComb(orderPoints) {
-		if colorSame && params.SpecialColorStraight {
-			cardsGroup.Type = ColorStraightType
-			cardsGroup.Cards = p
-			return
-		}
-		if params.SpecialStraightNiu {
-			cardsGroup.Type = StraightNiuType
-			cardsGroup.Cards = p
-			return
+	if len(stat) == 5 {
+		if comb, Ais14 := isComb(orderPoints); comb {
+			var mainCards = p
+			// 特殊处理A作为14点的情况
+			if Ais14 {
+				A := mainCards.PointCards(1)[0]
+				mainCards = mainCards.Remove(A)
+				mainCards = append(mainCards, PokerCard(A.Color()*100+14))
+			}
+
+			if colorSame && params.SpecialColorStraight {
+				cardsGroup.Type = ColorStraightType
+				cardsGroup.Cards = mainCards.Sort()
+				return
+			}
+			if params.SpecialStraightNiu {
+				cardsGroup.Type = StraightNiuType
+				cardsGroup.Cards = mainCards.Sort()
+				return
+			}
 		}
 	}
 
-	// 同花牛
-	if colorSame && params.SpecialSameColorNiu {
-		cardsGroup.Type = SameColorNiuType
-		cardsGroup.Cards = p
-		return
-	}
-
-	// 小五牛判断
+	// 五小牛判断
 	if params.SpecialFiveSmallNiu && func() bool {
 		totalPoint := int32(0)
 		for _, card := range p {
@@ -90,16 +93,26 @@ func (p PokerCards) AnalyzeCards(params *outer.NiuNiuParams) (cardsGroup CardsGr
 		return totalPoint < 10
 	}() {
 		cardsGroup.Type = FiveSmallNiuType
-		cardsGroup.Cards = p
+		cardsGroup.Cards = p.Sort()
 		return
 	}
 
+	// 炸弹牛
 	if params.SpecialBombNiu {
-		// 炸弹牛
 		for point, num := range stat {
 			if num == 4 {
+				cards := p
+				if point == 1 {
+					point = 14
+				}
+
+				A := p.PointCards(1)
+				cards = p.Remove(A...)
+				for _, card := range A {
+					cards = append(cards, PokerCard(card.Color()*100+14))
+				}
 				cardsGroup.Type = BombNiuType
-				cardsGroup.Cards = p.PointCards(point)
+				cardsGroup.Cards = cards.PointCards(point).Sort()
 				cardsGroup.SideCards = p.Remove(cardsGroup.Cards...)
 				return
 			}
@@ -108,21 +121,39 @@ func (p PokerCards) AnalyzeCards(params *outer.NiuNiuParams) (cardsGroup CardsGr
 
 	// 葫芦牛
 	if params.SpecialHuluNiu {
+		cards := p
+		A := p.PointCards(1)
+		cards = p.Remove(A...)
+		for _, card := range A {
+			cards = append(cards, PokerCard(card.Color()*100+14))
+		}
+		if len(A) > 0 {
+			stat = cards.ConvertStruct()
+		}
+
 		var cards3, cards2 PokerCards
 		for point, num := range stat {
 			if num == 3 {
-				cards3 = p.PointCards(point)
+				cards3 = cards.PointCards(point)
 			}
 			if num == 2 {
-				cards2 = p.PointCards(point)
+				cards2 = cards.PointCards(point)
 			}
 		}
+
 		if len(cards3) == 3 && len(cards2) == 2 {
 			cardsGroup.Type = HuluNiuType
-			cardsGroup.Cards = cards3
-			cardsGroup.SideCards = cards2
+			cardsGroup.Cards = cards3.Sort()
+			cardsGroup.SideCards = cards2.Sort()
 			return
 		}
+	}
+
+	// 同花牛
+	if colorSame && params.SpecialSameColorNiu {
+		cardsGroup.Type = SameColorNiuType
+		cardsGroup.Cards = p.Sort()
+		return
 	}
 
 	// 五花牛
@@ -135,23 +166,24 @@ func (p PokerCards) AnalyzeCards(params *outer.NiuNiuParams) (cardsGroup CardsGr
 		return true
 	}() {
 		cardsGroup.Type = FiveColorNiuType
-		cardsGroup.Cards = p
+		cardsGroup.Cards = p.Sort()
 		return
 	}
 
 	// 牛1~牛10
 	var (
 		cards       = make(PokerCards, 3, 3) // 主牌
-		total10Func func(n int) (found bool)
+		total10Func func(n, idx int) bool
+		cards10     []PokerCards
 	)
 
-	total10Func = func(n int) bool {
-		for i := 0; i < len(p); i++ {
+	total10Func = func(n, idx int) bool {
+		for i := idx; i < len(p); i++ {
 			cards[n] = p[i]
 			if n == 2 {
 				var totalPoint int32
 				for _, card := range cards {
-					// 牛牛特殊规则，JQK判断点数，都作为10点
+					// 特殊规则，JQK判断点数，都作为10点
 					point := card.Point()
 					if point == 11 || point == 12 || point == 13 {
 						point = 10
@@ -160,18 +192,36 @@ func (p PokerCards) AnalyzeCards(params *outer.NiuNiuParams) (cardsGroup CardsGr
 				}
 
 				if totalPoint%10 == 0 {
-					return true
+					newCards := make(PokerCards, 3, 3)
+					copy(newCards, cards.Sort())
+					cards10 = append(cards10, newCards)
+					return true // 无需区分各种组合成10的情况
 				}
-			} else if total10Func(n + 1) {
+				continue
+			}
+			if total10Func(n+1, i+1) {
 				return true
 			}
 		}
 		return false
 	}
 
-	if found := total10Func(0); found {
-		cardsGroup.Cards = cards
-		cardsGroup.SideCards = p.Remove(cards...)
+	total10Func(0, 0)
+
+	if len(cards10) > 0 {
+		sort.Slice(cards10, func(i, j int) bool {
+			cardi := cards10[i][len(cards10[i])-1]
+			cardj := cards10[j][len(cards10[j])-1]
+			if cardi.Point() != cardj.Point() {
+				return cardi.Point() > cardj.Point()
+			}
+			return cardi.Color() > cardj.Color()
+		})
+
+		bestCards := cards10[0]
+
+		cardsGroup.Cards = bestCards.Sort()
+		cardsGroup.SideCards = p.Remove(bestCards...).Sort()
 		var totalPoint int32
 		for _, card := range cardsGroup.SideCards {
 			// 牛牛特殊规则，JQK判断点数，都作为10点
@@ -199,9 +249,9 @@ func isJQK(point int32) bool {
 }
 
 // 判断一堆点数是否连续
-func isComb(arr []int32) bool {
+func isComb(arr []int32) (comb bool, isAis14 bool) {
 	if len(arr) < 2 {
-		return false
+		return false, false
 	}
 
 	// 如果有A,先把A去掉,判断剩下的牌是否连续
@@ -215,7 +265,7 @@ func isComb(arr []int32) bool {
 		}
 	}
 
-	comb := true
+	comb = true
 	for i := 0; i < len(arr); i++ {
 		if i+1 >= len(arr) {
 			break
@@ -228,14 +278,14 @@ func isComb(arr []int32) bool {
 
 	// 剩下的牌是连续的，在把A分别作为1和14带入判断
 	if comb && hasA {
-		if arr[0] == 2 || arr[len(arr)-1] == 13 {
-			return true
+		if arr[0] == 2 {
+			return true, false
 		}
-		return false
-	}
-	return comb
-}
+		if arr[len(arr)-1] == 13 {
+			return true, true
+		}
 
-func isJoker(point int32) bool {
-	return point == 15 || point == 16
+		return false, false
+	}
+	return comb, false
 }

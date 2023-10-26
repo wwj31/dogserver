@@ -94,61 +94,65 @@ var CardsTypeTimes = [2]map[PokerCardsType]int32{
 }
 
 const (
-	Diamonds_A  PokerCard = 101 // 方块A
-	Diamonds_2  PokerCard = 102 // 方块2
-	Diamonds_3  PokerCard = 103 // 方块3
-	Diamonds_4  PokerCard = 104 // 方块4
-	Diamonds_5  PokerCard = 105 // 方块5
-	Diamonds_6  PokerCard = 106 // 方块6
-	Diamonds_7  PokerCard = 107 // 方块7
-	Diamonds_8  PokerCard = 108 // 方块8
-	Diamonds_9  PokerCard = 109 // 方块9
-	Diamonds_10 PokerCard = 110 // 方块10
-	Diamonds_J  PokerCard = 111 // 方块J
-	Diamonds_Q  PokerCard = 112 // 方块Q
-	Diamonds_K  PokerCard = 113 // 方块K
+	Diamonds_A   PokerCard = 101 // 方块A
+	Diamonds_2   PokerCard = 102 // 方块2
+	Diamonds_3   PokerCard = 103 // 方块3
+	Diamonds_4   PokerCard = 104 // 方块4
+	Diamonds_5   PokerCard = 105 // 方块5
+	Diamonds_6   PokerCard = 106 // 方块6
+	Diamonds_7   PokerCard = 107 // 方块7
+	Diamonds_8   PokerCard = 108 // 方块8
+	Diamonds_9   PokerCard = 109 // 方块9
+	Diamonds_10  PokerCard = 110 // 方块10
+	Diamonds_J   PokerCard = 111 // 方块J
+	Diamonds_Q   PokerCard = 112 // 方块Q
+	Diamonds_K   PokerCard = 113 // 方块K
+	Diamonds_A14 PokerCard = 114 // 方块A
 
-	Clubs_A  PokerCard = 201 // 梅花A
-	Clubs_2  PokerCard = 202 // 梅花2
-	Clubs_3  PokerCard = 203 // 梅花3
-	Clubs_4  PokerCard = 204 // 梅花4
-	Clubs_5  PokerCard = 205 // 梅花5
-	Clubs_6  PokerCard = 206 // 梅花6
-	Clubs_7  PokerCard = 207 // 梅花7
-	Clubs_8  PokerCard = 208 // 梅花8
-	Clubs_9  PokerCard = 209 // 梅花9
-	Clubs_10 PokerCard = 210 // 梅花10
-	Clubs_J  PokerCard = 211 // 梅花J
-	Clubs_Q  PokerCard = 212 // 梅花Q
-	Clubs_K  PokerCard = 213 // 梅花K
+	Clubs_A   PokerCard = 201 // 梅花A
+	Clubs_2   PokerCard = 202 // 梅花2
+	Clubs_3   PokerCard = 203 // 梅花3
+	Clubs_4   PokerCard = 204 // 梅花4
+	Clubs_5   PokerCard = 205 // 梅花5
+	Clubs_6   PokerCard = 206 // 梅花6
+	Clubs_7   PokerCard = 207 // 梅花7
+	Clubs_8   PokerCard = 208 // 梅花8
+	Clubs_9   PokerCard = 209 // 梅花9
+	Clubs_10  PokerCard = 210 // 梅花10
+	Clubs_J   PokerCard = 211 // 梅花J
+	Clubs_Q   PokerCard = 212 // 梅花Q
+	Clubs_K   PokerCard = 213 // 梅花K
+	Clubs_A14 PokerCard = 214 // 梅花A
 
-	Hearts_A  PokerCard = 301 // 红心A
-	Hearts_2  PokerCard = 302 // 红心2
-	Hearts_3  PokerCard = 303 // 红心3
-	Hearts_4  PokerCard = 304 // 红心4
-	Hearts_5  PokerCard = 305 // 红心5
-	Hearts_6  PokerCard = 306 // 红心6
-	Hearts_7  PokerCard = 307 // 红心7
-	Hearts_8  PokerCard = 308 // 红心8
-	Hearts_9  PokerCard = 309 // 红心9
-	Hearts_10 PokerCard = 310 // 红心10
-	Hearts_J  PokerCard = 311 // 红心J
-	Hearts_Q  PokerCard = 312 // 红心Q
-	Hearts_K  PokerCard = 313 // 红心K
+	Hearts_A   PokerCard = 301 // 红心A
+	Hearts_2   PokerCard = 302 // 红心2
+	Hearts_3   PokerCard = 303 // 红心3
+	Hearts_4   PokerCard = 304 // 红心4
+	Hearts_5   PokerCard = 305 // 红心5
+	Hearts_6   PokerCard = 306 // 红心6
+	Hearts_7   PokerCard = 307 // 红心7
+	Hearts_8   PokerCard = 308 // 红心8
+	Hearts_9   PokerCard = 309 // 红心9
+	Hearts_10  PokerCard = 310 // 红心10
+	Hearts_J   PokerCard = 311 // 红心J
+	Hearts_Q   PokerCard = 312 // 红心Q
+	Hearts_K   PokerCard = 313 // 红心K
+	Hearts_A14 PokerCard = 314 // 红心A
 
-	Spades_A  PokerCard = 401 // 黑桃A
-	Spades_2  PokerCard = 402 // 黑桃2
-	Spades_3  PokerCard = 403 // 黑桃3
-	Spades_4  PokerCard = 404 // 黑桃4
-	Spades_5  PokerCard = 405 // 黑桃5
-	Spades_6  PokerCard = 406 // 黑桃6
-	Spades_7  PokerCard = 407 // 黑桃7
-	Spades_8  PokerCard = 408 // 黑桃8
-	Spades_9  PokerCard = 409 // 黑桃9
-	Spades_10 PokerCard = 410 // 黑桃10
-	Spades_J  PokerCard = 411 // 黑桃J
-	Spades_Q  PokerCard = 412 // 黑桃Q
-	Spades_K  PokerCard = 413 // 黑桃K
+	Spades_A   PokerCard = 401 // 黑桃A
+	Spades_2   PokerCard = 402 // 黑桃2
+	Spades_3   PokerCard = 403 // 黑桃3
+	Spades_4   PokerCard = 404 // 黑桃4
+	Spades_5   PokerCard = 405 // 黑桃5
+	Spades_6   PokerCard = 406 // 黑桃6
+	Spades_7   PokerCard = 407 // 黑桃7
+	Spades_8   PokerCard = 408 // 黑桃8
+	Spades_9   PokerCard = 409 // 黑桃9
+	Spades_10  PokerCard = 410 // 黑桃10
+	Spades_J   PokerCard = 411 // 黑桃J
+	Spades_Q   PokerCard = 412 // 黑桃Q
+	Spades_K   PokerCard = 413 // 黑桃K
+	Spades_A14 PokerCard = 414 // 黑桃A
 
 	Joker1 PokerCard = 516 // 小王
 	Joker2 PokerCard = 517 // 大王
@@ -181,25 +185,22 @@ func (c CardsGroup) String() string {
 func (c CardsGroup) BiggestCard() PokerCard {
 	result := c.Cards[0]
 
+	cards := append(c.Cards, c.SideCards...)
 	var A PokerCard
-	for i := 1; i < len(c.Cards); i++ {
-		point := c.Cards[i].Point()
-		if point == 16 || point == 17 {
-			continue
-		}
-
+	for i := 1; i < len(cards); i++ {
+		point := cards[i].Point()
 		if point == 1 {
-			A = c.Cards[i]
+			A = cards[i]
 		}
 
 		if result.Point() < point {
-			result = c.Cards[i]
+			result = cards[i]
 		}
 	}
 
 	// 如果A作为顺子中的14，那么A最大
 	if result.Point() == 13 && A.Point() == 1 && (c.Type == StraightNiuType || c.Type == ColorStraightType) {
-		return A
+		return PokerCard(int32(A.Color())*100 + 14)
 	}
 
 	return result

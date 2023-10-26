@@ -130,10 +130,6 @@ func (p PokerCards) isColorSame() (same bool) {
 
 	color := p[0].Color()
 	for i := 1; i < len(p); i++ {
-		if p[i].Color() == Joker {
-			continue
-		}
-
 		if color != p[i].Color() {
 			return false
 		}
@@ -167,6 +163,20 @@ func (c CardsGroup) GreaterThan(group CardsGroup) bool {
 		return c.Type > group.Type
 	}
 
+	if c.Type == HuluNiuType || c.Type == BombNiuType {
+		cCard := c.Cards.Sort()[len(c.Cards)-1]
+		gCard := group.Cards.Sort()[len(group.Cards)-1]
+		if cCard.Point() != gCard.Point() {
+			return cCard.Point() > gCard.Point()
+		}
+
+		cSideCard := c.SideCards.Sort()[len(c.SideCards)-1]
+		gSideCard := group.SideCards.Sort()[len(group.SideCards)-1]
+		if cSideCard.Point() != gSideCard.Point() {
+			return cSideCard.Point() > gSideCard.Point()
+		}
+	}
+
 	// 牌型相同，比主牌点数
 	cBiggest := c.BiggestCard()
 	gBiggest := group.BiggestCard()
@@ -176,5 +186,4 @@ func (c CardsGroup) GreaterThan(group CardsGroup) bool {
 
 	// 点数相同，比花色
 	return cBiggest.Color() > gBiggest.Color()
-
 }
