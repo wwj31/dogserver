@@ -403,6 +403,10 @@ func (s *StateSettlement) profit(bigWinner bool) (totalProfit int64) {
 		}
 	}
 
+	if len(winners) == 0 {
+		return 0
+	}
+
 	// 处理每一位赢家抽水
 	for _, winner := range winners {
 		rangeCfg := s.room.ProfitRange(winner.finalStatsMsg.TotalScore, s.gameParams().ReBate)
