@@ -34,6 +34,10 @@ type GoldUpdateReason struct {
 
 // SetUpdateGoldRecord 金币变化相关的记录
 func SetUpdateGoldRecord(shortId int64, reason GoldUpdateReason, pip ...redis.Pipeliner) {
+	if reason.Gold == 0 {
+		return
+	}
+
 	key := UpdateGoldRecordKey(shortId)
 	str := common.JsonMarshal(reason)
 	ctx := context.Background()
