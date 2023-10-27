@@ -24,8 +24,9 @@ func (s *StateReady) Enter() {
 	s.onPlayerLeave = s.playerLeave
 
 	s.RangePartInPlayer(func(seat int, player *niuniuPlayer) {
-		if player.Gold <= 0 {
+		if player.Gold <= s.baseScore() {
 			s.room.PlayerLeave(player.ShortId, true)
+			return
 		}
 	})
 	s.Log().Infow("[NiuNiu] enter state ready ", "room", s.room.RoomId)
@@ -63,5 +64,6 @@ func (s *StateReady) playerLeave(player *niuniuPlayer) {
 	if s.playerCount() < s.gameParams().MinPlayPlayerCount && s.timeId != "" {
 		s.room.CancelTimer(s.timeId)
 		s.room.Broadcast(&outer.NiuNiuStopCountDownNtf{})
+		s.timeId = ""
 	}
 }
