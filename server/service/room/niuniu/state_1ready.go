@@ -30,6 +30,8 @@ func (s *StateReady) Enter() {
 	})
 	s.Log().Infow("[NiuNiu] enter state ready ", "room", s.room.RoomId)
 	s.room.Broadcast(&outer.NiuNiuReadyNtf{})
+
+	s.checkAndSwitchNext()
 }
 
 func (s *StateReady) Leave() {
@@ -42,7 +44,7 @@ func (s *StateReady) Handle(shortId int64, v any) (result any) {
 	return outer.ERROR_NIUNIU_STATE_MSG_INVALID
 }
 
-func (s *StateReady) playerEnter(player *niuniuPlayer) {
+func (s *StateReady) checkAndSwitchNext() {
 	if s.playerCount() >= s.gameParams().MinPlayPlayerCount && s.timeId == "" {
 		s.timeId = tools.UUID()
 		expireAt := tools.Now().Add(ReadyExpiration)
@@ -51,6 +53,10 @@ func (s *StateReady) playerEnter(player *niuniuPlayer) {
 		})
 		s.room.Broadcast(&outer.NiuNiuStartCountDownNtf{ExpireAt: expireAt.UnixMilli()})
 	}
+}
+
+func (s *StateReady) playerEnter(player *niuniuPlayer) {
+	s.checkAndSwitchNext()
 }
 
 func (s *StateReady) playerLeave(player *niuniuPlayer) {
