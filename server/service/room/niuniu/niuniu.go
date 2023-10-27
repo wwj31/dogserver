@@ -214,8 +214,7 @@ func (n *NiuNiu) findNiuNiuPlayer(shortId int64) (*niuniuPlayer, int) {
 	}
 	return nil, -1
 }
-func (n *NiuNiu) participantCount() int {
-	var c int
+func (n *NiuNiu) participantCount() (c int) {
 	n.RangePartInPlayer(func(seat int, player *niuniuPlayer) { c++ })
 	return c
 }

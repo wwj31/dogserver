@@ -86,7 +86,7 @@ func (s *StateBetting) Handle(shortId int64, v any) (result any) {
 		}
 
 		// 操作最大押注金额
-		if req.Gold > s.baseScore()*int64(s.gameParams().PushBetTimes) {
+		if s.gameParams().PushBetTimes > 0 && req.Gold > s.baseScore()*int64(s.gameParams().PushBetTimes) {
 			return outer.ERROR_NIUNIU_BETTING_OUT_OF_RANGE
 		}
 
