@@ -6,8 +6,9 @@ import "base.proto";
 
 // 通知在线玩家actor联盟信息变化
 message AllianceInfoNtf {
-  int32 AllianceId = 1;
-  int32 Position   = 2;
+  int64 OpShortId  = 1;// 操作者
+  int32 AllianceId = 2;
+  int32 Position   = 3;
 }
 
 // 创建联盟
@@ -45,7 +46,8 @@ message SetMemberPositionRsp{
 
 // 踢出成员
 message KickOutMembersReq{
-  repeated int64 ShortIds = 1;
+  int64 OpShortId         = 1;
+  repeated int64 ShortIds = 2;
 }
 message KickOutMembersRsp{
 }

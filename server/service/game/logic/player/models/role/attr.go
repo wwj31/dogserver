@@ -29,13 +29,14 @@ func (s *Role) AddGold(v int64) {
 func (s *Role) GoldLine() int64     { return s.data.GoldLine }
 func (s *Role) SetGoldLine(v int64) { s.data.GoldLine = v }
 
-func (s *Role) Name() string        { return s.data.Name }
-func (s *Role) Icon() string        { return s.data.Icon }
-func (s *Role) Gender() int32       { return s.data.Gender }
-func (s *Role) UpShortId() int64    { return s.upShortId }
-func (s *Role) CreateAt() time.Time { return tools.TimeParse(s.data.CreateAt) }
-func (s *Role) LoginAt() time.Time  { return tools.TimeParse(s.data.LoginAt) }
-func (s *Role) LogoutAt() time.Time { return tools.TimeParse(s.data.LogoutAt) }
+func (s *Role) Name() string               { return s.data.Name }
+func (s *Role) Icon() string               { return s.data.Icon }
+func (s *Role) Gender() int32              { return s.data.Gender }
+func (s *Role) UpShortId() int64           { return s.upShortId }
+func (s *Role) SetUpShortId(shortId int64) { s.upShortId = shortId }
+func (s *Role) CreateAt() time.Time        { return tools.TimeParse(s.data.CreateAt) }
+func (s *Role) LoginAt() time.Time         { return tools.TimeParse(s.data.LoginAt) }
+func (s *Role) LogoutAt() time.Time        { return tools.TimeParse(s.data.LogoutAt) }
 func (s *Role) SetBaseInfo(icon, name string, gender int32) {
 	s.data.Icon = icon
 	s.data.Name = name

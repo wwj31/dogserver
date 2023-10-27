@@ -17,13 +17,17 @@ import (
 var _ = router.Reg(func(player *player.Player, msg *inner.AllianceInfoNtf) any {
 	player.Alliance().SetAllianceId(msg.AllianceId)
 	player.Alliance().SetPosition(msg.Position)
+
+	if msg.AllianceId == 0 && player.Role().UpShortId() == msg.OpShortId {
+		player.Role().SetUpShortId(0)
+	}
 	player.UpdateInfoToRedis()
 
 	player.SendToClient(&outer.AllianceInfoNtf{
 		AllianceId: msg.AllianceId,
 		Position:   msg.Position,
 	})
-	return nil
+	return &inner.Ok{}
 })
 
 // 搜索玩家信息
@@ -230,13 +234,14 @@ var _ = router.Reg(func(player *player.Player, msg *outer.KickOutMemberReq) any 
 
 	// 解除被踢者的上下级关系
 	rdsop.UnbindAgent(playerInfo.ShortId)
-	playerInfo.UpShortId = 0
-	rdsop.SetPlayerInfo(&playerInfo)
 
 	// 获取被踢者以及所有下级
 	downs := rdsop.AgentDown(playerInfo.ShortId)
 	allianceActor := actortype.AllianceName(player.Alliance().AllianceId())
-	v, err := player.RequestWait(allianceActor, &inner.KickOutMembersReq{ShortIds: downs})
+	v, err := player.RequestWait(allianceActor, &inner.KickOutMembersReq{
+		ShortIds:  downs,
+		OpShortId: player.Role().ShortId(),
+	})
 	if yes, code := common.IsErr(v, err); yes {
 		return code
 	}

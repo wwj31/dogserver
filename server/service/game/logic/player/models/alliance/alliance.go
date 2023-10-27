@@ -76,9 +76,7 @@ func (s *Alliance) OnLogin(first bool, enterGameRsp *outer.EnterGameRsp) {
 			s.data.AllianceId = 0
 			return
 		}
-	}
 
-	if s.data.AllianceId != 0 {
 		result, err := s.Player.RequestWait(actortype.AllianceName(s.AllianceId()), &inner.MemberInfoOnLoginReq{
 			GateSession: s.Player.GateSession().String(),
 			RID:         s.Player.RID(),
@@ -94,8 +92,13 @@ func (s *Alliance) OnLogin(first bool, enterGameRsp *outer.EnterGameRsp) {
 			return
 		}
 
+		if memberInfoRsp.AllianceId == 0 {
+			s.Player.Role().SetUpShortId(0)
+		}
+
 		s.data.Position = memberInfoRsp.Position
 		s.data.AllianceId = memberInfoRsp.AllianceId
+		s.Player.UpdateInfoToRedis()
 	}
 
 	enterGameRsp.RoleInfo.AllianceId = s.data.AllianceId
