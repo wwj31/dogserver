@@ -36,6 +36,7 @@ enum ERROR {
    AGENT_DOWN_GOLD_PLAYER_IN_ROOM     = 68; // 玩家还在房间中，不能上下分操作
    AGENT_KICK_OUT_FAILED_HAS_DOWN     = 69; // 玩家有下级，不能被踢
    AGENT_KICK_OUT_FAILED_LIMIT_POS    = 70; // 玩家有职位，不能被踢
+   AGENT_SET_POS_WITHOUT_CAP          = 71; // 要设置更高职位，至少是队长
 
    // 房间
    PLAYER_ALREADY_IN_ROOM           = 104; // 玩家已经在房间内，不能重复进入房间

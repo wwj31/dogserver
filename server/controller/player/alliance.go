@@ -27,6 +27,7 @@ var _ = router.Reg(func(player *player.Player, msg *inner.AllianceInfoNtf) any {
 		AllianceId: msg.AllianceId,
 		Position:   msg.Position,
 	})
+
 	return &inner.Ok{}
 })
 
@@ -122,6 +123,11 @@ var _ = router.Reg(func(player *player.Player, msg *outer.SetMemberPositionReq) 
 		return outer.ERROR_PLAYER_POSITION_LIMIT
 	}
 
+	// 被设置的人，至少需要是个队长
+	if playerInfo.Position < alliance.Captain.Int32() {
+		return outer.ERROR_AGENT_SET_POS_WITHOUT_CAP
+	}
+
 	// 对方职位比设置者大
 	if playerInfo.Position > player.Alliance().Position() {
 		return outer.ERROR_PLAYER_POSITION_LIMIT
@@ -151,24 +157,23 @@ var _ = router.Reg(func(player *player.Player, msg *outer.SetMemberPositionReq) 
 
 	// 如果职位被盟主，管理员，副盟主设置成功,
 	// 那么被设置的人将解除上下级关系，并且绑定盟主为最新上级
-	if player.Alliance().Position() >= alliance.Manager.Int32() {
-		// 获取盟主
-		v, err := player.RequestWait(allianceActor, &inner.AllianceInfoReq{})
-		if yes, code := common.IsErr(v, err); yes {
-			return code
-		}
-		alliInfoRsp := v.(*inner.AllianceInfoRsp)
-		if playerInfo.UpShortId != alliInfoRsp.MasterShortId {
-			if playerInfo.UpShortId != 0 {
-				rdsop.AgentCancelUp(playerInfo.ShortId, playerInfo.UpShortId)
-			}
-			rdsop.BindAgent(alliInfoRsp.MasterShortId, playerInfo.ShortId) // 被管理员以上职位设置职位
-			playerInfo.UpShortId = alliInfoRsp.MasterShortId
-		}
-	}
+	//if player.Alliance().Position() >= alliance.Manager.Int32() {
+	//	// 获取盟主
+	//	v, err := player.RequestWait(allianceActor, &inner.AllianceInfoReq{})
+	//	if yes, code := common.IsErr(v, err); yes {
+	//		return code
+	//	}
+	//	alliInfoRsp := v.(*inner.AllianceInfoRsp)
+	//	if playerInfo.UpShortId != alliInfoRsp.MasterShortId {
+	//		if playerInfo.UpShortId != 0 {
+	//			rdsop.AgentCancelUp(playerInfo.ShortId, playerInfo.UpShortId)
+	//		}
+	//		rdsop.BindAgent(alliInfoRsp.MasterShortId, playerInfo.ShortId) // 被管理员以上职位设置职位
+	//		playerInfo.UpShortId = alliInfoRsp.MasterShortId
+	//	}
+	//}
+	//
 
-	playerInfo.Position = int32(msg.Position)
-	rdsop.SetPlayerInfo(&playerInfo)
 	return &outer.SetMemberPositionRsp{
 		ShortId:  msg.ShortId,
 		Position: msg.Position,
