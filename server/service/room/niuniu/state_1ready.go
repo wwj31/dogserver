@@ -22,6 +22,7 @@ func (s *StateReady) State() int {
 func (s *StateReady) Enter() {
 	s.onPlayerEnter = s.playerEnter
 	s.onPlayerLeave = s.playerLeave
+	s.timeId = ""
 
 	s.RangePartInPlayer(func(seat int, player *niuniuPlayer) {
 		if player.Gold <= s.baseScore() {

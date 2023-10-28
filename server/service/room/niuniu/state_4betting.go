@@ -57,11 +57,11 @@ func (s *StateBetting) Enter() {
 		})
 		s.SwitchTo(ShowCards)
 	})
-	s.Log().Infow("[NiuNiu] enter state Betting ", "room", s.room.RoomId, "bet seat", s.betGoldSeats)
+	s.Log().Infow("[NiuNiu] enter state Betting ", "room", s.room.RoomId)
 }
 
 func (s *StateBetting) Leave() {
-	s.Log().Infow("[NiuNiu] leave state Betting", "room", s.room.RoomId)
+	s.Log().Infow("[NiuNiu] leave state Betting", "room", s.room.RoomId, "bet seat", s.betGoldSeats)
 }
 
 func (s *StateBetting) Handle(shortId int64, v any) (result any) {
