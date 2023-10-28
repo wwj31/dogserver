@@ -232,11 +232,20 @@ var _ = router.Reg(func(player *player.Player, msg *outer.KickOutMemberReq) any 
 		return outer.ERROR_TARGET_IS_NOT_DOWN
 	}
 
+	// 成员有职位，不能被踢
+	if playerInfo.Position > alliance.Normal.Int32() {
+		return outer.ERROR_AGENT_KICK_OUT_FAILED_LIMIT_POS
+	}
+
+	// 有下级，不能被踢
+	downs := rdsop.AgentDown(playerInfo.ShortId)
+	if len(downs) > 0 {
+		return outer.ERROR_AGENT_KICK_OUT_FAILED_HAS_DOWN
+	}
+
 	// 解除被踢者的上下级关系
 	rdsop.UnbindAgent(playerInfo.ShortId)
 
-	// 获取被踢者以及所有下级
-	downs := rdsop.AgentDown(playerInfo.ShortId)
 	allianceActor := actortype.AllianceName(player.Alliance().AllianceId())
 	v, err := player.RequestWait(allianceActor, &inner.KickOutMembersReq{
 		ShortIds:  downs,

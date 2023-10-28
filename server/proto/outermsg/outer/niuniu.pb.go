@@ -126,7 +126,7 @@ type NiuNiuPlayerInfo struct {
 	Ready         bool  `protobuf:"varint,2,opt,name=Ready,proto3" json:"Ready,omitempty"`                 // true.准备、false.未准备
 	ReadyExpireAt int64 `protobuf:"varint,3,opt,name=ReadyExpireAt,proto3" json:"ReadyExpireAt,omitempty"` // 准备超时时间(毫秒)
 	GameCount     int32 `protobuf:"varint,4,opt,name=GameCount,proto3" json:"GameCount,omitempty"`         // 游戏局数
-	// 手牌 (梅花101-113 方块201-213 红心301-313 黑桃401-413)
+	// 手牌 (梅花101-113 方块201-213 红心301-313 黑桃401-413 小王516 大王517)
 	// NOTE: 401:黑桃A 402:黑桃2 411:黑桃J 412:黑桃Q 413:黑桃K 其他花色同理
 	HandCards  []int32 `protobuf:"varint,5,rep,packed,name=HandCards,proto3" json:"HandCards,omitempty"`
 	Score      int64   `protobuf:"varint,6,opt,name=Score,proto3" json:"Score,omitempty"`           // 玩家本局拥有的分数

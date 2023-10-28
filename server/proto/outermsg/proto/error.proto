@@ -34,6 +34,8 @@ enum ERROR {
    AGENT_UP_GOLD_FAILED               = 66; // 上分失败，自己金币不够
    AGENT_DOWN_GOLD_FAILED             = 67; // 下分失败，下级金币不够
    AGENT_DOWN_GOLD_PLAYER_IN_ROOM     = 68; // 玩家还在房间中，不能上下分操作
+   AGENT_KICK_OUT_FAILED_HAS_DOWN     = 69; // 玩家有下级，不能被踢
+   AGENT_KICK_OUT_FAILED_LIMIT_POS    = 70; // 玩家有职位，不能被踢
 
    // 房间
    PLAYER_ALREADY_IN_ROOM           = 104; // 玩家已经在房间内，不能重复进入房间
