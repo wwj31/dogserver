@@ -48,7 +48,7 @@ var _ = router.Reg(func(player *player.Player, msg *outer.InviteAllianceReq) any
 		return outer.ERROR_PLAYER_NOT_IN_ALLIANCE
 	}
 
-	if player.Alliance().Position() >= alliance.Captain.Int32() {
+	if player.Alliance().Position() < alliance.Captain.Int32() {
 		return outer.ERROR_PLAYER_POSITION_LIMIT
 	}
 
