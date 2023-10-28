@@ -3,6 +3,7 @@ package player
 import (
 	"context"
 	"reflect"
+	"server/service/alliance"
 	"time"
 
 	"github.com/spf13/cast"
@@ -113,6 +114,19 @@ var _ = router.Reg(func(p *player.Player, msg *outer.SetAgentDownRebateReq) any 
 	err := rdsop.SetRebateInfo(p.Role().ShortId(), msg.ShortId, msg.Rebate)
 	if err != outer.ERROR_OK {
 		return err
+	}
+
+	downInfo := rdsop.PlayerInfo(msg.ShortId)
+	playerInfo := rdsop.PlayerInfo(p.Role().ShortId())
+	if downInfo.Position <= alliance.Normal.Int32() {
+		allianceActor := actortype.AllianceName(p.Alliance().AllianceId())
+		rsp, err := p.RequestWait(allianceActor, &inner.SetMemberPositionReq{
+			Player:   &playerInfo,
+			Position: int32(alliance.Captain),
+		})
+		if yes, err := common.IsErr(rsp, err); yes {
+			return err
+		}
 	}
 
 	return &outer.SetAgentDownRebateRsp{
