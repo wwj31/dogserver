@@ -15,6 +15,7 @@ message NiuNiuGameInfo {
     int32                       MasterIndex      = 5; // 庄家位置
     map<int32,int32>            MasterTimes      = 6; // 每个人的抢庄倍数<位置，倍数>
     map<int32,int64>            BetGold          = 7; // 每个人的押注金币<位置，金币>
+    NiuNiuSettlementNtf         Settlement       = 8; // 结算数据，仅在结算状态进入房间会发
 }
 
 // 牛牛 参与游戏的玩家数据
@@ -54,7 +55,7 @@ message NiuNiuToBeMasterRsp {
 
 // 闲家下注
 message NiuNiuToBettingReq {// tag:gambling
-    int64 Gold = 1; // 根据底分和选择的倍数，把押注的金额发过来
+    float Gold = 1; // 根据底分和选择的倍数，把押注的金额发过来,（不用扩大1000倍数）
 }
 message NiuNiuToBettingRsp {
 }

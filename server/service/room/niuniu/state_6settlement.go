@@ -32,7 +32,7 @@ func (s *StateSettlement) Enter() {
 	s.Log().Infow("[NiuNiu] enter state settlement", "room", s.room.RoomId,
 		"master", s.masterIndex, "endAt", s.currentStateEndAt.UnixMilli())
 
-	settlementMsg := &outer.NiuNiuSettlementNtf{
+	s.settlementMsg = &outer.NiuNiuSettlementNtf{
 		EndAt:            s.currentStateEndAt.UnixMilli(),
 		GameSettlementAt: tools.Now().UnixMilli(),
 		WinScores:        map[int32]int64{},
@@ -48,7 +48,7 @@ func (s *StateSettlement) Enter() {
 
 	master := s.niuniuPlayers[s.masterIndex]
 	masterCardsType := s.niuniuPlayers[s.masterIndex].handCards.AnalyzeCards(s.gameParams()) // 先拿到庄家牌型
-	settlementMsg.CardsTypes[int32(s.masterIndex)] = masterCardsType.ToPB()
+	s.settlementMsg.CardsTypes[int32(s.masterIndex)] = masterCardsType.ToPB()
 	s.RangePartInPlayer(func(seat int, player *niuniuPlayer) {
 		if seat == s.masterIndex {
 			return
@@ -57,12 +57,16 @@ func (s *StateSettlement) Enter() {
 		// 闲家赢加入winners,闲家输加入losers
 		playerCardsType := player.handCards.AnalyzeCards(s.gameParams())
 		playerCardsTypes[seat] = playerCardsType
-		settlementMsg.CardsTypes[int32(seat)] = playerCardsType.ToPB()
-		if playerCardsType.GreaterThan(masterCardsType) {
+		s.settlementMsg.CardsTypes[int32(seat)] = playerCardsType.ToPB()
+		playerIsWin := playerCardsType.GreaterThan(masterCardsType)
+		if playerIsWin {
 			winners = append(winners, seat)
 		} else {
 			losers = append(losers, seat)
 		}
+		s.Log().Infow("compare niuniu",
+			"master card", masterCardsType.String(),
+			"player card", playerCardsType.String(), "player is win?", playerIsWin, "player shortId", player.ShortId, "player gold", player.score)
 	})
 
 	var cardTypeTimes map[PokerCardsType]int32
@@ -81,12 +85,13 @@ func (s *StateSettlement) Enter() {
 	// 先计算庄家赢的钱
 	for _, loserSeat := range losers {
 		loser := s.niuniuPlayers[loserSeat]
-		winScore := winFunc(loserSeat, masterCardsType)
-		winScore = common.Min(loser.score, winScore)
+		calcScore := winFunc(loserSeat, masterCardsType)
+		winScore := common.Min(loser.score, calcScore)
 
 		master.updateScore(winScore)
 		s.niuniuPlayers[loserSeat].updateScore(-winScore)
-		settlementMsg.WinScores[int32(loserSeat)] = s.niuniuPlayers[loserSeat].winScore
+		s.settlementMsg.WinScores[int32(loserSeat)] = s.niuniuPlayers[loserSeat].winScore
+		s.Log().Infow("loser", "short", loser.ShortId, "win score", winScore, "calc score", calcScore)
 	}
 
 	// 统计庄家总共需要输的钱，如果够输直接算分，不够输就按照比例算分
@@ -97,19 +102,20 @@ func (s *StateSettlement) Enter() {
 		totalMasterLoseScore += winScore
 		winScores[winSeat] = winScore
 	}
+	s.Log().Infow("totalMasterLoseScore", "total", totalMasterLoseScore, "master score", master.score, "winScores", winScores)
 
 	if master.score >= totalMasterLoseScore {
 		for seat, score := range winScores {
 			master.updateScore(-score)
 			s.niuniuPlayers[seat].updateScore(score)
-			settlementMsg.WinScores[int32(seat)] = s.niuniuPlayers[seat].winScore
+			s.settlementMsg.WinScores[int32(seat)] = s.niuniuPlayers[seat].winScore
 		}
 	} else {
 		for seat, score := range winScores {
 			winScore := master.score * score / totalMasterLoseScore
 			master.updateScore(-winScore)
 			s.niuniuPlayers[seat].updateScore(winScore)
-			settlementMsg.WinScores[int32(seat)] = s.niuniuPlayers[seat].winScore
+			s.settlementMsg.WinScores[int32(seat)] = s.niuniuPlayers[seat].winScore
 		}
 	}
 
@@ -146,7 +152,7 @@ func (s *StateSettlement) Enter() {
 				OccurAt:   tools.Now(),
 			})
 			if len(modifyRspCount) == count {
-				s.afterSettle(settlementMsg)
+				s.afterSettle(s.settlementMsg)
 			}
 		})
 	})
@@ -154,6 +160,7 @@ func (s *StateSettlement) Enter() {
 }
 
 func (s *StateSettlement) Leave() {
+	s.settlementMsg = nil
 	s.Log().Infow("[NiuNiu] leave state settlement ==================SETTLEMENT==================", "room", s.room.RoomId)
 	s.Log().Infof(" ")
 	s.Log().Infof(" ")

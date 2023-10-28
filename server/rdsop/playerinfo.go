@@ -44,10 +44,15 @@ func PlayerInfo(shortId int64) (info inner.PlayerInfo) {
 func SetPlayerDailyStat(shortId, score int64) {
 	stat := &outer.PlayerDailyStat{}
 	key := PlayerDailyStatKey(shortId)
-	str := rds.Ins.Get(context.Background(), key).Val()
-	err := json.Unmarshal([]byte(str), stat)
-	if err != nil {
-		log.Errorw("PlayerInfo json unmarshal failed", "err", err, "key", key)
+	str, err := rds.Ins.Get(context.Background(), key).Result()
+	if err == nil {
+		jsonErr := json.Unmarshal([]byte(str), stat)
+		if jsonErr != nil {
+			log.Errorw("PlayerInfo json unmarshal failed", "err", jsonErr, "key", key, "str", str)
+			return
+		}
+	} else if err != redis.Nil {
+		log.Errorw("PlayerInfo redis get key failed", "err", err, "key", key)
 		return
 	}
 

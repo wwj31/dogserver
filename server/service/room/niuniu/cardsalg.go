@@ -236,10 +236,12 @@ func (p PokerCards) AnalyzeCards(params *outer.NiuNiuParams) (cardsGroup CardsGr
 			}
 			cardsGroup.Type = PokerCardsType(niuniuType)
 		}
-
 		return
-
 	}
+
+	// 没牛
+	cardsGroup.Cards = p.Sort()
+
 	return
 }
 

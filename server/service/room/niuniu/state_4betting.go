@@ -2,6 +2,7 @@ package niuniu
 
 import (
 	"reflect"
+	"server/common"
 	"time"
 
 	"github.com/wwj31/dogactor/tools"
@@ -56,7 +57,7 @@ func (s *StateBetting) Enter() {
 		})
 		s.SwitchTo(ShowCards)
 	})
-	s.Log().Infow("[NiuNiu] enter state Betting ", "room", s.room.RoomId)
+	s.Log().Infow("[NiuNiu] enter state Betting ", "room", s.room.RoomId, "bet seat", s.betGoldSeats)
 }
 
 func (s *StateBetting) Leave() {
@@ -73,25 +74,26 @@ func (s *StateBetting) Handle(shortId int64, v any) (result any) {
 	switch req := v.(type) {
 	case *outer.NiuNiuToBettingReq: // 押注
 		seat := int32(s.SeatIndex(shortId))
+		gold := int64(req.Gold * common.Gold1000Times)
 		// 发的分大于底分的5倍，算推注
-		if req.Gold > s.baseScore()*5 {
+		if gold > s.baseScore()*5 {
 			if err := s.canPushBet(shortId); err != outer.ERROR_OK {
 				return err
 			}
 		}
 
 		// 身上钱不够押注
-		if req.Gold < player.Gold {
+		if gold < player.Gold {
 			return outer.ERROR_GOLD_NOT_ENOUGH
 		}
 
 		// 操作最大押注金额
-		if s.gameParams().PushBetTimes > 0 && req.Gold > s.baseScore()*int64(s.gameParams().PushBetTimes) {
+		if s.gameParams().PushBetTimes > 0 && gold > s.baseScore()*int64(s.gameParams().PushBetTimes) {
 			return outer.ERROR_NIUNIU_BETTING_OUT_OF_RANGE
 		}
 
 		// 抢过庄的，不能选1倍数
-		if s.masterTimesSeats[seat] > 0 && req.Gold <= s.baseScore() {
+		if s.masterTimesSeats[seat] > 0 && gold <= s.baseScore() {
 			return outer.ERROR_NIUNIU_BETTING_HAS_BE_MASTER
 		}
 
@@ -99,7 +101,7 @@ func (s *StateBetting) Handle(shortId int64, v any) (result any) {
 			return outer.ERROR_NIUNIU_HAS_BE_BET
 		}
 
-		s.betGoldSeats[seat] = req.Gold
+		s.betGoldSeats[seat] = gold
 		s.room.Broadcast(&outer.NiuNiuSelectBettingNtf{
 			ShortId: shortId,
 			Gold:    s.betGoldSeats[seat],

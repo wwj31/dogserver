@@ -24,9 +24,7 @@ func (s *StateMaster) State() int {
 
 func (s *StateMaster) Enter() {
 	s.masterTimesSeats = make(map[int32]int32)
-	s.RangePartInPlayer(func(seat int, player *niuniuPlayer) {
-		s.masterTimesSeats[int32(seat)] = -1
-	})
+	s.RangePartInPlayer(func(seat int, player *niuniuPlayer) { s.masterTimesSeats[int32(seat)] = -1 })
 
 	s.timeout = tools.UUID()
 	expireAt := tools.Now().Add(MasterExpiration)
@@ -34,8 +32,12 @@ func (s *StateMaster) Enter() {
 
 	s.room.AddTimer(s.timeout, expireAt, func(dt time.Duration) {
 		for seat, v := range s.masterTimesSeats {
-			if v == 0 {
+			if v == -1 {
 				s.masterTimesSeats[seat] = 0
+				s.room.Broadcast(&outer.NiuNiuSelectMasterNtf{
+					ShortId: s.niuniuPlayers[seat].ShortId,
+					Times:   0,
+				})
 			}
 		}
 		s.decideMaster()
@@ -45,7 +47,12 @@ func (s *StateMaster) Enter() {
 }
 
 func (s *StateMaster) Leave() {
-	s.Log().Infow("[NiuNiu] leave state master", "room", s.room.RoomId)
+	s.Log().Infow("[NiuNiu] leave state master",
+		"room", s.room.RoomId,
+		"master", s.niuniuPlayers[s.masterIndex].ShortId,
+		"master times", s.masterTimesSeats,
+		"push bet index", s.pushBetIndex,
+	)
 }
 
 // 确定庄家
@@ -103,6 +110,10 @@ func (s *StateMaster) Handle(shortId int64, v any) (result any) {
 		}
 
 		s.masterTimesSeats[seat] = req.Times
+		s.room.Broadcast(&outer.NiuNiuSelectMasterNtf{
+			ShortId: player.ShortId,
+			Times:   req.Times,
+		})
 
 		// 如果所有人都选择完成，就确定庄家，并且进入下个状态
 		if len(s.masterTimesSeats) == s.participantCount() {

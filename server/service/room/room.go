@@ -311,7 +311,7 @@ func (r *Room) GamblingData(shortId int64) []byte {
 		r.Log().Errorw("gambling data marshal failed", "room", r.RoomId, "param", r.GameParams.String())
 	}
 
-	r.Log().Infow("gambling data", "room id ", r.RoomId, "data", data.String())
+	r.Log().Infow("gambling data", "shortId", shortId, "data", data.String())
 	return payload
 }
 

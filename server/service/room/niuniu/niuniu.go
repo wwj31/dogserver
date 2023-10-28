@@ -70,6 +70,7 @@ type (
 		masterTimesSeats map[int32]int32 // 每个位置抢庄的倍数
 		betGoldSeats     map[int32]int64 // 每个位置押注的分数
 		showCards        map[int32]int32 // 亮牌的位置
+		settlementMsg    *outer.NiuNiuSettlementNtf
 	}
 )
 
@@ -99,6 +100,7 @@ func (n *NiuNiu) Data(shortId int64) proto.Message {
 		MasterIndex:  int32(n.masterIndex),
 		MasterTimes:  n.masterTimesSeats,
 		BetGold:      n.betGoldSeats,
+		Settlement:   n.settlementMsg,
 	}
 	return info
 }

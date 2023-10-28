@@ -192,3 +192,27 @@ var _ = reg("hu", func(arg ...string) {
 	}
 	client.Req(outer.Msg_IdMahjongBTEOperateReq, req)
 })
+
+// 牛牛 抢庄
+var _ = reg("master", func(arg ...string) {
+	if len(arg) != 1 {
+		return
+	}
+
+	req := &outer.NiuNiuToBeMasterReq{
+		Times: cast.ToInt32(arg[0]),
+	}
+	client.Req(outer.Msg_IdNiuNiuToBeMasterReq, req)
+})
+
+// 牛牛 押注
+var _ = reg("bet", func(arg ...string) {
+	if len(arg) != 1 {
+		return
+	}
+
+	req := &outer.NiuNiuToBettingReq{
+		Gold: cast.ToFloat32(arg[0]),
+	}
+	client.Req(outer.Msg_IdNiuNiuToBettingReq, req)
+})
