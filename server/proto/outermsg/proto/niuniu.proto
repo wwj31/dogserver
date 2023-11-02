@@ -30,7 +30,7 @@ message NiuNiuPlayerInfo {
     repeated int32      HandCards      = 5;
 
     int64               Score          = 6;// 玩家本局拥有的分数
-    bool                CanPushBet     = 7; // 本次押注能否推注(仅在押注阶段用，其余阶段都是false)
+    bool                CanPushBet     = 7; // 本次押注能否推注
 }
 
 // 牌型数据
@@ -97,9 +97,9 @@ message NiuNiuSelectMasterNtf {
 
 // 开始押注状态通知
 message NiuNiuBettingNtf {
-    int64 ExpireAt              = 1;// 押注结束时间(毫秒)
-    int32 MasterSeat            = 2;// 抢庄结束后，确定的庄家位置
-    repeated int32 CanPushSeats = 3; // 可以推注的位置
+    int64 ExpireAt                 = 1; // 押注结束时间(毫秒)
+    int32 MasterSeat               = 2; // 抢庄结束后，确定的庄家位置
+    map<int32,int64> CanPushSeats  = 3; // <可推注的位置，上一把赢的金额>
 }
 
 // 押注操作广播

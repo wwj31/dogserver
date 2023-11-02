@@ -26,10 +26,10 @@ func (s *StateBetting) Enter() {
 
 	s.timeout = tools.UUID()
 	expireAt := tools.Now().Add(BettingExpiration)
-	pushBetSeat := make([]int32, 0)
+	pushBetSeat := make(map[int32]int64)
 	for seat, player := range s.niuniuPlayers {
 		if player != nil && s.canPushBet(player.ShortId) == outer.ERROR_OK {
-			pushBetSeat = append(pushBetSeat, int32(seat))
+			pushBetSeat[int32(seat)] = player.LastWinScore
 		}
 	}
 
@@ -79,6 +79,10 @@ func (s *StateBetting) Handle(shortId int64, v any) (result any) {
 		if gold > s.baseScore()*5 {
 			if err := s.canPushBet(shortId); err != outer.ERROR_OK {
 				return err
+			}
+
+			if gold > player.LastWinScore {
+				return outer.ERROR_NIUNIU_DISALLOW_PUSH_GOLD_OUT_LAST_WIN
 			}
 		}
 

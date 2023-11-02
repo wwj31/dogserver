@@ -30,6 +30,7 @@ func (s *StateDeal) Enter() {
 		if player != nil {
 			s.playerGameCount[player.ShortId]++
 			player.ready = true
+			player.winScore = 0
 		}
 	}
 

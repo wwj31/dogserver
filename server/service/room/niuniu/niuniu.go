@@ -49,6 +49,7 @@ type (
 		*room.Player
 		score         int64 // 本局参与的实时分
 		winScore      int64 // 单局的总输赢
+		LastWinScore  int64 // 上一把总输赢
 		ready         bool
 		readyExpireAt time.Time
 		handCards     PokerCards
@@ -310,6 +311,7 @@ func (n *NiuNiu) allSeats(ignoreSeat ...int) (result []int) {
 func (m *niuniuPlayer) updateScore(val int64) {
 	m.score += val
 	m.winScore += val // 单局总输赢
+	m.LastWinScore += val
 }
 
 func (n *NiuNiu) playerCount() int32 {

@@ -94,6 +94,7 @@ enum ERROR {
    NIUNIU_DISALLOW_PUSH_WITH_NOT_WIN        = 409; // 上把没赢，不允许推注
    NIUNIU_DISALLOW_PUSH_WITH_LAST_IS_MASTER = 410; // 上把是庄家，不允许推注
    NIUNIU_DISALLOW_PUSH_WITH_NOT_BETTING    = 411; // 不是推注判断阶段
+   NIUNIU_DISALLOW_PUSH_GOLD_OUT_LAST_WIN   = 412; // 不能推注，推注金额超过上一把赢的金额
 
 }
 
