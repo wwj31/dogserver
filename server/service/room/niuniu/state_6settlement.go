@@ -36,7 +36,6 @@ func (s *StateSettlement) Enter() {
 		EndAt:            s.currentStateEndAt.UnixMilli(),
 		GameSettlementAt: tools.Now().UnixMilli(),
 		WinScores:        map[int32]int64{},
-		CardsTypes:       map[int32]*outer.NiuNiuCardsGroup{},
 	}
 
 	// 先分别统计输家和赢家,排除庄家
@@ -47,8 +46,7 @@ func (s *StateSettlement) Enter() {
 	)
 
 	master := s.niuniuPlayers[s.masterIndex]
-	masterCardsType := s.niuniuPlayers[s.masterIndex].handCards.AnalyzeCards(s.gameParams()) // 先拿到庄家牌型
-	s.settlementMsg.CardsTypes[int32(s.masterIndex)] = masterCardsType.ToPB()
+	masterCardsType := s.niuniuPlayers[s.masterIndex].cardsGroup // 先拿到庄家牌型
 	s.RangePartInPlayer(func(seat int, player *niuniuPlayer) {
 		if seat == s.masterIndex {
 			return
@@ -57,7 +55,6 @@ func (s *StateSettlement) Enter() {
 		// 闲家赢加入winners,闲家输加入losers
 		playerCardsType := player.handCards.AnalyzeCards(s.gameParams())
 		playerCardsTypes[seat] = playerCardsType
-		s.settlementMsg.CardsTypes[int32(seat)] = playerCardsType.ToPB()
 		playerIsWin := playerCardsType.GreaterThan(masterCardsType)
 		if playerIsWin {
 			winners = append(winners, seat)

@@ -53,6 +53,7 @@ type (
 		ready         bool
 		readyExpireAt time.Time
 		handCards     PokerCards
+		cardsGroup    CardsGroup
 	}
 
 	NiuNiu struct {
@@ -256,6 +257,7 @@ func (n *NiuNiu) playersToPB(shortId int64) (players []*outer.NiuNiuPlayerInfo) 
 				Ready:         player.ready,
 				ReadyExpireAt: player.readyExpireAt.UnixMilli(),
 				HandCards:     handCards,
+				CardsType:     player.cardsGroup.ToPB(),
 				Score:         player.score,
 				CanPushBet:    n.canPushBet(player.ShortId) == outer.ERROR_OK,
 			})
@@ -332,7 +334,7 @@ func (n *NiuNiu) canPushBet(shortId int64) outer.ERROR {
 
 	player, seat := n.findNiuNiuPlayer(shortId)
 	// 上把没赢钱，或者赢钱小于5倍底分，不能推注
-	if player.winScore <= 0 || player.winScore < n.baseScore()*5 {
+	if player.LastWinScore <= 0 || player.LastWinScore < n.baseScore()*5 {
 		return outer.ERROR_NIUNIU_DISALLOW_PUSH_WITH_NOT_WIN
 	}
 

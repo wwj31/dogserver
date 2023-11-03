@@ -28,9 +28,10 @@ message NiuNiuPlayerInfo {
     // 手牌 (梅花101-113 方块201-213 红心301-313 黑桃401-413 小王516 大王517)
     // NOTE: 401:黑桃A 402:黑桃2 411:黑桃J 412:黑桃Q 413:黑桃K 其他花色同理
     repeated int32      HandCards      = 5;
+    NiuNiuCardsGroup    CardsType      = 6;// 亮牌后才有
 
-    int64               Score          = 6;// 玩家本局拥有的分数
-    bool                CanPushBet     = 7; // 本次押注能否推注
+    int64               Score          = 7;// 玩家本局拥有的分数
+    bool                CanPushBet     = 8; // 本次押注能否推注
 }
 
 // 牌型数据
@@ -116,8 +117,9 @@ message NiuNiuShowCardsNtf {
 
 // 亮牌通知
 message NiuNiuFinishShowCardsNtf {
-    int64 ShortId             = 1; // 亮牌的玩家
-    repeated int32 HandCards  = 2; // 自己的最新手牌
+    int64 ShortId              = 1; // 亮牌的玩家
+    repeated int32 HandCards   = 2; // 亮牌玩家的手牌
+    NiuNiuCardsGroup CardsType = 3; // 手牌牌行
 }
 
 
@@ -127,5 +129,4 @@ message NiuNiuSettlementNtf {
     int64    EndAt                        = 2; // 结算结束时间
     repeated NiuNiuPlayerInfo players     = 3; // 亮牌后的信息
     map<int32,int64> WinScores            = 4; // 每个位置的玩家总输赢,正数是赢，负数是输
-    map<int32,NiuNiuCardsGroup> CardsTypes = 5; // 每个位置的牌型分析
 }

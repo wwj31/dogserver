@@ -28,9 +28,11 @@ func (s *StateShow) Enter() {
 	s.room.AddTimer(s.timeout, expireAt, func(dt time.Duration) {
 		s.RangePartInPlayer(func(seat int, player *niuniuPlayer) {
 			if s.showCards[int32(seat)] == 0 {
+				player.cardsGroup = player.handCards.AnalyzeCards(s.gameParams())
 				s.room.Broadcast(&outer.NiuNiuFinishShowCardsNtf{
 					ShortId:   player.ShortId,
 					HandCards: player.handCards.ToPB(),
+					CardsType: player.cardsGroup.ToPB(),
 				})
 			}
 			s.showCards[int32(seat)] = 1
@@ -65,9 +67,11 @@ func (s *StateShow) Handle(shortId int64, v any) (result any) {
 	switch req := v.(type) {
 	case *outer.NiuNiuShowCardsReq: // 亮牌
 		s.showCards[int32(s.SeatIndex(shortId))] = 1
+		player.cardsGroup = player.handCards.AnalyzeCards(s.gameParams())
 		s.room.Broadcast(&outer.NiuNiuFinishShowCardsNtf{
 			ShortId:   shortId,
 			HandCards: player.handCards.ToPB(),
+			CardsType: player.cardsGroup.ToPB(),
 		})
 
 		if len(s.showCards) == s.participantCount() {
