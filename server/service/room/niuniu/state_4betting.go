@@ -113,6 +113,7 @@ func (s *StateBetting) Handle(shortId int64, v any) (result any) {
 			Gold:    s.betGoldSeats[seat],
 		})
 
+		s.Log().Infow("NiuNiuToBettingReq", "shortId", shortId, "seat", seat, "req", req.String(), "betGoldSeats", s.betGoldSeats)
 		if len(s.betGoldSeats) == s.participantCount() {
 			s.SwitchTo(ShowCards)
 		}

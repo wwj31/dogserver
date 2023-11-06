@@ -116,15 +116,16 @@ func (s *StateMaster) Handle(shortId int64, v any) (result any) {
 			Times:   req.Times,
 		})
 
-		swtichToNext := true
+		switchToNext := true
 		for _, val := range s.masterTimesSeats {
 			if val == -1 {
-				swtichToNext = false
+				switchToNext = false
 			}
 		}
+		s.Log().Infow("NiuNiuToBeMasterReq", "shortId", shortId, "seat", seat, "req", req.String(), "switch", switchToNext)
 
 		// 如果所有人都选择完成，就确定庄家，并且进入下个状态
-		if swtichToNext {
+		if switchToNext {
 			s.decideMaster()
 		}
 		return &outer.NiuNiuToBeMasterRsp{}
