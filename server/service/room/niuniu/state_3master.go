@@ -48,8 +48,7 @@ func (s *StateMaster) Enter() {
 
 func (s *StateMaster) Leave() {
 	s.room.CancelTimer(s.timeout)
-	s.Log().Infow("[NiuNiu] leave state master",
-		"room", s.room.RoomId,
+	s.Log().Infow("[NiuNiu] leave state master", "room", s.room.RoomId,
 		"master", s.niuniuPlayers[s.masterIndex].ShortId,
 		"master times", s.masterTimesSeats,
 		"push bet index", s.pushBetIndex,
