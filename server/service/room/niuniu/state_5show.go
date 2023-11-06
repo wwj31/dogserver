@@ -54,6 +54,7 @@ func (s *StateShow) Enter() {
 }
 
 func (s *StateShow) Leave() {
+	s.room.CancelTimer(s.timeout)
 	s.Log().Infow("[NiuNiu] leave state Show", "room", s.room.RoomId)
 }
 

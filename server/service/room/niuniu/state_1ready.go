@@ -12,7 +12,7 @@ import (
 
 type StateReady struct {
 	*NiuNiu
-	timeId string
+	timeout string
 }
 
 func (s *StateReady) State() int {
@@ -22,7 +22,7 @@ func (s *StateReady) State() int {
 func (s *StateReady) Enter() {
 	s.onPlayerEnter = s.playerEnter
 	s.onPlayerLeave = s.playerLeave
-	s.timeId = ""
+	s.timeout = ""
 
 	s.RangePartInPlayer(func(seat int, player *niuniuPlayer) {
 		if player.Gold <= s.baseScore() {
@@ -37,6 +37,7 @@ func (s *StateReady) Enter() {
 }
 
 func (s *StateReady) Leave() {
+	s.room.CancelTimer(s.timeout)
 	s.onPlayerEnter = nil
 	s.onPlayerLeave = nil
 	s.Log().Infow("[NiuNiu] leave state ready", "room", s.room.RoomId)
@@ -47,10 +48,10 @@ func (s *StateReady) Handle(shortId int64, v any) (result any) {
 }
 
 func (s *StateReady) checkAndSwitchNext() {
-	if s.playerCount() >= s.gameParams().MinPlayPlayerCount && s.timeId == "" {
-		s.timeId = tools.UUID()
+	if s.playerCount() >= s.gameParams().MinPlayPlayerCount && s.timeout == "" {
+		s.timeout = tools.UUID()
 		expireAt := tools.Now().Add(ReadyExpiration)
-		s.room.AddTimer(s.timeId, expireAt, func(dt time.Duration) {
+		s.room.AddTimer(s.timeout, expireAt, func(dt time.Duration) {
 			s.SwitchTo(Deal)
 		})
 		s.room.Broadcast(&outer.NiuNiuStartCountDownNtf{ExpireAt: expireAt.UnixMilli()})
@@ -62,9 +63,9 @@ func (s *StateReady) playerEnter(player *niuniuPlayer) {
 }
 
 func (s *StateReady) playerLeave(player *niuniuPlayer) {
-	if s.playerCount() < s.gameParams().MinPlayPlayerCount && s.timeId != "" {
-		s.room.CancelTimer(s.timeId)
+	if s.playerCount() < s.gameParams().MinPlayPlayerCount && s.timeout != "" {
+		s.room.CancelTimer(s.timeout)
 		s.room.Broadcast(&outer.NiuNiuStopCountDownNtf{})
-		s.timeId = ""
+		s.timeout = ""
 	}
 }

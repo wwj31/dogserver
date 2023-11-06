@@ -2,8 +2,9 @@ package niuniu
 
 import (
 	"reflect"
-	"server/common"
 	"time"
+
+	"server/common"
 
 	"github.com/wwj31/dogactor/tools"
 
@@ -61,6 +62,7 @@ func (s *StateBetting) Enter() {
 }
 
 func (s *StateBetting) Leave() {
+	s.room.CancelTimer(s.timeout)
 	s.Log().Infow("[NiuNiu] leave state Betting", "room", s.room.RoomId, "bet seat", s.betGoldSeats)
 }
 

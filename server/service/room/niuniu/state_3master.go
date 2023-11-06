@@ -47,6 +47,7 @@ func (s *StateMaster) Enter() {
 }
 
 func (s *StateMaster) Leave() {
+	s.room.CancelTimer(s.timeout)
 	s.Log().Infow("[NiuNiu] leave state master",
 		"room", s.room.RoomId,
 		"master", s.niuniuPlayers[s.masterIndex].ShortId,
@@ -115,8 +116,15 @@ func (s *StateMaster) Handle(shortId int64, v any) (result any) {
 			Times:   req.Times,
 		})
 
+		swtichToNext := true
+		for _, val := range s.masterTimesSeats {
+			if val == -1 {
+				swtichToNext = false
+			}
+		}
+
 		// 如果所有人都选择完成，就确定庄家，并且进入下个状态
-		if len(s.masterTimesSeats) == s.participantCount() {
+		if swtichToNext {
 			s.decideMaster()
 		}
 		return &outer.NiuNiuToBeMasterRsp{}
