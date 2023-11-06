@@ -54,7 +54,7 @@ func (s *StateDeal) Enter() {
 	})
 
 	// 发牌动画后，进入下个状态
-	s.currentStateEndAt = tools.Now().Add(DealExpiration)
+	s.currentStateEndAt = tools.Now().Add(DealExpiration * time.Duration(s.participantCount())).Add(2 * time.Second)
 	s.room.AddTimer(tools.XUID(), s.currentStateEndAt, func(dt time.Duration) {
 		s.SwitchTo(DecideMaster)
 	})
