@@ -17,7 +17,7 @@ import (
 
 const (
 	ReadyExpiration     = 5 * time.Second  // 倒计时进入发牌时间
-	DealExpiration      = 1 * time.Second  // 发牌状态持续时间(参与人数*该值)
+	DealExpiration      = 3 * time.Second  // 发牌状态持续时间(参与人数*该值)
 	MasterExpiration    = 10 * time.Second // 抢庄状态持续时间
 	BettingExpiration   = 10 * time.Second // 押注状态持续时间
 	ShowCardsExpiration = 10 * time.Second // 亮牌状态持续时间

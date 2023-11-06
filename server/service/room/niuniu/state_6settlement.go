@@ -28,7 +28,7 @@ func (s *StateSettlement) State() int {
 
 func (s *StateSettlement) Enter() {
 	s.lastMasterShort = s.niuniuPlayers[s.masterIndex].ShortId
-	s.currentStateEndAt = tools.Now().Add(SettlementDuration)
+	s.currentStateEndAt = tools.Now().Add(SettlementDuration).Add(time.Duration(s.participantCount()) * time.Second)
 	s.Log().Infow("[NiuNiu] enter state settlement", "room", s.room.RoomId,
 		"master", s.masterIndex, "endAt", s.currentStateEndAt.UnixMilli())
 
