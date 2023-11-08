@@ -67,7 +67,7 @@ type (
 		playerGameCount  map[int64]int32 // 参与者的游戏次数
 		masterIndex      int             // 庄家位置
 		lastMasterShort  int64           // 上一把庄家shortId
-		pushBetIndex     []int           // 抢庄后，能推注的玩家位置
+		pushBetIndex     []int32         // 抢庄后，能推注的玩家位置
 		niuniuPlayers    []*niuniuPlayer // 参与游戏的玩家  seat->player
 		masterTimesSeats map[int32]int32 // 每个位置抢庄的倍数
 		betGoldSeats     map[int32]int64 // 每个位置押注的分数
@@ -351,7 +351,7 @@ func (n *NiuNiu) canPushBet(shortId int64) outer.ERROR {
 	// 剩下的判断只可能是在,抢庄和押注阶段
 	var can bool
 	for _, index := range n.pushBetIndex {
-		if seat == index {
+		if seat == int(index) {
 			can = true
 			break
 		}

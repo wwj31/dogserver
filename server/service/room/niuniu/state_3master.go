@@ -72,15 +72,15 @@ func (s *StateMaster) decideMaster() {
 		return arr[i].Times > arr[j].Times
 	})
 
-	selects := []int{int(arr[0].Seat)}
+	selects := []int32{arr[0].Seat}
 	for i := 1; i < len(arr); i++ {
 		if arr[i].Times == arr[0].Times {
-			selects = append(selects, int(arr[i].Seat))
+			selects = append(selects, arr[i].Seat)
 		}
 	}
 
 	randSeat := rand.Intn(len(selects))
-	s.masterIndex = selects[randSeat]
+	s.masterIndex = int(selects[randSeat])
 	if arr[0].Times > 0 {
 		s.pushBetIndex = append(selects[:randSeat], selects[randSeat+1:]...)
 	}

@@ -35,9 +35,10 @@ func (s *StateBetting) Enter() {
 	}
 
 	s.room.Broadcast(&outer.NiuNiuBettingNtf{
-		ExpireAt:     expireAt.UnixMilli(),
-		MasterSeat:   int32(s.masterIndex),
-		CanPushSeats: pushBetSeat, // 能推注的位置
+		ExpireAt:         expireAt.UnixMilli(),
+		MasterSeat:       int32(s.masterIndex),
+		CanPushSeats:     pushBetSeat, // 能推注的位置
+		SelectMasterSeat: append(s.pushBetIndex, int32(s.masterIndex)),
 	})
 
 	s.room.AddTimer(s.timeout, expireAt, func(dt time.Duration) {
