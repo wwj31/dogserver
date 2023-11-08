@@ -8,6 +8,7 @@ import (
 
 	"github.com/wwj31/dogactor/tools"
 
+	"server/common"
 	"server/proto/outermsg/outer"
 )
 
@@ -83,6 +84,9 @@ func (s *StateMaster) decideMaster() {
 	if arr[0].Times > 0 {
 		s.pushBetIndex = append(selects[:randSeat], selects[randSeat+1:]...)
 	}
+
+	// 如果大家都不抢选出来的庄家，按照1倍算
+	s.masterTimesSeats[int32(s.masterIndex)] = common.Min(1, s.masterTimesSeats[int32(s.masterIndex)])
 	s.SwitchTo(Betting)
 }
 

@@ -88,7 +88,7 @@ func (s *StateSettlement) Enter() {
 		master.updateScore(winScore)
 		s.niuniuPlayers[loserSeat].updateScore(-winScore)
 		s.settlementMsg.WinScores[int32(loserSeat)] = s.niuniuPlayers[loserSeat].winScore
-		s.Log().Infow("loser", "short", loser.ShortId, "win score", winScore, "calc score", calcScore)
+		s.Log().Infow("settle losers", "short", loser.ShortId, "win score", winScore, "calc score", calcScore)
 	}
 
 	// 统计庄家总共需要输的钱，如果够输直接算分，不够输就按照比例算分
@@ -98,6 +98,7 @@ func (s *StateSettlement) Enter() {
 		winScore := winFunc(winSeat, playerCardsTypes[winSeat])
 		totalMasterLoseScore += winScore
 		winScores[winSeat] = winScore
+		s.Log().Infow("settle winners", "win seat", winSeat, "")
 	}
 	s.Log().Infow("totalMasterLoseScore", "total", totalMasterLoseScore, "master score", master.score, "winScores", winScores)
 
