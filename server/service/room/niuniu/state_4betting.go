@@ -89,7 +89,7 @@ func (s *StateBetting) Handle(shortId int64, v any) (result any) {
 		}
 
 		// 身上钱不够押注
-		if gold < player.Gold {
+		if gold > player.Gold {
 			return outer.ERROR_GOLD_NOT_ENOUGH
 		}
 
