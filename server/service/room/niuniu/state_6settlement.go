@@ -75,8 +75,8 @@ func (s *StateSettlement) Enter() {
 	}
 
 	// 赢家赢钱计算公式
-	winFunc := func(loseSeat int, winnerCardsGroup CardsGroup) (winScore int64) {
-		return int64(s.masterTimesSeats[int32(s.masterIndex)]) * s.betGoldSeats[int32(loseSeat)] * int64(cardTypeTimes[winnerCardsGroup.Type])
+	winFunc := func(seat int, winnerCardsGroup CardsGroup) (winScore int64) {
+		return int64(s.masterTimesSeats[int32(s.masterIndex)]) * s.betGoldSeats[int32(seat)] * int64(cardTypeTimes[winnerCardsGroup.Type])
 	}
 
 	// 先计算庄家赢的钱
@@ -95,7 +95,7 @@ func (s *StateSettlement) Enter() {
 	var totalMasterLoseScore int64
 	winScores := map[int]int64{} // 每个位置分别需要赔多少钱
 	for _, winSeat := range winners {
-		winScore := winFunc(s.masterIndex, playerCardsTypes[winSeat])
+		winScore := winFunc(winSeat, playerCardsTypes[winSeat])
 		totalMasterLoseScore += winScore
 		winScores[winSeat] = winScore
 	}
@@ -115,6 +115,8 @@ func (s *StateSettlement) Enter() {
 			s.settlementMsg.WinScores[int32(seat)] = s.niuniuPlayers[seat].winScore
 		}
 	}
+	// 所有输赢的闲家都统计完了，再把庄家的数据加入结算中
+	s.settlementMsg.WinScores[int32(s.masterIndex)] = s.niuniuPlayers[s.masterIndex].winScore
 
 	/////////////////////////////// 抽水返利 ///////////////////////////////
 	s.profitAndRebate()
