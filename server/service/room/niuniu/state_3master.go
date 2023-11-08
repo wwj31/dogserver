@@ -86,7 +86,7 @@ func (s *StateMaster) decideMaster() {
 	}
 
 	// 如果大家都不抢选出来的庄家，按照1倍算
-	s.masterTimesSeats[int32(s.masterIndex)] = common.Min(1, s.masterTimesSeats[int32(s.masterIndex)])
+	s.masterTimesSeats[int32(s.masterIndex)] = common.Max(1, s.masterTimesSeats[int32(s.masterIndex)])
 	s.SwitchTo(Betting)
 }
 
