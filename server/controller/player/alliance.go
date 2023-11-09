@@ -18,11 +18,7 @@ var _ = router.Reg(func(player *player.Player, msg *inner.AllianceInfoNtf) any {
 	player.Alliance().SetAllianceId(msg.AllianceId)
 	player.Alliance().SetPosition(msg.Position)
 
-	if msg.AllianceId == 0 && player.Role().UpShortId() == msg.OpShortId {
-		player.Role().SetUpShortId(0)
-	}
 	player.UpdateInfoToRedis()
-
 	player.SendToClient(&outer.AllianceInfoNtf{
 		AllianceId: msg.AllianceId,
 		Position:   msg.Position,

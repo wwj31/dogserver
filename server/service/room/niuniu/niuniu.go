@@ -6,10 +6,10 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/wwj31/dogactor/logger"
 
+	"github.com/wwj31/dogactor/tools"
+
 	"server/common"
 	"server/proto/outermsg/outer"
-
-	"github.com/wwj31/dogactor/tools"
 
 	"server/proto/innermsg/inner"
 	"server/service/room"
@@ -363,4 +363,13 @@ func (n *NiuNiu) canPushBet(shortId int64) outer.ERROR {
 	}
 
 	return outer.ERROR_OK
+}
+
+func (n *NiuNiu) clear() {
+	for seatIndex, oldPlayer := range n.niuniuPlayers {
+		if oldPlayer != nil {
+			n.niuniuPlayers[seatIndex] = n.newNiuNiuPlayer(oldPlayer.Player)
+			n.niuniuPlayers[seatIndex].LastWinScore = oldPlayer.LastWinScore
+		}
+	}
 }

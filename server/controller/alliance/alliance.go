@@ -1,6 +1,8 @@
 package alliance
 
 import (
+	"time"
+
 	"server/common"
 	"server/common/actortype"
 	"server/common/log"
@@ -8,7 +10,6 @@ import (
 	"server/proto/outermsg/outer"
 	"server/rdsop"
 	"server/service/alliance"
-	"time"
 
 	"server/common/router"
 )
@@ -140,19 +141,10 @@ var _ = router.Reg(func(alli *alliance.Alliance, msg *inner.KickOutMembersReq) a
 		alli.KickOutMember(shortId)
 
 		if playerInfo.GSession != "" {
-			alli.Request(actortype.PlayerId(member.RID), &inner.AllianceInfoNtf{
+			_ = alli.Send(actortype.PlayerId(member.RID), &inner.AllianceInfoNtf{
 				OpShortId:  msg.OpShortId,
 				AllianceId: 0,
 				Position:   0,
-			}, time.Second).Handle(func(resp any, err error) {
-				if err != nil {
-					playerInfo.Position = 0
-					playerInfo.AllianceId = 0
-					if playerInfo.UpShortId == msg.OpShortId {
-						playerInfo.UpShortId = 0
-					}
-					rdsop.SetPlayerInfo(&playerInfo)
-				}
 			})
 		}
 	}

@@ -26,7 +26,6 @@ type Role interface {
 	Icon() string
 	Gender() int32
 	UpShortId() int64
-	SetUpShortId(shortId int64)
 	SetBaseInfo(icon, name string, gender int32)
 	CreateAt() time.Time
 	LoginAt() time.Time
