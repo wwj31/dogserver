@@ -91,11 +91,6 @@ func (s *Alliance) OnLogin(first bool, enterGameRsp *outer.EnterGameRsp) {
 		if !ok {
 			return
 		}
-
-		if memberInfoRsp.AllianceId == 0 {
-			s.Player.Role().SetUpShortId(0)
-		}
-
 		s.data.Position = memberInfoRsp.Position
 		s.data.AllianceId = memberInfoRsp.AllianceId
 		s.Player.UpdateInfoToRedis()

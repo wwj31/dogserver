@@ -179,6 +179,8 @@ func (s *StateSettlement) afterSettle(ntf *outer.NiuNiuSettlementNtf) {
 
 	s.room.Broadcast(ntf)
 
+	s.clear()
+
 	// 结算给个短暂的时间
 	s.room.AddTimer(tools.XUID(), s.currentStateEndAt, func(dt time.Duration) {
 		s.SwitchTo(Ready)
