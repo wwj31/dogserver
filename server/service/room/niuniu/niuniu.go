@@ -68,6 +68,7 @@ type (
 		masterIndex      int             // 庄家位置
 		lastMasterShort  int64           // 上一把庄家shortId
 		pushBetIndex     []int32         // 抢庄后，能推注的玩家位置
+		randMasterSeat   []int32         // 参与随机选庄的位置
 		niuniuPlayers    []*niuniuPlayer // 参与游戏的玩家  seat->player
 		masterTimesSeats map[int32]int32 // 每个位置抢庄的倍数
 		betGoldSeats     map[int32]int64 // 每个位置押注的分数

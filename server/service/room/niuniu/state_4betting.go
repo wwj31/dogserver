@@ -34,14 +34,13 @@ func (s *StateBetting) Enter() {
 		}
 	}
 
-	selectMasterSeat := append(s.pushBetIndex, int32(s.masterIndex))
 	s.room.Broadcast(&outer.NiuNiuBettingNtf{
 		ExpireAt:         expireAt.UnixMilli(),
 		MasterSeat:       int32(s.masterIndex),
 		CanPushSeats:     pushBetSeat, // 能推注的位置
-		SelectMasterSeat: selectMasterSeat,
+		SelectMasterSeat: s.randMasterSeat,
 	})
-	if len(selectMasterSeat) >= 2 {
+	if len(s.randMasterSeat) >= 2 {
 		expireAt = expireAt.Add(3 * time.Second)
 	}
 
@@ -63,7 +62,7 @@ func (s *StateBetting) Enter() {
 		})
 		s.SwitchTo(ShowCards)
 	})
-	s.Log().Infow("[NiuNiu] enter state Betting ", "room", s.room.RoomId)
+	s.Log().Infow("[NiuNiu] enter state Betting ", "room", s.room.RoomId, "rand master seat", s.randMasterSeat)
 }
 
 func (s *StateBetting) Leave() {
