@@ -142,7 +142,7 @@ func (n *NiuNiu) CanLeave(p *inner.PlayerInfo) bool {
 		if !exist {
 			return true
 		}
-		if c < n.gameParams().PlayCountLimit {
+		if c < n.gameParams().PlayCountLimit && n.playerCount() > 1 {
 			return false
 		}
 
