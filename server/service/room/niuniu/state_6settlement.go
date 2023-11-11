@@ -124,7 +124,7 @@ func (s *StateSettlement) Enter() {
 
 	///////////////////// 结算分数为最终金币 //////////////////////////////////
 	var (
-		count int
+		count          int
 		modifyRspCount = make(map[string]struct{}) // 必须等待所有玩家金币修改成功后，才能发送结算
 	)
 
@@ -156,7 +156,7 @@ func (s *StateSettlement) Enter() {
 				AfterGold: finalScore,
 				OccurAt:   tools.Now(),
 			})
-			if len(modifyRspCount) ==  {
+			if len(modifyRspCount) == count {
 				s.afterSettle(s.settlementMsg)
 			}
 		})
