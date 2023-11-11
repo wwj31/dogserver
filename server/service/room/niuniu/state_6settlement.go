@@ -123,8 +123,13 @@ func (s *StateSettlement) Enter() {
 	s.profitAndRebate()
 
 	///////////////////// 结算分数为最终金币 //////////////////////////////////
-	modifyRspCount := make(map[string]struct{}) // 必须等待所有玩家金币修改成功后，才能发送结算
-	count := int(s.playerCount())
+	var (
+		count int
+		modifyRspCount = make(map[string]struct{}) // 必须等待所有玩家金币修改成功后，才能发送结算
+	)
+
+	s.RangePartInPlayer(func(seat int, player *niuniuPlayer) { count++ })
+
 	var partInShortIds []int64
 	s.RangePartInPlayer(func(seat int, player *niuniuPlayer) {
 		finalScore := player.score
@@ -151,7 +156,7 @@ func (s *StateSettlement) Enter() {
 				AfterGold: finalScore,
 				OccurAt:   tools.Now(),
 			})
-			if len(modifyRspCount) == count {
+			if len(modifyRspCount) ==  {
 				s.afterSettle(s.settlementMsg)
 			}
 		})
