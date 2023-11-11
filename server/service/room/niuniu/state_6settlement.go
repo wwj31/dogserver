@@ -68,7 +68,7 @@ func (s *StateSettlement) Enter() {
 
 	var cardTypeTimes map[PokerCardsType]int32
 	if s.gameParams().NiuNiuTimes < 0 || s.gameParams().NiuNiuTimes > 1 {
-		s.Log().Errorw(" niu niu params times err", "times", s.gameParams().NiuNiuTimes)
+		s.Log().Warnw(" niu niu params times err", "times", s.gameParams().NiuNiuTimes)
 		cardTypeTimes = CardsTypeTimes[0]
 	} else {
 		cardTypeTimes = CardsTypeTimes[int(s.gameParams().NiuNiuTimes)]
@@ -98,7 +98,7 @@ func (s *StateSettlement) Enter() {
 		winScore := winFunc(winSeat, playerCardsTypes[winSeat])
 		totalMasterLoseScore += winScore
 		winScores[winSeat] = winScore
-		s.Log().Infow("settle winners", "win seat", winSeat, "")
+		s.Log().Infow("settle winners", "win seat", winSeat)
 	}
 	s.Log().Infow("totalMasterLoseScore", "total", totalMasterLoseScore, "master score", master.score, "winScores", winScores)
 
