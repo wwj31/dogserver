@@ -73,10 +73,14 @@ func (s *StateMaster) decideMaster() {
 	})
 
 	selects := []int32{arr[0].Seat}
-	for i := 1; i < len(arr); i++ {
-		if arr[i].Times == arr[0].Times {
-			selects = append(selects, arr[i].Seat)
+	for seat, times := range s.masterTimesSeats {
+		if arr[0].Seat == seat {
+			continue
 		}
+		if times != arr[0].Times {
+			continue
+		}
+		selects = append(selects, seat)
 	}
 
 	randSeat := rand.Intn(len(selects))
@@ -100,8 +104,8 @@ func (s *StateMaster) Handle(shortId int64, v any) (result any) {
 
 	switch req := v.(type) {
 	case *outer.NiuNiuToBeMasterReq:
-		minGoldRequired := s.baseScore() * 200
-		if player.Gold < minGoldRequired {
+		minGoldRequired := s.baseScore() * 100
+		if req.Times > 0 && player.Gold < minGoldRequired {
 			return outer.ERROR_NIUNIU_GOLD_NOT_ENOUGH_MASTER
 		}
 

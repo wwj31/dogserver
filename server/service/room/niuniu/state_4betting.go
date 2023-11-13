@@ -34,15 +34,16 @@ func (s *StateBetting) Enter() {
 		}
 	}
 
+	if len(s.randMasterSeat) >= 2 {
+		expireAt = expireAt.Add(3 * time.Second)
+	}
+
 	s.room.Broadcast(&outer.NiuNiuBettingNtf{
 		ExpireAt:         expireAt.UnixMilli(),
 		MasterSeat:       int32(s.masterIndex),
 		CanPushSeats:     pushBetSeat, // 能推注的位置
 		SelectMasterSeat: s.randMasterSeat,
 	})
-	if len(s.randMasterSeat) >= 2 {
-		expireAt = expireAt.Add(3 * time.Second)
-	}
 
 	s.room.AddTimer(s.timeout, expireAt, func(dt time.Duration) {
 		s.RangePartInPlayer(func(seat int, player *niuniuPlayer) {
@@ -118,7 +119,7 @@ func (s *StateBetting) Handle(shortId int64, v any) (result any) {
 		})
 
 		s.Log().Infow("NiuNiuToBettingReq", "shortId", shortId, "seat", seat, "req", req.String(), "betGoldSeats", s.betGoldSeats)
-		if len(s.betGoldSeats) == s.participantCount() {
+		if len(s.betGoldSeats) == s.participantCount()-1 {
 			s.SwitchTo(ShowCards)
 		}
 		return &outer.NiuNiuToBettingRsp{}
