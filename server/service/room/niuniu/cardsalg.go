@@ -8,7 +8,7 @@ import (
 
 func (p PokerCards) joker() (cards PokerCards) {
 	for _, card := range p {
-		if card.Point() == 15 || card.Point() == 16 {
+		if card.Point() == Joker1.Point() || card.Point() == Joker2.Point() {
 			cards = append(cards, card)
 			if len(cards) == 2 {
 				return

@@ -23,11 +23,11 @@ var params = outer.NiuNiuParams{
 
 func TestNiuNiuCardsType(t *testing.T) {
 	cards := niuniu.PokerCards{
-		niuniu.Spades_K,
-		niuniu.Spades_Q,
-		niuniu.Clubs_10,
-		niuniu.Hearts_J,
 		niuniu.Spades_A,
+		niuniu.Hearts_7,
+		niuniu.Diamonds_8,
+		niuniu.Hearts_Q,
+		niuniu.Joker2,
 	}
 	dst := cards.AnalyzeCards(&params)
 	fmt.Println(dst)
