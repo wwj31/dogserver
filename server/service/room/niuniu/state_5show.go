@@ -29,6 +29,7 @@ func (s *StateShow) Enter() {
 		s.RangePartInPlayer(func(seat int, player *niuniuPlayer) {
 			if s.showCards[int32(seat)] == 0 {
 				player.cardsGroup = player.handCards.AnalyzeCards(s.gameParams())
+				s.Log().Infow("timeout show cards", "shortId", player.ShortId, "hand cards", player.handCards, "cards group", player.cardsGroup)
 				s.room.Broadcast(&outer.NiuNiuFinishShowCardsNtf{
 					ShortId:   player.ShortId,
 					HandCards: player.handCards.ToPB(),
@@ -74,6 +75,7 @@ func (s *StateShow) Handle(shortId int64, v any) (result any) {
 			HandCards: player.handCards.ToPB(),
 			CardsType: player.cardsGroup.ToPB(),
 		})
+		s.Log().Infow("player show cards", "shortId", shortId, "hand cards", player.handCards, "cards group", player.cardsGroup)
 
 		if len(s.showCards) == s.participantCount() {
 			s.SwitchTo(Settlement)
