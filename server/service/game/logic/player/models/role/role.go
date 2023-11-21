@@ -2,6 +2,7 @@ package role
 
 import (
 	"math/rand"
+	"time"
 
 	"github.com/spf13/cast"
 
@@ -52,7 +53,7 @@ func (s *Role) OnLogin(first bool, enterGameRsp *outer.EnterGameRsp) {
 		s.data.Phone = s.Player.Role().Phone()
 		s.data.Name = randName()
 		s.data.Icon = cast.ToString(rand.Int31n(10) + 1)
-		s.data.LogoutAt = nowStr
+		s.data.LogoutAt = tools.TimeFormat(tools.Now().Add(-time.Second))
 	}
 
 	s.data.LoginAt = nowStr
