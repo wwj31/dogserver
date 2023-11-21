@@ -68,11 +68,7 @@ func TestNiuNiuCardsType(t *testing.T) {
 
 func TestBug(t *testing.T) {
 	cards := niuniu.PokerCards{
-		niuniu.Hearts_A,
-		niuniu.Joker2,
-		niuniu.Joker1,
-		niuniu.Spades_4,
-		niuniu.Diamonds_3,
+		516, 517, 408, 108, 312,
 	}
 
 	dst := cards.AnalyzeCards(&params)

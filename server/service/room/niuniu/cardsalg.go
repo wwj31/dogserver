@@ -25,13 +25,19 @@ func (p PokerCards) comprehensiveAnalysis(jokerCards PokerCards, params *outer.N
 		newCards := append(cardsWithoutJoker, joker1Card)
 		if len(newCards) == 4 {
 			for _, joker2Card := range pokerCards52 {
-				newCards = append(cardsWithoutJoker, joker2Card)
+				newCards2 := append(newCards, joker2Card)
+				cg := newCards2.AnalyzeCards(params) // 两张王的情况
+				if cg.Type != PokerCardsUnknown {
+					cardsGroups = append(cardsGroups, &cg)
+				}
 			}
-			cg := newCards.AnalyzeCards(params) // 两张王的情况
-			cardsGroups = append(cardsGroups, &cg)
+
 		} else {
 			cg := newCards.AnalyzeCards(params) // 一张王的情况
 			cardsGroups = append(cardsGroups, &cg)
+			if cg.Type != PokerCardsUnknown {
+				cardsGroups = append(cardsGroups, &cg)
+			}
 		}
 	}
 	sort.Slice(cardsGroups, func(i, j int) bool {
