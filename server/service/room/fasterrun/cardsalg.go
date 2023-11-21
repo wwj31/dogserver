@@ -233,11 +233,20 @@ func (p PokerCards) AnalyzeCards(AAAisBomb bool) (cardsGroup CardsGroup) {
 			return
 		}
 
-		// 最长连续数等于本组牌长度的一半，肯定数连对
+		// 最长连续数等于本组牌长度的一半，并且每张牌都是2张，肯定数连对
 		if sequentialMaxCount*2 == l && isComb(p.ConvertOrderPoint(stat)) {
-			cardsGroup.Type = StraightPair
-			cardsGroup.Cards = append(cardsGroup.Cards, p...)
-			return
+			allTwo := true
+			for _, n := range stat {
+				if n != 2 {
+					allTwo = false
+				}
+			}
+
+			if allTwo {
+				cardsGroup.Type = StraightPair
+				cardsGroup.Cards = append(cardsGroup.Cards, p...)
+				return
+			}
 		}
 
 		// 最长连续数等于本组牌长度的1/3，肯定飞机

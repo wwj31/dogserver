@@ -195,7 +195,7 @@ func TestFindBiggerStraight(t *testing.T) {
 }
 
 func TestFindBiggerDebug(t *testing.T) {
-	cards := fasterrun.PokerCards{10, 11, 12, 13, 14, 15}
+	cards := fasterrun.PokerCards{103, 203, 303, 204, 304, 404, 405, 406}
 	dst := cards.AnalyzeCards(true)
 	fmt.Println(dst)
 }
