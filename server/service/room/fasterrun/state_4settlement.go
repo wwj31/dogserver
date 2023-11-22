@@ -29,6 +29,7 @@ func (s *StateSettlement) Enter() {
 		"master", s.masterIndex, "game count", s.gameCount, "endAt", s.currentStateEndAt.UnixMilli())
 
 	playerNumber := s.playerNumber()
+	lastRecords := &s.playRecords[len(s.playRecords)-1]
 	settlementMsg := &outer.FasterRunSettlementNtf{
 		EndAt:            s.currentStateEndAt.UnixMilli(),
 		HasScoreZero:     s.scoreZeroOver,
@@ -36,7 +37,7 @@ func (s *StateSettlement) Enter() {
 		GameSettlementAt: tools.Now().UnixMilli(),
 		PlayerData:       make([]*outer.FasterRunSettlementPlayerData, playerNumber, playerNumber),
 		SpareCards:       s.spareCards.ToPB(),
-		LastRecord:       s.playRecords[len(s.playRecords)-1].ToPB(),
+		LastRecord:       lastRecords.ToPB(),
 	}
 
 	for seat := 0; seat < playerNumber; seat++ {
