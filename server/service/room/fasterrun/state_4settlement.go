@@ -36,6 +36,7 @@ func (s *StateSettlement) Enter() {
 		GameSettlementAt: tools.Now().UnixMilli(),
 		PlayerData:       make([]*outer.FasterRunSettlementPlayerData, playerNumber, playerNumber),
 		SpareCards:       s.spareCards.ToPB(),
+		LastRecord:       s.playRecords[len(s.playRecords)-1].ToPB(),
 	}
 
 	for seat := 0; seat < playerNumber; seat++ {

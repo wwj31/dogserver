@@ -126,6 +126,7 @@ message FasterRunSettlementNtf {
     bool     Spring                                    = 7; // 是否是春天
     bool     AgainstSpring                             = 8; // 是否是反春
     FasterRunFinialSettlement FinalSettlement          = 10; // 非大结算，值为null
+    PlayCardsRecord LastRecord                         = 11; // 最后一位出牌的信息
 }
 
 // 大结算信息
