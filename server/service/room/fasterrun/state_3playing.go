@@ -323,7 +323,12 @@ func (s *StatePlaying) actionTimer(expireAt time.Time) {
 			sort.Slice(biggerCardGroups, func(i, j int) bool {
 				return biggerCardGroups[i].Cards[0].Point() < biggerCardGroups[i].Cards[0].Point()
 			})
-			cards = append(biggerCardGroups[0].Cards, biggerCardGroups[0].SideCards...)
+
+			one := biggerCardGroups[0]
+			for len(one.SideCards) > len(latest.cardsGroup.SideCards) {
+				one.SideCards = one.SideCards[1:]
+			}
+			cards = append(one.Cards, one.SideCards...)
 		} else {
 			cards = player.handCards.SideCards(1)
 			if len(cards) == 0 {

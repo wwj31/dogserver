@@ -199,3 +199,17 @@ func TestFindBiggerDebug(t *testing.T) {
 	dst := cards.AnalyzeCards(true)
 	fmt.Println(dst)
 }
+func TestFindBiggerDebug2(t *testing.T) {
+	cards := fasterrun.PokerCards{105, 205, 305, 106, 206, 306, 407, 408, 310, 313}
+	cardGroup := fasterrun.CardsGroup{
+		Type:      9,
+		Cards:     fasterrun.PokerCards{103, 203, 303, 204, 304, 404},
+		SideCards: fasterrun.PokerCards{405, 406},
+	}
+	biggerCardGroups := cards.FindBigger(cardGroup)
+	one := biggerCardGroups[0]
+	for len(one.SideCards) > len(cardGroup.SideCards) {
+		one.SideCards = one.SideCards[1:]
+	}
+	fmt.Println(biggerCardGroups)
+}
