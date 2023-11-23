@@ -216,10 +216,12 @@ func (s *StateSettlement) notHu(ntf *outer.MahjongBTESettlementNtf) {
 			totalLoseScore := winScore * int64(len(winSeats))
 			playerPig.updateScore(-totalLoseScore)
 			s.Log().Infow("pig!", "pig seat", pigSeat, "totalLoseScore", totalLoseScore, "winner seats", winSeats)
+			ntf.PlayerData[pigSeat].PigScoreLose = make(map[int32]int64)
 			// 赢钱的人加分
 			for _, seat := range winSeats {
 				player := s.mahjongPlayers[seat]
 				player.updateScore(winScore)
+				ntf.PlayerData[pigSeat].PigScoreLose[int32(seat)] = -winScore
 			}
 		}
 	}
@@ -249,6 +251,7 @@ func (s *StateSettlement) notHu(ntf *outer.MahjongBTESettlementNtf) {
 
 		// 没叫的挨个赔有叫的
 		for _, notTingSeat := range hasNotTingSeat {
+			ntf.PlayerData[notTingSeat].NotTingScoreLose = make(map[int32]int64)
 			// 够赔，或者允许负分，直接赔
 			if s.gameParams().AllowScoreSmallZero || s.mahjongPlayers[notTingSeat].score < totalWinScore {
 				for seat, winScore := range allWinner {
@@ -256,6 +259,7 @@ func (s *StateSettlement) notHu(ntf *outer.MahjongBTESettlementNtf) {
 					s.mahjongPlayers[notTingSeat].updateScore(-winScore)
 					s.Log().Infow("notHu notTing 1",
 						"notTingSeat", notTingSeat, "seat", seat, "winScore", winScore)
+					ntf.PlayerData[notTingSeat].NotTingScoreLose[int32(seat)] = -winScore
 				}
 			} else {
 				// 不够赔，并且不允许负分，就按照比例赔付
@@ -266,6 +270,7 @@ func (s *StateSettlement) notHu(ntf *outer.MahjongBTESettlementNtf) {
 					s.mahjongPlayers[notTingSeat].updateScore(-exactScore)
 					s.Log().Infow("notHu notTing 2",
 						"notTingSeat", notTingSeat, "seat", seat, "winScore", winScore, "totalWinScore", totalWinScore, "exactScore", exactScore)
+					ntf.PlayerData[notTingSeat].NotTingScoreLose[int32(seat)] = -exactScore
 				}
 			}
 		}

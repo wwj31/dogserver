@@ -248,6 +248,10 @@ message MahjongBTESettlementPlayerData{
 
     // 本玩家的退杠分信息
     map<int32,int64> GangScoreRefund     = 8; // map<被杠者位置，退给被杠者的分(负数)>
+    // 本玩家当花猪赔付的信息
+    map<int32,int64> PigScoreLose        = 9; // map<赢分位置，赔的分(负数)>
+    // 本玩家被查大叫赔付的信息
+    map<int32,int64> NotTingScoreLose    = 10; // map<赢分位置，赔的分(负数)>
 }
 
 // 结算通知
