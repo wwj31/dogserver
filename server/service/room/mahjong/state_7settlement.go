@@ -160,6 +160,7 @@ func (s *StateSettlement) notHu(ntf *outer.MahjongBTESettlementNtf) {
 			hasTingSeat = append(hasTingSeat, seat)
 		} else {
 			// 没有叫，需要退杠分
+			ntf.PlayerData[seat].GangScoreRefund = make(map[int32]int64)
 			for _, gang := range player.gangInfos {
 				for loseSeat, score := range gang.loserSeats {
 					s.mahjongPlayers[loseSeat].gangTotalScore += score // 退杠得分
@@ -167,6 +168,7 @@ func (s *StateSettlement) notHu(ntf *outer.MahjongBTESettlementNtf) {
 
 					player.gangTotalScore -= score // 没叫，退杠分
 					player.updateScore(-score)
+					ntf.PlayerData[seat].GangScoreRefund[loseSeat] = -score
 				}
 			}
 

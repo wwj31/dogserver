@@ -244,6 +244,10 @@ message MahjongBTESettlementPlayerData{
     map<int32,int64> ByLightGangSeatIndex = 5; // 被哪些人明杠，map<杠的玩家位置，赔的分>
     int32 TotalFan                        = 6; // 总番数
     int64 TotalScore                      = 7; // 总输赢 负数为输
+
+
+    // 本玩家的退杠分信息
+    map<int32,int64> GangScoreRefund     = 8; // map<被杠者位置，退给被杠者的分(负数)>
 }
 
 // 结算通知
