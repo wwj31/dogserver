@@ -151,7 +151,7 @@ func (p PokerCards) StraightGroups(t PokerCardsType, n int) (result []PokerCards
 			continue
 		}
 
-		if point == seqPoint+1 {
+		if point == seqPoint+1 && point != 15 {
 			seqPoint = point
 			seq++
 			// 满足n顺的条件，就把这组牌加入结果中
