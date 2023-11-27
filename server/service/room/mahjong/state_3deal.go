@@ -40,17 +40,19 @@ func (s *StateDeal) Enter() {
 	for _, player := range s.mahjongPlayers {
 		player.handCards = append(Cards{}, s.cards[i:i+13]...).Sort()
 		i += 13
-
-		s.room.SendToPlayer(player.ShortId, &outer.MahjongBTEDealNtf{
-			Cards:      player.handCards.ToSlice(),
-			MasterSeat: int32(s.masterIndex),
-		})
 	}
 
 	// 庄家多发一张
 	master := s.mahjongPlayers[s.masterIndex]
 	master.handCards = master.handCards.Insert(s.cards[52])
 	s.masterCard14 = s.cards[52]
+
+	for _, player := range s.mahjongPlayers {
+		s.room.SendToPlayer(player.ShortId, &outer.MahjongBTEDealNtf{
+			Cards:      player.handCards.ToSlice(),
+			MasterSeat: int32(s.masterIndex),
+		})
+	}
 
 	// 剩下的算本局牌组
 	s.cards = s.cards[53:]
