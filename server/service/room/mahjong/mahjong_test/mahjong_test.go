@@ -175,12 +175,12 @@ func TestRecurCheck(t *testing.T) {
 		},
 		{
 			name: "Hu 全幺九",
-			c:    mahjong.Cards{13, 13, 13, 14, 15, 15, 16, 16, 17, 28, 28},
+			c:    mahjong.Cards{11, 12, 13, 14, 15, 16, 17, 18, 19, 25, 26, 27, 27, 27},
 			want: mahjong.QuanYaoJiu,
 		},
 		{
 			name: "Hu",
-			c:    mahjong.Cards{17, 17, 17, 21, 21, 23, 23, 24, 24, 25, 25},
+			c:    mahjong.Cards{31, 32, 33, 33, 34, 35, 35, 36, 37, 38, 38},
 			want: mahjong.Hu,
 		},
 		// Add more test cases for different Hu types...
@@ -195,8 +195,8 @@ func TestRecurCheck(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tt.c.IsHu(nil, nil, map[int32]int64{2: 22}, 11, params)
-			assert.Equal(t, tt.want, tt.c.IsHu(nil, nil, nil, 11, params))
+			tt.c.IsHu(map[int32]int64{21: 1}, nil, nil, 35, params)
+			assert.Equal(t, tt.want, tt.c.IsHu(map[int32]int64{21: 1}, nil, nil, 35, params))
 		})
 	}
 }

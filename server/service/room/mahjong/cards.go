@@ -179,7 +179,7 @@ func RecurCheckHu(cards Cards, upCardsHas1or9 bool) HuType {
 	allKan := append(RemoveDuplicate(allShunzi), RemoveDuplicate(allKezi)...)
 	for _, kan := range allKan {
 		tmp := cards.Remove(kan...)
-		if h := RecurCheckHu(tmp, kan.Has1or9()); h > HuInvalid {
+		if h := RecurCheckHu(tmp, kan.Has1or9() && upCardsHas1or9); h > HuInvalid {
 			return h
 		}
 	}
