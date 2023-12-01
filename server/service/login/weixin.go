@@ -6,6 +6,8 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/spf13/cast"
+
 	"server/common/log"
 	"server/proto/innermsg/inner"
 )
@@ -93,36 +95,38 @@ func (w *WeChatAccessInfo) UserInfo() (userInfo *inner.WeChatUserInfo) {
 	addr := fmt.Sprintf(weChatUserInfoURL, w.AccessToken, w.OpenId)
 	rsp, err := http.Get(addr)
 	if err != nil {
-		log.Errorw("WeiXin refresh token get failed", "err", err)
+		log.Errorw("WeiXin UserInfo get failed", "err", err)
 		return
 	}
 	defer rsp.Body.Close()
 
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	if err != nil {
-		log.Errorw("WeiXin refresh token body read failed", "err", err)
+		log.Errorw("WeiXin UserInfo body read failed", "err", err)
 		return
 	}
 
 	var rspInfo = struct {
-		AccessToken  string   `json:"nickname"`
-		ExpiresIn    int64    `json:"sex"`
-		RefreshToken string   `json:"province"`
-		OpenId       string   `json:"city"`
-		Scope        string   `json:"country"`
-		Scope        string   `json:"headimgurl"`
-		Privilege    []string `json:"privilege"`
-		Scope        string   `json:"unionid"`
+		OpenId     string   `json:"openid"`
+		NickName   string   `json:"nickname"`
+		Sex        int64    `json:"sex"`
+		Province   string   `json:"province"`   // 普通用户个人资料填写的省份
+		City       string   `json:"city"`       // 普通用户个人资料填写的城市
+		Country    string   `json:"country"`    // 国家，如中国为 CN
+		HeadImgURL string   `json:"headimgurl"` // 用户头像，最后一个数值代表正方形头像大小（有 0、46、64、96、132 数值可选，0 代表 640*640 正方形头像），用户没有头像时该项为空
+		Privilege  []string `json:"privilege"`  // 用户特权信息，json 数组，如微信沃卡用户为（chinaunicom）
+		UnionId    string   `json:"unionid"`    // 用户统一标识。针对一个微信开放平台账号下的应用，同一用户的 unionid 是唯一的。
 	}{}
 
 	err = json.Unmarshal(bodyBytes, &rspInfo)
 	if err != nil {
-		log.Errorw("WeiXin access token body json unmarshal failed", "err", err, "bodyBytes", string(bodyBytes))
-		return true
+		log.Errorw("WeiXin UserInfo body json unmarshal failed", "err", err, "bodyBytes", string(bodyBytes))
+		return
 	}
 
-	w.AccessToken = rspInfo.AccessToken
-	w.ExpiresIn = rspInfo.ExpiresIn
-	w.OpenId = rspInfo.OpenId
-	return false
+	return &inner.WeChatUserInfo{
+		Icon:   rspInfo.HeadImgURL,
+		Gender: cast.ToInt32(rspInfo.Sex),
+		Name:   rspInfo.NickName,
+	}
 }

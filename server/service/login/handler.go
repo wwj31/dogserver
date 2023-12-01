@@ -174,9 +174,7 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 			// 获取微信用户最新信息
 			if weChatAccessToken != nil {
 				_, err = s.RequestWait(actortype.PlayerId(acc.LastLoginRID), &inner.SetWeChatInfoReq{
-					Icon:   "",
-					Gender: 0,
-					Name:   "",
+					UserInfo: weChatAccessToken.UserInfo(),
 				})
 			}
 
