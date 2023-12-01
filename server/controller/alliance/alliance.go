@@ -81,6 +81,7 @@ var _ = router.Reg(func(alli *alliance.Alliance, msg *inner.SetMemberPositionReq
 			AllianceId: alli.AllianceId(),
 			Position:   member.Position.Int32(),
 		}, time.Second).Handle(func(resp any, err error) {
+			log.Infow("set result ", "err", err)
 			if err != nil {
 				playerInfo := rdsop.PlayerInfo(member.ShortId)
 				playerInfo.Position = msg.Position
