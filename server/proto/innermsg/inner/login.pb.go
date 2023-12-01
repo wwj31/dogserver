@@ -207,17 +207,160 @@ func (m *GSessionClosed) GetGateSession() string {
 	return ""
 }
 
+type WeChatUserInfo struct {
+	Icon   string `protobuf:"bytes,1,opt,name=Icon,proto3" json:"Icon,omitempty"`
+	Gender int32  `protobuf:"varint,2,opt,name=Gender,proto3" json:"Gender,omitempty"`
+	Name   string `protobuf:"bytes,3,opt,name=Name,proto3" json:"Name,omitempty"`
+}
+
+func (m *WeChatUserInfo) Reset()         { *m = WeChatUserInfo{} }
+func (m *WeChatUserInfo) String() string { return proto.CompactTextString(m) }
+func (*WeChatUserInfo) ProtoMessage()    {}
+func (*WeChatUserInfo) Descriptor() ([]byte, []int) {
+	return fileDescriptor_67c21677aa7f4e4f, []int{4}
+}
+func (m *WeChatUserInfo) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *WeChatUserInfo) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_WeChatUserInfo.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *WeChatUserInfo) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_WeChatUserInfo.Merge(m, src)
+}
+func (m *WeChatUserInfo) XXX_Size() int {
+	return m.Size()
+}
+func (m *WeChatUserInfo) XXX_DiscardUnknown() {
+	xxx_messageInfo_WeChatUserInfo.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_WeChatUserInfo proto.InternalMessageInfo
+
+func (m *WeChatUserInfo) GetIcon() string {
+	if m != nil {
+		return m.Icon
+	}
+	return ""
+}
+
+func (m *WeChatUserInfo) GetGender() int32 {
+	if m != nil {
+		return m.Gender
+	}
+	return 0
+}
+
+func (m *WeChatUserInfo) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+type SetWeChatInfoReq struct {
+	UserInfo *WeChatUserInfo `protobuf:"bytes,1,opt,name=UserInfo,proto3" json:"UserInfo,omitempty"`
+}
+
+func (m *SetWeChatInfoReq) Reset()         { *m = SetWeChatInfoReq{} }
+func (m *SetWeChatInfoReq) String() string { return proto.CompactTextString(m) }
+func (*SetWeChatInfoReq) ProtoMessage()    {}
+func (*SetWeChatInfoReq) Descriptor() ([]byte, []int) {
+	return fileDescriptor_67c21677aa7f4e4f, []int{5}
+}
+func (m *SetWeChatInfoReq) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *SetWeChatInfoReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_SetWeChatInfoReq.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *SetWeChatInfoReq) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SetWeChatInfoReq.Merge(m, src)
+}
+func (m *SetWeChatInfoReq) XXX_Size() int {
+	return m.Size()
+}
+func (m *SetWeChatInfoReq) XXX_DiscardUnknown() {
+	xxx_messageInfo_SetWeChatInfoReq.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SetWeChatInfoReq proto.InternalMessageInfo
+
+func (m *SetWeChatInfoReq) GetUserInfo() *WeChatUserInfo {
+	if m != nil {
+		return m.UserInfo
+	}
+	return nil
+}
+
+type SetWeChatInfoRsp struct {
+}
+
+func (m *SetWeChatInfoRsp) Reset()         { *m = SetWeChatInfoRsp{} }
+func (m *SetWeChatInfoRsp) String() string { return proto.CompactTextString(m) }
+func (*SetWeChatInfoRsp) ProtoMessage()    {}
+func (*SetWeChatInfoRsp) Descriptor() ([]byte, []int) {
+	return fileDescriptor_67c21677aa7f4e4f, []int{6}
+}
+func (m *SetWeChatInfoRsp) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *SetWeChatInfoRsp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_SetWeChatInfoRsp.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *SetWeChatInfoRsp) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SetWeChatInfoRsp.Merge(m, src)
+}
+func (m *SetWeChatInfoRsp) XXX_Size() int {
+	return m.Size()
+}
+func (m *SetWeChatInfoRsp) XXX_DiscardUnknown() {
+	xxx_messageInfo_SetWeChatInfoRsp.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SetWeChatInfoRsp proto.InternalMessageInfo
+
 func init() {
 	proto.RegisterType((*BindSessionWithRID)(nil), "inner.BindSessionWithRID")
 	proto.RegisterType((*KickOutReq)(nil), "inner.KickOutReq")
 	proto.RegisterType((*KickOutRsp)(nil), "inner.KickOutRsp")
 	proto.RegisterType((*GSessionClosed)(nil), "inner.GSessionClosed")
+	proto.RegisterType((*WeChatUserInfo)(nil), "inner.WeChatUserInfo")
+	proto.RegisterType((*SetWeChatInfoReq)(nil), "inner.SetWeChatInfoReq")
+	proto.RegisterType((*SetWeChatInfoRsp)(nil), "inner.SetWeChatInfoRsp")
 }
 
 func init() { proto.RegisterFile("login.proto", fileDescriptor_67c21677aa7f4e4f) }
 
 var fileDescriptor_67c21677aa7f4e4f = []byte{
-	// 173 bytes of a gzipped FileDescriptorProto
+	// 268 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0xce, 0xc9, 0x4f, 0xcf,
 	0xcc, 0xd3, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0xcd, 0xcc, 0xcb, 0x4b, 0x2d, 0x52, 0xf2,
 	0xe0, 0x12, 0x72, 0xca, 0xcc, 0x4b, 0x09, 0x4e, 0x2d, 0x2e, 0xce, 0xcc, 0xcf, 0x0b, 0xcf, 0x2c,
@@ -225,10 +368,16 @@ var fileDescriptor_67c21677aa7f4e4f = []byte{
 	0x2a, 0x30, 0x6a, 0x70, 0x06, 0x21, 0x0b, 0x09, 0x09, 0x70, 0x31, 0x07, 0x79, 0xba, 0x48, 0x30,
 	0x81, 0x65, 0x40, 0x4c, 0x25, 0x07, 0x2e, 0x2e, 0xef, 0xcc, 0xe4, 0x6c, 0xff, 0xd2, 0x92, 0xa0,
 	0xd4, 0x42, 0xb2, 0x4c, 0xe0, 0x41, 0x98, 0x50, 0x5c, 0xa0, 0x64, 0xc4, 0xc5, 0xe7, 0x0e, 0x55,
-	0xeb, 0x9c, 0x93, 0x5f, 0x9c, 0x9a, 0x42, 0xd8, 0x4c, 0x27, 0x85, 0x13, 0x8f, 0xe4, 0x18, 0x2f,
-	0x3c, 0x92, 0x63, 0x7c, 0xf0, 0x48, 0x8e, 0x71, 0xc2, 0x63, 0x39, 0x86, 0x0b, 0x8f, 0xe5, 0x18,
-	0x6e, 0x3c, 0x96, 0x63, 0x88, 0x62, 0xd3, 0x07, 0xfb, 0x37, 0x89, 0x0d, 0xec, 0x7b, 0x63, 0x40,
-	0x00, 0x00, 0x00, 0xff, 0xff, 0x99, 0x73, 0x3d, 0xab, 0x0c, 0x01, 0x00, 0x00,
+	0xeb, 0x9c, 0x93, 0x5f, 0x9c, 0x9a, 0x42, 0xd8, 0x4c, 0xa5, 0x00, 0x2e, 0xbe, 0xf0, 0x54, 0xe7,
+	0x8c, 0xc4, 0x92, 0xd0, 0xe2, 0xd4, 0x22, 0xcf, 0xbc, 0xb4, 0x7c, 0x21, 0x21, 0x2e, 0x16, 0xcf,
+	0x64, 0xb8, 0x62, 0x30, 0x5b, 0x48, 0x8c, 0x8b, 0xcd, 0x3d, 0x35, 0x2f, 0x25, 0xb5, 0x08, 0x6c,
+	0x39, 0x6b, 0x10, 0x94, 0x07, 0x52, 0xeb, 0x97, 0x98, 0x9b, 0x2a, 0xc1, 0x0c, 0x51, 0x0b, 0x62,
+	0x2b, 0xb9, 0x72, 0x09, 0x04, 0xa7, 0x96, 0x40, 0x0c, 0x05, 0x19, 0x08, 0xf2, 0x9b, 0x21, 0x17,
+	0x07, 0xcc, 0x7c, 0xb0, 0xb9, 0xdc, 0x46, 0xa2, 0x7a, 0xe0, 0xd0, 0xd4, 0x43, 0xb5, 0x3c, 0x08,
+	0xae, 0x4c, 0x49, 0x08, 0xdd, 0x98, 0xe2, 0x02, 0x27, 0x85, 0x13, 0x8f, 0xe4, 0x18, 0x2f, 0x3c,
+	0x92, 0x63, 0x7c, 0xf0, 0x48, 0x8e, 0x71, 0xc2, 0x63, 0x39, 0x86, 0x0b, 0x8f, 0xe5, 0x18, 0x6e,
+	0x3c, 0x96, 0x63, 0x88, 0x62, 0xd3, 0x07, 0x1b, 0x97, 0xc4, 0x06, 0x8e, 0x2a, 0x63, 0x40, 0x00,
+	0x00, 0x00, 0xff, 0xff, 0x9a, 0xa4, 0xe5, 0xbb, 0xb9, 0x01, 0x00, 0x00,
 }
 
 func (m *BindSessionWithRID) Marshal() (dAtA []byte, err error) {
@@ -358,6 +507,106 @@ func (m *GSessionClosed) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *WeChatUserInfo) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *WeChatUserInfo) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *WeChatUserInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Name) > 0 {
+		i -= len(m.Name)
+		copy(dAtA[i:], m.Name)
+		i = encodeVarintLogin(dAtA, i, uint64(len(m.Name)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if m.Gender != 0 {
+		i = encodeVarintLogin(dAtA, i, uint64(m.Gender))
+		i--
+		dAtA[i] = 0x10
+	}
+	if len(m.Icon) > 0 {
+		i -= len(m.Icon)
+		copy(dAtA[i:], m.Icon)
+		i = encodeVarintLogin(dAtA, i, uint64(len(m.Icon)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *SetWeChatInfoReq) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *SetWeChatInfoReq) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *SetWeChatInfoReq) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.UserInfo != nil {
+		{
+			size, err := m.UserInfo.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintLogin(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *SetWeChatInfoRsp) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *SetWeChatInfoRsp) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *SetWeChatInfoRsp) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintLogin(dAtA []byte, offset int, v uint64) int {
 	offset -= sovLogin(v)
 	base := offset
@@ -422,6 +671,48 @@ func (m *GSessionClosed) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovLogin(uint64(l))
 	}
+	return n
+}
+
+func (m *WeChatUserInfo) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Icon)
+	if l > 0 {
+		n += 1 + l + sovLogin(uint64(l))
+	}
+	if m.Gender != 0 {
+		n += 1 + sovLogin(uint64(m.Gender))
+	}
+	l = len(m.Name)
+	if l > 0 {
+		n += 1 + l + sovLogin(uint64(l))
+	}
+	return n
+}
+
+func (m *SetWeChatInfoReq) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.UserInfo != nil {
+		l = m.UserInfo.Size()
+		n += 1 + l + sovLogin(uint64(l))
+	}
+	return n
+}
+
+func (m *SetWeChatInfoRsp) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
 	return n
 }
 
@@ -770,6 +1061,275 @@ func (m *GSessionClosed) Unmarshal(dAtA []byte) error {
 			}
 			m.GateSession = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipLogin(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthLogin
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *WeChatUserInfo) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowLogin
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: WeChatUserInfo: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: WeChatUserInfo: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Icon", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowLogin
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthLogin
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthLogin
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Icon = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Gender", wireType)
+			}
+			m.Gender = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowLogin
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Gender |= int32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Name", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowLogin
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthLogin
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthLogin
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Name = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipLogin(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthLogin
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *SetWeChatInfoReq) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowLogin
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: SetWeChatInfoReq: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: SetWeChatInfoReq: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field UserInfo", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowLogin
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthLogin
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthLogin
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.UserInfo == nil {
+				m.UserInfo = &WeChatUserInfo{}
+			}
+			if err := m.UserInfo.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipLogin(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthLogin
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *SetWeChatInfoRsp) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowLogin
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: SetWeChatInfoRsp: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: SetWeChatInfoRsp: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
 		default:
 			iNdEx = preIndex
 			skippy, err := skipLogin(dAtA[iNdEx:])

@@ -25,8 +25,9 @@ import (
 
 type Claims struct {
 	jwt.RegisteredClaims
-	UID string
-	RID string
+	UID         string
+	RID         string
+	weChatToken *WeChatAccessInfo
 }
 
 const (
@@ -40,10 +41,11 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 	go tools.Try(func() {
 		rds.LockDo(rdsop.LockLoginKey(req.DeviceID), func() {
 			var (
-				acc       *account.Account
-				newPlayer bool
-				err       error
-				errCode   outer.ERROR
+				acc               *account.Account
+				newPlayer         bool
+				err               error
+				errCode           outer.ERROR
+				weChatAccessToken *WeChatAccessInfo
 			)
 
 			defer func() {
@@ -52,7 +54,7 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 					return
 				}
 
-				s.responseLoginToClient(acc, newPlayer, gSession)
+				s.responseLoginToClient(acc, newPlayer, gSession, weChatAccessToken)
 			}()
 
 			var result *mongo.SingleResult
@@ -81,22 +83,29 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 					return
 				}
 
+				if claims.weChatToken != nil {
+					claims.weChatToken.RefreshAccessTokenExpiration()
+					weChatAccessToken = claims.weChatToken
+				}
+
 				result = mongodb.Ins.Collection(account.Collection).FindOne(context.Background(), bson.M{"_id": claims.UID})
 				if err = result.Err(); err == mongo.ErrNoDocuments {
 					log.Warnw("token login can not find account", "err", err, "req", req.String())
 					errCode = outer.ERROR_LOGIN_TOKEN_INVALID
 					return
 				}
+
 			case WeiXinLogin:
-				if req.WeiXinOpenID == "" {
+				if req.WeChatCode == "" {
 					err = fmt.Errorf("weixin login failed, openID is nil")
 					return
 				}
-				return
 
-				result = mongodb.Ins.Collection(account.Collection).FindOne(context.Background(), bson.M{"wei_xin_open_id": req.WeiXinOpenID})
+				weChatAccessToken = WeChatAccessToken(req.WeChatCode)
+
+				result = mongodb.Ins.Collection(account.Collection).FindOne(context.Background(), bson.M{"wei_xin_open_id": weChatAccessToken.OpenId})
 				if result.Err() == mongo.ErrNoDocuments {
-					acc.WeiXinOpenID = req.WeiXinOpenID
+					acc.WeiXinOpenID = weChatAccessToken.OpenId
 				}
 			}
 
@@ -162,6 +171,15 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 				})
 			}
 
+			// 获取微信用户最新信息
+			if weChatAccessToken != nil {
+				_, err = s.RequestWait(actortype.PlayerId(acc.LastLoginRID), &inner.SetWeChatInfoReq{
+					Icon:   "",
+					Gender: 0,
+					Name:   "",
+				})
+			}
+
 			rds.Ins.Set(context.Background(), rdsop.GameNodeKey(acc.LastShortID), dispatchGameId, 7*24*time.Hour)
 			log.Infow("login success dispatch the player to game",
 				"new", newPlayer, "role", acc.Roles[acc.LastLoginRID], "req", req.String(), "to game", dispatchGameId)
@@ -169,7 +187,7 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 	})
 }
 
-func (s *Login) responseLoginToClient(acc *account.Account, newPlayer bool, gSession common.GSession) {
+func (s *Login) responseLoginToClient(acc *account.Account, newPlayer bool, gSession common.GSession, weChat *WeChatAccessInfo) {
 	// 走到这里，说明已经登录成功，
 	// 通知gateway，绑定关联Session的用户信息
 	gateId, _ := gSession.Split()
@@ -190,8 +208,9 @@ func (s *Login) responseLoginToClient(acc *account.Account, newPlayer bool, gSes
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(15 * 24 * time.Hour)),
 		},
-		UID: acc.UUID,
-		RID: acc.LastLoginRID,
+		UID:         acc.UUID,
+		RID:         acc.LastLoginRID,
+		weChatToken: weChat,
 	}
 
 	signedToken, signErr := common.JWTSignedToken(claims)

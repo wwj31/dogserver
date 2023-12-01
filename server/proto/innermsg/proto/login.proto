@@ -20,3 +20,15 @@ message GSessionClosed{
     string GateSession = 1;
 }
 
+message WeChatUserInfo{
+    string Icon   = 1; // 头像
+    int32  Gender = 2; // 性别 1.男、2.女
+    string Name   = 3; // 服务器限制最长20个字符
+}
+message SetWeChatInfoReq{
+    WeChatUserInfo UserInfo = 1;
+}
+
+message SetWeChatInfoRsp{
+}
+
