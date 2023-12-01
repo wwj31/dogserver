@@ -241,7 +241,7 @@ var _ = router.Reg(func(player *player.Player, msg *outer.KickOutMemberReq) any 
 
 	// 有下级，不能被踢
 	downs := rdsop.AgentDown(playerInfo.ShortId)
-	if len(downs) > 0 {
+	if len(downs) > 1 {
 		return outer.ERROR_AGENT_KICK_OUT_FAILED_HAS_DOWN
 	}
 
