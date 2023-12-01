@@ -118,7 +118,7 @@ var _ = router.Reg(func(p *player.Player, msg *outer.SetAgentDownRebateReq) any 
 	}
 
 	downInfo := rdsop.PlayerInfo(msg.ShortId)
-	playerInfo := rdsop.PlayerInfo(p.Role().ShortId())
+	//playerInfo := rdsop.PlayerInfo(p.Role().ShortId())
 	if downInfo.Position <= alliance.Normal.Int32() {
 		allianceActor := actortype.AllianceName(p.Alliance().AllianceId())
 		rsp, err := p.RequestWait(allianceActor, &inner.SetMemberPositionReq{
