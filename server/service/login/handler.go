@@ -84,7 +84,11 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 				}
 
 				if claims.weChatToken != nil {
-					claims.weChatToken.RefreshAccessTokenExpiration()
+					if claims.weChatToken.RefreshAccessTokenExpiration() {
+						log.Warnw("refresh token has expired ", "err", err, "req", req.String(), "token", claims.weChatToken)
+						errCode = outer.ERROR_LOGIN_TOKEN_INVALID
+						return
+					}
 					weChatAccessToken = claims.weChatToken
 				}
 
@@ -180,7 +184,7 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 
 			rds.Ins.Set(context.Background(), rdsop.GameNodeKey(acc.LastShortID), dispatchGameId, 7*24*time.Hour)
 			log.Infow("login success dispatch the player to game",
-				"new", newPlayer, "role", acc.Roles[acc.LastLoginRID], "req", req.String(), "to game", dispatchGameId)
+				"new", newPlayer, "role", acc.Roles[acc.LastLoginRID], "req", req.String(), "wechat", weChatAccessToken, "to game", dispatchGameId)
 		})
 	})
 }

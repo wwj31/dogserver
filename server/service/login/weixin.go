@@ -17,9 +17,11 @@ const (
 	refreshTokenURL   = "https://api.weixin.qq.com/sns/oauth2/refresh_token?appid=%v&grant_type=refresh_token&refresh_token=%v"
 	weChatUserInfoURL = "https://api.weixin.qq.com/sns/userinfo?access_token=%v&openid=%v"
 
-	appid  = "fewfjewiofewjifw"
-	secret = "jfeohewouiofdgherio"
+	appid  = "wx3483e9b50015f7e1"
+	secret = "14a391e492ee7c532c4ac2b0d6fbc176"
 )
+
+// https://developers.weixin.qq.com/doc/oplatform/Mobile_App/WeChat_Login/Development_Guide.html
 
 type WeChatAccessInfo struct {
 	AccessToken  string `json:"access_token"`  // 接口调用凭证
@@ -35,21 +37,21 @@ func WeChatAccessToken(code string) *WeChatAccessInfo {
 	addr := fmt.Sprintf(accessTokenURL, appid, secret, code)
 	rsp, err := http.Get(addr)
 	if err != nil {
-		log.Errorw("WeiXin access token get failed", "err", err)
+		log.Errorw("WeiXin access token get failed", "err", err, "code", code)
 		return nil
 	}
 	defer rsp.Body.Close()
 
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	if err != nil {
-		log.Errorw("WeiXin access token body read failed", "err", err)
+		log.Errorw("WeiXin access token body read failed", "err", err, "code", code)
 		return nil
 	}
 
 	var info WeChatAccessInfo
 	err = json.Unmarshal(bodyBytes, &info)
 	if err != nil {
-		log.Errorw("WeiXin access token body json unmarshal failed", "err", err, "bodyBytes", string(bodyBytes))
+		log.Errorw("WeiXin access token body json unmarshal failed", "err", err, "code", code, "bodyBytes", string(bodyBytes))
 		return nil
 	}
 	return &info
@@ -60,14 +62,14 @@ func (w *WeChatAccessInfo) RefreshAccessTokenExpiration() (refreshExpire bool) {
 	addr := fmt.Sprintf(refreshTokenURL, appid, w.RefreshToken)
 	rsp, err := http.Get(addr)
 	if err != nil {
-		log.Errorw("WeiXin refresh token get failed", "err", err)
+		log.Errorw("WeiXin refresh token get failed", "err", err, "info", w)
 		return false
 	}
 	defer rsp.Body.Close()
 
 	bodyBytes, err := io.ReadAll(rsp.Body)
 	if err != nil {
-		log.Errorw("WeiXin refresh token body read failed", "err", err)
+		log.Errorw("WeiXin refresh token body read failed", "err", err, "info", w)
 		return false
 	}
 
@@ -126,7 +128,7 @@ func (w *WeChatAccessInfo) UserInfo() (userInfo *inner.WeChatUserInfo) {
 
 	return &inner.WeChatUserInfo{
 		Icon:   rspInfo.HeadImgURL,
-		Gender: cast.ToInt32(rspInfo.Sex),
+		Gender: cast.ToInt32(rspInfo.Sex) - 1,
 		Name:   rspInfo.NickName,
 	}
 }
