@@ -15,6 +15,9 @@ func Spawner(name string, newPool ...bool) (interface{}, bool) {
 func Put(name string, x interface{}) {}
 
 var spawner = map[string]factory{
+	"inner.WeChatUserInfo":             func() interface{} { return &WeChatUserInfo{} },
+	"inner.SetWeChatInfoRsp":           func() interface{} { return &SetWeChatInfoRsp{} },
+	"inner.SetWeChatInfoReq":           func() interface{} { return &SetWeChatInfoReq{} },
 	"inner.SetMemberPositionRsp":       func() interface{} { return &SetMemberPositionRsp{} },
 	"inner.SetMemberPositionReq":       func() interface{} { return &SetMemberPositionReq{} },
 	"inner.RoomPlayerInfo":             func() interface{} { return &RoomPlayerInfo{} },

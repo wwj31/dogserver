@@ -15,7 +15,7 @@ message HeartRsp {
 
 message LoginReq {  // tag:login
     int32  LoginType     = 1; // 登录方式 1.游客、2.phone、3.微信、4.token
-    string WeiXinOpenID  = 2; // 微信的Openid
+    string WeChatCode    = 2; // 微信授权登录的code https://developers.weixin.qq.com/doc/oplatform/Mobile_App/WeChat_Login/Development_Guide.html
     string DeviceID      = 3; // 设备ID
     string Phone         = 4; // 电话登录
     string PhonePassword = 5; // 绑定的密码
