@@ -3,8 +3,9 @@ package player
 import (
 	"context"
 	"reflect"
-	"server/service/alliance"
 	"time"
+
+	"server/service/alliance"
 
 	"github.com/spf13/cast"
 	"github.com/wwj31/dogactor/tools"
@@ -121,7 +122,7 @@ var _ = router.Reg(func(p *player.Player, msg *outer.SetAgentDownRebateReq) any 
 	if downInfo.Position <= alliance.Normal.Int32() {
 		allianceActor := actortype.AllianceName(p.Alliance().AllianceId())
 		rsp, err := p.RequestWait(allianceActor, &inner.SetMemberPositionReq{
-			Player:   &playerInfo,
+			Player:   &downInfo,
 			Position: int32(alliance.Captain),
 		})
 		if yes, err := common.IsErr(rsp, err); yes {
