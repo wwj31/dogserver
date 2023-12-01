@@ -88,7 +88,9 @@ var _ = router.Reg(func(alli *alliance.Alliance, msg *inner.SetMemberPositionReq
 				rdsop.SetPlayerInfo(&playerInfo)
 			}
 		})
-
+	} else {
+		msg.Player.Position = msg.Position
+		rdsop.SetPlayerInfo(msg.Player)
 	}
 	return &inner.SetMemberPositionRsp{}
 })
