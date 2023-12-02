@@ -26,6 +26,7 @@ func (s *StateDeal) State() int {
 const handCardsSize = 5
 
 func (s *StateDeal) Enter() {
+	s.room.GameRecordingStart()
 	for _, player := range s.niuniuPlayers {
 		if player != nil {
 			s.playerGameCount[player.ShortId]++

@@ -178,6 +178,14 @@ func (f *FasterRun) CanSetGold(p *inner.PlayerInfo) bool {
 	return false
 }
 
+// RecordingPlayback 当前状态是否需要记录回播内容
+func (f *FasterRun) RecordingPlayback() bool {
+	if f.fsm.State() == Ready {
+		return false
+	}
+	return true
+}
+
 func (f *FasterRun) PlayerOnline(shortId int64)  {}
 func (f *FasterRun) PlayerOffline(shortId int64) {}
 

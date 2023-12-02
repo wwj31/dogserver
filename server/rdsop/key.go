@@ -121,6 +121,11 @@ func RoomsInfoKey(roomId int64) string {
 	return fmt.Sprintf("room:info:%v", roomId)
 }
 
+// RoomsRecordingDataKey 房间回放信息
+func RoomsRecordingDataKey(roomId int64) string {
+	return fmt.Sprintf("room:recording:%v", roomId)
+}
+
 // RoomsIncIdKey 房间递增ID
 func RoomsIncIdKey() string {
 	return fmt.Sprintf("room:inc_id")

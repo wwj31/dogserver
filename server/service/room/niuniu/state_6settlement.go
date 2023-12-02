@@ -165,6 +165,7 @@ func (s *StateSettlement) Enter() {
 }
 
 func (s *StateSettlement) Leave() {
+	s.room.GameRecordingOver()
 	s.settlementMsg = nil
 	s.Log().Infow("[NiuNiu] leave state settlement ==================SETTLEMENT==================", "room", s.room.RoomId)
 	s.Log().Infof(" ")

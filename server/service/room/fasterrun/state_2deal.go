@@ -25,6 +25,7 @@ func (s *StateDeal) State() int {
 }
 
 func (s *StateDeal) Enter() {
+	s.room.GameRecordingStart()
 	var ignoreCards PokerCards
 	var handCardsNumber int
 	if s.gameParams().CardsNumber == 0 { //

@@ -291,8 +291,16 @@ func (m *Mahjong) CanSetGold(p *inner.PlayerInfo) bool {
 	return false
 }
 
-func (f *Mahjong) PlayerOnline(shortId int64)  {}
-func (f *Mahjong) PlayerOffline(shortId int64) {}
+// RecordingPlayback 当前状态是否需要记录回播内容
+func (m *Mahjong) RecordingPlayback() bool {
+	if m.fsm.State() == Ready {
+		return false
+	}
+	return true
+}
+
+func (m *Mahjong) PlayerOnline(shortId int64)  {}
+func (m *Mahjong) PlayerOffline(shortId int64) {}
 
 func (m *Mahjong) PlayerEnter(roomPlayer *room.Player) {
 	for i, player := range m.mahjongPlayers {

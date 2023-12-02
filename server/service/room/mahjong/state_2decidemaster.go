@@ -21,6 +21,7 @@ func (s *StateDecideMaster) State() int {
 }
 
 func (s *StateDecideMaster) Enter() {
+
 	s.dices[0] = rand.Int31n(6) + 1
 	s.dices[1] = rand.Int31n(6) + 1
 

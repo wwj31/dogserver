@@ -120,11 +120,11 @@ func (s *StateSettlement) Enter() {
 }
 
 func (s *StateSettlement) Leave() {
+	s.room.GameRecordingOver()
 	s.Log().Infow("[Mahjong] leave state settlement ==================SETTLEMENT==================", "room", s.room.RoomId, "count", s.gameCount)
 	s.Log().Infof(" ")
 	s.Log().Infof(" ")
 	s.Log().Infof(" ")
-
 }
 
 func (s *StateSettlement) Handle(shortId int64, v any) (result any) {

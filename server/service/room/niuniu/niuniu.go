@@ -165,6 +165,14 @@ func (n *NiuNiu) CanSetGold(p *inner.PlayerInfo) bool {
 	return false
 }
 
+// RecordingPlayback 当前状态是否需要记录回播内容
+func (n *NiuNiu) RecordingPlayback() bool {
+	if n.fsm.State() == Ready {
+		return false
+	}
+	return true
+}
+
 func (n *NiuNiu) PlayerOnline(shortId int64) {}
 func (n *NiuNiu) PlayerOffline(shortId int64) {
 	if player, _ := n.findNiuNiuPlayer(shortId); player != nil && n.CanLeave(player.PlayerInfo) {

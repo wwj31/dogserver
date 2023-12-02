@@ -37,6 +37,8 @@ var spawner = map[string]factory{
 	"outer.RoomListReq":                       func() interface{} { return &RoomListReq{} },
 	"outer.RoomInfo":                          func() interface{} { return &RoomInfo{} },
 	"outer.RoleInfo":                          func() interface{} { return &RoleInfo{} },
+	"outer.RecordingMessage":                  func() interface{} { return &RecordingMessage{} },
+	"outer.Recording":                         func() interface{} { return &Recording{} },
 	"outer.ReceiveMailItemRsp":                func() interface{} { return &ReceiveMailItemRsp{} },
 	"outer.ReceiveMailItemReq":                func() interface{} { return &ReceiveMailItemReq{} },
 	"outer.RebateScoreRsp":                    func() interface{} { return &RebateScoreRsp{} },

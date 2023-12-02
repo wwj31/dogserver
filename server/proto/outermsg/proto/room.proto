@@ -4,6 +4,7 @@ option  go_package = "/outer";
 
 import "base.proto";
 import "type.proto";
+import "msgid.proto";
 
 // 房间内玩家数据
 message RoomPlayerInfo {
@@ -70,4 +71,20 @@ message RoomPlayerLeaveNtf {// 房间内玩家离开通知
 message RoomPlayerOnlineNtf {// 房间内玩家上、下线通知
     int64 ShortId = 1;
     bool  Online  = 2; // true在线、false离线
+}
+
+// 回放记录消息
+message RecordingMessage {
+    int64 SendAt  = 1; // 发送时间
+    int64 ShortId = 2; // 接收消息的对象
+    Msg   MsgId   = 3; // 消息id
+    bytes Data    = 4; // 消息内容
+}
+
+// 回放数据
+message Recording {
+    int64 GameStartAt                  = 1; // 游戏开始时间(准备结束后开始游戏的时刻 毫秒)
+    int64 GameOverAt                   = 2; // 游戏结束时间(结算结束的时刻 毫秒)
+    RoomInfo Room                      = 3; // 房间基础信息
+    repeated RecordingMessage Messages = 4; // 回放消息队列
 }

@@ -32,7 +32,7 @@ type WeChatAccessInfo struct {
 	UnionId      string `json:"unionid"`       // o6_bmasdasdsad6_2sgVt7hMZOPfL
 }
 
-// WeChatAccessToken 获取微信用户接口调用凭证
+// WeChatAccessToken 获取微信用户接口调用凭证，code的超时时间为10分钟，一个code只能成功换取一次access_token即失效。
 func WeChatAccessToken(code string) *WeChatAccessInfo {
 	addr := fmt.Sprintf(accessTokenURL, appid, secret, code)
 	rsp, err := http.Get(addr)
@@ -108,6 +108,7 @@ func (w *WeChatAccessInfo) UserInfo() (userInfo *inner.WeChatUserInfo) {
 		return
 	}
 
+	// headImgURL的格式:"https://thirdwx.qlogo.cn/mmopen/g3MonUZtNHkdmzicIlibx6iaFqAc56vxLSUfpb6n5WKSYVY0ChQKkiaJSgQ1dZuTOgvLLrhJbERQQ4eMsv84eavHiaiceqxibJxCfHe/0"
 	var rspInfo = struct {
 		OpenId     string   `json:"openid"`
 		NickName   string   `json:"nickname"`

@@ -1,9 +1,13 @@
 package rdsop
 
 import (
+	"bytes"
 	"context"
 
+	"github.com/go-redis/redis/v9"
+	"github.com/golang/protobuf/proto"
 	"github.com/spf13/cast"
+	"github.com/wwj31/dogactor/tools"
 
 	"server/common"
 	"server/common/log"
@@ -57,4 +61,44 @@ func (n NewRoomInfo) GetInfoFromRedis() NewRoomInfo {
 		info.Params = &outer.GameParams{}
 	}
 	return info
+}
+
+func AddRoomRecording(recordMsg *outer.Recording) {
+	data := common.ProtoMarshal(recordMsg)
+	rds.Ins.ZAdd(context.Background(), RoomsRecordingDataKey(recordMsg.Room.RoomId), redis.Z{
+		Score:  float64(recordMsg.GameStartAt),
+		Member: string(data),
+	})
+
+	// 删除7天前的数据
+	SevenDayAgo := tools.Now().Add(-10 * tools.Day).UnixMilli()
+	rds.Ins.ZRemRangeByScore(context.Background(), RoomsRecordingDataKey(recordMsg.Room.RoomId), "0", cast.ToString(SevenDayAgo))
+}
+
+func GetRoomRecording(roomId, gameStartAt int64) *outer.Recording {
+	cmd := rds.Ins.ZRangeByScore(context.Background(), RoomsRecordingDataKey(roomId), &redis.ZRangeBy{
+		Min:    cast.ToString(float64(gameStartAt)),
+		Max:    cast.ToString(float64(gameStartAt)),
+		Offset: 0,
+		Count:  1,
+	})
+
+	result, err := cmd.Result()
+	if err != nil {
+		log.Warnw("get room recording failed ", "err", err)
+		return nil
+	}
+
+	if len(result) == 0 {
+		log.Warnw("cannot find room recording")
+		return nil
+	}
+
+	buffer := bytes.NewBufferString(result[0])
+	var recording outer.Recording
+	if err = proto.Unmarshal(buffer.Bytes(), &recording); err != nil {
+		log.Warnw("room recording proto unmarshal failed", "err", err)
+		return nil
+	}
+	return &recording
 }

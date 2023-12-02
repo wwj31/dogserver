@@ -230,6 +230,7 @@ func (s *StateSettlement) isAgainstSpring(winner *fasterRunPlayer) bool {
 }
 
 func (s *StateSettlement) Leave() {
+	s.room.GameRecordingOver()
 	s.Log().Infow("[FasterRun] leave state settlement ==================SETTLEMENT==================", "room", s.room.RoomId, "count", s.gameCount)
 	s.Log().Infof(" ")
 	s.Log().Infof(" ")

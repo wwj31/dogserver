@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/wwj31/dogactor/logger"
+	"github.com/wwj31/dogactor/tools"
 
 	"server/common/actortype"
 	"server/rdsop"
@@ -66,8 +67,9 @@ type (
 
 		Players []*Player
 
-		gambling Gambling
-		log      *logger.Logger
+		RecordInfo *outer.Recording // 回放数据
+		gambling   Gambling
+		log        *logger.Logger
 	}
 )
 
@@ -253,9 +255,24 @@ func (r *Room) PlayerReady(shortId int64, ready bool) (ok bool, err outer.ERROR)
 }
 
 func (r *Room) SendToPlayer(shortId int64, msg proto.Message) {
+	msgType := common.ProtoType(msg)
+	Data := common.ProtoMarshal(msg)
+
 	wrapper := &inner.GamblingMsgToClientWrapper{
-		MsgType: common.ProtoType(msg),
-		Data:    common.ProtoMarshal(msg),
+		MsgType: msgType,
+		Data:    Data,
+	}
+
+	pbIndex := r.System().ProtoIndex()
+	msgId, _ := pbIndex.MsgNameToId(msgType)
+
+	if r.gambling.RecordingPlayback() {
+		r.RecordInfo.Messages = append(r.RecordInfo.Messages, &outer.RecordingMessage{
+			SendAt:  tools.Now().UnixMilli(),
+			ShortId: shortId,
+			MsgId:   outer.Msg(msgId),
+			Data:    Data,
+		})
 	}
 
 	player := r.FindPlayer(shortId)
@@ -332,4 +349,22 @@ func (p *Player) OuterPB(seatIdx int32) *outer.RoomPlayerInfo {
 
 func (r *Room) Log() *logger.Logger {
 	return r.log
+}
+
+// GameRecordingStart 开始记录
+func (r *Room) GameRecordingStart() {
+	// 在开始记录回放的点，把房间状态先存下来
+	r.RecordInfo = &outer.Recording{
+		GameStartAt: tools.Now().UnixMilli(),
+		Room:        convert.RoomInfoInnerToOuter(r.Info()),
+	}
+}
+
+// GameRecordingOver 结束记录
+func (r *Room) GameRecordingOver() {
+	r.RecordInfo.GameOverAt = tools.Now().UnixMilli()
+	// 结束记录的时候，房间回放信息推上redis
+	rdsop.AddRoomRecording(r.RecordInfo)
+
+	// TODO 每位玩家，分别记录各自的战绩信息
 }
