@@ -125,4 +125,8 @@ enum Msg {
     IdRoomPlayerEnterNtf = 867132366;
     IdRoomPlayerLeaveNtf = 721409295;
     IdRoomPlayerOnlineNtf = 1386944282;
+    IdRoomGameHistoryReq = 1965733328;
+    IdRoomGameHistoryRsp = 187357234;
+    IdRoomRecordingReq = 585852543;
+    IdRoomRecordingRsp = 887849782;
 }

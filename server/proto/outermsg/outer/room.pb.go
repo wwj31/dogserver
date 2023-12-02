@@ -770,6 +770,83 @@ func (x *RoomPlayerOnlineNtf) GetOnline() bool {
 	return false
 }
 
+// 请求近期战绩信息
+type RoomGameHistoryReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *RoomGameHistoryReq) Reset() {
+	*x = RoomGameHistoryReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_room_proto_msgTypes[15]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *RoomGameHistoryReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RoomGameHistoryReq) ProtoMessage() {}
+
+func (x *RoomGameHistoryReq) ProtoReflect() protoreflect.Message {
+	mi := &file_room_proto_msgTypes[15]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RoomGameHistoryReq.ProtoReflect.Descriptor instead.
+func (*RoomGameHistoryReq) Descriptor() ([]byte, []int) {
+	return file_room_proto_rawDescGZIP(), []int{15}
+}
+
+type RoomGameHistoryRsp struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *RoomGameHistoryRsp) Reset() {
+	*x = RoomGameHistoryRsp{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_room_proto_msgTypes[16]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *RoomGameHistoryRsp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RoomGameHistoryRsp) ProtoMessage() {}
+
+func (x *RoomGameHistoryRsp) ProtoReflect() protoreflect.Message {
+	mi := &file_room_proto_msgTypes[16]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RoomGameHistoryRsp.ProtoReflect.Descriptor instead.
+func (*RoomGameHistoryRsp) Descriptor() ([]byte, []int) {
+	return file_room_proto_rawDescGZIP(), []int{16}
+}
+
 // 回放记录消息
 type RecordingMessage struct {
 	state         protoimpl.MessageState
@@ -785,7 +862,7 @@ type RecordingMessage struct {
 func (x *RecordingMessage) Reset() {
 	*x = RecordingMessage{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_room_proto_msgTypes[15]
+		mi := &file_room_proto_msgTypes[17]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -798,7 +875,7 @@ func (x *RecordingMessage) String() string {
 func (*RecordingMessage) ProtoMessage() {}
 
 func (x *RecordingMessage) ProtoReflect() protoreflect.Message {
-	mi := &file_room_proto_msgTypes[15]
+	mi := &file_room_proto_msgTypes[17]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -811,7 +888,7 @@ func (x *RecordingMessage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RecordingMessage.ProtoReflect.Descriptor instead.
 func (*RecordingMessage) Descriptor() ([]byte, []int) {
-	return file_room_proto_rawDescGZIP(), []int{15}
+	return file_room_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *RecordingMessage) GetSendAt() int64 {
@@ -848,8 +925,8 @@ type Recording struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	GameStartAt int64               `protobuf:"varint,1,opt,name=GameStartAt,proto3" json:"GameStartAt,omitempty"` // 游戏开始时间(准备结束后开始游戏的时刻)
-	GameOverAt  int64               `protobuf:"varint,2,opt,name=GameOverAt,proto3" json:"GameOverAt,omitempty"`   // 游戏结束时间(结算结束的时刻)
+	GameStartAt int64               `protobuf:"varint,1,opt,name=GameStartAt,proto3" json:"GameStartAt,omitempty"` // 游戏开始时间(准备结束后开始游戏的时刻 毫秒)
+	GameOverAt  int64               `protobuf:"varint,2,opt,name=GameOverAt,proto3" json:"GameOverAt,omitempty"`   // 游戏结束时间(结算结束的时刻 毫秒)
 	Room        *RoomInfo           `protobuf:"bytes,3,opt,name=Room,proto3" json:"Room,omitempty"`                // 房间基础信息
 	Messages    []*RecordingMessage `protobuf:"bytes,4,rep,name=Messages,proto3" json:"Messages,omitempty"`        // 回放消息队列
 }
@@ -857,7 +934,7 @@ type Recording struct {
 func (x *Recording) Reset() {
 	*x = Recording{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_room_proto_msgTypes[16]
+		mi := &file_room_proto_msgTypes[18]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -870,7 +947,7 @@ func (x *Recording) String() string {
 func (*Recording) ProtoMessage() {}
 
 func (x *Recording) ProtoReflect() protoreflect.Message {
-	mi := &file_room_proto_msgTypes[16]
+	mi := &file_room_proto_msgTypes[18]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -883,7 +960,7 @@ func (x *Recording) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Recording.ProtoReflect.Descriptor instead.
 func (*Recording) Descriptor() ([]byte, []int) {
-	return file_room_proto_rawDescGZIP(), []int{16}
+	return file_room_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *Recording) GetGameStartAt() int64 {
@@ -910,6 +987,109 @@ func (x *Recording) GetRoom() *RoomInfo {
 func (x *Recording) GetMessages() []*RecordingMessage {
 	if x != nil {
 		return x.Messages
+	}
+	return nil
+}
+
+// 游戏数据回放
+type RoomRecordingReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	RoomId      int64 `protobuf:"varint,1,opt,name=RoomId,proto3" json:"RoomId,omitempty"`           // 房间id
+	GameStartAt int64 `protobuf:"varint,2,opt,name=GameStartAt,proto3" json:"GameStartAt,omitempty"` // 要看的那局游戏开始时间
+}
+
+func (x *RoomRecordingReq) Reset() {
+	*x = RoomRecordingReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_room_proto_msgTypes[19]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *RoomRecordingReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RoomRecordingReq) ProtoMessage() {}
+
+func (x *RoomRecordingReq) ProtoReflect() protoreflect.Message {
+	mi := &file_room_proto_msgTypes[19]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RoomRecordingReq.ProtoReflect.Descriptor instead.
+func (*RoomRecordingReq) Descriptor() ([]byte, []int) {
+	return file_room_proto_rawDescGZIP(), []int{19}
+}
+
+func (x *RoomRecordingReq) GetRoomId() int64 {
+	if x != nil {
+		return x.RoomId
+	}
+	return 0
+}
+
+func (x *RoomRecordingReq) GetGameStartAt() int64 {
+	if x != nil {
+		return x.GameStartAt
+	}
+	return 0
+}
+
+type RoomRecordingRsp struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	GameRecordData *Recording `protobuf:"bytes,1,opt,name=GameRecordData,proto3" json:"GameRecordData,omitempty"` // 游戏回放记录
+}
+
+func (x *RoomRecordingRsp) Reset() {
+	*x = RoomRecordingRsp{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_room_proto_msgTypes[20]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *RoomRecordingRsp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RoomRecordingRsp) ProtoMessage() {}
+
+func (x *RoomRecordingRsp) ProtoReflect() protoreflect.Message {
+	mi := &file_room_proto_msgTypes[20]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RoomRecordingRsp.ProtoReflect.Descriptor instead.
+func (*RoomRecordingRsp) Descriptor() ([]byte, []int) {
+	return file_room_proto_rawDescGZIP(), []int{20}
+}
+
+func (x *RoomRecordingRsp) GetGameRecordData() *Recording {
+	if x != nil {
+		return x.GameRecordData
 	}
 	return nil
 }
@@ -981,27 +1161,39 @@ var file_room_proto_rawDesc = []byte{
 	0x6e, 0x6c, 0x69, 0x6e, 0x65, 0x4e, 0x74, 0x66, 0x12, 0x18, 0x0a, 0x07, 0x53, 0x68, 0x6f, 0x72,
 	0x74, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x07, 0x53, 0x68, 0x6f, 0x72, 0x74,
 	0x49, 0x64, 0x12, 0x16, 0x0a, 0x06, 0x4f, 0x6e, 0x6c, 0x69, 0x6e, 0x65, 0x18, 0x02, 0x20, 0x01,
-	0x28, 0x08, 0x52, 0x06, 0x4f, 0x6e, 0x6c, 0x69, 0x6e, 0x65, 0x22, 0x7a, 0x0a, 0x10, 0x52, 0x65,
-	0x63, 0x6f, 0x72, 0x64, 0x69, 0x6e, 0x67, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x12, 0x16,
-	0x0a, 0x06, 0x53, 0x65, 0x6e, 0x64, 0x41, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x06,
-	0x53, 0x65, 0x6e, 0x64, 0x41, 0x74, 0x12, 0x18, 0x0a, 0x07, 0x53, 0x68, 0x6f, 0x72, 0x74, 0x49,
-	0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x03, 0x52, 0x07, 0x53, 0x68, 0x6f, 0x72, 0x74, 0x49, 0x64,
-	0x12, 0x20, 0x0a, 0x05, 0x4d, 0x73, 0x67, 0x49, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0e, 0x32,
-	0x0a, 0x2e, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x4d, 0x73, 0x67, 0x52, 0x05, 0x4d, 0x73, 0x67,
-	0x49, 0x64, 0x12, 0x12, 0x0a, 0x04, 0x44, 0x61, 0x74, 0x61, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0c,
-	0x52, 0x04, 0x44, 0x61, 0x74, 0x61, 0x22, 0xa7, 0x01, 0x0a, 0x09, 0x52, 0x65, 0x63, 0x6f, 0x72,
-	0x64, 0x69, 0x6e, 0x67, 0x12, 0x20, 0x0a, 0x0b, 0x47, 0x61, 0x6d, 0x65, 0x53, 0x74, 0x61, 0x72,
-	0x74, 0x41, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0b, 0x47, 0x61, 0x6d, 0x65, 0x53,
-	0x74, 0x61, 0x72, 0x74, 0x41, 0x74, 0x12, 0x1e, 0x0a, 0x0a, 0x47, 0x61, 0x6d, 0x65, 0x4f, 0x76,
-	0x65, 0x72, 0x41, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0a, 0x47, 0x61, 0x6d, 0x65,
-	0x4f, 0x76, 0x65, 0x72, 0x41, 0x74, 0x12, 0x23, 0x0a, 0x04, 0x52, 0x6f, 0x6f, 0x6d, 0x18, 0x03,
-	0x20, 0x01, 0x28, 0x0b, 0x32, 0x0f, 0x2e, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x52, 0x6f, 0x6f,
-	0x6d, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x04, 0x52, 0x6f, 0x6f, 0x6d, 0x12, 0x33, 0x0a, 0x08, 0x4d,
-	0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x73, 0x18, 0x04, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x17, 0x2e,
-	0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x69, 0x6e, 0x67, 0x4d,
-	0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x52, 0x08, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x73,
-	0x42, 0x08, 0x5a, 0x06, 0x2f, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x33,
+	0x28, 0x08, 0x52, 0x06, 0x4f, 0x6e, 0x6c, 0x69, 0x6e, 0x65, 0x22, 0x14, 0x0a, 0x12, 0x52, 0x6f,
+	0x6f, 0x6d, 0x47, 0x61, 0x6d, 0x65, 0x48, 0x69, 0x73, 0x74, 0x6f, 0x72, 0x79, 0x52, 0x65, 0x71,
+	0x22, 0x14, 0x0a, 0x12, 0x52, 0x6f, 0x6f, 0x6d, 0x47, 0x61, 0x6d, 0x65, 0x48, 0x69, 0x73, 0x74,
+	0x6f, 0x72, 0x79, 0x52, 0x73, 0x70, 0x22, 0x7a, 0x0a, 0x10, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64,
+	0x69, 0x6e, 0x67, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x53, 0x65,
+	0x6e, 0x64, 0x41, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x06, 0x53, 0x65, 0x6e, 0x64,
+	0x41, 0x74, 0x12, 0x18, 0x0a, 0x07, 0x53, 0x68, 0x6f, 0x72, 0x74, 0x49, 0x64, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x03, 0x52, 0x07, 0x53, 0x68, 0x6f, 0x72, 0x74, 0x49, 0x64, 0x12, 0x20, 0x0a, 0x05,
+	0x4d, 0x73, 0x67, 0x49, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x0a, 0x2e, 0x6f, 0x75,
+	0x74, 0x65, 0x72, 0x2e, 0x4d, 0x73, 0x67, 0x52, 0x05, 0x4d, 0x73, 0x67, 0x49, 0x64, 0x12, 0x12,
+	0x0a, 0x04, 0x44, 0x61, 0x74, 0x61, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x04, 0x44, 0x61,
+	0x74, 0x61, 0x22, 0xa7, 0x01, 0x0a, 0x09, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x69, 0x6e, 0x67,
+	0x12, 0x20, 0x0a, 0x0b, 0x47, 0x61, 0x6d, 0x65, 0x53, 0x74, 0x61, 0x72, 0x74, 0x41, 0x74, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0b, 0x47, 0x61, 0x6d, 0x65, 0x53, 0x74, 0x61, 0x72, 0x74,
+	0x41, 0x74, 0x12, 0x1e, 0x0a, 0x0a, 0x47, 0x61, 0x6d, 0x65, 0x4f, 0x76, 0x65, 0x72, 0x41, 0x74,
+	0x18, 0x02, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0a, 0x47, 0x61, 0x6d, 0x65, 0x4f, 0x76, 0x65, 0x72,
+	0x41, 0x74, 0x12, 0x23, 0x0a, 0x04, 0x52, 0x6f, 0x6f, 0x6d, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b,
+	0x32, 0x0f, 0x2e, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x52, 0x6f, 0x6f, 0x6d, 0x49, 0x6e, 0x66,
+	0x6f, 0x52, 0x04, 0x52, 0x6f, 0x6f, 0x6d, 0x12, 0x33, 0x0a, 0x08, 0x4d, 0x65, 0x73, 0x73, 0x61,
+	0x67, 0x65, 0x73, 0x18, 0x04, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x6f, 0x75, 0x74, 0x65,
+	0x72, 0x2e, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x69, 0x6e, 0x67, 0x4d, 0x65, 0x73, 0x73, 0x61,
+	0x67, 0x65, 0x52, 0x08, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x73, 0x22, 0x4c, 0x0a, 0x10,
+	0x52, 0x6f, 0x6f, 0x6d, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x69, 0x6e, 0x67, 0x52, 0x65, 0x71,
+	0x12, 0x16, 0x0a, 0x06, 0x52, 0x6f, 0x6f, 0x6d, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03,
+	0x52, 0x06, 0x52, 0x6f, 0x6f, 0x6d, 0x49, 0x64, 0x12, 0x20, 0x0a, 0x0b, 0x47, 0x61, 0x6d, 0x65,
+	0x53, 0x74, 0x61, 0x72, 0x74, 0x41, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x03, 0x52, 0x0b, 0x47,
+	0x61, 0x6d, 0x65, 0x53, 0x74, 0x61, 0x72, 0x74, 0x41, 0x74, 0x22, 0x4c, 0x0a, 0x10, 0x52, 0x6f,
+	0x6f, 0x6d, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x69, 0x6e, 0x67, 0x52, 0x73, 0x70, 0x12, 0x38,
+	0x0a, 0x0e, 0x47, 0x61, 0x6d, 0x65, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x44, 0x61, 0x74, 0x61,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x10, 0x2e, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x52,
+	0x65, 0x63, 0x6f, 0x72, 0x64, 0x69, 0x6e, 0x67, 0x52, 0x0e, 0x47, 0x61, 0x6d, 0x65, 0x52, 0x65,
+	0x63, 0x6f, 0x72, 0x64, 0x44, 0x61, 0x74, 0x61, 0x42, 0x08, 0x5a, 0x06, 0x2f, 0x6f, 0x75, 0x74,
+	0x65, 0x72, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1016,7 +1208,7 @@ func file_room_proto_rawDescGZIP() []byte {
 	return file_room_proto_rawDescData
 }
 
-var file_room_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
+var file_room_proto_msgTypes = make([]protoimpl.MessageInfo, 21)
 var file_room_proto_goTypes = []interface{}{
 	(*RoomPlayerInfo)(nil),      // 0: outer.RoomPlayerInfo
 	(*RoomInfo)(nil),            // 1: outer.RoomInfo
@@ -1033,32 +1225,37 @@ var file_room_proto_goTypes = []interface{}{
 	(*RoomPlayerEnterNtf)(nil),  // 12: outer.RoomPlayerEnterNtf
 	(*RoomPlayerLeaveNtf)(nil),  // 13: outer.RoomPlayerLeaveNtf
 	(*RoomPlayerOnlineNtf)(nil), // 14: outer.RoomPlayerOnlineNtf
-	(*RecordingMessage)(nil),    // 15: outer.RecordingMessage
-	(*Recording)(nil),           // 16: outer.Recording
-	(*PlayerInfo)(nil),          // 17: outer.PlayerInfo
-	(GameType)(0),               // 18: outer.GameType
-	(*GameParams)(nil),          // 19: outer.GameParams
-	(Msg)(0),                    // 20: outer.Msg
+	(*RoomGameHistoryReq)(nil),  // 15: outer.RoomGameHistoryReq
+	(*RoomGameHistoryRsp)(nil),  // 16: outer.RoomGameHistoryRsp
+	(*RecordingMessage)(nil),    // 17: outer.RecordingMessage
+	(*Recording)(nil),           // 18: outer.Recording
+	(*RoomRecordingReq)(nil),    // 19: outer.RoomRecordingReq
+	(*RoomRecordingRsp)(nil),    // 20: outer.RoomRecordingRsp
+	(*PlayerInfo)(nil),          // 21: outer.PlayerInfo
+	(GameType)(0),               // 22: outer.GameType
+	(*GameParams)(nil),          // 23: outer.GameParams
+	(Msg)(0),                    // 24: outer.Msg
 }
 var file_room_proto_depIdxs = []int32{
-	17, // 0: outer.RoomPlayerInfo.BaseInfo:type_name -> outer.PlayerInfo
-	18, // 1: outer.RoomInfo.GameType:type_name -> outer.GameType
-	19, // 2: outer.RoomInfo.GameParams:type_name -> outer.GameParams
+	21, // 0: outer.RoomPlayerInfo.BaseInfo:type_name -> outer.PlayerInfo
+	22, // 1: outer.RoomInfo.GameType:type_name -> outer.GameType
+	23, // 2: outer.RoomInfo.GameParams:type_name -> outer.GameParams
 	0,  // 3: outer.RoomInfo.Players:type_name -> outer.RoomPlayerInfo
-	18, // 4: outer.CreateRoomReq.GameType:type_name -> outer.GameType
-	19, // 5: outer.CreateRoomReq.GameParams:type_name -> outer.GameParams
+	22, // 4: outer.CreateRoomReq.GameType:type_name -> outer.GameType
+	23, // 5: outer.CreateRoomReq.GameParams:type_name -> outer.GameParams
 	1,  // 6: outer.CreateRoomRsp.Room:type_name -> outer.RoomInfo
 	1,  // 7: outer.RoomListRsp.RoomList:type_name -> outer.RoomInfo
 	1,  // 8: outer.JoinRoomRsp.Room:type_name -> outer.RoomInfo
 	0,  // 9: outer.RoomPlayerEnterNtf.Player:type_name -> outer.RoomPlayerInfo
-	20, // 10: outer.RecordingMessage.MsgId:type_name -> outer.Msg
+	24, // 10: outer.RecordingMessage.MsgId:type_name -> outer.Msg
 	1,  // 11: outer.Recording.Room:type_name -> outer.RoomInfo
-	15, // 12: outer.Recording.Messages:type_name -> outer.RecordingMessage
-	13, // [13:13] is the sub-list for method output_type
-	13, // [13:13] is the sub-list for method input_type
-	13, // [13:13] is the sub-list for extension type_name
-	13, // [13:13] is the sub-list for extension extendee
-	0,  // [0:13] is the sub-list for field type_name
+	17, // 12: outer.Recording.Messages:type_name -> outer.RecordingMessage
+	18, // 13: outer.RoomRecordingRsp.GameRecordData:type_name -> outer.Recording
+	14, // [14:14] is the sub-list for method output_type
+	14, // [14:14] is the sub-list for method input_type
+	14, // [14:14] is the sub-list for extension type_name
+	14, // [14:14] is the sub-list for extension extendee
+	0,  // [0:14] is the sub-list for field type_name
 }
 
 func init() { file_room_proto_init() }
@@ -1251,7 +1448,7 @@ func file_room_proto_init() {
 			}
 		}
 		file_room_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*RecordingMessage); i {
+			switch v := v.(*RoomGameHistoryReq); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1263,7 +1460,55 @@ func file_room_proto_init() {
 			}
 		}
 		file_room_proto_msgTypes[16].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*RoomGameHistoryRsp); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_room_proto_msgTypes[17].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*RecordingMessage); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_room_proto_msgTypes[18].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Recording); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_room_proto_msgTypes[19].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*RoomRecordingReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_room_proto_msgTypes[20].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*RoomRecordingRsp); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1281,7 +1526,7 @@ func file_room_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_room_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   17,
+			NumMessages:   21,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

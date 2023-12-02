@@ -73,6 +73,13 @@ message RoomPlayerOnlineNtf {// 房间内玩家上、下线通知
     bool  Online  = 2; // true在线、false离线
 }
 
+// 请求近期战绩信息
+message RoomGameHistoryReq {
+}
+message RoomGameHistoryRsp {
+    // TODO
+}
+
 // 回放记录消息
 message RecordingMessage {
     int64 SendAt  = 1; // 发送时间
@@ -87,4 +94,13 @@ message Recording {
     int64 GameOverAt                   = 2; // 游戏结束时间(结算结束的时刻 毫秒)
     RoomInfo Room                      = 3; // 房间基础信息
     repeated RecordingMessage Messages = 4; // 回放消息队列
+}
+
+// 游戏数据回放
+message RoomRecordingReq {
+    int64 RoomId      = 1; // 房间id
+    int64 GameStartAt = 2; // 要看的那局游戏开始时间
+}
+message RoomRecordingRsp {
+    Recording GameRecordData = 1; // 游戏回放记录
 }
