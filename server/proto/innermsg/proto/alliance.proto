@@ -12,68 +12,68 @@ message AllianceInfoNtf {
 }
 
 // 创建联盟
-message CreateAllianceReq{
+message CreateAllianceReq {
   int64 MasterShortId = 1; // 盟主短Id
 }
-message CreateAllianceRsp{
+message CreateAllianceRsp {
   int32 AllianceId = 1;
 }
 
 // 解散联盟
-message DisbandAllianceReq{
+message DisbandAllianceReq {
   string RID = 1;
   int32  AllianceId = 2;
 }
-message DisbandAllianceRsp{
+message DisbandAllianceRsp {
 }
 
 // 设置成员信息
-message AddMemberReq{
+message AddMemberReq {
   PlayerInfo Player   = 1;
   int32      Position = 2;
   bool       Ntf      = 3; // 登录触发加入联盟不需要通知，跟随盟主被动进入联盟需要通知
 }
-message AddMemberRsp{
+message AddMemberRsp {
 }
 
 // 设置成员职位
-message SetMemberPositionReq{
+message SetMemberPositionReq {
   PlayerInfo Player   = 1;
   int32      Position = 2;
 }
-message SetMemberPositionRsp{
+message SetMemberPositionRsp {
 }
 
 // 踢出成员
-message KickOutMembersReq{
+message KickOutMembersReq {
   int64 OpShortId         = 1;
   repeated int64 ShortIds = 2;
 }
-message KickOutMembersRsp{
+message KickOutMembersRsp {
 }
 
 // 登录时，绑定角色session，并请求自己在联盟中的成员最新信息
-message MemberInfoOnLoginReq{
+message MemberInfoOnLoginReq {
   string GateSession = 1;
   string RID         = 2;
 }
-message MemberInfoOnLoginRsp{
+message MemberInfoOnLoginRsp {
   int32 AllianceId = 1; // 联盟id，如果为0，表示玩家下线期间被踢了
   int32 Position   = 2; // 职位
 }
 
 // 下线后，通知联盟
-message MemberInfoOnLogoutReq{
+message MemberInfoOnLogoutReq {
   string GateSession = 1;
   string RID         = 2;
 }
-message MemberInfoOnLogoutRsp{
+message MemberInfoOnLogoutRsp {
 }
 
 // 获取联盟基础信息
-message AllianceInfoReq{
+message AllianceInfoReq {
 }
-message AllianceInfoRsp{
+message AllianceInfoRsp {
   int64 MasterShortId = 1;
   string MasterRID    = 2;
 }

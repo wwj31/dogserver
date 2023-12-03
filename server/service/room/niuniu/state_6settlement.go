@@ -20,6 +20,7 @@ import (
 
 type StateSettlement struct {
 	*NiuNiu
+	history map[int64]int64
 }
 
 func (s *StateSettlement) State() int {
@@ -27,6 +28,7 @@ func (s *StateSettlement) State() int {
 }
 
 func (s *StateSettlement) Enter() {
+	s.history = make(map[int64]int64)
 	s.lastMasterShort = s.niuniuPlayers[s.masterIndex].ShortId
 	s.currentStateEndAt = tools.Now().Add(SettlementDuration).Add(time.Duration(s.participantCount()) * time.Second)
 	s.Log().Infow("[NiuNiu] enter state settlement", "room", s.room.RoomId,
@@ -150,6 +152,7 @@ func (s *StateSettlement) Enter() {
 
 			// 记录本场游戏的输赢变化
 			changes := finalScore - presentScore
+			s.history[player.ShortId] = changes
 			rdsop.SetUpdateGoldRecord(player.ShortId, rdsop.GoldUpdateReason{
 				Type:      rdsop.GameWinOrLose, // 跑的快游戏输赢记录
 				Gold:      changes,
@@ -165,7 +168,6 @@ func (s *StateSettlement) Enter() {
 }
 
 func (s *StateSettlement) Leave() {
-	s.room.GameRecordingOver()
 	s.settlementMsg = nil
 	s.Log().Infow("[NiuNiu] leave state settlement ==================SETTLEMENT==================", "room", s.room.RoomId)
 	s.Log().Infof(" ")
@@ -185,6 +187,7 @@ func (s *StateSettlement) afterSettle(ntf *outer.NiuNiuSettlementNtf) {
 
 	s.room.Broadcast(ntf)
 
+	s.room.GameRecordingOver(s.baseScore(), s.history)
 	s.clear()
 
 	// 结算给个短暂的时间

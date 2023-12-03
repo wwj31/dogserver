@@ -266,7 +266,7 @@ func (r *Room) SendToPlayer(shortId int64, msg proto.Message) {
 	pbIndex := r.System().ProtoIndex()
 	msgId, _ := pbIndex.MsgNameToId(msgType)
 
-	if r.gambling.RecordingPlayback() {
+	if r.gambling.CanRecordingPlayback() {
 		r.RecordInfo.Messages = append(r.RecordInfo.Messages, &outer.RecordingMessage{
 			SendAt:  tools.Now().UnixMilli(),
 			ShortId: shortId,
@@ -360,11 +360,23 @@ func (r *Room) GameRecordingStart() {
 	}
 }
 
-// GameRecordingOver 结束记录
-func (r *Room) GameRecordingOver() {
+// GameRecordingOver 结束记录 传入底分和每个玩家的输赢情况
+func (r *Room) GameRecordingOver(baseScore int64, winScore map[int64]int64) {
 	r.RecordInfo.GameOverAt = tools.Now().UnixMilli()
 	// 结束记录的时候，房间回放信息推上redis
 	rdsop.AddRoomRecording(r.RecordInfo)
 
-	// TODO 每位玩家，分别记录各自的战绩信息
+	// 玩家游戏记录
+	msg := &inner.GameHistoryInfoReq{
+		Info: &inner.HistoryInfo{
+			GameType:    r.GameType,
+			RoomId:      r.RoomId,
+			GameStartAt: r.RecordInfo.GameStartAt,
+			GameOverAt:  r.RecordInfo.GameOverAt,
+		},
+	}
+	for shortId, win := range winScore {
+		msg.Info.WinGold = win
+		r.SendToPlayer(shortId, msg)
+	}
 }

@@ -8,4 +8,5 @@ type Room interface {
 	Modeler
 	RoomId() int64
 	SetRoomInfo(info *inner.RoomInfo)
+	AddGamblingHistory(info *inner.HistoryInfo)
 }

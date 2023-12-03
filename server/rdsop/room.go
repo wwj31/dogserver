@@ -70,8 +70,8 @@ func AddRoomRecording(recordMsg *outer.Recording) {
 		Member: string(data),
 	})
 
-	// 删除7天前的数据
-	SevenDayAgo := tools.Now().Add(-10 * tools.Day).UnixMilli()
+	// 删除4天前的数据
+	SevenDayAgo := tools.Now().Add(-4 * tools.Day).UnixMilli()
 	rds.Ins.ZRemRangeByScore(context.Background(), RoomsRecordingDataKey(recordMsg.Room.RoomId), "0", cast.ToString(SevenDayAgo))
 }
 

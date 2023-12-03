@@ -2,8 +2,7 @@ syntax = "proto3";
 package inner;
 option  go_package = "/inner";
 
-message Account
-{
+message Account {
     string UID           =  1;
     string DeviceId      =  2;
     string Phone         =  3;

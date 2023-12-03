@@ -367,6 +367,178 @@ func (m *MailInfo) GetMails() map[string]*Mail {
 	return nil
 }
 
+type HistoryInfo struct {
+	GameType    int32 `protobuf:"varint,1,opt,name=GameType,proto3" json:"GameType,omitempty"`
+	RoomId      int64 `protobuf:"varint,2,opt,name=RoomId,proto3" json:"RoomId,omitempty"`
+	GameStartAt int64 `protobuf:"varint,3,opt,name=GameStartAt,proto3" json:"GameStartAt,omitempty"`
+	GameOverAt  int64 `protobuf:"varint,4,opt,name=GameOverAt,proto3" json:"GameOverAt,omitempty"`
+	WinGold     int64 `protobuf:"varint,5,opt,name=WinGold,proto3" json:"WinGold,omitempty"`
+}
+
+func (m *HistoryInfo) Reset()         { *m = HistoryInfo{} }
+func (m *HistoryInfo) String() string { return proto.CompactTextString(m) }
+func (*HistoryInfo) ProtoMessage()    {}
+func (*HistoryInfo) Descriptor() ([]byte, []int) {
+	return fileDescriptor_0a7260d8149d0369, []int{4}
+}
+func (m *HistoryInfo) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *HistoryInfo) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_HistoryInfo.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *HistoryInfo) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_HistoryInfo.Merge(m, src)
+}
+func (m *HistoryInfo) XXX_Size() int {
+	return m.Size()
+}
+func (m *HistoryInfo) XXX_DiscardUnknown() {
+	xxx_messageInfo_HistoryInfo.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_HistoryInfo proto.InternalMessageInfo
+
+func (m *HistoryInfo) GetGameType() int32 {
+	if m != nil {
+		return m.GameType
+	}
+	return 0
+}
+
+func (m *HistoryInfo) GetRoomId() int64 {
+	if m != nil {
+		return m.RoomId
+	}
+	return 0
+}
+
+func (m *HistoryInfo) GetGameStartAt() int64 {
+	if m != nil {
+		return m.GameStartAt
+	}
+	return 0
+}
+
+func (m *HistoryInfo) GetGameOverAt() int64 {
+	if m != nil {
+		return m.GameOverAt
+	}
+	return 0
+}
+
+func (m *HistoryInfo) GetWinGold() int64 {
+	if m != nil {
+		return m.WinGold
+	}
+	return 0
+}
+
+type HistoryInfos struct {
+	List []*HistoryInfo `protobuf:"bytes,1,rep,name=list,proto3" json:"list,omitempty"`
+}
+
+func (m *HistoryInfos) Reset()         { *m = HistoryInfos{} }
+func (m *HistoryInfos) String() string { return proto.CompactTextString(m) }
+func (*HistoryInfos) ProtoMessage()    {}
+func (*HistoryInfos) Descriptor() ([]byte, []int) {
+	return fileDescriptor_0a7260d8149d0369, []int{5}
+}
+func (m *HistoryInfos) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *HistoryInfos) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_HistoryInfos.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *HistoryInfos) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_HistoryInfos.Merge(m, src)
+}
+func (m *HistoryInfos) XXX_Size() int {
+	return m.Size()
+}
+func (m *HistoryInfos) XXX_DiscardUnknown() {
+	xxx_messageInfo_HistoryInfos.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_HistoryInfos proto.InternalMessageInfo
+
+func (m *HistoryInfos) GetList() []*HistoryInfo {
+	if m != nil {
+		return m.List
+	}
+	return nil
+}
+
+type GamblingData struct {
+	RID     string                  `protobuf:"bytes,1,opt,name=RID,proto3" json:"RID,omitempty" bson:"_id"`
+	History map[int32]*HistoryInfos `protobuf:"bytes,2,rep,name=History,proto3" json:"History,omitempty" protobuf_key:"varint,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+}
+
+func (m *GamblingData) Reset()         { *m = GamblingData{} }
+func (m *GamblingData) String() string { return proto.CompactTextString(m) }
+func (*GamblingData) ProtoMessage()    {}
+func (*GamblingData) Descriptor() ([]byte, []int) {
+	return fileDescriptor_0a7260d8149d0369, []int{6}
+}
+func (m *GamblingData) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *GamblingData) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_GamblingData.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *GamblingData) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GamblingData.Merge(m, src)
+}
+func (m *GamblingData) XXX_Size() int {
+	return m.Size()
+}
+func (m *GamblingData) XXX_DiscardUnknown() {
+	xxx_messageInfo_GamblingData.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GamblingData proto.InternalMessageInfo
+
+func (m *GamblingData) GetRID() string {
+	if m != nil {
+		return m.RID
+	}
+	return ""
+}
+
+func (m *GamblingData) GetHistory() map[int32]*HistoryInfos {
+	if m != nil {
+		return m.History
+	}
+	return nil
+}
+
 func init() {
 	proto.RegisterType((*RoleInfo)(nil), "inner.RoleInfo")
 	proto.RegisterType((*AllianceInfo)(nil), "inner.AllianceInfo")
@@ -374,45 +546,58 @@ func init() {
 	proto.RegisterMapType((map[int64]int64)(nil), "inner.Mail.ItemsEntry")
 	proto.RegisterType((*MailInfo)(nil), "inner.MailInfo")
 	proto.RegisterMapType((map[string]*Mail)(nil), "inner.MailInfo.MailsEntry")
+	proto.RegisterType((*HistoryInfo)(nil), "inner.HistoryInfo")
+	proto.RegisterType((*HistoryInfos)(nil), "inner.HistoryInfos")
+	proto.RegisterType((*GamblingData)(nil), "inner.GamblingData")
+	proto.RegisterMapType((map[int32]*HistoryInfos)(nil), "inner.GamblingData.HistoryEntry")
 }
 
 func init() { proto.RegisterFile("playerdata.proto", fileDescriptor_0a7260d8149d0369) }
 
 var fileDescriptor_0a7260d8149d0369 = []byte{
-	// 513 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x53, 0xcb, 0x6e, 0xd3, 0x40,
-	0x14, 0x8d, 0xed, 0x4c, 0x1e, 0x37, 0x15, 0xaa, 0x46, 0x55, 0x35, 0x8a, 0x90, 0x31, 0x5e, 0x65,
-	0x81, 0x02, 0x2a, 0x9b, 0xaa, 0xbb, 0xf4, 0xa1, 0xca, 0x52, 0x40, 0xd5, 0x84, 0x6c, 0xd8, 0x20,
-	0xb7, 0x1e, 0x52, 0x0b, 0x77, 0xa6, 0xb2, 0x27, 0x48, 0xf9, 0x0b, 0x96, 0xfc, 0x00, 0x7b, 0x3e,
-	0x83, 0x65, 0x97, 0xac, 0x10, 0x4a, 0xfe, 0x80, 0x2f, 0x40, 0xf7, 0x3a, 0x76, 0xdc, 0x5d, 0x77,
-	0xe7, 0x71, 0x27, 0x73, 0xe6, 0x5c, 0x07, 0xf6, 0xef, 0xb3, 0x78, 0xa5, 0xf2, 0x24, 0xb6, 0xf1,
-	0xf8, 0x3e, 0x37, 0xd6, 0x70, 0x96, 0x6a, 0xad, 0xf2, 0x21, 0x2c, 0xcc, 0xc2, 0x94, 0x52, 0xf8,
-	0xd3, 0x85, 0x9e, 0x34, 0x99, 0x8a, 0xf4, 0x67, 0xc3, 0x03, 0xf0, 0x64, 0x74, 0x2e, 0x9c, 0xc0,
-	0x19, 0xf5, 0x4f, 0x9f, 0xfd, 0xfb, 0xf3, 0x02, 0xae, 0x0b, 0xa3, 0x4f, 0xc2, 0x4f, 0x69, 0x12,
-	0x4a, 0xb4, 0xf8, 0x3e, 0x78, 0xf3, 0xe8, 0x5c, 0xb8, 0x38, 0x21, 0x11, 0x72, 0x01, 0xdd, 0xd9,
-	0xad, 0xc9, 0x6d, 0x94, 0x08, 0x2f, 0x70, 0x46, 0x9e, 0xac, 0x28, 0x3a, 0x53, 0xb3, 0x48, 0xf5,
-	0xc4, 0x8a, 0x36, 0xcd, 0x57, 0x94, 0x0f, 0xa1, 0x37, 0x35, 0x0b, 0xb3, 0xb4, 0x13, 0x2b, 0x18,
-	0x59, 0x35, 0x47, 0xef, 0x2c, 0x57, 0xb1, 0x55, 0x13, 0x2b, 0x3a, 0xa5, 0x57, 0x71, 0x7e, 0x00,
-	0xec, 0xea, 0xd6, 0x68, 0x25, 0xba, 0x64, 0x94, 0x84, 0x73, 0x68, 0xbf, 0x8f, 0xef, 0x94, 0xe8,
-	0x91, 0x48, 0x18, 0xb5, 0xe8, 0xc6, 0x68, 0xd1, 0x2f, 0x35, 0xc4, 0xa8, 0x5d, 0x9a, 0x2c, 0x11,
-	0x40, 0x31, 0x09, 0xf3, 0x43, 0xe8, 0x5c, 0x2a, 0x9d, 0xa8, 0x5c, 0x0c, 0x02, 0x67, 0xc4, 0xe4,
-	0x96, 0x61, 0x0a, 0xf4, 0xa7, 0xa9, 0x56, 0x62, 0x8f, 0xe6, 0x6b, 0x1e, 0x66, 0xb0, 0x37, 0xc9,
-	0xb2, 0x34, 0xd6, 0x37, 0x4f, 0x6d, 0xcd, 0x07, 0xa8, 0x4f, 0x24, 0x54, 0x1e, 0x93, 0x0d, 0x05,
-	0x6f, 0xbb, 0x32, 0x45, 0x6a, 0x53, 0xa3, 0xa9, 0x44, 0x26, 0x6b, 0x1e, 0x7e, 0x77, 0xa1, 0xfd,
-	0x2e, 0x4e, 0x33, 0x8c, 0x3f, 0x9f, 0x57, 0xf7, 0x48, 0xc2, 0x8f, 0xca, 0x72, 0xcb, 0x98, 0x75,
-	0x59, 0xcf, 0xa1, 0x3f, 0xa3, 0xc7, 0x60, 0x38, 0x8f, 0x0e, 0xed, 0x84, 0xba, 0xb4, 0x76, 0xa3,
-	0xb4, 0x03, 0x60, 0x1f, 0x52, 0x9b, 0xa9, 0xed, 0x4e, 0x4a, 0x82, 0x6b, 0x3c, 0x33, 0xda, 0x2a,
-	0x5d, 0xed, 0xa3, 0xa2, 0xfc, 0x15, 0xb0, 0xc8, 0xaa, 0xbb, 0x42, 0x74, 0x03, 0x6f, 0x34, 0x38,
-	0x3a, 0x1c, 0xd3, 0xe7, 0x35, 0xc6, 0xb4, 0x63, 0x32, 0x2e, 0xb4, 0xcd, 0x57, 0xb2, 0x1c, 0xc2,
-	0xaa, 0x67, 0x36, 0xb6, 0xcb, 0x82, 0x16, 0xc5, 0xe4, 0x96, 0x0d, 0x8f, 0x01, 0x76, 0xc3, 0xf8,
-	0x81, 0x7d, 0x51, 0x2b, 0x7a, 0xa4, 0x27, 0x11, 0x62, 0xaa, 0xaf, 0x71, 0xb6, 0x54, 0xdb, 0x07,
-	0x96, 0xe4, 0xc4, 0x3d, 0x76, 0xc2, 0x1f, 0x0e, 0xf4, 0xf0, 0xb2, 0x27, 0x6e, 0xe1, 0x0d, 0x30,
-	0x9c, 0x2e, 0x84, 0x4b, 0x71, 0x87, 0x8d, 0xb8, 0xf8, 0x0b, 0x04, 0xaa, 0xc8, 0x84, 0x87, 0x17,
-	0x00, 0x3b, 0xb1, 0x19, 0xad, 0x5f, 0x46, 0x7b, 0xd9, 0x8c, 0x36, 0x38, 0x1a, 0x34, 0x7e, 0xb1,
-	0x91, 0xf3, 0x34, 0xf8, 0xb5, 0xf6, 0x9d, 0x87, 0xb5, 0xef, 0xfc, 0x5d, 0xfb, 0xce, 0xb7, 0x8d,
-	0xdf, 0x7a, 0xd8, 0xf8, 0xad, 0xdf, 0x1b, 0xbf, 0xf5, 0xb1, 0xf3, 0x9a, 0x4e, 0x5c, 0x77, 0xe8,
-	0xcf, 0xf8, 0xf6, 0x7f, 0x00, 0x00, 0x00, 0xff, 0xff, 0x16, 0x91, 0x07, 0xde, 0xb3, 0x03, 0x00,
-	0x00,
+	// 664 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x54, 0xcd, 0x6a, 0x14, 0x41,
+	0x10, 0xce, 0xec, 0xec, 0xec, 0x4f, 0xed, 0x22, 0x61, 0x0c, 0xa1, 0x59, 0x64, 0x1d, 0xe7, 0x20,
+	0x2b, 0xc8, 0x2a, 0x11, 0x24, 0xe4, 0xb6, 0xf9, 0x21, 0x2e, 0x44, 0x13, 0x7a, 0x13, 0x04, 0x2f,
+	0xd2, 0xc9, 0xb6, 0x9b, 0xc1, 0xd9, 0xee, 0x30, 0xd3, 0x09, 0xec, 0x5b, 0x78, 0xf4, 0xe2, 0xd1,
+	0xbb, 0x2f, 0xe0, 0xdd, 0x63, 0x8e, 0x9e, 0x44, 0x92, 0x37, 0xf0, 0x09, 0xa4, 0xaa, 0x67, 0x26,
+	0x1d, 0x72, 0xc9, 0xad, 0xbe, 0xaa, 0x9a, 0xea, 0xaf, 0xbf, 0xaf, 0x6b, 0x60, 0xf9, 0x2c, 0x15,
+	0x0b, 0x99, 0x4d, 0x85, 0x11, 0xc3, 0xb3, 0x4c, 0x1b, 0x1d, 0x06, 0x89, 0x52, 0x32, 0xeb, 0xc1,
+	0x4c, 0xcf, 0xb4, 0x4d, 0xc5, 0x3f, 0x6a, 0xd0, 0xe2, 0x3a, 0x95, 0x63, 0xf5, 0x49, 0x87, 0x11,
+	0xf8, 0x7c, 0xbc, 0xcd, 0xbc, 0xc8, 0x1b, 0xb4, 0x37, 0x1f, 0xfc, 0xfb, 0xf3, 0x18, 0x8e, 0x73,
+	0xad, 0x36, 0xe2, 0x8f, 0xc9, 0x34, 0xe6, 0x58, 0x0a, 0x97, 0xc1, 0x3f, 0x1a, 0x6f, 0xb3, 0x1a,
+	0x76, 0x70, 0x0c, 0x43, 0x06, 0xcd, 0xc9, 0xa9, 0xce, 0xcc, 0x78, 0xca, 0xfc, 0xc8, 0x1b, 0xf8,
+	0xbc, 0x84, 0x58, 0xd9, 0xd3, 0xb3, 0x44, 0x8d, 0x0c, 0xab, 0x53, 0x7f, 0x09, 0xc3, 0x1e, 0xb4,
+	0xf6, 0xf4, 0x4c, 0x9f, 0x9b, 0x91, 0x61, 0x01, 0x95, 0x2a, 0x8c, 0xb5, 0xad, 0x4c, 0x0a, 0x23,
+	0x47, 0x86, 0x35, 0x6c, 0xad, 0xc4, 0xe1, 0x0a, 0x04, 0x07, 0xa7, 0x5a, 0x49, 0xd6, 0xa4, 0x82,
+	0x05, 0x61, 0x08, 0xf5, 0x77, 0x62, 0x2e, 0x59, 0x8b, 0x92, 0x14, 0x63, 0x6e, 0x7c, 0xa2, 0x15,
+	0x6b, 0xdb, 0x1c, 0xc6, 0x98, 0xdb, 0xd5, 0xe9, 0x94, 0x01, 0xd1, 0xa4, 0x38, 0x5c, 0x85, 0xc6,
+	0xae, 0x54, 0x53, 0x99, 0xb1, 0x4e, 0xe4, 0x0d, 0x02, 0x5e, 0x20, 0x64, 0x81, 0xf5, 0xbd, 0x44,
+	0x49, 0xd6, 0xa5, 0xfe, 0x0a, 0xc7, 0x29, 0x74, 0x47, 0x69, 0x9a, 0x08, 0x75, 0x72, 0x5f, 0xd5,
+	0xfa, 0x00, 0xd5, 0x17, 0x53, 0x12, 0x2f, 0xe0, 0x4e, 0x06, 0x4f, 0x3b, 0xd0, 0x79, 0x62, 0x12,
+	0xad, 0x48, 0xc4, 0x80, 0x57, 0x38, 0xfe, 0x5a, 0x83, 0xfa, 0x5b, 0x91, 0xa4, 0x48, 0xff, 0xe8,
+	0xa8, 0x3c, 0x87, 0x53, 0x7c, 0x4b, 0xac, 0x9a, 0xa5, 0x59, 0x89, 0xf5, 0x08, 0xda, 0x13, 0xba,
+	0x0c, 0x92, 0xf3, 0xe9, 0xa3, 0x9b, 0x44, 0x25, 0x5a, 0xdd, 0x11, 0x6d, 0x05, 0x82, 0xc3, 0xc4,
+	0xa4, 0xb2, 0xf0, 0xc4, 0x02, 0xb4, 0x71, 0x4b, 0x2b, 0x23, 0x55, 0xe9, 0x47, 0x09, 0xc3, 0xe7,
+	0x10, 0x8c, 0x8d, 0x9c, 0xe7, 0xac, 0x19, 0xf9, 0x83, 0xce, 0xda, 0xea, 0x90, 0x9e, 0xd7, 0x10,
+	0xd9, 0x0e, 0xa9, 0xb0, 0xa3, 0x4c, 0xb6, 0xe0, 0xb6, 0x09, 0xa5, 0x9e, 0x18, 0x61, 0xce, 0x73,
+	0x32, 0x2a, 0xe0, 0x05, 0xea, 0xad, 0x03, 0xdc, 0x34, 0xe3, 0x03, 0xfb, 0x2c, 0x17, 0x74, 0x49,
+	0x9f, 0x63, 0x88, 0xac, 0x2e, 0x44, 0x7a, 0x2e, 0x8b, 0x0b, 0x5a, 0xb0, 0x51, 0x5b, 0xf7, 0xe2,
+	0xef, 0x1e, 0xb4, 0xf0, 0xb0, 0x7b, 0xba, 0xf0, 0x12, 0x02, 0xec, 0xce, 0x59, 0x8d, 0xe8, 0xf6,
+	0x1c, 0xba, 0x38, 0x81, 0x82, 0x92, 0x32, 0xc5, 0xbd, 0x1d, 0x80, 0x9b, 0xa4, 0x4b, 0xad, 0x6d,
+	0xa9, 0x3d, 0x71, 0xa9, 0x75, 0xd6, 0x3a, 0xce, 0x44, 0x97, 0xe7, 0x37, 0x0f, 0x3a, 0x6f, 0x92,
+	0xdc, 0xe8, 0x6c, 0x41, 0x54, 0xf1, 0x71, 0x89, 0xb9, 0x3c, 0x5c, 0x9c, 0x49, 0x9a, 0x16, 0xf0,
+	0x0a, 0xa3, 0x4a, 0x5c, 0xeb, 0x79, 0xf1, 0x4c, 0x7c, 0x5e, 0xa0, 0x30, 0x82, 0x0e, 0xf6, 0x4c,
+	0x8c, 0xc8, 0x70, 0x6b, 0xec, 0xaa, 0xb9, 0x29, 0x7c, 0x64, 0x08, 0xf7, 0x2f, 0x64, 0x56, 0x6c,
+	0x9c, 0xcf, 0x9d, 0x0c, 0xfa, 0xf8, 0x3e, 0x51, 0xb4, 0x01, 0x81, 0x5d, 0xd4, 0x02, 0xc6, 0xaf,
+	0xa1, 0xeb, 0xd0, 0xcb, 0xc3, 0xa7, 0x50, 0x4f, 0x93, 0xdc, 0x30, 0x8f, 0x74, 0x0a, 0x8b, 0x5b,
+	0x39, 0x2d, 0x9c, 0xea, 0xf1, 0x4f, 0x0f, 0xba, 0xbb, 0x62, 0x7e, 0x9c, 0x26, 0x6a, 0xb6, 0x2d,
+	0x8c, 0xb8, 0x87, 0x07, 0x1b, 0xd0, 0x2c, 0xe6, 0x14, 0x2e, 0x44, 0xc5, 0x74, 0x77, 0x4e, 0x79,
+	0x94, 0xf5, 0xa2, 0xfc, 0xa0, 0xb7, 0x5f, 0xd1, 0xbc, 0xe3, 0x47, 0x60, 0xfd, 0x78, 0x76, 0xdb,
+	0x8f, 0x87, 0x77, 0x99, 0xe7, 0x8e, 0x2f, 0x9b, 0xd1, 0xaf, 0xab, 0xbe, 0x77, 0x79, 0xd5, 0xf7,
+	0xfe, 0x5e, 0xf5, 0xbd, 0x2f, 0xd7, 0xfd, 0xa5, 0xcb, 0xeb, 0xfe, 0xd2, 0xef, 0xeb, 0xfe, 0xd2,
+	0x87, 0xc6, 0x0b, 0xfa, 0xf2, 0xb8, 0x41, 0x3f, 0xc9, 0x57, 0xff, 0x03, 0x00, 0x00, 0xff, 0xff,
+	0x49, 0xbf, 0x1a, 0x1f, 0x4b, 0x05, 0x00, 0x00,
 }
 
 func (m *RoleInfo) Marshal() (dAtA []byte, err error) {
@@ -693,6 +878,145 @@ func (m *MailInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *HistoryInfo) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *HistoryInfo) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *HistoryInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.WinGold != 0 {
+		i = encodeVarintPlayerdata(dAtA, i, uint64(m.WinGold))
+		i--
+		dAtA[i] = 0x28
+	}
+	if m.GameOverAt != 0 {
+		i = encodeVarintPlayerdata(dAtA, i, uint64(m.GameOverAt))
+		i--
+		dAtA[i] = 0x20
+	}
+	if m.GameStartAt != 0 {
+		i = encodeVarintPlayerdata(dAtA, i, uint64(m.GameStartAt))
+		i--
+		dAtA[i] = 0x18
+	}
+	if m.RoomId != 0 {
+		i = encodeVarintPlayerdata(dAtA, i, uint64(m.RoomId))
+		i--
+		dAtA[i] = 0x10
+	}
+	if m.GameType != 0 {
+		i = encodeVarintPlayerdata(dAtA, i, uint64(m.GameType))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *HistoryInfos) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *HistoryInfos) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *HistoryInfos) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.List) > 0 {
+		for iNdEx := len(m.List) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.List[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintPlayerdata(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *GamblingData) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *GamblingData) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *GamblingData) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.History) > 0 {
+		for k := range m.History {
+			v := m.History[k]
+			baseI := i
+			if v != nil {
+				{
+					size, err := v.MarshalToSizedBuffer(dAtA[:i])
+					if err != nil {
+						return 0, err
+					}
+					i -= size
+					i = encodeVarintPlayerdata(dAtA, i, uint64(size))
+				}
+				i--
+				dAtA[i] = 0x12
+			}
+			i = encodeVarintPlayerdata(dAtA, i, uint64(k))
+			i--
+			dAtA[i] = 0x8
+			i = encodeVarintPlayerdata(dAtA, i, uint64(baseI-i))
+			i--
+			dAtA[i] = 0x12
+		}
+	}
+	if len(m.RID) > 0 {
+		i -= len(m.RID)
+		copy(dAtA[i:], m.RID)
+		i = encodeVarintPlayerdata(dAtA, i, uint64(len(m.RID)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintPlayerdata(dAtA []byte, offset int, v uint64) int {
 	offset -= sovPlayerdata(v)
 	base := offset
@@ -839,6 +1163,71 @@ func (m *MailInfo) Size() (n int) {
 				l += 1 + sovPlayerdata(uint64(l))
 			}
 			mapEntrySize := 1 + len(k) + sovPlayerdata(uint64(len(k))) + l
+			n += mapEntrySize + 1 + sovPlayerdata(uint64(mapEntrySize))
+		}
+	}
+	return n
+}
+
+func (m *HistoryInfo) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.GameType != 0 {
+		n += 1 + sovPlayerdata(uint64(m.GameType))
+	}
+	if m.RoomId != 0 {
+		n += 1 + sovPlayerdata(uint64(m.RoomId))
+	}
+	if m.GameStartAt != 0 {
+		n += 1 + sovPlayerdata(uint64(m.GameStartAt))
+	}
+	if m.GameOverAt != 0 {
+		n += 1 + sovPlayerdata(uint64(m.GameOverAt))
+	}
+	if m.WinGold != 0 {
+		n += 1 + sovPlayerdata(uint64(m.WinGold))
+	}
+	return n
+}
+
+func (m *HistoryInfos) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.List) > 0 {
+		for _, e := range m.List {
+			l = e.Size()
+			n += 1 + l + sovPlayerdata(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *GamblingData) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.RID)
+	if l > 0 {
+		n += 1 + l + sovPlayerdata(uint64(l))
+	}
+	if len(m.History) > 0 {
+		for k, v := range m.History {
+			_ = k
+			_ = v
+			l = 0
+			if v != nil {
+				l = v.Size()
+				l += 1 + sovPlayerdata(uint64(l))
+			}
+			mapEntrySize := 1 + sovPlayerdata(uint64(k)) + l
 			n += mapEntrySize + 1 + sovPlayerdata(uint64(mapEntrySize))
 		}
 	}
@@ -1889,6 +2278,432 @@ func (m *MailInfo) Unmarshal(dAtA []byte) error {
 				}
 			}
 			m.Mails[mapkey] = mapvalue
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipPlayerdata(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthPlayerdata
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *HistoryInfo) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowPlayerdata
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: HistoryInfo: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: HistoryInfo: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field GameType", wireType)
+			}
+			m.GameType = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPlayerdata
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.GameType |= int32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RoomId", wireType)
+			}
+			m.RoomId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPlayerdata
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.RoomId |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field GameStartAt", wireType)
+			}
+			m.GameStartAt = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPlayerdata
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.GameStartAt |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 4:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field GameOverAt", wireType)
+			}
+			m.GameOverAt = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPlayerdata
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.GameOverAt |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 5:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field WinGold", wireType)
+			}
+			m.WinGold = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPlayerdata
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.WinGold |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipPlayerdata(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthPlayerdata
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *HistoryInfos) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowPlayerdata
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: HistoryInfos: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: HistoryInfos: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field List", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPlayerdata
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthPlayerdata
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthPlayerdata
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.List = append(m.List, &HistoryInfo{})
+			if err := m.List[len(m.List)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipPlayerdata(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthPlayerdata
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *GamblingData) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowPlayerdata
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: GamblingData: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: GamblingData: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RID", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPlayerdata
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPlayerdata
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPlayerdata
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.RID = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field History", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPlayerdata
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthPlayerdata
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthPlayerdata
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.History == nil {
+				m.History = make(map[int32]*HistoryInfos)
+			}
+			var mapkey int32
+			var mapvalue *HistoryInfos
+			for iNdEx < postIndex {
+				entryPreIndex := iNdEx
+				var wire uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowPlayerdata
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					wire |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				fieldNum := int32(wire >> 3)
+				if fieldNum == 1 {
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowPlayerdata
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						mapkey |= int32(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+				} else if fieldNum == 2 {
+					var mapmsglen int
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowPlayerdata
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						mapmsglen |= int(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					if mapmsglen < 0 {
+						return ErrInvalidLengthPlayerdata
+					}
+					postmsgIndex := iNdEx + mapmsglen
+					if postmsgIndex < 0 {
+						return ErrInvalidLengthPlayerdata
+					}
+					if postmsgIndex > l {
+						return io.ErrUnexpectedEOF
+					}
+					mapvalue = &HistoryInfos{}
+					if err := mapvalue.Unmarshal(dAtA[iNdEx:postmsgIndex]); err != nil {
+						return err
+					}
+					iNdEx = postmsgIndex
+				} else {
+					iNdEx = entryPreIndex
+					skippy, err := skipPlayerdata(dAtA[iNdEx:])
+					if err != nil {
+						return err
+					}
+					if (skippy < 0) || (iNdEx+skippy) < 0 {
+						return ErrInvalidLengthPlayerdata
+					}
+					if (iNdEx + skippy) > postIndex {
+						return io.ErrUnexpectedEOF
+					}
+					iNdEx += skippy
+				}
+			}
+			m.History[mapkey] = mapvalue
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

@@ -16,6 +16,7 @@ import (
 
 type StateSettlement struct {
 	*Mahjong
+	history map[int64]int64
 }
 
 func (s *StateSettlement) State() int {
@@ -24,7 +25,7 @@ func (s *StateSettlement) State() int {
 
 func (s *StateSettlement) Enter() {
 	notHu := s.isNoHu()
-
+	s.history = make(map[int64]int64)
 	s.currentStateEndAt = tools.Now().Add(SettlementDuration)
 	s.Log().Infow("[Mahjong] enter state settlement",
 		"room", s.room.RoomId, "master", s.masterIndex, "notHu", notHu, "game count", s.gameCount,
@@ -104,6 +105,7 @@ func (s *StateSettlement) Enter() {
 
 			// 记录本场游戏的输赢变化
 			changes := finalScore - presentScore
+			s.history[player.ShortId] = changes
 			rdsop.SetUpdateGoldRecord(player.ShortId, rdsop.GoldUpdateReason{
 				Type:      rdsop.GameWinOrLose, // 血战麻将游戏输赢记录
 				Gold:      changes,
@@ -120,7 +122,6 @@ func (s *StateSettlement) Enter() {
 }
 
 func (s *StateSettlement) Leave() {
-	s.room.GameRecordingOver()
 	s.Log().Infow("[Mahjong] leave state settlement ==================SETTLEMENT==================", "room", s.room.RoomId, "count", s.gameCount)
 	s.Log().Infof(" ")
 	s.Log().Infof(" ")
@@ -344,6 +345,7 @@ func (s *StateSettlement) afterSettle(ntf *outer.MahjongBTESettlementNtf) {
 		"room", s.room.RoomId, "master", s.masterIndex, "ntf", ntf.String())
 	s.room.Broadcast(ntf)
 
+	s.room.GameRecordingOver(s.baseScore(), s.history)
 	s.clear()           // 分算完清理数据
 	s.nextMasterIndex() // 计算下一局庄家
 

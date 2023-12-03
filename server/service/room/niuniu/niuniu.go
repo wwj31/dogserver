@@ -166,7 +166,7 @@ func (n *NiuNiu) CanSetGold(p *inner.PlayerInfo) bool {
 }
 
 // RecordingPlayback 当前状态是否需要记录回播内容
-func (n *NiuNiu) RecordingPlayback() bool {
+func (n *NiuNiu) CanRecordingPlayback() bool {
 	if n.fsm.State() == Ready {
 		return false
 	}

@@ -10,7 +10,7 @@ message Error {
 }
 message Ok {}
 
-message PlayerInfo{
+message PlayerInfo {
     string RID        = 1;
     int64  ShortId    = 2;
     string Name       = 3;
@@ -28,13 +28,13 @@ message PlayerInfo{
 }
 
 
-message GateMsgWrapper{
+message GateMsgWrapper {
     string GateSession = 1;
     string MsgName     = 2;
     bytes  Data        = 3;
 }
 
-message PullPlayer{
+message PullPlayer {
     string  RID            = 1;
 }
 

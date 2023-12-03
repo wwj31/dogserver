@@ -1,6 +1,8 @@
 package room
 
 import (
+	gogo "github.com/gogo/protobuf/proto"
+	"github.com/wwj31/dogactor/tools"
 	"server/common"
 	"server/common/actortype"
 	"server/common/log"
@@ -12,6 +14,7 @@ import (
 
 type Room struct {
 	models.Model
+	data     inner.GamblingData // 游戏数据
 	RoomInfo *inner.RoomInfo
 }
 
@@ -20,6 +23,9 @@ func New(base models.Model) *Room {
 	return mod
 }
 
+func (s *Room) Data() gogo.Message {
+	return &s.data
+}
 func (s *Room) OnLogin(first bool, enterGameRsp *outer.EnterGameRsp) {
 	var clear bool
 	// 玩家重登，检查房间是否有效
@@ -70,4 +76,28 @@ func (s *Room) RoomId() int64 {
 	}
 	return s.RoomInfo.RoomId
 }
+
 func (s *Room) SetRoomInfo(info *inner.RoomInfo) { s.RoomInfo = info }
+func (s *Room) AddGamblingHistory(info *inner.HistoryInfo) {
+	if s.data.History == nil {
+		s.data.History = map[int32]*inner.HistoryInfos{}
+	}
+	if s.data.History[info.GameType] == nil {
+		s.data.History[info.GameType] = &inner.HistoryInfos{List: make([]*inner.HistoryInfo, 0, 10)}
+	}
+	list := s.data.History[info.GameType].List
+	list = append(list, info)
+	expireAt := tools.NewTimeEx().BeginOfToday().Add(-3 * tools.Day)
+	expireIndex := -1
+	for i, historyInfo := range list {
+		if historyInfo.GameStartAt < expireAt.UnixMilli() {
+			expireIndex = i
+			continue
+		}
+		break
+	}
+	if expireIndex >= 0 {
+		list = list[expireIndex+1:]
+	}
+	s.data.History[info.GameType].List = list
+}

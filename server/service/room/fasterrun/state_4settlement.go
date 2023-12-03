@@ -17,6 +17,7 @@ import (
 
 type StateSettlement struct {
 	*FasterRun
+	history map[int64]int64
 }
 
 func (s *StateSettlement) State() int {
@@ -25,6 +26,7 @@ func (s *StateSettlement) State() int {
 
 func (s *StateSettlement) Enter() {
 	s.currentStateEndAt = tools.Now().Add(SettlementDuration)
+	s.history = make(map[int64]int64)
 	s.Log().Infow("[FasterRun] enter state settlement", "room", s.room.RoomId,
 		"master", s.masterIndex, "game count", s.gameCount, "endAt", s.currentStateEndAt.UnixMilli())
 
@@ -166,6 +168,7 @@ func (s *StateSettlement) Enter() {
 
 			// 记录本场游戏的输赢变化
 			changes := finalScore - presentScore
+			s.history[player.ShortId] = changes
 			rdsop.SetUpdateGoldRecord(player.ShortId, rdsop.GoldUpdateReason{
 				Type:      rdsop.GameWinOrLose, // 跑的快游戏输赢记录
 				Gold:      changes,
@@ -230,7 +233,6 @@ func (s *StateSettlement) isAgainstSpring(winner *fasterRunPlayer) bool {
 }
 
 func (s *StateSettlement) Leave() {
-	s.room.GameRecordingOver()
 	s.Log().Infow("[FasterRun] leave state settlement ==================SETTLEMENT==================", "room", s.room.RoomId, "count", s.gameCount)
 	s.Log().Infof(" ")
 	s.Log().Infof(" ")
@@ -255,6 +257,7 @@ func (s *StateSettlement) afterSettle(ntf *outer.FasterRunSettlementNtf) {
 		"master", s.masterIndex, "ntf", ntf.String())
 
 	s.room.Broadcast(ntf)
+	s.room.GameRecordingOver(s.baseScore(), s.history)
 	s.clear() // 分算完清理数据
 
 	// 结算给个短暂的时间
