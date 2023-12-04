@@ -11,6 +11,7 @@ import (
 	"github.com/wwj31/dogactor/tools"
 
 	"server/common"
+	"server/common/log"
 	"server/proto/outermsg/outer"
 
 	"server/proto/innermsg/inner"
@@ -32,6 +33,10 @@ const (
 
 func New(r *room.Room) *Mahjong {
 	playerNum := int(r.GameParams.Mahjong.GamePlayerNumber)
+	if playerNum < 2 || playerNum > 4 {
+		log.Errorw("mahjong player num invalid", "num", playerNum)
+		return nil
+	}
 	mahjong := &Mahjong{
 		room:           r,
 		fsm:            room.NewFSM(),

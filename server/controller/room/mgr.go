@@ -57,6 +57,11 @@ var _ = router.Reg(func(mgr *room.Mgr, msg *inner.CreateRoomReq) any {
 	case room.NiuNiu:
 		gambling = niuniu.New(newRoom)
 	}
+
+	if gambling == nil {
+		return &inner.Error{ErrorInfo: "create room failed"}
+	}
+
 	newRoom.InjectGambling(gambling)
 
 	roomActor := actortype.RoomName(roomId)
