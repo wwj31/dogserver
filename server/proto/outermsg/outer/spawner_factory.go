@@ -38,8 +38,6 @@ var spawner = map[string]factory{
 	"outer.RoomListRsp":                       func() interface{} { return &RoomListRsp{} },
 	"outer.RoomListReq":                       func() interface{} { return &RoomListReq{} },
 	"outer.RoomInfo":                          func() interface{} { return &RoomInfo{} },
-	"outer.RoomGameHistoryRsp":                func() interface{} { return &RoomGameHistoryRsp{} },
-	"outer.RoomGameHistoryReq":                func() interface{} { return &RoomGameHistoryReq{} },
 	"outer.RoomGamblingHistoryRsp":            func() interface{} { return &RoomGamblingHistoryRsp{} },
 	"outer.RoomGamblingHistoryReq":            func() interface{} { return &RoomGamblingHistoryReq{} },
 	"outer.RoleInfo":                          func() interface{} { return &RoleInfo{} },

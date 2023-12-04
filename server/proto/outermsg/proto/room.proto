@@ -73,12 +73,6 @@ message RoomPlayerOnlineNtf {// 房间内玩家上、下线通知
     bool  Online  = 2; // true在线、false离线
 }
 
-// 请求近期战绩信息
-message RoomGameHistoryReq {
-}
-message RoomGameHistoryRsp {
-    // TODO
-}
 
 // 回放记录消息
 message RecordingMessage {
@@ -95,7 +89,6 @@ message Recording {
     RoomInfo Room                      = 3; // 房间基础信息
     repeated RecordingMessage Messages = 4; // 回放消息队列
 }
-
 
 // 请求游戏数据回播数据
 message RoomRecordingReq {
