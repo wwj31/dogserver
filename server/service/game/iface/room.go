@@ -9,4 +9,5 @@ type Room interface {
 	RoomId() int64
 	SetRoomInfo(info *inner.RoomInfo)
 	AddGamblingHistory(info *inner.HistoryInfo)
+	GamblingHistory() map[int32]*inner.HistoryInfos
 }

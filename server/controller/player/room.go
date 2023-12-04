@@ -256,12 +256,6 @@ var _ = router.Reg(func(p *player.Player, msg *inner.ModifyGoldReq) any {
 	return &inner.ModifyGoldRsp{Success: true, Info: p.PlayerInfo()}
 })
 
-// 游戏记录
-var _ = router.Reg(func(p *player.Player, msg *inner.GameHistoryInfoReq) any {
-	p.Room().AddGamblingHistory(msg.Info)
-	return nil
-})
-
 // 转发所有Client游戏消息至房间
 var _ = router.Reg(func(p *player.Player, msg *inner.GamblingMsgToRoomWrapper) any {
 	if p.Room().RoomId() == 0 {

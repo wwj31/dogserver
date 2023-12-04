@@ -129,4 +129,6 @@ enum Msg {
     IdRoomGameHistoryRsp = 187357234;
     IdRoomRecordingReq = 585852543;
     IdRoomRecordingRsp = 887849782;
+    IdRoomGamblingHistoryReq = 408995401;
+    IdRoomGamblingHistoryRsp = 241219084;
 }

@@ -3,6 +3,7 @@ package room
 import (
 	gogo "github.com/gogo/protobuf/proto"
 	"github.com/wwj31/dogactor/tools"
+
 	"server/common"
 	"server/common/actortype"
 	"server/common/log"
@@ -78,6 +79,8 @@ func (s *Room) RoomId() int64 {
 }
 
 func (s *Room) SetRoomInfo(info *inner.RoomInfo) { s.RoomInfo = info }
+
+func (s *Room) GamblingHistory() map[int32]*inner.HistoryInfos { return s.data.History }
 func (s *Room) AddGamblingHistory(info *inner.HistoryInfo) {
 	if s.data.History == nil {
 		s.data.History = map[int32]*inner.HistoryInfos{}

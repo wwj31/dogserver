@@ -991,7 +991,7 @@ func (x *Recording) GetMessages() []*RecordingMessage {
 	return nil
 }
 
-// 游戏数据回放
+// 请求游戏数据回播数据
 type RoomRecordingReq struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1094,6 +1094,172 @@ func (x *RoomRecordingRsp) GetGameRecordData() *Recording {
 	return nil
 }
 
+// 游戏历史基础信息
+type HistoryInfo struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	GameType    int32 `protobuf:"varint,1,opt,name=GameType,proto3" json:"GameType,omitempty"`       // 游戏类型
+	RoomId      int64 `protobuf:"varint,2,opt,name=RoomId,proto3" json:"RoomId,omitempty"`           // 房间Id
+	GameStartAt int64 `protobuf:"varint,3,opt,name=GameStartAt,proto3" json:"GameStartAt,omitempty"` // 游戏开始时间
+	GameOverAt  int64 `protobuf:"varint,4,opt,name=GameOverAt,proto3" json:"GameOverAt,omitempty"`   // 游戏结束时间
+	WinGold     int64 `protobuf:"varint,5,opt,name=WinGold,proto3" json:"WinGold,omitempty"`         // 产生的金币变化(负为数，正为赢)
+}
+
+func (x *HistoryInfo) Reset() {
+	*x = HistoryInfo{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_room_proto_msgTypes[21]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *HistoryInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*HistoryInfo) ProtoMessage() {}
+
+func (x *HistoryInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_room_proto_msgTypes[21]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use HistoryInfo.ProtoReflect.Descriptor instead.
+func (*HistoryInfo) Descriptor() ([]byte, []int) {
+	return file_room_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *HistoryInfo) GetGameType() int32 {
+	if x != nil {
+		return x.GameType
+	}
+	return 0
+}
+
+func (x *HistoryInfo) GetRoomId() int64 {
+	if x != nil {
+		return x.RoomId
+	}
+	return 0
+}
+
+func (x *HistoryInfo) GetGameStartAt() int64 {
+	if x != nil {
+		return x.GameStartAt
+	}
+	return 0
+}
+
+func (x *HistoryInfo) GetGameOverAt() int64 {
+	if x != nil {
+		return x.GameOverAt
+	}
+	return 0
+}
+
+func (x *HistoryInfo) GetWinGold() int64 {
+	if x != nil {
+		return x.WinGold
+	}
+	return 0
+}
+
+// 获得游戏历史战绩列表
+type RoomGamblingHistoryReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *RoomGamblingHistoryReq) Reset() {
+	*x = RoomGamblingHistoryReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_room_proto_msgTypes[22]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *RoomGamblingHistoryReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RoomGamblingHistoryReq) ProtoMessage() {}
+
+func (x *RoomGamblingHistoryReq) ProtoReflect() protoreflect.Message {
+	mi := &file_room_proto_msgTypes[22]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RoomGamblingHistoryReq.ProtoReflect.Descriptor instead.
+func (*RoomGamblingHistoryReq) Descriptor() ([]byte, []int) {
+	return file_room_proto_rawDescGZIP(), []int{22}
+}
+
+type RoomGamblingHistoryRsp struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	List []*HistoryInfo `protobuf:"bytes,1,rep,name=list,proto3" json:"list,omitempty"` // 时间大到小排序
+}
+
+func (x *RoomGamblingHistoryRsp) Reset() {
+	*x = RoomGamblingHistoryRsp{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_room_proto_msgTypes[23]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *RoomGamblingHistoryRsp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RoomGamblingHistoryRsp) ProtoMessage() {}
+
+func (x *RoomGamblingHistoryRsp) ProtoReflect() protoreflect.Message {
+	mi := &file_room_proto_msgTypes[23]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RoomGamblingHistoryRsp.ProtoReflect.Descriptor instead.
+func (*RoomGamblingHistoryRsp) Descriptor() ([]byte, []int) {
+	return file_room_proto_rawDescGZIP(), []int{23}
+}
+
+func (x *RoomGamblingHistoryRsp) GetList() []*HistoryInfo {
+	if x != nil {
+		return x.List
+	}
+	return nil
+}
+
 var File_room_proto protoreflect.FileDescriptor
 
 var file_room_proto_rawDesc = []byte{
@@ -1192,8 +1358,24 @@ var file_room_proto_rawDesc = []byte{
 	0x0a, 0x0e, 0x47, 0x61, 0x6d, 0x65, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x44, 0x61, 0x74, 0x61,
 	0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x10, 0x2e, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x52,
 	0x65, 0x63, 0x6f, 0x72, 0x64, 0x69, 0x6e, 0x67, 0x52, 0x0e, 0x47, 0x61, 0x6d, 0x65, 0x52, 0x65,
-	0x63, 0x6f, 0x72, 0x64, 0x44, 0x61, 0x74, 0x61, 0x42, 0x08, 0x5a, 0x06, 0x2f, 0x6f, 0x75, 0x74,
-	0x65, 0x72, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x63, 0x6f, 0x72, 0x64, 0x44, 0x61, 0x74, 0x61, 0x22, 0x9d, 0x01, 0x0a, 0x0b, 0x48, 0x69, 0x73,
+	0x74, 0x6f, 0x72, 0x79, 0x49, 0x6e, 0x66, 0x6f, 0x12, 0x1a, 0x0a, 0x08, 0x47, 0x61, 0x6d, 0x65,
+	0x54, 0x79, 0x70, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x08, 0x47, 0x61, 0x6d, 0x65,
+	0x54, 0x79, 0x70, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x52, 0x6f, 0x6f, 0x6d, 0x49, 0x64, 0x18, 0x02,
+	0x20, 0x01, 0x28, 0x03, 0x52, 0x06, 0x52, 0x6f, 0x6f, 0x6d, 0x49, 0x64, 0x12, 0x20, 0x0a, 0x0b,
+	0x47, 0x61, 0x6d, 0x65, 0x53, 0x74, 0x61, 0x72, 0x74, 0x41, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28,
+	0x03, 0x52, 0x0b, 0x47, 0x61, 0x6d, 0x65, 0x53, 0x74, 0x61, 0x72, 0x74, 0x41, 0x74, 0x12, 0x1e,
+	0x0a, 0x0a, 0x47, 0x61, 0x6d, 0x65, 0x4f, 0x76, 0x65, 0x72, 0x41, 0x74, 0x18, 0x04, 0x20, 0x01,
+	0x28, 0x03, 0x52, 0x0a, 0x47, 0x61, 0x6d, 0x65, 0x4f, 0x76, 0x65, 0x72, 0x41, 0x74, 0x12, 0x18,
+	0x0a, 0x07, 0x57, 0x69, 0x6e, 0x47, 0x6f, 0x6c, 0x64, 0x18, 0x05, 0x20, 0x01, 0x28, 0x03, 0x52,
+	0x07, 0x57, 0x69, 0x6e, 0x47, 0x6f, 0x6c, 0x64, 0x22, 0x18, 0x0a, 0x16, 0x52, 0x6f, 0x6f, 0x6d,
+	0x47, 0x61, 0x6d, 0x62, 0x6c, 0x69, 0x6e, 0x67, 0x48, 0x69, 0x73, 0x74, 0x6f, 0x72, 0x79, 0x52,
+	0x65, 0x71, 0x22, 0x40, 0x0a, 0x16, 0x52, 0x6f, 0x6f, 0x6d, 0x47, 0x61, 0x6d, 0x62, 0x6c, 0x69,
+	0x6e, 0x67, 0x48, 0x69, 0x73, 0x74, 0x6f, 0x72, 0x79, 0x52, 0x73, 0x70, 0x12, 0x26, 0x0a, 0x04,
+	0x6c, 0x69, 0x73, 0x74, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x6f, 0x75, 0x74,
+	0x65, 0x72, 0x2e, 0x48, 0x69, 0x73, 0x74, 0x6f, 0x72, 0x79, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x04,
+	0x6c, 0x69, 0x73, 0x74, 0x42, 0x08, 0x5a, 0x06, 0x2f, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x62, 0x06,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1208,54 +1390,58 @@ func file_room_proto_rawDescGZIP() []byte {
 	return file_room_proto_rawDescData
 }
 
-var file_room_proto_msgTypes = make([]protoimpl.MessageInfo, 21)
+var file_room_proto_msgTypes = make([]protoimpl.MessageInfo, 24)
 var file_room_proto_goTypes = []interface{}{
-	(*RoomPlayerInfo)(nil),      // 0: outer.RoomPlayerInfo
-	(*RoomInfo)(nil),            // 1: outer.RoomInfo
-	(*CreateRoomReq)(nil),       // 2: outer.CreateRoomReq
-	(*CreateRoomRsp)(nil),       // 3: outer.CreateRoomRsp
-	(*DisbandRoomReq)(nil),      // 4: outer.DisbandRoomReq
-	(*DisbandRoomRsp)(nil),      // 5: outer.DisbandRoomRsp
-	(*RoomListReq)(nil),         // 6: outer.RoomListReq
-	(*RoomListRsp)(nil),         // 7: outer.RoomListRsp
-	(*JoinRoomReq)(nil),         // 8: outer.JoinRoomReq
-	(*JoinRoomRsp)(nil),         // 9: outer.JoinRoomRsp
-	(*LeaveRoomReq)(nil),        // 10: outer.LeaveRoomReq
-	(*LeaveRoomRsp)(nil),        // 11: outer.LeaveRoomRsp
-	(*RoomPlayerEnterNtf)(nil),  // 12: outer.RoomPlayerEnterNtf
-	(*RoomPlayerLeaveNtf)(nil),  // 13: outer.RoomPlayerLeaveNtf
-	(*RoomPlayerOnlineNtf)(nil), // 14: outer.RoomPlayerOnlineNtf
-	(*RoomGameHistoryReq)(nil),  // 15: outer.RoomGameHistoryReq
-	(*RoomGameHistoryRsp)(nil),  // 16: outer.RoomGameHistoryRsp
-	(*RecordingMessage)(nil),    // 17: outer.RecordingMessage
-	(*Recording)(nil),           // 18: outer.Recording
-	(*RoomRecordingReq)(nil),    // 19: outer.RoomRecordingReq
-	(*RoomRecordingRsp)(nil),    // 20: outer.RoomRecordingRsp
-	(*PlayerInfo)(nil),          // 21: outer.PlayerInfo
-	(GameType)(0),               // 22: outer.GameType
-	(*GameParams)(nil),          // 23: outer.GameParams
-	(Msg)(0),                    // 24: outer.Msg
+	(*RoomPlayerInfo)(nil),         // 0: outer.RoomPlayerInfo
+	(*RoomInfo)(nil),               // 1: outer.RoomInfo
+	(*CreateRoomReq)(nil),          // 2: outer.CreateRoomReq
+	(*CreateRoomRsp)(nil),          // 3: outer.CreateRoomRsp
+	(*DisbandRoomReq)(nil),         // 4: outer.DisbandRoomReq
+	(*DisbandRoomRsp)(nil),         // 5: outer.DisbandRoomRsp
+	(*RoomListReq)(nil),            // 6: outer.RoomListReq
+	(*RoomListRsp)(nil),            // 7: outer.RoomListRsp
+	(*JoinRoomReq)(nil),            // 8: outer.JoinRoomReq
+	(*JoinRoomRsp)(nil),            // 9: outer.JoinRoomRsp
+	(*LeaveRoomReq)(nil),           // 10: outer.LeaveRoomReq
+	(*LeaveRoomRsp)(nil),           // 11: outer.LeaveRoomRsp
+	(*RoomPlayerEnterNtf)(nil),     // 12: outer.RoomPlayerEnterNtf
+	(*RoomPlayerLeaveNtf)(nil),     // 13: outer.RoomPlayerLeaveNtf
+	(*RoomPlayerOnlineNtf)(nil),    // 14: outer.RoomPlayerOnlineNtf
+	(*RoomGameHistoryReq)(nil),     // 15: outer.RoomGameHistoryReq
+	(*RoomGameHistoryRsp)(nil),     // 16: outer.RoomGameHistoryRsp
+	(*RecordingMessage)(nil),       // 17: outer.RecordingMessage
+	(*Recording)(nil),              // 18: outer.Recording
+	(*RoomRecordingReq)(nil),       // 19: outer.RoomRecordingReq
+	(*RoomRecordingRsp)(nil),       // 20: outer.RoomRecordingRsp
+	(*HistoryInfo)(nil),            // 21: outer.HistoryInfo
+	(*RoomGamblingHistoryReq)(nil), // 22: outer.RoomGamblingHistoryReq
+	(*RoomGamblingHistoryRsp)(nil), // 23: outer.RoomGamblingHistoryRsp
+	(*PlayerInfo)(nil),             // 24: outer.PlayerInfo
+	(GameType)(0),                  // 25: outer.GameType
+	(*GameParams)(nil),             // 26: outer.GameParams
+	(Msg)(0),                       // 27: outer.Msg
 }
 var file_room_proto_depIdxs = []int32{
-	21, // 0: outer.RoomPlayerInfo.BaseInfo:type_name -> outer.PlayerInfo
-	22, // 1: outer.RoomInfo.GameType:type_name -> outer.GameType
-	23, // 2: outer.RoomInfo.GameParams:type_name -> outer.GameParams
+	24, // 0: outer.RoomPlayerInfo.BaseInfo:type_name -> outer.PlayerInfo
+	25, // 1: outer.RoomInfo.GameType:type_name -> outer.GameType
+	26, // 2: outer.RoomInfo.GameParams:type_name -> outer.GameParams
 	0,  // 3: outer.RoomInfo.Players:type_name -> outer.RoomPlayerInfo
-	22, // 4: outer.CreateRoomReq.GameType:type_name -> outer.GameType
-	23, // 5: outer.CreateRoomReq.GameParams:type_name -> outer.GameParams
+	25, // 4: outer.CreateRoomReq.GameType:type_name -> outer.GameType
+	26, // 5: outer.CreateRoomReq.GameParams:type_name -> outer.GameParams
 	1,  // 6: outer.CreateRoomRsp.Room:type_name -> outer.RoomInfo
 	1,  // 7: outer.RoomListRsp.RoomList:type_name -> outer.RoomInfo
 	1,  // 8: outer.JoinRoomRsp.Room:type_name -> outer.RoomInfo
 	0,  // 9: outer.RoomPlayerEnterNtf.Player:type_name -> outer.RoomPlayerInfo
-	24, // 10: outer.RecordingMessage.MsgId:type_name -> outer.Msg
+	27, // 10: outer.RecordingMessage.MsgId:type_name -> outer.Msg
 	1,  // 11: outer.Recording.Room:type_name -> outer.RoomInfo
 	17, // 12: outer.Recording.Messages:type_name -> outer.RecordingMessage
 	18, // 13: outer.RoomRecordingRsp.GameRecordData:type_name -> outer.Recording
-	14, // [14:14] is the sub-list for method output_type
-	14, // [14:14] is the sub-list for method input_type
-	14, // [14:14] is the sub-list for extension type_name
-	14, // [14:14] is the sub-list for extension extendee
-	0,  // [0:14] is the sub-list for field type_name
+	21, // 14: outer.RoomGamblingHistoryRsp.list:type_name -> outer.HistoryInfo
+	15, // [15:15] is the sub-list for method output_type
+	15, // [15:15] is the sub-list for method input_type
+	15, // [15:15] is the sub-list for extension type_name
+	15, // [15:15] is the sub-list for extension extendee
+	0,  // [0:15] is the sub-list for field type_name
 }
 
 func init() { file_room_proto_init() }
@@ -1519,6 +1705,42 @@ func file_room_proto_init() {
 				return nil
 			}
 		}
+		file_room_proto_msgTypes[21].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*HistoryInfo); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_room_proto_msgTypes[22].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*RoomGamblingHistoryReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_room_proto_msgTypes[23].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*RoomGamblingHistoryRsp); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -1526,7 +1748,7 @@ func file_room_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_room_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   21,
+			NumMessages:   24,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

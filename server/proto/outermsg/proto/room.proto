@@ -96,11 +96,28 @@ message Recording {
     repeated RecordingMessage Messages = 4; // 回放消息队列
 }
 
-// 游戏数据回放
+
+// 请求游戏数据回播数据
 message RoomRecordingReq {
     int64 RoomId      = 1; // 房间id
     int64 GameStartAt = 2; // 要看的那局游戏开始时间
 }
 message RoomRecordingRsp {
     Recording GameRecordData = 1; // 游戏回放记录
+}
+
+// 游戏历史基础信息
+message HistoryInfo {
+    int32 GameType    = 1; // 游戏类型
+    int64 RoomId      = 2; // 房间Id
+    int64 GameStartAt = 3; // 游戏开始时间
+    int64 GameOverAt  = 4; // 游戏结束时间
+    int64 WinGold     = 5; // 产生的金币变化(负为数，正为赢)
+}
+
+// 获得游戏历史战绩列表
+message RoomGamblingHistoryReq {
+}
+message RoomGamblingHistoryRsp {
+    repeated HistoryInfo list = 1; // 时间大到小排序
 }
