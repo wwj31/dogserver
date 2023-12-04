@@ -21,7 +21,7 @@ import (
 )
 
 // 检查抽水参数是否合法
-func checkMahjongParams(params *outer.RebateParams) (err outer.ERROR) {
+func checkRebateParams(params *outer.RebateParams) (err outer.ERROR) {
 	fixedRanges := []*outer.RangeParams{params.RangeL1, params.RangeL2, params.RangeL3, params.RangeL4}
 	var validRanges []*outer.RangeParams
 	// 找到勾选了生效的范围
@@ -83,12 +83,29 @@ var _ = router.Reg(func(p *player.Player, msg *outer.CreateRoomReq) any {
 	// 检查各个游戏的抽水参数是否合法
 	switch msg.GameType {
 	case outer.GameType_Mahjong:
-		if err := checkMahjongParams(msg.GetGameParams().Mahjong.ReBate); err != outer.ERROR_OK {
-			log.Warnw("checkMahjongParams failed ", "player", p.Role().ShortId(), "rebate", msg.GameParams.Mahjong.ReBate.String())
+		if err := checkRebateParams(msg.GetGameParams().Mahjong.ReBate); err != outer.ERROR_OK {
+			log.Warnw("check Mahjong Params failed ", "player", p.Role().ShortId(), "rebate", msg.GameParams.Mahjong.ReBate.String())
 			return err
 		}
 
+		if msg.GetGameParams().Mahjong.GamePlayerNumber == 0 {
+			msg.GetGameParams().Mahjong.GamePlayerNumber = 4
+		}
+
+		if msg.GetGameParams().Mahjong.GamePlayerNumber < 2 || msg.GetGameParams().Mahjong.GamePlayerNumber > 4 {
+			return outer.ERROR_MAHJONG_PLAYER_NUMBER_INVALID
+		}
+
 	case outer.GameType_FasterRun:
+		if err := checkRebateParams(msg.GetGameParams().FasterRun.ReBate); err != outer.ERROR_OK {
+			log.Warnw("check FasterRun Params failed ", "player", p.Role().ShortId(), "rebate", msg.GameParams.FasterRun.ReBate.String())
+			return err
+		}
+	case outer.GameType_NiuNiu:
+		if err := checkRebateParams(msg.GetGameParams().NiuNiu.ReBate); err != outer.ERROR_OK {
+			log.Warnw("check NiuNiu Params failed ", "player", p.Role().ShortId(), "rebate", msg.GameParams.NiuNiu.ReBate.String())
+			return err
+		}
 	}
 
 	gameParamsBytes, _ := proto.Marshal(msg.GetGameParams())

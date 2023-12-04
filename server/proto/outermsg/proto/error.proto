@@ -66,6 +66,7 @@ enum ERROR {
    MAHJONG_REBATE_PARAM_REBATE_INVALID = 221; // 麻将抽水百分比参数设置错误
    MAHJONG_REBATE_PARAM_LIMIT_INVALID  = 222; // 麻将抽水参数设置错误
    MAHJONG_REBATE_PARAM_RANGE_INVALID  = 223; // 麻将抽水范围参数设置有交叉
+   MAHJONG_PLAYER_NUMBER_INVALID       = 224; // 创建麻将房间人数错误，有效人数是2-4
 
 
    // 跑得快

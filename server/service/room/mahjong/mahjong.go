@@ -31,9 +31,11 @@ const (
 )
 
 func New(r *room.Room) *Mahjong {
+	playerNum := int(r.GameParams.Mahjong.GamePlayerNumber)
 	mahjong := &Mahjong{
-		room: r,
-		fsm:  room.NewFSM(),
+		room:           r,
+		fsm:            room.NewFSM(),
+		mahjongPlayers: make([]*mahjongPlayer, playerNum, playerNum),
 	}
 	_ = mahjong.fsm.Add(&StateReady{Mahjong: mahjong})        // 准备中
 	_ = mahjong.fsm.Add(&StateDeal{Mahjong: mahjong})         // 发牌中
@@ -47,8 +49,6 @@ func New(r *room.Room) *Mahjong {
 
 	return mahjong
 }
-
-const maxNum = 4
 
 type gangInfo struct {
 	loserSeats    map[int32]int64 // 赔付的位置，赔付的分
@@ -110,14 +110,14 @@ type (
 		multiHuByIndex int      // 一炮多响点炮的人
 		scoreZeroOver  bool     // 因为有玩家没分了，而触发的结束
 
-		cards              Cards                  // 剩余牌组
-		cardsInDesktop     Cards                  // 打出的牌
-		cardsPlayOrder     []int32                // 出牌座位顺序
-		mahjongPlayers     [maxNum]*mahjongPlayer // 参与游戏的玩家
-		peerRecords        []peerRecords          // 需要关注的操作记录(出牌、摸牌、杠)按触发顺序添加
-		actionMap          map[int]*action        // 代表某次操作触发了玩家的行为
-		currentAction      []*action              // 当前行动者,从actionMap中筛选出来的，当前能行动的人
-		currentActionEndAt time.Time              // 当前行动者结束时间
+		cards              Cards            // 剩余牌组
+		cardsInDesktop     Cards            // 打出的牌
+		cardsPlayOrder     []int32          // 出牌座位顺序
+		mahjongPlayers     []*mahjongPlayer // 参与游戏的玩家
+		peerRecords        []peerRecords    // 需要关注的操作记录(出牌、摸牌、杠)按触发顺序添加
+		actionMap          map[int]*action  // 代表某次操作触发了玩家的行为
+		currentAction      []*action        // 当前行动者,从actionMap中筛选出来的，当前能行动的人
+		currentActionEndAt time.Time        // 当前行动者结束时间
 	}
 )
 
@@ -412,7 +412,7 @@ func (m *Mahjong) baseScore() int64 {
 
 func (m *Mahjong) clear() {
 	// 重置玩家数据
-	for i := 0; i < maxNum; i++ {
+	for i := 0; i < int(m.gameParams().GamePlayerNumber); i++ {
 		gamer := m.mahjongPlayers[i]
 		if gamer != nil {
 			m.mahjongPlayers[i] = m.newMahjongPlayer(gamer.Player)
@@ -436,7 +436,7 @@ func (m *Mahjong) allSeats(ignoreSeat ...int) (result []int) {
 		seatMap[seat] = struct{}{}
 	}
 
-	for seatIndex := 0; seatIndex < maxNum; seatIndex++ {
+	for seatIndex := 0; seatIndex < int(m.gameParams().GamePlayerNumber); seatIndex++ {
 		if _, ignore := seatMap[seatIndex]; !ignore {
 			result = append(result, seatIndex)
 		}

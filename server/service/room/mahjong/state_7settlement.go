@@ -31,6 +31,7 @@ func (s *StateSettlement) Enter() {
 		"room", s.room.RoomId, "master", s.masterIndex, "notHu", notHu, "game count", s.gameCount,
 		"endAt", s.currentStateEndAt.UnixMilli())
 
+	maxNum := int(s.gameParams().GamePlayerNumber)
 	settlementMsg := &outer.MahjongBTESettlementNtf{
 		EndAt:            s.currentStateEndAt.UnixMilli(),
 		NotHu:            notHu,
@@ -184,6 +185,7 @@ func (s *StateSettlement) notHu(ntf *outer.MahjongBTESettlementNtf) {
 		}
 	}
 
+	maxNum := int(s.gameParams().GamePlayerNumber)
 	// 4家全是花猪, 或者4家都没有叫  ？？?
 	if len(pigSeats) == maxNum || len(hasNotTingSeat) == maxNum {
 		s.Log().Infow("all player is the pig", "pigs", pigSeats, "not ting", hasNotTingSeat)
