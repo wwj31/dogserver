@@ -28,6 +28,7 @@ var _ = router.Reg(func(p *player.Player, msg *outer.RoomGamblingHistoryReq) any
 				RoomId:      info.RoomId,
 				GameStartAt: info.GameStartAt,
 				GameOverAt:  info.GameOverAt,
+				BaseScore:   info.BaseScore,
 				WinGold:     info.WinGold,
 			})
 		}

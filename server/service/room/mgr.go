@@ -4,9 +4,11 @@ import (
 	"context"
 	"fmt"
 	"reflect"
+	"time"
 
 	"github.com/gogo/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
+	"github.com/wwj31/dogactor/tools"
 
 	"server/common/log"
 	"server/common/rds"
@@ -30,7 +32,19 @@ func (m *Mgr) OnInit() {
 	m.Rooms = make(map[int64]*Room, 8)
 	router.Result(m, m.responseHandle)
 	rdsop.AddRoomMgr(m.appId)
+
+	m.AddTimer(tools.UUID(), tools.Now().Add(time.Minute), m.maintainRoomCount, -1)
 	log.Debugf("RoomMgr OnInit")
+}
+
+func (m *Mgr) maintainRoomCount(dt time.Duration) {
+	stat := make(map[GamblingType]int)
+	for _, room := range m.Rooms {
+		stat[room.GameType] += 1
+	}
+
+	log.Infow("room stat", "stat", stat)
+
 }
 
 func (m *Mgr) OnStop() bool {

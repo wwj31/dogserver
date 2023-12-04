@@ -373,6 +373,7 @@ func (r *Room) GameRecordingOver(baseScore int64, winScore map[int64]int64) {
 			RoomId:      r.RoomId,
 			GameStartAt: r.RecordInfo.GameStartAt,
 			GameOverAt:  r.RecordInfo.GameOverAt,
+			BaseScore:   baseScore,
 		},
 	}
 	for shortId, win := range winScore {

@@ -46,7 +46,8 @@ message HistoryInfo {
     int64 RoomId      = 2; // 房间Id
     int64 GameStartAt = 3; // 游戏开始时间
     int64 GameOverAt  = 4; // 游戏结束时间
-    int64 WinGold     = 5; // 产生的金币变化(负为数，正为赢)
+    int64 BaseScore   = 5; // 游戏底分
+    int64 WinGold     = 6; // 产生的金币变化(负为数，正为赢)
 }
 message HistoryInfos {
     repeated HistoryInfo list = 1;
