@@ -136,7 +136,6 @@ func (p *Player) OnHandle(msg actor.Message) {
 }
 
 func (p *Player) SendToClient(pb proto.Message) {
-	log.Infow("output", "rid", p.roleId, "shortId", p.Role().ShortId(), "gSession", p.gSession, "online", p.Online(), "msg", reflect.TypeOf(pb), "data", pb.String())
 	if pb == nil || !p.Online() {
 		return
 	}

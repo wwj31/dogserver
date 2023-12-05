@@ -3,12 +3,15 @@ package alliance
 import (
 	"context"
 	"fmt"
+	"reflect"
+
 	"github.com/golang/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
 	"github.com/wwj31/dogactor/actor/event"
 	"github.com/wwj31/dogactor/expect"
+	"github.com/wwj31/dogactor/tools"
 	"go.mongodb.org/mongo-driver/bson"
-	"reflect"
+
 	"server/common"
 	"server/common/actortype"
 	"server/common/log"
@@ -16,6 +19,7 @@ import (
 	"server/common/rds"
 	"server/common/router"
 	"server/proto/innermsg/inner"
+	"server/proto/outermsg/outer"
 	"server/rdsop"
 )
 
@@ -26,6 +30,7 @@ func New(id int32) *Alliance {
 		allianceId:       id,
 		members:          make(map[RID]*Member),
 		membersByShortId: make(map[int64]*Member),
+		manifests:        make(map[string]*Manifest),
 	}
 }
 
@@ -39,17 +44,40 @@ type (
 		membersByShortId map[int64]*Member
 		master           *Member
 
+		// 自动创建房间清单
+		manifests map[string]*Manifest
+
 		currentMsg      actor.Message
 		currentGSession common.GSession
 	}
 )
 
-func (a *Alliance) Coll() string {
+func (a *Alliance) MemberColl() string {
 	return fmt.Sprintf("alliance_%v", a.allianceId)
 }
 
+func (a *Alliance) ManifestColl() string {
+	return fmt.Sprintf("alliance_manifest_%v", a.allianceId)
+}
+
 func (a *Alliance) OnInit() {
-	cur, err := mongodb.Ins.Collection(a.Coll()).Find(context.Background(), bson.M{})
+	a.loadAllMember()
+	a.loadAllManifest()
+
+	// 统一返回结果
+	router.Result(a, a.responseHandle)
+
+	a.System().OnEvent(a.ID(), func(ev event.EvNewActor) {
+		if actortype.IsActorOf(ev.ActorId, actortype.RoomMgrActor) {
+			a.loadRooms()
+		}
+	})
+
+	log.Debugf("Alliance OnInit %v members:%v", a.ID(), len(a.members))
+}
+
+func (a *Alliance) loadAllMember() {
+	cur, err := mongodb.Ins.Collection(a.MemberColl()).Find(context.Background(), bson.M{})
 	if err != nil {
 		log.Errorw("load all alliance member failed", "err", err)
 		return
@@ -71,17 +99,26 @@ func (a *Alliance) OnInit() {
 		}
 		log.Debugf("alliance:%v load member %+v", a.allianceId, *member)
 	}
+}
 
-	// 统一返回结果
-	router.Result(a, a.responseHandle)
+func (a *Alliance) loadAllManifest() {
+	cur, err := mongodb.Ins.Collection(a.ManifestColl()).Find(context.Background(), bson.M{})
+	if err != nil {
+		log.Errorw("load all alliance manifest failed", "err", err)
+		return
+	}
 
-	a.System().OnEvent(a.ID(), func(ev event.EvNewActor) {
-		if actortype.IsActorOf(ev.ActorId, actortype.RoomMgrActor) {
-			a.loadRooms()
-		}
-	})
+	var manifests []*Manifest
+	err = cur.All(context.Background(), &manifests)
+	if err != nil {
+		log.Errorw("decode all manifest failed", "err", err)
+		return
+	}
 
-	log.Debugf("Alliance OnInit %v members:%v", a.ID(), len(a.members))
+	for _, manifest := range manifests {
+		a.manifests[manifest.UID] = manifest
+		log.Debugf("alliance:%v load manifest %+v", a.allianceId, *manifest)
+	}
 }
 
 // 所有消息,处理完统一返回流程
@@ -108,6 +145,7 @@ func (a *Alliance) responseHandle(resultMsg any) {
 		}
 	}
 }
+
 func (a *Alliance) loadRooms() {
 	if a.roomLoad {
 		return
@@ -147,9 +185,9 @@ func (a *Alliance) Send2Client(gSession common.GSession, msg proto.Message) {
 func (a *Alliance) OnStop() bool {
 	log.Infof("stop Alliance %v", a.ID())
 	if a.disband {
-		err := mongodb.Ins.Collection(a.Coll()).Drop(context.Background())
+		err := mongodb.Ins.Collection(a.MemberColl()).Drop(context.Background())
 		if err != nil {
-			log.Warnw("disband alliance drop table failed", "coll", a.Coll())
+			log.Warnw("disband alliance drop table failed", "coll", a.MemberColl())
 		}
 		rds.Ins.Del(context.Background(), rdsop.JoinAllianceKey(a.master.ShortId))
 	}
@@ -194,6 +232,45 @@ func (a *Alliance) Members() (arr []*Member) {
 		arr = append(arr, member)
 	}
 	return
+}
+
+func (a *Alliance) ManifestListPB(typ outer.GameType) (list []*outer.Manifest) {
+	for _, manifest := range a.manifests {
+		if manifest.GameType == typ.Int32() {
+			list = append(list, manifest.ToPB())
+		}
+	}
+	return
+}
+func (a *Alliance) SetManifest(uid string, typ outer.GameType, params *outer.GameParams) *Manifest {
+	obj := &Manifest{
+		Alliance:   a,
+		UID:        uid,
+		GameType:   typ.Int32(),
+		GameParams: params,
+	}
+
+	if uid != "" {
+		manifest, ok := a.manifests[uid]
+		if ok {
+			manifest.GameParams = params
+			manifest.Save()
+			return manifest
+		}
+	} else {
+		for _, manifest := range a.manifests {
+			if manifest.ArgEqual(obj) {
+				manifest.GameParams.MaintainEmptyRoom = params.MaintainEmptyRoom
+				manifest.Save()
+				return manifest
+			}
+		}
+		obj.UID = tools.UUID()
+	}
+
+	a.manifests[obj.UID] = obj
+	obj.Save()
+	return obj
 }
 
 func (a *Alliance) PlayerOnline(gSession common.GSession, rid RID) {

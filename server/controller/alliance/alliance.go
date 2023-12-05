@@ -162,3 +162,15 @@ var _ = router.Reg(func(alli *alliance.Alliance, msg *inner.AllianceInfoReq) any
 		MasterRID:     alli.Master().RID,
 	}
 })
+
+// 申请设置创建房间清单
+var _ = router.Reg(func(alli *alliance.Alliance, msg *outer.SetRoomManifestReq) any {
+	manifest := alli.SetManifest(msg.Id, msg.GameType, msg.GameParams)
+	return &outer.SetRoomManifestRsp{Info: manifest.ToPB()}
+})
+
+// 获得设置创建房间清单列表
+var _ = router.Reg(func(alli *alliance.Alliance, msg *outer.RoomManifestListReq) any {
+	list := alli.ManifestListPB(msg.GameType)
+	return &outer.RoomManifestListRsp{Manifests: list}
+})

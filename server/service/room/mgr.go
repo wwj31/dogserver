@@ -38,12 +38,6 @@ func (m *Mgr) OnInit() {
 }
 
 func (m *Mgr) maintainRoomCount(dt time.Duration) {
-	stat := make(map[GamblingType]int)
-	for _, room := range m.Rooms {
-		stat[room.GameType] += 1
-	}
-
-	log.Infow("room stat", "stat", stat)
 
 }
 

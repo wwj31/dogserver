@@ -33,11 +33,25 @@ func Reg[ACTOR actor.Actor, MSG gogo.Message](fn func(actor ACTOR, msg MSG) any,
 	}
 
 	handlers.Store(actName, func(actor actor.Actor, message gogo.Message) {
-		rsp := fn(actor.(ACTOR), message.(MSG))
+		log.Infow("router INPUT", "actor", actor.ID(), "msg", reflect.TypeOf(message), "message", message.String())
+
+		ret := fn(actor.(ACTOR), message.(MSG))
+
+		var retLog string
+		if reflect.ValueOf(ret).IsNil() {
+			retLog = "nil"
+		} else {
+			if returnMessage, ok := ret.(gogo.Message); ok {
+				retLog = returnMessage.String()
+			} else {
+				retLog = "unknown"
+			}
+		}
+		log.Infow("router OUTPUT", "actor", actor.ID(), "msg", reflect.TypeOf(ret), "ret", retLog)
 		val, ex := result.Load(actor.ID())
 		if ex {
 			response := val.(func(any))
-			response(rsp)
+			response(ret)
 		}
 	})
 	return true

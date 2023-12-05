@@ -21,7 +21,7 @@ message RoomInfo {
     repeated RoomPlayerInfo Players = 4; // 房间内的成员信息
 }
 
-// 创建房间
+// 创建房间 (以后将不再开放此结构，统一走自动创建房间的接口)
 message CreateRoomReq {// tag:player
     GameType GameType     = 1;
     GameParams GameParams = 2; // 游戏参数
@@ -29,6 +29,33 @@ message CreateRoomReq {// tag:player
 message CreateRoomRsp {
     RoomInfo Room = 1;
 }
+
+////////////////////////// 自动创建房间相关操作 /////////////////////////////////
+message Manifest{
+    string Id             = 1; // 清单唯一id
+    GameType GameType     = 2; //
+    GameParams GameParams = 3;
+}
+
+// 申请 自动创建房间参数清单
+message SetRoomManifestReq {// tag:player
+    string   Id           = 1; // 修改需要传，创建不用传
+    GameType GameType     = 2;
+    GameParams GameParams = 3; // 游戏参数
+}
+
+message SetRoomManifestRsp {
+    Manifest Info = 1; // 申请成功的清单信息
+}
+
+// 获得 自动创建房间参数清单 列表
+message RoomManifestListReq {// tag:player
+    GameType GameType     = 1;
+}
+message RoomManifestListRsp {
+    repeated Manifest Manifests = 1;
+}
+/////////////////////////////////////////////////////////////////////////////////
 
 // 解散房间
 message DisbandRoomReq {// tag:player

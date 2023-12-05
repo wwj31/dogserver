@@ -33,9 +33,10 @@ message PlayerDailyStat {
 
 // 游戏参数
 message GameParams {
-    MahjongParams    Mahjong   = 1;
-    FasterRunParams  FasterRun = 2;
-    NiuNiuParams     NiuNiu    = 3;
+    MahjongParams    Mahjong            = 1;
+    FasterRunParams  FasterRun          = 2;
+    NiuNiuParams     NiuNiu             = 3;
+    int32            MaintainEmptyRoom  = 4; // 系统维持空房间的数量
 }
 
 // 麻将

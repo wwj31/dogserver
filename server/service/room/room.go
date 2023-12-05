@@ -150,8 +150,16 @@ func (r *Room) responseHandle(resultMsg any) {
 	}
 }
 
-func (r *Room) IsFull() bool { return len(r.Players) >= gameMaxPlayers[r.GameType] }
-func (r *Room) Disband()     { r.stopping = true }
+func (r *Room) IsFull() bool {
+	maxNum := gameMaxPlayers[r.GameType]
+	if r.GameType == Mahjong {
+		maxNum = int(r.GameParams.Mahjong.GamePlayerNumber)
+	}
+	return len(r.Players) >= maxNum
+}
+
+func (r *Room) IsEmpty() bool { return len(r.Players) == 0 }
+func (r *Room) Disband()      { r.stopping = true }
 
 func (r *Room) CanEnterRoom(p *inner.PlayerInfo) bool {
 	if r.stopping {

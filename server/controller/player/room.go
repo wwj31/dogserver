@@ -65,6 +65,38 @@ func checkRebateParams(params *outer.RebateParams) (err outer.ERROR) {
 	return outer.ERROR_OK
 }
 
+// 获得自动创建房间清单列表
+var _ = router.Reg(func(p *player.Player, msg *outer.SetRoomManifestReq) any {
+	alliId := actortype.AllianceName(p.Alliance().AllianceId())
+	v, err := p.RequestWait(alliId, msg)
+	if yes, code := common.IsErr(v, err); yes {
+		return code
+	}
+
+	rsp := v.(*outer.SetRoomManifestRsp)
+	return rsp
+})
+
+// 申请自动创建房间清单
+var _ = router.Reg(func(p *player.Player, msg *outer.SetRoomManifestReq) any {
+	if msg.GameParams == nil {
+		return outer.ERROR_MSG_REQ_PARAM_INVALID
+	}
+
+	if p.Alliance().Position() < alliance.DeputyMaster.Int32() {
+		return outer.ERROR_PLAYER_POSITION_LIMIT
+	}
+
+	alliId := actortype.AllianceName(p.Alliance().AllianceId())
+	v, err := p.RequestWait(alliId, msg)
+	if yes, code := common.IsErr(v, err); yes {
+		return code
+	}
+
+	rsp := v.(*outer.SetRoomManifestRsp)
+	return rsp
+})
+
 // 创建房间
 var _ = router.Reg(func(p *player.Player, msg *outer.CreateRoomReq) any {
 	if msg.GameParams == nil {

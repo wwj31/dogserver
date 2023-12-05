@@ -114,6 +114,10 @@ enum Msg {
     IdNiuNiuSettlementNtf = 2082388696;
     IdCreateRoomReq = 2001014089;// dispatch to player
     IdCreateRoomRsp = 222637993;
+    IdSetRoomManifestReq = 1442907631;// dispatch to player
+    IdSetRoomManifestRsp = 1208020742;
+    IdRoomManifestListReq = 1543982760;// dispatch to player
+    IdRoomManifestListRsp = 1845979999;
     IdDisbandRoomReq = 1782747149;// dispatch to player
     IdDisbandRoomRsp = 2017634040;
     IdRoomListReq = 21167689;// dispatch to player
