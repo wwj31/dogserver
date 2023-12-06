@@ -118,6 +118,8 @@ enum Msg {
     IdSetRoomManifestRsp = 1208020742;
     IdRoomManifestListReq = 1543982760;// dispatch to player
     IdRoomManifestListRsp = 1845979999;
+    IdPruneRoomManifestReq = 211174196;// dispatch to player
+    IdPruneRoomManifestRsp = 378950515;
     IdDisbandRoomReq = 1782747149;// dispatch to player
     IdDisbandRoomRsp = 2017634040;
     IdRoomListReq = 21167689;// dispatch to player

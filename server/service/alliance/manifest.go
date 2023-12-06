@@ -30,6 +30,15 @@ func (m *Manifest) Save() {
 	}
 }
 
+func (m *Manifest) Delete() {
+	if _, err := mongodb.Ins.Collection(m.ManifestColl()).DeleteOne(context.Background(), bson.M{"_id": m.UID}); err != nil {
+		log.Errorw("member save failed", "err", err, "rid", m.UID, "param", m.GameParams.String())
+		return
+	}
+	delete(m.manifests, m.UID)
+
+}
+
 func (m *Manifest) ArgEqual(other *Manifest) bool {
 	return m.GameParams.Mahjong.String() == other.GameParams.Mahjong.String() &&
 		m.GameParams.FasterRun.String() == other.GameParams.FasterRun.String() &&

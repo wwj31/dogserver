@@ -55,6 +55,15 @@ message RoomManifestListReq {// tag:player
 message RoomManifestListRsp {
     repeated Manifest Manifests = 1;
 }
+
+// 删除清单
+message PruneRoomManifestReq {// tag:player
+    string   Id           = 1; // 清单id
+}
+
+message PruneRoomManifestRsp {
+}
+
 /////////////////////////////////////////////////////////////////////////////////
 
 // 解散房间

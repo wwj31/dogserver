@@ -165,9 +165,24 @@ var _ = router.Reg(func(alli *alliance.Alliance, msg *inner.AllianceInfoReq) any
 
 // 申请设置创建房间清单
 var _ = router.Reg(func(alli *alliance.Alliance, msg *outer.SetRoomManifestReq) any {
+	if msg.GameParams.MaintainEmptyRoom <= 0 {
+		return outer.ERROR_ROOM_MANIFEST_NUM_LESS_ZERO
+	}
+
+	if msg.GameParams.MaintainEmptyRoom > 50 {
+		return outer.ERROR_ROOM_MANIFEST_NUM_MORE_LIMIT
+	}
+
 	manifest := alli.SetManifest(msg.Id, msg.GameType, msg.GameParams)
 	alli.MaintainImmediately()
 	return &outer.SetRoomManifestRsp{Info: manifest.ToPB()}
+})
+
+// 删除清单
+var _ = router.Reg(func(alli *alliance.Alliance, msg *outer.PruneRoomManifestReq) any {
+	alli.PruneManifest(msg.Id)
+	alli.MaintainImmediately()
+	return &outer.PruneRoomManifestRsp{}
 })
 
 // 获得设置创建房间清单列表

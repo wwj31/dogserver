@@ -257,6 +257,7 @@ func (a *Alliance) ManifestListPB(typ outer.GameType) (list []*outer.Manifest) {
 	}
 	return
 }
+
 func (a *Alliance) SetManifest(uid string, typ outer.GameType, params *outer.GameParams) *Manifest {
 	obj := &Manifest{
 		Alliance:   a,
@@ -286,6 +287,14 @@ func (a *Alliance) SetManifest(uid string, typ outer.GameType, params *outer.Gam
 	a.manifests[obj.UID] = obj
 	obj.Save()
 	return obj
+}
+
+func (a *Alliance) PruneManifest(uid string) {
+	manifest, ok := a.manifests[uid]
+	if !ok {
+		return
+	}
+	manifest.GameParams.MaintainEmptyRoom = 0
 }
 
 func (a *Alliance) PlayerOnline(gSession common.GSession, rid RID) {

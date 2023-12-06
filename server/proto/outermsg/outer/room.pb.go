@@ -529,6 +529,92 @@ func (x *RoomManifestListRsp) GetManifests() []*Manifest {
 	return nil
 }
 
+// 删除清单
+type PruneRoomManifestReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Id string `protobuf:"bytes,1,opt,name=Id,proto3" json:"Id,omitempty"` // 清单id
+}
+
+func (x *PruneRoomManifestReq) Reset() {
+	*x = PruneRoomManifestReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_room_proto_msgTypes[9]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *PruneRoomManifestReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PruneRoomManifestReq) ProtoMessage() {}
+
+func (x *PruneRoomManifestReq) ProtoReflect() protoreflect.Message {
+	mi := &file_room_proto_msgTypes[9]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PruneRoomManifestReq.ProtoReflect.Descriptor instead.
+func (*PruneRoomManifestReq) Descriptor() ([]byte, []int) {
+	return file_room_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *PruneRoomManifestReq) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+type PruneRoomManifestRsp struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *PruneRoomManifestRsp) Reset() {
+	*x = PruneRoomManifestRsp{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_room_proto_msgTypes[10]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *PruneRoomManifestRsp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PruneRoomManifestRsp) ProtoMessage() {}
+
+func (x *PruneRoomManifestRsp) ProtoReflect() protoreflect.Message {
+	mi := &file_room_proto_msgTypes[10]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PruneRoomManifestRsp.ProtoReflect.Descriptor instead.
+func (*PruneRoomManifestRsp) Descriptor() ([]byte, []int) {
+	return file_room_proto_rawDescGZIP(), []int{10}
+}
+
 // 解散房间
 type DisbandRoomReq struct {
 	state         protoimpl.MessageState
@@ -541,7 +627,7 @@ type DisbandRoomReq struct {
 func (x *DisbandRoomReq) Reset() {
 	*x = DisbandRoomReq{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_room_proto_msgTypes[9]
+		mi := &file_room_proto_msgTypes[11]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -554,7 +640,7 @@ func (x *DisbandRoomReq) String() string {
 func (*DisbandRoomReq) ProtoMessage() {}
 
 func (x *DisbandRoomReq) ProtoReflect() protoreflect.Message {
-	mi := &file_room_proto_msgTypes[9]
+	mi := &file_room_proto_msgTypes[11]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -567,7 +653,7 @@ func (x *DisbandRoomReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DisbandRoomReq.ProtoReflect.Descriptor instead.
 func (*DisbandRoomReq) Descriptor() ([]byte, []int) {
-	return file_room_proto_rawDescGZIP(), []int{9}
+	return file_room_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *DisbandRoomReq) GetRoomId() int64 {
@@ -588,7 +674,7 @@ type DisbandRoomRsp struct {
 func (x *DisbandRoomRsp) Reset() {
 	*x = DisbandRoomRsp{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_room_proto_msgTypes[10]
+		mi := &file_room_proto_msgTypes[12]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -601,7 +687,7 @@ func (x *DisbandRoomRsp) String() string {
 func (*DisbandRoomRsp) ProtoMessage() {}
 
 func (x *DisbandRoomRsp) ProtoReflect() protoreflect.Message {
-	mi := &file_room_proto_msgTypes[10]
+	mi := &file_room_proto_msgTypes[12]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -614,7 +700,7 @@ func (x *DisbandRoomRsp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DisbandRoomRsp.ProtoReflect.Descriptor instead.
 func (*DisbandRoomRsp) Descriptor() ([]byte, []int) {
-	return file_room_proto_rawDescGZIP(), []int{10}
+	return file_room_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *DisbandRoomRsp) GetRoomId() int64 {
@@ -634,7 +720,7 @@ type RoomListReq struct {
 func (x *RoomListReq) Reset() {
 	*x = RoomListReq{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_room_proto_msgTypes[11]
+		mi := &file_room_proto_msgTypes[13]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -647,7 +733,7 @@ func (x *RoomListReq) String() string {
 func (*RoomListReq) ProtoMessage() {}
 
 func (x *RoomListReq) ProtoReflect() protoreflect.Message {
-	mi := &file_room_proto_msgTypes[11]
+	mi := &file_room_proto_msgTypes[13]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -660,7 +746,7 @@ func (x *RoomListReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RoomListReq.ProtoReflect.Descriptor instead.
 func (*RoomListReq) Descriptor() ([]byte, []int) {
-	return file_room_proto_rawDescGZIP(), []int{11}
+	return file_room_proto_rawDescGZIP(), []int{13}
 }
 
 type RoomListRsp struct {
@@ -674,7 +760,7 @@ type RoomListRsp struct {
 func (x *RoomListRsp) Reset() {
 	*x = RoomListRsp{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_room_proto_msgTypes[12]
+		mi := &file_room_proto_msgTypes[14]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -687,7 +773,7 @@ func (x *RoomListRsp) String() string {
 func (*RoomListRsp) ProtoMessage() {}
 
 func (x *RoomListRsp) ProtoReflect() protoreflect.Message {
-	mi := &file_room_proto_msgTypes[12]
+	mi := &file_room_proto_msgTypes[14]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -700,7 +786,7 @@ func (x *RoomListRsp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RoomListRsp.ProtoReflect.Descriptor instead.
 func (*RoomListRsp) Descriptor() ([]byte, []int) {
-	return file_room_proto_rawDescGZIP(), []int{12}
+	return file_room_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *RoomListRsp) GetRoomList() []*RoomInfo {
@@ -722,7 +808,7 @@ type JoinRoomReq struct {
 func (x *JoinRoomReq) Reset() {
 	*x = JoinRoomReq{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_room_proto_msgTypes[13]
+		mi := &file_room_proto_msgTypes[15]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -735,7 +821,7 @@ func (x *JoinRoomReq) String() string {
 func (*JoinRoomReq) ProtoMessage() {}
 
 func (x *JoinRoomReq) ProtoReflect() protoreflect.Message {
-	mi := &file_room_proto_msgTypes[13]
+	mi := &file_room_proto_msgTypes[15]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -748,7 +834,7 @@ func (x *JoinRoomReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use JoinRoomReq.ProtoReflect.Descriptor instead.
 func (*JoinRoomReq) Descriptor() ([]byte, []int) {
-	return file_room_proto_rawDescGZIP(), []int{13}
+	return file_room_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *JoinRoomReq) GetRoomId() int64 {
@@ -770,7 +856,7 @@ type JoinRoomRsp struct {
 func (x *JoinRoomRsp) Reset() {
 	*x = JoinRoomRsp{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_room_proto_msgTypes[14]
+		mi := &file_room_proto_msgTypes[16]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -783,7 +869,7 @@ func (x *JoinRoomRsp) String() string {
 func (*JoinRoomRsp) ProtoMessage() {}
 
 func (x *JoinRoomRsp) ProtoReflect() protoreflect.Message {
-	mi := &file_room_proto_msgTypes[14]
+	mi := &file_room_proto_msgTypes[16]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -796,7 +882,7 @@ func (x *JoinRoomRsp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use JoinRoomRsp.ProtoReflect.Descriptor instead.
 func (*JoinRoomRsp) Descriptor() ([]byte, []int) {
-	return file_room_proto_rawDescGZIP(), []int{14}
+	return file_room_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *JoinRoomRsp) GetRoom() *RoomInfo {
@@ -823,7 +909,7 @@ type LeaveRoomReq struct {
 func (x *LeaveRoomReq) Reset() {
 	*x = LeaveRoomReq{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_room_proto_msgTypes[15]
+		mi := &file_room_proto_msgTypes[17]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -836,7 +922,7 @@ func (x *LeaveRoomReq) String() string {
 func (*LeaveRoomReq) ProtoMessage() {}
 
 func (x *LeaveRoomReq) ProtoReflect() protoreflect.Message {
-	mi := &file_room_proto_msgTypes[15]
+	mi := &file_room_proto_msgTypes[17]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -849,7 +935,7 @@ func (x *LeaveRoomReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LeaveRoomReq.ProtoReflect.Descriptor instead.
 func (*LeaveRoomReq) Descriptor() ([]byte, []int) {
-	return file_room_proto_rawDescGZIP(), []int{15}
+	return file_room_proto_rawDescGZIP(), []int{17}
 }
 
 type LeaveRoomRsp struct {
@@ -861,7 +947,7 @@ type LeaveRoomRsp struct {
 func (x *LeaveRoomRsp) Reset() {
 	*x = LeaveRoomRsp{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_room_proto_msgTypes[16]
+		mi := &file_room_proto_msgTypes[18]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -874,7 +960,7 @@ func (x *LeaveRoomRsp) String() string {
 func (*LeaveRoomRsp) ProtoMessage() {}
 
 func (x *LeaveRoomRsp) ProtoReflect() protoreflect.Message {
-	mi := &file_room_proto_msgTypes[16]
+	mi := &file_room_proto_msgTypes[18]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -887,7 +973,7 @@ func (x *LeaveRoomRsp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LeaveRoomRsp.ProtoReflect.Descriptor instead.
 func (*LeaveRoomRsp) Descriptor() ([]byte, []int) {
-	return file_room_proto_rawDescGZIP(), []int{16}
+	return file_room_proto_rawDescGZIP(), []int{18}
 }
 
 // 通知类消息
@@ -902,7 +988,7 @@ type RoomPlayerEnterNtf struct {
 func (x *RoomPlayerEnterNtf) Reset() {
 	*x = RoomPlayerEnterNtf{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_room_proto_msgTypes[17]
+		mi := &file_room_proto_msgTypes[19]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -915,7 +1001,7 @@ func (x *RoomPlayerEnterNtf) String() string {
 func (*RoomPlayerEnterNtf) ProtoMessage() {}
 
 func (x *RoomPlayerEnterNtf) ProtoReflect() protoreflect.Message {
-	mi := &file_room_proto_msgTypes[17]
+	mi := &file_room_proto_msgTypes[19]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -928,7 +1014,7 @@ func (x *RoomPlayerEnterNtf) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RoomPlayerEnterNtf.ProtoReflect.Descriptor instead.
 func (*RoomPlayerEnterNtf) Descriptor() ([]byte, []int) {
-	return file_room_proto_rawDescGZIP(), []int{17}
+	return file_room_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *RoomPlayerEnterNtf) GetPlayer() *RoomPlayerInfo {
@@ -949,7 +1035,7 @@ type RoomPlayerLeaveNtf struct {
 func (x *RoomPlayerLeaveNtf) Reset() {
 	*x = RoomPlayerLeaveNtf{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_room_proto_msgTypes[18]
+		mi := &file_room_proto_msgTypes[20]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -962,7 +1048,7 @@ func (x *RoomPlayerLeaveNtf) String() string {
 func (*RoomPlayerLeaveNtf) ProtoMessage() {}
 
 func (x *RoomPlayerLeaveNtf) ProtoReflect() protoreflect.Message {
-	mi := &file_room_proto_msgTypes[18]
+	mi := &file_room_proto_msgTypes[20]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -975,7 +1061,7 @@ func (x *RoomPlayerLeaveNtf) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RoomPlayerLeaveNtf.ProtoReflect.Descriptor instead.
 func (*RoomPlayerLeaveNtf) Descriptor() ([]byte, []int) {
-	return file_room_proto_rawDescGZIP(), []int{18}
+	return file_room_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *RoomPlayerLeaveNtf) GetShortId() int64 {
@@ -997,7 +1083,7 @@ type RoomPlayerOnlineNtf struct {
 func (x *RoomPlayerOnlineNtf) Reset() {
 	*x = RoomPlayerOnlineNtf{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_room_proto_msgTypes[19]
+		mi := &file_room_proto_msgTypes[21]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1010,7 +1096,7 @@ func (x *RoomPlayerOnlineNtf) String() string {
 func (*RoomPlayerOnlineNtf) ProtoMessage() {}
 
 func (x *RoomPlayerOnlineNtf) ProtoReflect() protoreflect.Message {
-	mi := &file_room_proto_msgTypes[19]
+	mi := &file_room_proto_msgTypes[21]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1023,7 +1109,7 @@ func (x *RoomPlayerOnlineNtf) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RoomPlayerOnlineNtf.ProtoReflect.Descriptor instead.
 func (*RoomPlayerOnlineNtf) Descriptor() ([]byte, []int) {
-	return file_room_proto_rawDescGZIP(), []int{19}
+	return file_room_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *RoomPlayerOnlineNtf) GetShortId() int64 {
@@ -1055,7 +1141,7 @@ type RecordingMessage struct {
 func (x *RecordingMessage) Reset() {
 	*x = RecordingMessage{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_room_proto_msgTypes[20]
+		mi := &file_room_proto_msgTypes[22]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1068,7 +1154,7 @@ func (x *RecordingMessage) String() string {
 func (*RecordingMessage) ProtoMessage() {}
 
 func (x *RecordingMessage) ProtoReflect() protoreflect.Message {
-	mi := &file_room_proto_msgTypes[20]
+	mi := &file_room_proto_msgTypes[22]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1081,7 +1167,7 @@ func (x *RecordingMessage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RecordingMessage.ProtoReflect.Descriptor instead.
 func (*RecordingMessage) Descriptor() ([]byte, []int) {
-	return file_room_proto_rawDescGZIP(), []int{20}
+	return file_room_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *RecordingMessage) GetSendAt() int64 {
@@ -1127,7 +1213,7 @@ type Recording struct {
 func (x *Recording) Reset() {
 	*x = Recording{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_room_proto_msgTypes[21]
+		mi := &file_room_proto_msgTypes[23]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1140,7 +1226,7 @@ func (x *Recording) String() string {
 func (*Recording) ProtoMessage() {}
 
 func (x *Recording) ProtoReflect() protoreflect.Message {
-	mi := &file_room_proto_msgTypes[21]
+	mi := &file_room_proto_msgTypes[23]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1153,7 +1239,7 @@ func (x *Recording) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Recording.ProtoReflect.Descriptor instead.
 func (*Recording) Descriptor() ([]byte, []int) {
-	return file_room_proto_rawDescGZIP(), []int{21}
+	return file_room_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *Recording) GetGameStartAt() int64 {
@@ -1197,7 +1283,7 @@ type RoomRecordingReq struct {
 func (x *RoomRecordingReq) Reset() {
 	*x = RoomRecordingReq{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_room_proto_msgTypes[22]
+		mi := &file_room_proto_msgTypes[24]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1210,7 +1296,7 @@ func (x *RoomRecordingReq) String() string {
 func (*RoomRecordingReq) ProtoMessage() {}
 
 func (x *RoomRecordingReq) ProtoReflect() protoreflect.Message {
-	mi := &file_room_proto_msgTypes[22]
+	mi := &file_room_proto_msgTypes[24]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1223,7 +1309,7 @@ func (x *RoomRecordingReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RoomRecordingReq.ProtoReflect.Descriptor instead.
 func (*RoomRecordingReq) Descriptor() ([]byte, []int) {
-	return file_room_proto_rawDescGZIP(), []int{22}
+	return file_room_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *RoomRecordingReq) GetRoomId() int64 {
@@ -1251,7 +1337,7 @@ type RoomRecordingRsp struct {
 func (x *RoomRecordingRsp) Reset() {
 	*x = RoomRecordingRsp{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_room_proto_msgTypes[23]
+		mi := &file_room_proto_msgTypes[25]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1264,7 +1350,7 @@ func (x *RoomRecordingRsp) String() string {
 func (*RoomRecordingRsp) ProtoMessage() {}
 
 func (x *RoomRecordingRsp) ProtoReflect() protoreflect.Message {
-	mi := &file_room_proto_msgTypes[23]
+	mi := &file_room_proto_msgTypes[25]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1277,7 +1363,7 @@ func (x *RoomRecordingRsp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RoomRecordingRsp.ProtoReflect.Descriptor instead.
 func (*RoomRecordingRsp) Descriptor() ([]byte, []int) {
-	return file_room_proto_rawDescGZIP(), []int{23}
+	return file_room_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *RoomRecordingRsp) GetGameRecordData() *Recording {
@@ -1304,7 +1390,7 @@ type HistoryInfo struct {
 func (x *HistoryInfo) Reset() {
 	*x = HistoryInfo{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_room_proto_msgTypes[24]
+		mi := &file_room_proto_msgTypes[26]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1317,7 +1403,7 @@ func (x *HistoryInfo) String() string {
 func (*HistoryInfo) ProtoMessage() {}
 
 func (x *HistoryInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_room_proto_msgTypes[24]
+	mi := &file_room_proto_msgTypes[26]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1330,7 +1416,7 @@ func (x *HistoryInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HistoryInfo.ProtoReflect.Descriptor instead.
 func (*HistoryInfo) Descriptor() ([]byte, []int) {
-	return file_room_proto_rawDescGZIP(), []int{24}
+	return file_room_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *HistoryInfo) GetGameType() int32 {
@@ -1385,7 +1471,7 @@ type RoomGamblingHistoryReq struct {
 func (x *RoomGamblingHistoryReq) Reset() {
 	*x = RoomGamblingHistoryReq{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_room_proto_msgTypes[25]
+		mi := &file_room_proto_msgTypes[27]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1398,7 +1484,7 @@ func (x *RoomGamblingHistoryReq) String() string {
 func (*RoomGamblingHistoryReq) ProtoMessage() {}
 
 func (x *RoomGamblingHistoryReq) ProtoReflect() protoreflect.Message {
-	mi := &file_room_proto_msgTypes[25]
+	mi := &file_room_proto_msgTypes[27]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1411,7 +1497,7 @@ func (x *RoomGamblingHistoryReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RoomGamblingHistoryReq.ProtoReflect.Descriptor instead.
 func (*RoomGamblingHistoryReq) Descriptor() ([]byte, []int) {
-	return file_room_proto_rawDescGZIP(), []int{25}
+	return file_room_proto_rawDescGZIP(), []int{27}
 }
 
 type RoomGamblingHistoryRsp struct {
@@ -1425,7 +1511,7 @@ type RoomGamblingHistoryRsp struct {
 func (x *RoomGamblingHistoryRsp) Reset() {
 	*x = RoomGamblingHistoryRsp{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_room_proto_msgTypes[26]
+		mi := &file_room_proto_msgTypes[28]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1438,7 +1524,7 @@ func (x *RoomGamblingHistoryRsp) String() string {
 func (*RoomGamblingHistoryRsp) ProtoMessage() {}
 
 func (x *RoomGamblingHistoryRsp) ProtoReflect() protoreflect.Message {
-	mi := &file_room_proto_msgTypes[26]
+	mi := &file_room_proto_msgTypes[28]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1451,7 +1537,7 @@ func (x *RoomGamblingHistoryRsp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RoomGamblingHistoryRsp.ProtoReflect.Descriptor instead.
 func (*RoomGamblingHistoryRsp) Descriptor() ([]byte, []int) {
-	return file_room_proto_rawDescGZIP(), []int{26}
+	return file_room_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *RoomGamblingHistoryRsp) GetList() []*HistoryInfo {
@@ -1525,7 +1611,11 @@ var file_room_proto_rawDesc = []byte{
 	0x4c, 0x69, 0x73, 0x74, 0x52, 0x73, 0x70, 0x12, 0x2d, 0x0a, 0x09, 0x4d, 0x61, 0x6e, 0x69, 0x66,
 	0x65, 0x73, 0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0f, 0x2e, 0x6f, 0x75, 0x74,
 	0x65, 0x72, 0x2e, 0x4d, 0x61, 0x6e, 0x69, 0x66, 0x65, 0x73, 0x74, 0x52, 0x09, 0x4d, 0x61, 0x6e,
-	0x69, 0x66, 0x65, 0x73, 0x74, 0x73, 0x22, 0x28, 0x0a, 0x0e, 0x44, 0x69, 0x73, 0x62, 0x61, 0x6e,
+	0x69, 0x66, 0x65, 0x73, 0x74, 0x73, 0x22, 0x26, 0x0a, 0x14, 0x50, 0x72, 0x75, 0x6e, 0x65, 0x52,
+	0x6f, 0x6f, 0x6d, 0x4d, 0x61, 0x6e, 0x69, 0x66, 0x65, 0x73, 0x74, 0x52, 0x65, 0x71, 0x12, 0x0e,
+	0x0a, 0x02, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x49, 0x64, 0x22, 0x16,
+	0x0a, 0x14, 0x50, 0x72, 0x75, 0x6e, 0x65, 0x52, 0x6f, 0x6f, 0x6d, 0x4d, 0x61, 0x6e, 0x69, 0x66,
+	0x65, 0x73, 0x74, 0x52, 0x73, 0x70, 0x22, 0x28, 0x0a, 0x0e, 0x44, 0x69, 0x73, 0x62, 0x61, 0x6e,
 	0x64, 0x52, 0x6f, 0x6f, 0x6d, 0x52, 0x65, 0x71, 0x12, 0x16, 0x0a, 0x06, 0x52, 0x6f, 0x6f, 0x6d,
 	0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x06, 0x52, 0x6f, 0x6f, 0x6d, 0x49, 0x64,
 	0x22, 0x28, 0x0a, 0x0e, 0x44, 0x69, 0x73, 0x62, 0x61, 0x6e, 0x64, 0x52, 0x6f, 0x6f, 0x6d, 0x52,
@@ -1618,7 +1708,7 @@ func file_room_proto_rawDescGZIP() []byte {
 	return file_room_proto_rawDescData
 }
 
-var file_room_proto_msgTypes = make([]protoimpl.MessageInfo, 27)
+var file_room_proto_msgTypes = make([]protoimpl.MessageInfo, 29)
 var file_room_proto_goTypes = []interface{}{
 	(*RoomPlayerInfo)(nil),         // 0: outer.RoomPlayerInfo
 	(*RoomInfo)(nil),               // 1: outer.RoomInfo
@@ -1629,52 +1719,54 @@ var file_room_proto_goTypes = []interface{}{
 	(*SetRoomManifestRsp)(nil),     // 6: outer.SetRoomManifestRsp
 	(*RoomManifestListReq)(nil),    // 7: outer.RoomManifestListReq
 	(*RoomManifestListRsp)(nil),    // 8: outer.RoomManifestListRsp
-	(*DisbandRoomReq)(nil),         // 9: outer.DisbandRoomReq
-	(*DisbandRoomRsp)(nil),         // 10: outer.DisbandRoomRsp
-	(*RoomListReq)(nil),            // 11: outer.RoomListReq
-	(*RoomListRsp)(nil),            // 12: outer.RoomListRsp
-	(*JoinRoomReq)(nil),            // 13: outer.JoinRoomReq
-	(*JoinRoomRsp)(nil),            // 14: outer.JoinRoomRsp
-	(*LeaveRoomReq)(nil),           // 15: outer.LeaveRoomReq
-	(*LeaveRoomRsp)(nil),           // 16: outer.LeaveRoomRsp
-	(*RoomPlayerEnterNtf)(nil),     // 17: outer.RoomPlayerEnterNtf
-	(*RoomPlayerLeaveNtf)(nil),     // 18: outer.RoomPlayerLeaveNtf
-	(*RoomPlayerOnlineNtf)(nil),    // 19: outer.RoomPlayerOnlineNtf
-	(*RecordingMessage)(nil),       // 20: outer.RecordingMessage
-	(*Recording)(nil),              // 21: outer.Recording
-	(*RoomRecordingReq)(nil),       // 22: outer.RoomRecordingReq
-	(*RoomRecordingRsp)(nil),       // 23: outer.RoomRecordingRsp
-	(*HistoryInfo)(nil),            // 24: outer.HistoryInfo
-	(*RoomGamblingHistoryReq)(nil), // 25: outer.RoomGamblingHistoryReq
-	(*RoomGamblingHistoryRsp)(nil), // 26: outer.RoomGamblingHistoryRsp
-	(*PlayerInfo)(nil),             // 27: outer.PlayerInfo
-	(GameType)(0),                  // 28: outer.GameType
-	(*GameParams)(nil),             // 29: outer.GameParams
-	(Msg)(0),                       // 30: outer.Msg
+	(*PruneRoomManifestReq)(nil),   // 9: outer.PruneRoomManifestReq
+	(*PruneRoomManifestRsp)(nil),   // 10: outer.PruneRoomManifestRsp
+	(*DisbandRoomReq)(nil),         // 11: outer.DisbandRoomReq
+	(*DisbandRoomRsp)(nil),         // 12: outer.DisbandRoomRsp
+	(*RoomListReq)(nil),            // 13: outer.RoomListReq
+	(*RoomListRsp)(nil),            // 14: outer.RoomListRsp
+	(*JoinRoomReq)(nil),            // 15: outer.JoinRoomReq
+	(*JoinRoomRsp)(nil),            // 16: outer.JoinRoomRsp
+	(*LeaveRoomReq)(nil),           // 17: outer.LeaveRoomReq
+	(*LeaveRoomRsp)(nil),           // 18: outer.LeaveRoomRsp
+	(*RoomPlayerEnterNtf)(nil),     // 19: outer.RoomPlayerEnterNtf
+	(*RoomPlayerLeaveNtf)(nil),     // 20: outer.RoomPlayerLeaveNtf
+	(*RoomPlayerOnlineNtf)(nil),    // 21: outer.RoomPlayerOnlineNtf
+	(*RecordingMessage)(nil),       // 22: outer.RecordingMessage
+	(*Recording)(nil),              // 23: outer.Recording
+	(*RoomRecordingReq)(nil),       // 24: outer.RoomRecordingReq
+	(*RoomRecordingRsp)(nil),       // 25: outer.RoomRecordingRsp
+	(*HistoryInfo)(nil),            // 26: outer.HistoryInfo
+	(*RoomGamblingHistoryReq)(nil), // 27: outer.RoomGamblingHistoryReq
+	(*RoomGamblingHistoryRsp)(nil), // 28: outer.RoomGamblingHistoryRsp
+	(*PlayerInfo)(nil),             // 29: outer.PlayerInfo
+	(GameType)(0),                  // 30: outer.GameType
+	(*GameParams)(nil),             // 31: outer.GameParams
+	(Msg)(0),                       // 32: outer.Msg
 }
 var file_room_proto_depIdxs = []int32{
-	27, // 0: outer.RoomPlayerInfo.BaseInfo:type_name -> outer.PlayerInfo
-	28, // 1: outer.RoomInfo.GameType:type_name -> outer.GameType
-	29, // 2: outer.RoomInfo.GameParams:type_name -> outer.GameParams
+	29, // 0: outer.RoomPlayerInfo.BaseInfo:type_name -> outer.PlayerInfo
+	30, // 1: outer.RoomInfo.GameType:type_name -> outer.GameType
+	31, // 2: outer.RoomInfo.GameParams:type_name -> outer.GameParams
 	0,  // 3: outer.RoomInfo.Players:type_name -> outer.RoomPlayerInfo
-	28, // 4: outer.CreateRoomReq.GameType:type_name -> outer.GameType
-	29, // 5: outer.CreateRoomReq.GameParams:type_name -> outer.GameParams
+	30, // 4: outer.CreateRoomReq.GameType:type_name -> outer.GameType
+	31, // 5: outer.CreateRoomReq.GameParams:type_name -> outer.GameParams
 	1,  // 6: outer.CreateRoomRsp.Room:type_name -> outer.RoomInfo
-	28, // 7: outer.Manifest.GameType:type_name -> outer.GameType
-	29, // 8: outer.Manifest.GameParams:type_name -> outer.GameParams
-	28, // 9: outer.SetRoomManifestReq.GameType:type_name -> outer.GameType
-	29, // 10: outer.SetRoomManifestReq.GameParams:type_name -> outer.GameParams
+	30, // 7: outer.Manifest.GameType:type_name -> outer.GameType
+	31, // 8: outer.Manifest.GameParams:type_name -> outer.GameParams
+	30, // 9: outer.SetRoomManifestReq.GameType:type_name -> outer.GameType
+	31, // 10: outer.SetRoomManifestReq.GameParams:type_name -> outer.GameParams
 	4,  // 11: outer.SetRoomManifestRsp.Info:type_name -> outer.Manifest
-	28, // 12: outer.RoomManifestListReq.GameType:type_name -> outer.GameType
+	30, // 12: outer.RoomManifestListReq.GameType:type_name -> outer.GameType
 	4,  // 13: outer.RoomManifestListRsp.Manifests:type_name -> outer.Manifest
 	1,  // 14: outer.RoomListRsp.RoomList:type_name -> outer.RoomInfo
 	1,  // 15: outer.JoinRoomRsp.Room:type_name -> outer.RoomInfo
 	0,  // 16: outer.RoomPlayerEnterNtf.Player:type_name -> outer.RoomPlayerInfo
-	30, // 17: outer.RecordingMessage.MsgId:type_name -> outer.Msg
+	32, // 17: outer.RecordingMessage.MsgId:type_name -> outer.Msg
 	1,  // 18: outer.Recording.Room:type_name -> outer.RoomInfo
-	20, // 19: outer.Recording.Messages:type_name -> outer.RecordingMessage
-	21, // 20: outer.RoomRecordingRsp.GameRecordData:type_name -> outer.Recording
-	24, // 21: outer.RoomGamblingHistoryRsp.list:type_name -> outer.HistoryInfo
+	22, // 19: outer.Recording.Messages:type_name -> outer.RecordingMessage
+	23, // 20: outer.RoomRecordingRsp.GameRecordData:type_name -> outer.Recording
+	26, // 21: outer.RoomGamblingHistoryRsp.list:type_name -> outer.HistoryInfo
 	22, // [22:22] is the sub-list for method output_type
 	22, // [22:22] is the sub-list for method input_type
 	22, // [22:22] is the sub-list for extension type_name
@@ -1800,7 +1892,7 @@ func file_room_proto_init() {
 			}
 		}
 		file_room_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DisbandRoomReq); i {
+			switch v := v.(*PruneRoomManifestReq); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1812,7 +1904,7 @@ func file_room_proto_init() {
 			}
 		}
 		file_room_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DisbandRoomRsp); i {
+			switch v := v.(*PruneRoomManifestRsp); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1824,7 +1916,7 @@ func file_room_proto_init() {
 			}
 		}
 		file_room_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*RoomListReq); i {
+			switch v := v.(*DisbandRoomReq); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1836,7 +1928,7 @@ func file_room_proto_init() {
 			}
 		}
 		file_room_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*RoomListRsp); i {
+			switch v := v.(*DisbandRoomRsp); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1848,7 +1940,7 @@ func file_room_proto_init() {
 			}
 		}
 		file_room_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*JoinRoomReq); i {
+			switch v := v.(*RoomListReq); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1860,7 +1952,7 @@ func file_room_proto_init() {
 			}
 		}
 		file_room_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*JoinRoomRsp); i {
+			switch v := v.(*RoomListRsp); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1872,7 +1964,7 @@ func file_room_proto_init() {
 			}
 		}
 		file_room_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*LeaveRoomReq); i {
+			switch v := v.(*JoinRoomReq); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1884,7 +1976,7 @@ func file_room_proto_init() {
 			}
 		}
 		file_room_proto_msgTypes[16].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*LeaveRoomRsp); i {
+			switch v := v.(*JoinRoomRsp); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1896,7 +1988,7 @@ func file_room_proto_init() {
 			}
 		}
 		file_room_proto_msgTypes[17].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*RoomPlayerEnterNtf); i {
+			switch v := v.(*LeaveRoomReq); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1908,7 +2000,7 @@ func file_room_proto_init() {
 			}
 		}
 		file_room_proto_msgTypes[18].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*RoomPlayerLeaveNtf); i {
+			switch v := v.(*LeaveRoomRsp); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1920,7 +2012,7 @@ func file_room_proto_init() {
 			}
 		}
 		file_room_proto_msgTypes[19].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*RoomPlayerOnlineNtf); i {
+			switch v := v.(*RoomPlayerEnterNtf); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1932,7 +2024,7 @@ func file_room_proto_init() {
 			}
 		}
 		file_room_proto_msgTypes[20].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*RecordingMessage); i {
+			switch v := v.(*RoomPlayerLeaveNtf); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1944,7 +2036,7 @@ func file_room_proto_init() {
 			}
 		}
 		file_room_proto_msgTypes[21].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Recording); i {
+			switch v := v.(*RoomPlayerOnlineNtf); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1956,7 +2048,7 @@ func file_room_proto_init() {
 			}
 		}
 		file_room_proto_msgTypes[22].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*RoomRecordingReq); i {
+			switch v := v.(*RecordingMessage); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1968,7 +2060,7 @@ func file_room_proto_init() {
 			}
 		}
 		file_room_proto_msgTypes[23].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*RoomRecordingRsp); i {
+			switch v := v.(*Recording); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1980,7 +2072,7 @@ func file_room_proto_init() {
 			}
 		}
 		file_room_proto_msgTypes[24].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*HistoryInfo); i {
+			switch v := v.(*RoomRecordingReq); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1992,7 +2084,7 @@ func file_room_proto_init() {
 			}
 		}
 		file_room_proto_msgTypes[25].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*RoomGamblingHistoryReq); i {
+			switch v := v.(*RoomRecordingRsp); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2004,6 +2096,30 @@ func file_room_proto_init() {
 			}
 		}
 		file_room_proto_msgTypes[26].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*HistoryInfo); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_room_proto_msgTypes[27].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*RoomGamblingHistoryReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_room_proto_msgTypes[28].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*RoomGamblingHistoryRsp); i {
 			case 0:
 				return &v.state
@@ -2022,7 +2138,7 @@ func file_room_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_room_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   27,
+			NumMessages:   29,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

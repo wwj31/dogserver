@@ -15,10 +15,11 @@ func (a *Alliance) manifestMaintenance() {
 		return
 	}
 
-	// 先统计各个清单空房间数量
-	emptyRoomStat := make(map[string]map[actor.Id]struct{}) // map[清单id][房间actorId]
+	emptyRoomStat := make(map[string]map[actor.Id]struct{}) // 统计各个清单空房间数量 map[清单id][房间actorId]
+	roomStat := make(map[string]map[actor.Id]struct{})      // 统计各个清单非房间数量 map[清单id][房间actorId]
 	for id, _ := range a.manifests {
 		emptyRoomStat[id] = make(map[actor.Id]struct{})
+		roomStat[id] = make(map[actor.Id]struct{})
 	}
 	roomList := rdsop.RoomList(a.allianceId)
 
@@ -31,15 +32,27 @@ func (a *Alliance) manifestMaintenance() {
 		}
 
 		rsp := v.(*inner.RoomIsEmptyRsp)
+
+		// 手动创建的房间，没有清单id，不归manifestId管
+		if rsp.ManifestId == "" {
+			continue
+		}
+
 		if rsp.Empty {
 			if emptyRoomStat[rsp.ManifestId] == nil {
 				log.Errorw("room cannot find manifest", "id", rsp.ManifestId)
 				continue
 			}
 			emptyRoomStat[rsp.ManifestId][roomActorId] = struct{}{}
+		} else {
+			if roomStat[rsp.ManifestId] == nil {
+				log.Errorw("room cannot find manifest", "id", rsp.ManifestId)
+				continue
+			}
+			roomStat[rsp.ManifestId][roomActorId] = struct{}{}
 		}
 	}
-	log.Infow("regular maintain", "emptyRoomStat", emptyRoomStat)
+	log.Infow("regular maintain", "emptyRoomStat", emptyRoomStat, "roomStat", roomStat)
 
 	// 检查是否满足清单所需数量，不满足的执行补充，多于所需数量尝试销毁
 	for id, manifest := range a.manifests {
@@ -66,6 +79,11 @@ func (a *Alliance) manifestMaintenance() {
 			log.Infow("create alliance room success", "alliance", a.allianceId, "manifestId", id, "manifest", manifest.GameParams.String())
 		}
 
+		// 先判断是否需要删除清单
+		if manifest.GameParams.MaintainEmptyRoom == 0 && len(emptyRoomStat[id]) == 0 && len(roomStat[id]) == 0 {
+			manifest.Delete()
+		}
+
 		// 尝试销毁多余的空房间
 		disbandNum := len(emptyRoomStat[id]) - int(manifest.GameParams.MaintainEmptyRoom)
 		for i := 0; i < disbandNum; i++ {
@@ -84,6 +102,7 @@ func (a *Alliance) manifestMaintenance() {
 			}
 			log.Infow("disband alliance room success", "alliance", a.allianceId, "room", roomActorId, "manifestId", id, "manifest", manifest.GameParams.String())
 		}
+
 	}
 
 }

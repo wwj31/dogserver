@@ -86,6 +86,34 @@ var _ = router.Reg(func(p *player.Player, msg *outer.SetRoomManifestReq) any {
 		return outer.ERROR_PLAYER_POSITION_LIMIT
 	}
 
+	// 检查各个游戏的抽水参数是否合法
+	switch msg.GameType {
+	case outer.GameType_Mahjong:
+		if err := checkRebateParams(msg.GetGameParams().Mahjong.ReBate); err != outer.ERROR_OK {
+			log.Warnw("check Mahjong Params failed ", "player", p.Role().ShortId(), "rebate", msg.GameParams.Mahjong.ReBate.String())
+			return err
+		}
+
+		if msg.GetGameParams().Mahjong.GamePlayerNumber == 0 {
+			msg.GetGameParams().Mahjong.GamePlayerNumber = 4
+		}
+
+		if msg.GetGameParams().Mahjong.GamePlayerNumber < 2 || msg.GetGameParams().Mahjong.GamePlayerNumber > 4 {
+			return outer.ERROR_MAHJONG_PLAYER_NUMBER_INVALID
+		}
+
+	case outer.GameType_FasterRun:
+		if err := checkRebateParams(msg.GetGameParams().FasterRun.ReBate); err != outer.ERROR_OK {
+			log.Warnw("check FasterRun Params failed ", "player", p.Role().ShortId(), "rebate", msg.GameParams.FasterRun.ReBate.String())
+			return err
+		}
+	case outer.GameType_NiuNiu:
+		if err := checkRebateParams(msg.GetGameParams().NiuNiu.ReBate); err != outer.ERROR_OK {
+			log.Warnw("check NiuNiu Params failed ", "player", p.Role().ShortId(), "rebate", msg.GameParams.NiuNiu.ReBate.String())
+			return err
+		}
+	}
+
 	alliId := actortype.AllianceName(p.Alliance().AllianceId())
 	v, err := p.RequestWait(alliId, msg)
 	if yes, code := common.IsErr(v, err); yes {
@@ -94,6 +122,17 @@ var _ = router.Reg(func(p *player.Player, msg *outer.SetRoomManifestReq) any {
 
 	rsp := v.(*outer.SetRoomManifestRsp)
 	return rsp
+})
+
+// 删除清单
+var _ = router.Reg(func(p *player.Player, msg *outer.PruneRoomManifestReq) any {
+	alliId := actortype.AllianceName(p.Alliance().AllianceId())
+	v, err := p.RequestWait(alliId, msg)
+	if yes, code := common.IsErr(v, err); yes {
+		return code
+	}
+
+	return v
 })
 
 // 创建房间
