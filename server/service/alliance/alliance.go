@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"reflect"
+	"time"
 
 	"github.com/golang/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
@@ -22,6 +23,8 @@ import (
 	"server/proto/outermsg/outer"
 	"server/rdsop"
 )
+
+const regularTimerId = "allianceRegularTimer"
 
 type RID = string
 
@@ -64,16 +67,28 @@ func (a *Alliance) OnInit() {
 	a.loadAllMember()
 	a.loadAllManifest()
 
-	// 统一返回结果
-	router.Result(a, a.responseHandle)
-
 	a.System().OnEvent(a.ID(), func(ev event.EvNewActor) {
 		if actortype.IsActorOf(ev.ActorId, actortype.RoomMgrActor) {
-			a.loadRooms()
+			a.MaintainImmediately()
 		}
 	})
 
+	// 注册统一返回结果
+	router.Result(a, a.responseHandle)
 	log.Debugf("Alliance OnInit %v members:%v", a.ID(), len(a.members))
+}
+
+// MaintainImmediately 立刻维护房间清单并重置定时器
+func (a *Alliance) MaintainImmediately() {
+	a.manifestMaintenance()
+	a.resetRegularTimer()
+}
+
+// 定期维护清单房间
+func (a *Alliance) resetRegularTimer() {
+	a.AddTimer(regularTimerId, tools.Now().Add(20*time.Second), func(dt time.Duration) {
+		a.manifestMaintenance()
+	}, -1)
 }
 
 func (a *Alliance) loadAllMember() {

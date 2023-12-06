@@ -25,6 +25,7 @@ message CreateRoomReq {
   int64      CreatorShortId = 3; // 创建者短ID
   int32      AllianceId     = 4; // 联盟id
   bytes      GameParams     = 5; // 游戏参数  outer.GameParams
+  string     ManifestId     = 6; // 清单Id
 }
 message CreateRoomRsp {
   RoomInfo RoomInfo = 1;
@@ -32,7 +33,6 @@ message CreateRoomRsp {
 
 // 解散房间
 message DisbandRoomReq {
-  int64 RoomId = 1;
 }
 message DisbandRoomRsp {
 }
@@ -105,4 +105,12 @@ message GameHistoryInfoReq {
     HistoryInfo Info = 1;// 记录信息
 }
 message GameHistoryInfoRsp {
+}
+
+// 房间是否为空房间
+message RoomIsEmptyReq {
+}
+message RoomIsEmptyRsp {
+  bool     Empty       = 1;
+  string   ManifestId  = 2;
 }

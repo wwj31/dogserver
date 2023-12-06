@@ -158,8 +158,9 @@ func (r *Room) IsFull() bool {
 	return len(r.Players) >= maxNum
 }
 
-func (r *Room) IsEmpty() bool { return len(r.Players) == 0 }
-func (r *Room) Disband()      { r.stopping = true }
+func (r *Room) IsEmpty() bool   { return len(r.Players) == 0 }
+func (r *Room) Disband()        { r.stopping = true }
+func (r *Room) IsDisband() bool { return r.stopping }
 
 func (r *Room) CanEnterRoom(p *inner.PlayerInfo) bool {
 	if r.stopping {

@@ -2,14 +2,15 @@ package rds
 
 import (
 	"fmt"
+	"log"
 	"sync"
 	"testing"
 )
 
 func TestLock(t *testing.T) {
-	NewBuilder().OnConnect(func() {
-		fmt.Println("redis connect success")
-	}).Connect()
+	if err := Connect("redis://:123456@localhost:6379/1", false); err != nil {
+		log.Fatalf(err.Error())
+	}
 
 	var n int
 

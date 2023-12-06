@@ -4,11 +4,9 @@ import (
 	"context"
 	"fmt"
 	"reflect"
-	"time"
 
 	"github.com/gogo/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
-	"github.com/wwj31/dogactor/tools"
 
 	"server/common/log"
 	"server/common/rds"
@@ -33,12 +31,7 @@ func (m *Mgr) OnInit() {
 	router.Result(m, m.responseHandle)
 	rdsop.AddRoomMgr(m.appId)
 
-	m.AddTimer(tools.UUID(), tools.Now().Add(time.Minute), m.maintainRoomCount, -1)
 	log.Debugf("RoomMgr OnInit")
-}
-
-func (m *Mgr) maintainRoomCount(dt time.Duration) {
-
 }
 
 func (m *Mgr) OnStop() bool {

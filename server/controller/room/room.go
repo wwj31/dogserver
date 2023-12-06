@@ -16,6 +16,10 @@ var _ = router.Reg(func(r *room.Room, msg *inner.DisbandRoomReq) any {
 		return outer.ERROR_ROOM_HAS_PLAYER_CAN_NOT_DISBAND
 	}
 
+	if r.IsDisband() {
+		return outer.ERROR_ROOM_HAS_DISBAND
+	}
+
 	r.Disband()
 	r.Exit()
 	rdsop.DelRoomInfoFromRedis(r.RoomId)
@@ -137,4 +141,9 @@ var _ = router.Reg(func(r *room.Room, msg *inner.GamblingMsgToRoomWrapper) any {
 	rsp := r.GamblingHandle(p.ShortId, outerMsg)
 
 	return rsp
+})
+
+// gambling 消息
+var _ = router.Reg(func(r *room.Room, msg *inner.RoomIsEmptyReq) any {
+	return &inner.RoomIsEmptyRsp{Empty: r.IsEmpty()}
 })

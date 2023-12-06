@@ -166,6 +166,7 @@ var _ = router.Reg(func(alli *alliance.Alliance, msg *inner.AllianceInfoReq) any
 // 申请设置创建房间清单
 var _ = router.Reg(func(alli *alliance.Alliance, msg *outer.SetRoomManifestReq) any {
 	manifest := alli.SetManifest(msg.Id, msg.GameType, msg.GameParams)
+	alli.MaintainImmediately()
 	return &outer.SetRoomManifestRsp{Info: manifest.ToPB()}
 })
 

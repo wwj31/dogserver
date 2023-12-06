@@ -3,7 +3,7 @@ package room
 import (
 	"context"
 
-	"github.com/go-redis/redis/v9"
+	"github.com/redis/go-redis/v9"
 
 	"server/common"
 	"server/common/log"

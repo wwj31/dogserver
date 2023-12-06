@@ -40,11 +40,13 @@ var _ = router.Reg(func(mgr *room.Mgr, msg *inner.CreateRoomReq) any {
 	}
 
 	newRoomInfo := rdsop.NewRoomInfo{
-		RoomId:         roomId,
-		CreatorShortId: msg.CreatorShortId,
-		AllianceId:     msg.AllianceId,
-		GameType:       msg.GameType,
-		Params:         gameParams,
+		OwnerMgrActorId: mgr.ID(),
+		RoomId:          roomId,
+		CreatorShortId:  msg.CreatorShortId,
+		AllianceId:      msg.AllianceId,
+		GameType:        msg.GameType,
+		Params:          gameParams,
+		ManifestId:      msg.ManifestId,
 	}
 	newRoom := room.New(&newRoomInfo)
 
@@ -82,9 +84,9 @@ var _ = router.Reg(func(mgr *room.Mgr, msg *inner.CreateRoomReq) any {
 	// 请求创建roomId为0，表示联盟启动初始化已有的房间
 	if msg.RoomId == 0 {
 		rdsop.AddAllianceRoom(roomId, msg.AllianceId)
-		newRoomInfo.SetInfoToRedis()
 	}
 
+	newRoomInfo.SetInfoToRedis()
 	log.Infow("create room", "msg", msg.String(), "new room", newRoomInfo)
 	return &inner.CreateRoomRsp{RoomInfo: roomInfoRsp.RoomInfo}
 })

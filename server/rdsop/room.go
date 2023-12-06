@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"context"
 
-	"github.com/go-redis/redis/v9"
 	"github.com/golang/protobuf/proto"
+	"github.com/redis/go-redis/v9"
 	"github.com/spf13/cast"
 	"github.com/wwj31/dogactor/tools"
 
@@ -38,11 +38,13 @@ func RoomList(allianceId int32) (roomIds []int64) {
 }
 
 type NewRoomInfo struct {
-	RoomId         int64             `json:"room_id"`
-	CreatorShortId int64             `json:"creator_short_id"`
-	AllianceId     int32             `json:"alliance_id"`
-	GameType       int32             `json:"game_type"`
-	Params         *outer.GameParams `json:"params"`
+	ManifestId      string            `json:"manifest_id"`
+	OwnerMgrActorId string            `json:"owner_mgr_actor_id"` // 归属的房间管理器actorId
+	RoomId          int64             `json:"room_id"`
+	CreatorShortId  int64             `json:"creator_short_id"`
+	AllianceId      int32             `json:"alliance_id"`
+	GameType        int32             `json:"game_type"`
+	Params          *outer.GameParams `json:"params"`
 }
 
 func (n NewRoomInfo) SetInfoToRedis() {

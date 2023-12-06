@@ -39,16 +39,17 @@ enum ERROR {
    AGENT_SET_POS_WITHOUT_CAP          = 71; // 要设置更高职位，至少是队长
 
    // 房间
-   PLAYER_ALREADY_IN_ROOM           = 104; // 玩家已经在房间内，不能重复进入房间
-   ROOM_HAS_PLAYER_CAN_NOT_DISBAND  = 105; // 房间还有人，不能解散
-   ROOM_WAS_FULL_CAN_NOT_ENTER      = 106; // 房间已满
-   PLAYER_NOT_IN_ROOM               = 107; // 玩家没有房间
-   ROOM_CAN_NOT_ENTER               = 108; // 房间当前不能进入
-   ROOM_CAN_NOT_LEAVE               = 109; // 房间当前不能退出
-   ROOM_CAN_NOT_READY               = 100; // 房间当前不能切换准备状态
-   ROOM_CAN_NOT_SET_GOLD            = 101; // 房间当前状态不允许玩家上下分
-   ROOM_PLAYER_NOT_IN_GAME          = 102; // 玩家未参与游戏
-   ROOM_CANNOT_ENTER_WITH_GOLD_LINE = 103; // 玩家金币为达到警戒线，不能进房间
+   PLAYER_ALREADY_IN_ROOM           = 101; // 玩家已经在房间内，不能重复进入房间
+   ROOM_HAS_PLAYER_CAN_NOT_DISBAND  = 102; // 房间还有人，不能解散
+   ROOM_WAS_FULL_CAN_NOT_ENTER      = 103; // 房间已满
+   PLAYER_NOT_IN_ROOM               = 104; // 玩家没有房间
+   ROOM_CAN_NOT_ENTER               = 105; // 房间当前不能进入
+   ROOM_CAN_NOT_LEAVE               = 106; // 房间当前不能退出
+   ROOM_CAN_NOT_READY               = 107; // 房间当前不能切换准备状态
+   ROOM_CAN_NOT_SET_GOLD            = 108; // 房间当前状态不允许玩家上下分
+   ROOM_PLAYER_NOT_IN_GAME          = 109; // 玩家未参与游戏
+   ROOM_CANNOT_ENTER_WITH_GOLD_LINE = 110; // 玩家金币为达到警戒线，不能进房间
+   ROOM_HAS_DISBAND                 = 111; // 房间已经被解散过了
 
    // 血战到底
    MAHJONG_EXCHANGE3_LEN_ERROR         = 200; // 请求换三张长度不为3

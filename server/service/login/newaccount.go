@@ -7,7 +7,7 @@ import (
 
 	"server/rdsop"
 
-	"github.com/go-redis/redis/v9"
+	"github.com/redis/go-redis/v9"
 	"github.com/spf13/cast"
 	"github.com/wwj31/dogactor/tools"
 

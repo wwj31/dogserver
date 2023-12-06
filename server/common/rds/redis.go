@@ -1,8 +1,9 @@
 package rds
 
 import (
-	redisv9 "github.com/go-redis/redis/v9"
 	"github.com/go-redsync/redsync/v4"
+	"github.com/redis/go-redis/v9"
+
 	"sync"
 )
 
@@ -14,6 +15,6 @@ var (
 )
 
 type Client interface {
-	redisv9.Scripter
-	redisv9.UniversalClient
+	redis.Scripter
+	redis.UniversalClient
 }

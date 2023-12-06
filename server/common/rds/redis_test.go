@@ -3,17 +3,13 @@ package rds
 import (
 	"context"
 	"fmt"
+	"log"
 	"testing"
 )
 
 func TestRedis(t *testing.T) {
-	err := NewBuilder().OnConnect(func() {
-		fmt.Println("redis connect success")
-	}).Connect()
-
-	if err != nil {
-		fmt.Println(err)
-		return
+	if err := Connect("redis://:123456@localhost:6379/1", false); err != nil {
+		log.Fatalf(err.Error())
 	}
 	ctx := context.Background()
 	sr := Ins.Set(ctx, "foo", "bar", 0)

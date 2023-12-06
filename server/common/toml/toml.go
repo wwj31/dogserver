@@ -34,6 +34,20 @@ func Init(path string, appType string, appId int) {
 
 }
 
+func GetBool(k string, defaultValue ...bool) bool {
+	v, ok := Config[k]
+	if !ok {
+		if v, ok = BaseConfig[k]; !ok {
+			if len(defaultValue) > 0 {
+				return defaultValue[0]
+			}
+
+			panic(fmt.Errorf("common Config not find k %v", k))
+		}
+	}
+	return v.(bool)
+}
+
 func Get(k string, defaultValue ...string) string {
 	v, ok := Config[k]
 	if !ok {

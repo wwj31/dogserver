@@ -164,7 +164,7 @@ var _ = router.Reg(func(player *player.Player, msg *outer.DisbandRoomReq) any {
 	}
 
 	roomActor := actortype.RoomName(msg.RoomId)
-	v, err := player.RequestWait(roomActor, &inner.DisbandRoomReq{RoomId: msg.RoomId})
+	v, err := player.RequestWait(roomActor, &inner.DisbandRoomReq{})
 	if yes, code := common.IsErr(v, err); yes {
 		return code
 	}
