@@ -10,7 +10,7 @@ import (
 
 // gm设置金币
 func TestURLSetGold(t *testing.T) {
-	rsp, err := http.Get("http://localhost:9999/gm/gold/?shortId=2521496&gold=100000")
+	rsp, err := http.Get("http://localhost:9999/gm/gold/?shortId=1587608&gold=100000")
 	assert.Nil(t, err)
 	fmt.Println(rsp)
 }

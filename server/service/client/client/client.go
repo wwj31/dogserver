@@ -59,7 +59,9 @@ func (s *Client) Close() {
 	s.cli.Close()
 }
 
-func (s *Client) Req(msgId outer.Msg, pb proto.Message) proto.Message {
+func (s *Client) Req(pb proto.Message) proto.Message {
+	idx := s.System().ProtoIndex()
+	msgId, _ := idx.MsgNameToId(idx.MsgName(pb))
 	for !s.EnterGame.Load() {
 		time.Sleep(200 * time.Millisecond)
 	}
@@ -67,7 +69,7 @@ func (s *Client) Req(msgId outer.Msg, pb proto.Message) proto.Message {
 	s.waiter = make(chan proto.Message, 1)
 	defer func() { s.waiter = nil }()
 
-	s.SendToServer(msgId.Int32(), pb)
+	s.SendToServer(msgId, pb)
 	select {
 	case msg := <-s.waiter:
 		return msg

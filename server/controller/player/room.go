@@ -66,15 +66,14 @@ func checkRebateParams(params *outer.RebateParams) (err outer.ERROR) {
 }
 
 // 获得自动创建房间清单列表
-var _ = router.Reg(func(p *player.Player, msg *outer.SetRoomManifestReq) any {
+var _ = router.Reg(func(p *player.Player, msg *outer.RoomManifestListReq) any {
 	alliId := actortype.AllianceName(p.Alliance().AllianceId())
 	v, err := p.RequestWait(alliId, msg)
 	if yes, code := common.IsErr(v, err); yes {
 		return code
 	}
 
-	rsp := v.(*outer.SetRoomManifestRsp)
-	return rsp
+	return v
 })
 
 // 申请自动创建房间清单

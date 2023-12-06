@@ -14,13 +14,11 @@ import (
 
 var (
 	key     = flag.String("key", "shortid", "the key of the short id")
-	pwd     = flag.String("pwd", "", "the password of the redis")
-	uri     = flag.String("addr", ":@localhost:6379/0", "the addr of the redis")
+	uri     = flag.String("uri", "redis://:@localhost:6379/0", "the addr of the redis")
 	cluster = flag.Bool("cluster", false, "is redis cluster")
 )
 
 func main() {
-	flag.Usage = func() { fmt.Println("flag param error") }
 	flag.Parse()
 
 	if err := rds.Connect(*uri, *cluster); err != nil {

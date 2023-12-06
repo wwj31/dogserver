@@ -145,5 +145,5 @@ var _ = router.Reg(func(r *room.Room, msg *inner.GamblingMsgToRoomWrapper) any {
 
 // gambling 消息
 var _ = router.Reg(func(r *room.Room, msg *inner.RoomIsEmptyReq) any {
-	return &inner.RoomIsEmptyRsp{Empty: r.IsEmpty()}
+	return &inner.RoomIsEmptyRsp{Empty: r.IsEmpty(), ManifestId: r.ManifestId}
 })

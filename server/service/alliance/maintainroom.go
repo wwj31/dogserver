@@ -67,11 +67,13 @@ func (a *Alliance) manifestMaintenance() {
 		}
 
 		// 尝试销毁多余的空房间
-		for i := int(manifest.GameParams.MaintainEmptyRoom); i < len(emptyRoomStat[id]); i++ {
+		disbandNum := len(emptyRoomStat[id]) - int(manifest.GameParams.MaintainEmptyRoom)
+		for i := 0; i < disbandNum; i++ {
 			// 随便选个空房间，尝试销毁
 			var roomActorId actor.Id
 			for v := range emptyRoomStat[id] {
 				roomActorId = v
+				delete(emptyRoomStat[id], v)
 				break
 			}
 

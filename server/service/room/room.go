@@ -35,6 +35,7 @@ func New(info *rdsop.NewRoomInfo) *Room {
 		GameParams:     info.Params,
 		CreatorShortId: info.CreatorShortId,
 		AllianceId:     info.AllianceId,
+		ManifestId:     info.ManifestId,
 		log: logger.New(logger.Option{
 			Level:          logger.DebugLevel,
 			LogPath:        "./log/room",
@@ -64,6 +65,7 @@ type (
 		GameParams     *outer.GameParams // 游戏参数
 		CreatorShortId int64             // 房间创建者
 		AllianceId     int32             // 归属联盟
+		ManifestId     string            // 归属清单
 
 		Players []*Player
 

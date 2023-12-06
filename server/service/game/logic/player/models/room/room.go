@@ -21,6 +21,7 @@ type Room struct {
 
 func New(base models.Model) *Room {
 	mod := &Room{Model: base}
+	mod.data.RID = base.Player.RID()
 	return mod
 }
 
