@@ -156,7 +156,7 @@ func (x *RoomInfo) GetPlayers() []*RoomPlayerInfo {
 	return nil
 }
 
-// 创建房间 (以后将不再开放此结构，统一走自动创建房间的接口)
+// 创建房间 (以后将不再开放此接口，统一走自动创建房间的接口)
 type CreateRoomReq struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

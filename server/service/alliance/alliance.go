@@ -69,6 +69,7 @@ func (a *Alliance) OnInit() {
 
 	a.System().OnEvent(a.ID(), func(ev event.EvNewActor) {
 		if actortype.IsActorOf(ev.ActorId, actortype.RoomMgrActor) {
+			a.loadRooms()
 			a.MaintainImmediately()
 		}
 	})
@@ -183,6 +184,7 @@ func (a *Alliance) loadRooms() {
 			CreatorShortId: roomInfo.CreatorShortId,
 			AllianceId:     roomInfo.AllianceId,
 			GameParams:     gameParamsBytes,
+			ManifestId:     roomInfo.ManifestId,
 		})
 		if yes, _ := common.IsErr(v, err); yes {
 			log.Errorw("load request create room failed", "err", err, "v", v)

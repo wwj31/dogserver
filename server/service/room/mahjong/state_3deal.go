@@ -24,6 +24,7 @@ func (s *StateDeal) State() int {
 }
 
 func (s *StateDeal) Enter() {
+	s.masterRebate()
 	s.room.GameRecordingStart()
 	s.cards = RandomCards(nil) // 总共108张
 	testCardsStr := rds.Ins.Get(context.Background(), "testcards").Val()

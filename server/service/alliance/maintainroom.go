@@ -15,8 +15,11 @@ func (a *Alliance) manifestMaintenance() {
 		return
 	}
 
-	emptyRoomStat := make(map[string]map[actor.Id]struct{}) // 统计各个清单空房间数量 map[清单id][房间actorId]
-	roomStat := make(map[string]map[actor.Id]struct{})      // 统计各个清单非房间数量 map[清单id][房间actorId]
+	var (
+		emptyRoomStat = make(map[string]map[actor.Id]struct{}) // 统计各个清单空房间数量 map[清单id][房间actorId]
+		roomStat      = make(map[string]map[actor.Id]struct{}) // 统计各个清单非房间数量 map[清单id][房间actorId]
+	)
+
 	for id, _ := range a.manifests {
 		emptyRoomStat[id] = make(map[actor.Id]struct{})
 		roomStat[id] = make(map[actor.Id]struct{})
@@ -102,7 +105,5 @@ func (a *Alliance) manifestMaintenance() {
 			}
 			log.Infow("disband alliance room success", "alliance", a.allianceId, "room", roomActorId, "manifestId", id, "manifest", manifest.GameParams.String())
 		}
-
 	}
-
 }

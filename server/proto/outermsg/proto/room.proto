@@ -21,7 +21,7 @@ message RoomInfo {
     repeated RoomPlayerInfo Players = 4; // 房间内的成员信息
 }
 
-// 创建房间 (以后将不再开放此结构，统一走自动创建房间的接口)
+// 创建房间 (以后将不再开放此接口，统一走自动创建房间的接口)
 message CreateRoomReq {// tag:player
     GameType GameType     = 1;
     GameParams GameParams = 2; // 游戏参数

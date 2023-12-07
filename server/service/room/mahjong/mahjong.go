@@ -1,18 +1,22 @@
 package mahjong
 
 import (
+	"context"
 	"fmt"
 	"math"
 	"time"
 
 	"github.com/golang/protobuf/proto"
+	"github.com/redis/go-redis/v9"
 	"github.com/wwj31/dogactor/logger"
 
 	"github.com/wwj31/dogactor/tools"
 
 	"server/common"
+	"server/common/actortype"
 	"server/common/log"
 	"server/proto/outermsg/outer"
+	"server/rdsop"
 
 	"server/proto/innermsg/inner"
 	"server/service/room"
@@ -394,6 +398,43 @@ func (m *Mahjong) newMahjongPlayer(p *room.Player) *mahjongPlayer {
 		gangInfos:     map[int]*gangInfo{},
 		huPeerIndex:   -1,
 		passHandHuFan: -1,
+	}
+}
+
+// 开局扣门票
+func (m *Mahjong) masterRebate() {
+	if m.gameParams().MasterRebate <= 0 {
+		return
+	}
+
+	rsp, err := m.room.RequestWait(actortype.AllianceName(m.room.AllianceId), &inner.AllianceInfoReq{})
+	if err != nil {
+		m.Log().Errorw("master rebate req failed", "err", err)
+		return
+	}
+	infoRsp := rsp.(*inner.AllianceInfoRsp)
+	if infoRsp.MasterShortId == 0 {
+		m.Log().Errorw("masterRebate master shortId == 0")
+		return
+	}
+
+	record := &outer.RebateDetailInfo{
+		Type:      outer.GameType_Mahjong,
+		BaseScore: float32(m.gameParams().BaseScore),
+		CreateAt:  tools.Now().UnixMilli(),
+	}
+
+	var pip redis.Pipeliner
+	score := int64(m.gameParams().MasterRebate * common.Gold1000Times) // 门票
+	for _, player := range m.mahjongPlayers {
+		player.score = common.Max(player.score-score, 0)
+		record.Gold = score
+		record.ShortId = player.ShortId
+		rdsop.RecordRebateGold(common.JsonMarshal(record), infoRsp.MasterShortId, score, pip)
+	}
+
+	if _, err = pip.Exec(context.Background()); err != nil {
+		m.Log().Errorw("master rebate redis failed", "err", err)
 	}
 }
 

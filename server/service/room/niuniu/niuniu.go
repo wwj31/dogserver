@@ -1,15 +1,19 @@
 package niuniu
 
 import (
+	"context"
 	"time"
 
 	"github.com/golang/protobuf/proto"
+	"github.com/redis/go-redis/v9"
 	"github.com/wwj31/dogactor/logger"
 
 	"github.com/wwj31/dogactor/tools"
 
 	"server/common"
+	"server/common/actortype"
 	"server/proto/outermsg/outer"
+	"server/rdsop"
 
 	"server/proto/innermsg/inner"
 	"server/service/room"
@@ -279,6 +283,43 @@ func (n *NiuNiu) newNiuNiuPlayer(p *room.Player) *niuniuPlayer {
 	return &niuniuPlayer{
 		score:  p.Gold,
 		Player: p,
+	}
+}
+
+// 开局扣门票
+func (n *NiuNiu) masterRebate() {
+	if n.gameParams().MasterRebate <= 0 {
+		return
+	}
+
+	rsp, err := n.room.RequestWait(actortype.AllianceName(n.room.AllianceId), &inner.AllianceInfoReq{})
+	if err != nil {
+		n.Log().Errorw("master rebate req failed", "err", err)
+		return
+	}
+	infoRsp := rsp.(*inner.AllianceInfoRsp)
+	if infoRsp.MasterShortId == 0 {
+		n.Log().Errorw("masterRebate master shortId == 0")
+		return
+	}
+
+	record := &outer.RebateDetailInfo{
+		Type:      outer.GameType_NiuNiu,
+		BaseScore: n.gameParams().BaseScore,
+		CreateAt:  tools.Now().UnixMilli(),
+	}
+
+	var pip redis.Pipeliner
+	score := int64(n.gameParams().MasterRebate * common.Gold1000Times) // 门票
+	n.RangePartInPlayer(func(seat int, player *niuniuPlayer) {
+		player.score = common.Max(player.score-score, 0)
+		record.Gold = score
+		record.ShortId = player.ShortId
+		rdsop.RecordRebateGold(common.JsonMarshal(record), infoRsp.MasterShortId, score, pip)
+	})
+
+	if _, err = pip.Exec(context.Background()); err != nil {
+		n.Log().Errorw("master rebate redis failed", "err", err)
 	}
 }
 
