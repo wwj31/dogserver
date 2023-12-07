@@ -299,9 +299,9 @@ func (m *Mahjong) CanSetGold(p *inner.PlayerInfo) bool {
 	return false
 }
 
-// RecordingPlayback 当前状态是否需要记录回播内容
+// CanRecordingPlayback 当前状态是否需要记录回播内容
 func (m *Mahjong) CanRecordingPlayback() bool {
-	if m.fsm.State() == Ready {
+	if m.fsm.State() < Deal {
 		return false
 	}
 	return true
