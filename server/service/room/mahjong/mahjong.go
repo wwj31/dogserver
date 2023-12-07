@@ -407,7 +407,7 @@ func (m *Mahjong) masterRebate() {
 	}
 
 	record := &outer.RebateDetailInfo{
-		Type:      outer.GameType_Mahjong,
+		Type:      outer.GameType(m.room.GameType),
 		BaseScore: float32(m.gameParams().BaseScore),
 		CreateAt:  tools.Now().UnixMilli(),
 	}

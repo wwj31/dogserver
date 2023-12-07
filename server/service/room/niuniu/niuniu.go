@@ -292,7 +292,7 @@ func (n *NiuNiu) masterRebate() {
 	}
 
 	record := &outer.RebateDetailInfo{
-		Type:      outer.GameType_NiuNiu,
+		Type:      outer.GameType(n.room.GameType),
 		BaseScore: n.gameParams().BaseScore,
 		CreateAt:  tools.Now().UnixMilli(),
 	}

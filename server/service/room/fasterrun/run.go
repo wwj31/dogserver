@@ -291,7 +291,7 @@ func (f *FasterRun) masterRebate() {
 	}
 
 	record := &outer.RebateDetailInfo{
-		Type:      outer.GameType_FasterRun,
+		Type:      outer.GameType(f.room.GameType),
 		BaseScore: f.gameParams().BaseScore,
 		CreateAt:  tools.Now().UnixMilli(),
 	}

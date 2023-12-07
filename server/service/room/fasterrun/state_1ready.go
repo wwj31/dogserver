@@ -74,6 +74,7 @@ func (s *StateReady) Enter() {
 }
 
 func (s *StateReady) Leave() {
+	s.masterRebate()
 	s.Log().Infow("[FasterRun] leave state ready", "room", s.room.RoomId)
 }
 
