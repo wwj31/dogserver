@@ -8,7 +8,6 @@ import (
 	"github.com/redis/go-redis/v9"
 
 	"server/common"
-	"server/common/actortype"
 	"server/common/log"
 	"server/rdsop"
 
@@ -291,17 +290,6 @@ func (f *FasterRun) masterRebate() {
 		return
 	}
 
-	rsp, err := f.room.RequestWait(actortype.AllianceName(f.room.AllianceId), &inner.AllianceInfoReq{})
-	if err != nil {
-		f.Log().Errorw("master rebate req failed", "err", err)
-		return
-	}
-	infoRsp := rsp.(*inner.AllianceInfoRsp)
-	if infoRsp.MasterShortId == 0 {
-		f.Log().Errorw("masterRebate master shortId == 0")
-		return
-	}
-
 	record := &outer.RebateDetailInfo{
 		Type:      outer.GameType_FasterRun,
 		BaseScore: f.gameParams().BaseScore,
@@ -314,10 +302,10 @@ func (f *FasterRun) masterRebate() {
 		player.score = common.Max(player.score-score, 0)
 		record.Gold = score
 		record.ShortId = player.ShortId
-		rdsop.RecordRebateGold(common.JsonMarshal(record), infoRsp.MasterShortId, score, pip)
+		rdsop.RecordRebateGold(common.JsonMarshal(record), f.room.MasterShortId, score, pip)
 	}
 
-	if _, err = pip.Exec(context.Background()); err != nil {
+	if _, err := pip.Exec(context.Background()); err != nil {
 		f.Log().Errorw("master rebate redis failed", "err", err)
 	}
 }

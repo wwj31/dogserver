@@ -15,7 +15,6 @@ import (
 	"github.com/wwj31/dogactor/actor"
 
 	"server/common"
-	"server/common/log"
 	"server/common/router"
 	"server/proto/convert"
 	"server/proto/innermsg/inner"
@@ -36,6 +35,7 @@ func New(info *rdsop.NewRoomInfo) *Room {
 		CreatorShortId: info.CreatorShortId,
 		AllianceId:     info.AllianceId,
 		ManifestId:     info.ManifestId,
+
 		log: logger.New(logger.Option{
 			Level:          logger.DebugLevel,
 			LogPath:        "./log/room",
@@ -66,6 +66,7 @@ type (
 		CreatorShortId int64             // 房间创建者
 		AllianceId     int32             // 归属联盟
 		ManifestId     string            // 归属清单
+		MasterShortId  int64             // 盟主短Id
 
 		Players []*Player
 
@@ -100,30 +101,39 @@ func (r *Room) GamblingHandle(shortId int64, v any) (result any) {
 
 func (r *Room) OnInit() {
 	router.Result(r, r.responseHandle)
-	log.Debugf("Room:[%v] OnInit", r.RoomId)
+	r.Request(actortype.AllianceName(r.AllianceId), &inner.AllianceInfoReq{}).Handle(func(resp any, err error) {
+		if err != nil {
+			r.Log().Errorw("alliance info req failed", "err", err)
+			return
+		}
+		infoResp := resp.(*inner.AllianceInfoRsp)
+		r.MasterShortId = infoResp.MasterShortId
+	})
+
+	r.Log().Debugf("Room:[%v] OnInit", r.RoomId)
 }
 
 func (r *Room) OnStop() bool {
-	log.Debugw("room stop", "room", r.RoomId)
+	r.Log().Debugw("room stop", "room", r.RoomId)
 	return true
 }
 
 func (r *Room) OnHandle(msg actor.Message) {
 	pt, ok := msg.Payload().(proto.Message)
 	if !ok {
-		log.Warnw("room handler msg is not proto",
+		r.Log().Warnw("room handler msg is not proto",
 			"msg", reflect.TypeOf(msg.Payload()).String())
 		return
 	}
 
 	if r.stopping {
-		log.Warnw("room is stopping not handle msg", "room", r.RoomId)
+		r.Log().Warnw("room is stopping not handle msg", "room", r.RoomId)
 		return
 	}
 
 	r.CurrentMsg = msg
 	if routerErr := router.Dispatch(r, pt); routerErr != nil {
-		log.Warnw("room dispatch the message failed", "err", routerErr)
+		r.Log().Warnw("room dispatch the message failed", "err", routerErr)
 	}
 }
 
@@ -146,7 +156,7 @@ func (r *Room) responseHandle(resultMsg any) {
 	}
 
 	if err != nil {
-		log.Warnw("response to actor failed",
+		r.Log().Warnw("response to actor failed",
 			"source", r.CurrentMsg.GetSourceId(),
 			"msg name", r.CurrentMsg.GetMsgName())
 	}

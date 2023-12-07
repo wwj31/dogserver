@@ -11,7 +11,6 @@ import (
 	"github.com/wwj31/dogactor/tools"
 
 	"server/common"
-	"server/common/actortype"
 	"server/proto/outermsg/outer"
 	"server/rdsop"
 
@@ -292,17 +291,6 @@ func (n *NiuNiu) masterRebate() {
 		return
 	}
 
-	rsp, err := n.room.RequestWait(actortype.AllianceName(n.room.AllianceId), &inner.AllianceInfoReq{})
-	if err != nil {
-		n.Log().Errorw("master rebate req failed", "err", err)
-		return
-	}
-	infoRsp := rsp.(*inner.AllianceInfoRsp)
-	if infoRsp.MasterShortId == 0 {
-		n.Log().Errorw("masterRebate master shortId == 0")
-		return
-	}
-
 	record := &outer.RebateDetailInfo{
 		Type:      outer.GameType_NiuNiu,
 		BaseScore: n.gameParams().BaseScore,
@@ -315,10 +303,10 @@ func (n *NiuNiu) masterRebate() {
 		player.score = common.Max(player.score-score, 0)
 		record.Gold = score
 		record.ShortId = player.ShortId
-		rdsop.RecordRebateGold(common.JsonMarshal(record), infoRsp.MasterShortId, score, pip)
+		rdsop.RecordRebateGold(common.JsonMarshal(record), n.room.MasterShortId, score, pip)
 	})
 
-	if _, err = pip.Exec(context.Background()); err != nil {
+	if _, err := pip.Exec(context.Background()); err != nil {
 		n.Log().Errorw("master rebate redis failed", "err", err)
 	}
 }
