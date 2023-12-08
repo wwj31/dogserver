@@ -106,6 +106,8 @@ func (s *StatePlaying) Handle(shortId int64, v any) (result any) {
 	}
 	s.Log().Infow("playing handle msg", "shortId", shortId, reflect.TypeOf(v).String(), v)
 
+	player.timeoutTrusteeshipCount = 0 // 重置托管计次
+
 	switch msg := v.(type) {
 	case *outer.MahjongBTEPlayCardReq: // 打牌
 		if msg.Index < 0 || int(msg.Index) >= player.handCards.Len() {
@@ -124,6 +126,12 @@ func (s *StatePlaying) Handle(shortId int64, v any) (result any) {
 		}
 		return &outer.MahjongBTEOperateRsp{AllCards: player.allCardsToPB(s.gameParams(), player.ShortId, false)}
 
+	case *outer.MahjongBTECancelTrusteeshipReq: // 取消托管
+		if player.trusteeship {
+			player.trusteeship = false
+			s.room.Broadcast(&outer.MahjongBTETrusteeshipNtf{ShortId: player.ShortId, Trusteeship: false})
+		}
+		return &outer.MahjongBTECancelTrusteeshipRsp{}
 	default:
 		s.Log().Warnw("playing status has received an unknown message", "msg", reflect.TypeOf(msg).String())
 	}
@@ -145,9 +153,24 @@ func (s *StatePlaying) cancelActionTimer() {
 }
 
 // 行动倒计时
-func (s *StatePlaying) actionTimer(expireAt time.Time, seats ...int) {
+func (s *StatePlaying) actionTimer(expireAt time.Time, actionSeats ...int) {
 	s.cancelActionTimer()
-	s.actionTimerId = s.room.AddTimer(tools.XUID(), expireAt, func(dt time.Duration) {
+
+	var (
+		timeoutSeats     []int // 正常超时计时器的位置
+		trusteeshipSeats []int // 托管超时计时器的位置
+	)
+
+	for _, seat := range actionSeats {
+		player := s.mahjongPlayers[seat]
+		if player.trusteeship {
+			trusteeshipSeats = append(trusteeshipSeats, seat)
+		} else {
+			timeoutSeats = append(timeoutSeats, seat)
+		}
+	}
+
+	timeoutAction := func(seats ...int) {
 		var (
 			defaultOperaType outer.ActionType
 			card             Card
@@ -159,6 +182,15 @@ func (s *StatePlaying) actionTimer(expireAt time.Time, seats ...int) {
 				continue
 			}
 			player := s.mahjongPlayers[seat]
+
+			// 是否进入托管
+			if !player.trusteeship {
+				player.timeoutTrusteeshipCount++
+				if player.timeoutTrusteeshipCount >= TrusteeshipTimoutNum {
+					player.trusteeship = true
+					s.room.Broadcast(&outer.MahjongBTETrusteeshipNtf{ShortId: player.ShortId, Trusteeship: true})
+				}
+			}
 
 			s.Log().Infow("operator timeout with auto op", "short", player.ShortId, "seat", seat, "act", act.String())
 			// (碰杠胡过)行动者，优先打胡->杠->碰->打牌
@@ -200,7 +232,23 @@ func (s *StatePlaying) actionTimer(expireAt time.Time, seats ...int) {
 
 			s.operate(player, seat, defaultOperaType, hu, card)
 		}
-	})
+	}
+
+	// 正常超时
+	if len(timeoutSeats) > 0 {
+		s.actionTimerId = s.room.AddTimer(tools.XUID(), expireAt, func(dt time.Duration) {
+			timeoutAction(timeoutSeats...)
+		})
+	}
+
+	// 托管超时
+	if len(trusteeshipSeats) > 0 {
+		trusteeshipExpireAt := tools.Now().Add(time.Duration(TrusteeshipTimoutExpire) * time.Second)
+		s.room.AddTimer(tools.XUID(), trusteeshipExpireAt, func(dt time.Duration) {
+			timeoutAction(trusteeshipSeats...)
+		})
+	}
+
 }
 
 func (s *StatePlaying) gameOver() bool {

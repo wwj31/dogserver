@@ -60,6 +60,8 @@ message MahjongParams{
     RebateParams ReBate        = 17; // 抽水相关设置
     int32 GamePlayerNumber     = 18; // 游戏人数 有效值2-4
     float MasterRebate         = 19; // 门票，仅给盟主返利
+    bool  trusteeship          = 20; // 是否开启托管
+    int32 trusteeshipCount     = 21; // 托管局数(托管超过n局，直接进入大结算)
 }
 
 // 跑得快
@@ -84,6 +86,8 @@ message FasterRunParams{
     bool  BigWinner                 = 18; // 2人模式的抽水对象只有大赢家，3人模式有大赢家和赢家
     RebateParams ReBate             = 19; // 抽水相关设置
     float MasterRebate              = 20; // 门票，仅给盟主返利
+    bool  trusteeship               = 21; // 是否开启托管
+    int32 trusteeshipCount          = 22; // 托管局数(托管超过n局，直接进入大结算)
 }
 
 // 牛牛
@@ -106,6 +110,7 @@ message NiuNiuParams{
     bool  AllowScoreSmallZero       = 16; // 是否允许负分
     RebateParams ReBate             = 17; // 抽水相关设置
     float MasterRebate              = 18; // 门票，仅给盟主返利
+    bool  trusteeship               = 21; // 是否开启托管
 }
 
 

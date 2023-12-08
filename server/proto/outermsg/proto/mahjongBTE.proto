@@ -45,6 +45,7 @@ message MahjongPlayerInfo {
     int32               HuCard         = 9; // 胡的那张牌
     int32               HuGen          = 10;// 胡牌的根数
     int64               Score          = 11;// 玩家本局拥有的分数
+    bool                Trusteeship    = 12;// 是否处于托管
 }
 
 // 血战到底 换三张数据
@@ -105,6 +106,11 @@ message MahjongBTEOperateRsp {
     CardsOfBTE AllCards  = 1; // 玩家的所有牌，手牌、碰、杠
 }
 
+// 取消托管
+message MahjongBTECancelTrusteeshipReq {// tag:gambling
+}
+message MahjongBTECancelTrusteeshipRsp {
+}
 
 ////////////////////////////////////////////// 游戏通知 //////////////////////////////////////////////
 message MahjongBTEPlayerReadyNtf {// 房间内玩家准备、取消准备通知
@@ -278,4 +284,10 @@ message MahjongBTEFinialPlayerInfo {
     int32 TotalLightGang = 2; // 明杠总次数
     int32 TotalDarkGang  = 3; // 暗杠总次数
     int32 TotalHu        = 4; // 胡牌总次数
+}
+
+// 玩家托管状态通知
+message MahjongBTETrusteeshipNtf {
+    int64 ShortId      = 1;
+    bool  Trusteeship  = 2; // true.处于托管、false.未处于托管
 }

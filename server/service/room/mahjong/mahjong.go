@@ -32,6 +32,12 @@ const (
 	pongGangHuGuoExpiration  = 20 * time.Second // 碰、杠、胡、过持续时间
 	playCardExpiration       = 20 * time.Second // 出牌行为持续时间
 	SettlementDuration       = 10 * time.Second // 结算持续时间
+
+)
+
+const (
+	TrusteeshipTimoutNum    = 3 // 超时几次进入托管
+	TrusteeshipTimoutExpire = 1 // 托管超时过期时间(秒)
 )
 
 func New(r *room.Room) *Mahjong {
@@ -93,6 +99,11 @@ type (
 		winScore      map[int32]int64 // 胡牌赢的分 map[赔分的位置]赔的分
 		huTotalScore  int64           // 胡牌赢的总分
 		passHandHuFan int             // 过手胡限制，当前限制番数
+
+		// 托管
+		timeoutTrusteeshipCount int32 // 超时操作超过该次数，进入托管
+		trusteeship             bool  // 托管状态
+		trusteeshipCount        int32 // 托管局数（结算时处于托管状态，就累计）
 	}
 
 	action struct {
@@ -249,6 +260,7 @@ func (m *Mahjong) playersToPB(shortId int64, settlement bool) (players []*outer.
 				HuCard:         huPeer.card.Int32(),
 				HuGen:          player.huGen,
 				Score:          m.immScore(shortId),
+				Trusteeship:    player.trusteeship,
 			})
 		}
 	}
@@ -451,6 +463,10 @@ func (m *Mahjong) clear() {
 		if gamer != nil {
 			m.mahjongPlayers[i] = m.newMahjongPlayer(gamer.Player)
 			m.mahjongPlayers[i].finalStatsMsg = gamer.finalStatsMsg
+
+			// 托管数据需要保留
+			m.mahjongPlayers[i].trusteeship = gamer.trusteeship
+			m.mahjongPlayers[i].trusteeshipCount = gamer.trusteeshipCount
 		}
 	}
 

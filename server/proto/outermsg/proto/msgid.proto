@@ -72,6 +72,8 @@ enum Msg {
     IdMahjongBTEPlayCardRsp = 1970938586;
     IdMahjongBTEOperateReq = 1792910030;// dispatch to gambling
     IdMahjongBTEOperateRsp = 2094907235;
+    IdMahjongBTECancelTrusteeshipReq = 129498915;// dispatch to gambling
+    IdMahjongBTECancelTrusteeshipRsp = 297275232;
     IdMahjongBTEPlayerReadyNtf = 176653714;
     IdMahjongBTEReadyNtf = 23903615;
     IdMahjongBTEDecideMasterNtf = 701290466;
@@ -88,6 +90,7 @@ enum Msg {
     IdMahjongBTEHuResultNtf = 2017298907;
     IdMahjongBTEGangResultNtf = 411392799;
     IdMahjongBTESettlementNtf = 1808167222;
+    IdMahjongBTETrusteeshipNtf = 1650428177;
     IdMailListReq = 1443645576;// dispatch to player
     IdMailListRsp = 1812753385;
     IdReadMailReq = 1963047789;// dispatch to player
