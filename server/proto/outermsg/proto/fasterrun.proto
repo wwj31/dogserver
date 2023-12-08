@@ -114,6 +114,7 @@ message FasterRunSettlementPlayerData{
     int32 BombsCount             = 2; // 出过几次炸弹
     int64 TotalScore             = 3; // 总输赢 负数为输
     bool  DoubleHearts10         = 4; // 是否触发红桃10翻倍
+    bool  IsPlayCards            = 5; // 是否出过牌
 }
 
 // 结算通知

@@ -252,6 +252,7 @@ func (s *StateSettlement) afterSettle(ntf *outer.FasterRunSettlementNtf) {
 		ntf.PlayerData[seat].BombsCount = player.bombsCount
 		ntf.PlayerData[seat].TotalScore = player.totalWinScore
 		ntf.PlayerData[seat].DoubleHearts10 = player.doubleHearts10
+		ntf.PlayerData[seat].IsPlayCards = s.IsPlayCards(player.ShortId)
 	}
 
 	s.Log().Infow(" settlement broadcast", "room", s.room.RoomId,
@@ -265,6 +266,16 @@ func (s *StateSettlement) afterSettle(ntf *outer.FasterRunSettlementNtf) {
 	s.room.AddTimer(tools.XUID(), s.currentStateEndAt, func(dt time.Duration) {
 		s.SwitchTo(Ready)
 	})
+}
+
+func (s *StateSettlement) IsPlayCards(shortId int64) bool {
+	for i := len(s.playRecords) - 1; i >= 0; i-- {
+		record := s.playRecords[i]
+		if record.shortId == shortId {
+			return true
+		}
+	}
+	return false
 }
 
 func (s *StateSettlement) finalSettlement() bool {
