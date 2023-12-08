@@ -249,7 +249,7 @@ func (s *StateSettlement) afterSettle(ntf *outer.FasterRunSettlementNtf) {
 
 	for seat, player := range s.fasterRunPlayers {
 		ntf.PlayerData[seat].Player = allPlayerInfo[seat]
-		ntf.PlayerData[seat].BombsCount = player.BombsCount
+		ntf.PlayerData[seat].BombsCount = player.bombsCount
 		ntf.PlayerData[seat].TotalScore = player.totalWinScore
 		ntf.PlayerData[seat].DoubleHearts10 = player.doubleHearts10
 	}

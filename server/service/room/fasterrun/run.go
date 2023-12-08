@@ -56,7 +56,7 @@ type (
 		ready          bool
 		readyExpireAt  time.Time
 		handCards      PokerCards
-		BombsCount     int32
+		bombsCount     int32
 		doubleHearts10 bool // 红桃10 翻倍
 		finalStatsMsg  *outer.FasterRunFinialPlayerInfo
 	}

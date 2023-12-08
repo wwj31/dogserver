@@ -170,7 +170,7 @@ func (s *StatePlaying) play(player *fasterRunPlayer, cards PokerCards) outer.ERR
 	}
 
 	if playCardsGroup.Type == Bombs {
-		player.BombsCount++
+		player.bombsCount++
 	}
 
 	player.handCards = player.handCards.Remove(cards...)
