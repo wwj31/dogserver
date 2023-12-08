@@ -251,6 +251,7 @@ func (s *StateSettlement) afterSettle(ntf *outer.FasterRunSettlementNtf) {
 		ntf.PlayerData[seat].Player = allPlayerInfo[seat]
 		ntf.PlayerData[seat].BombsCount = player.BombsCount
 		ntf.PlayerData[seat].TotalScore = player.totalWinScore
+		ntf.PlayerData[seat].DoubleHearts10 = player.doubleHearts10
 	}
 
 	s.Log().Infow(" settlement broadcast", "room", s.room.RoomId,
