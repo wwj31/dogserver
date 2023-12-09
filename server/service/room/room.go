@@ -389,6 +389,7 @@ func (r *Room) GameRecordingOver(baseScore int64, winScore map[int64]int64) {
 	}
 	for shortId, win := range winScore {
 		msg.Info.WinGold = win
-		r.SendToPlayer(shortId, msg)
+		player := r.FindPlayer(shortId)
+		_ = r.Send(actortype.PlayerId(player.RID), msg)
 	}
 }
