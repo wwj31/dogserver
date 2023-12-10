@@ -42,6 +42,18 @@ func (s *StateSettlement) Enter() {
 		LastRecord:       lastRecords.ToPB(),
 	}
 
+	// 托管计数
+	var trusteeshipFinalSettlement bool
+	for i := 0; i < len(s.fasterRunPlayers); i++ {
+		player := s.fasterRunPlayers[i]
+		if player.trusteeship {
+			player.trusteeshipCount++
+			if player.trusteeshipCount == 2 {
+				trusteeshipFinalSettlement = true
+			}
+		}
+	}
+
 	for seat := 0; seat < playerNumber; seat++ {
 		settlementMsg.PlayerData[seat] = &outer.FasterRunSettlementPlayerData{}
 	}
@@ -117,9 +129,9 @@ func (s *StateSettlement) Enter() {
 	}
 
 	// 大结算
-	if s.finalSettlement() || s.scoreZeroOver {
+	if s.finalSettlement() || s.scoreZeroOver || trusteeshipFinalSettlement {
 		s.Log().Infow("final settlement",
-			"scoreZeroOver", s.scoreZeroOver, "game count", s.gameCount, "param", s.gameParams().PlayCountLimit)
+			"scoreZeroOver", s.scoreZeroOver, "game count", s.gameCount, "trusteeshipFinalSettlement", trusteeshipFinalSettlement, "param", s.gameParams().PlayCountLimit)
 		s.gameCount = int(s.gameParams().PlayCountLimit)
 
 		// 总抽水

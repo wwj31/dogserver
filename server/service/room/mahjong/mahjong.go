@@ -36,8 +36,8 @@ const (
 )
 
 const (
-	TrusteeshipTimoutNum    = 3 // 超时几次进入托管
-	TrusteeshipTimoutExpire = 1 // 托管超时过期时间(秒)
+	TrusteeshipTimoutNum        = 3               // 超时几次进入托管
+	TrusteeshipTimoutExpiration = 1 * time.Second // 托管超时过期时间(秒)
 )
 
 func New(r *room.Room) *Mahjong {
@@ -357,6 +357,19 @@ func (m *Mahjong) PlayerLeave(quitPlayer *room.Player) {
 
 // Handle 麻将游戏消息，全部交由当前状态处理
 func (m *Mahjong) Handle(shortId int64, v any) any {
+	switch v.(type) {
+	case *outer.MahjongBTECancelTrusteeshipReq: // 取消托管
+		player, seatIndex := m.findMahjongPlayer(shortId)
+		if seatIndex == -1 {
+			return outer.ERROR_PLAYER_NOT_IN_ROOM
+		}
+		if player.trusteeship {
+			player.trusteeship = false
+			m.room.Broadcast(&outer.MahjongBTETrusteeshipNtf{ShortId: player.ShortId, Trusteeship: false})
+		}
+		return &outer.MahjongBTECancelTrusteeshipRsp{}
+	}
+
 	return m.fsm.CurrentStateHandler().Handle(shortId, v)
 }
 

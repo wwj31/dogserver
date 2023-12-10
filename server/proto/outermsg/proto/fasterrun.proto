@@ -29,7 +29,8 @@ message FasterRunPlayerInfo {
     // NOTE: 411:黑桃J 412:黑桃Q 413:黑桃K 414:黑桃A 415:黑桃2 其他花色同理
     repeated int32      HandCards      = 4;
 
-    int64               Score          = 5;// 玩家本局拥有的分数
+    int64               Score          = 5; // 玩家本局拥有的分数
+    bool                Trusteeship    = 6; // 是否处于托管
 }
 
 // 牌型数据
@@ -68,6 +69,12 @@ message FasterRunPlayCardRsp {
 message FasterRunPassReq {// tag:gambling
 }
 message FasterRunPassRsp {
+}
+
+// 取消托管
+message FasterRunCancelTrusteeshipReq {// tag:gambling
+}
+message FasterRunCancelTrusteeshipRsp {
 }
 
 ////////////////////////////////////////////// 游戏通知 //////////////////////////////////////////////
@@ -138,4 +145,10 @@ message FasterRunFinialSettlement {
 
 message FasterRunFinialPlayerInfo {
     int64 TotalScore     = 1; // 总输赢，负分表示输
+}
+
+// 玩家托管状态通知
+message FasterRunTrusteeshipNtf {
+    int64 ShortId      = 1;
+    bool  Trusteeship  = 2; // true.处于托管、false.未处于托管
 }

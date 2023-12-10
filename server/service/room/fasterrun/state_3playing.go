@@ -43,9 +43,14 @@ func (s *StatePlaying) Handle(shortId int64, v any) (result any) {
 	}
 
 	s.Log().Infow("playing handle msg", "shortId", shortId, reflect.TypeOf(v).String(), v)
+	player.timeoutTrusteeshipCount = 0
 
 	switch msg := v.(type) {
 	case *outer.FasterRunPlayCardReq:
+		if player.trusteeship {
+			return outer.ERROR_ROOM_NEED_CANCEL_TRUSTEESHIP
+		}
+
 		if err = s.play(player, int32ArrToPokerCards(msg.PlayCards)); err != outer.ERROR_OK {
 			return err
 		}
@@ -234,6 +239,10 @@ func (s *StatePlaying) nextPlayer(seat int, lastPlayInfo *playCardsRecord) {
 	}
 
 	waitingExpiration := tools.Now().Add(WaitingPlayExpiration)
+	if player.trusteeship {
+		waitingExpiration = tools.Now().Add(TrusteeshipTimoutExpiration)
+	}
+	var immediately bool
 	// 如果最后一个出牌人不是自己，就需要跟牌
 	var follow, bigger bool // 跟牌，还是牌权出牌
 	if lastValidPlay != nil && lastValidPlay.shortId != player.ShortId {
@@ -244,6 +253,7 @@ func (s *StatePlaying) nextPlayer(seat int, lastPlayInfo *playCardsRecord) {
 		bigger = len(biggerCardGroups) > 0
 		if !bigger {
 			waitingExpiration = tools.Now().Add(WaitingPassExpiration)
+			immediately = true
 		}
 	}
 
@@ -261,7 +271,7 @@ func (s *StatePlaying) nextPlayer(seat int, lastPlayInfo *playCardsRecord) {
 	}
 	s.room.Broadcast(ntf)
 
-	s.actionTimer(waitingExpiration)
+	s.actionTimer(waitingExpiration, immediately)
 
 	s.Log().Infow("next player ",
 		"seat", seat, "shortId", player.ShortId, "follow", follow, "lastValidPlay", lastValidPlay.String(),
@@ -302,7 +312,7 @@ func (s *StatePlaying) cancelActionTimer() {
 }
 
 // 行动倒计时
-func (s *StatePlaying) actionTimer(expireAt time.Time) {
+func (s *StatePlaying) actionTimer(expireAt time.Time, immediately bool) {
 	s.cancelActionTimer()
 	s.actionTimerId = s.room.AddTimer(tools.XUID(), expireAt, func(dt time.Duration) {
 		player, _ := s.findFasterRunPlayer(s.waitingPlayShortId)
@@ -311,6 +321,15 @@ func (s *StatePlaying) actionTimer(expireAt time.Time) {
 		defer func() {
 			s.Log().Infow("player timeout", "shortId", s.waitingPlayShortId, "cards", cards)
 		}()
+
+		// 是否进入托管
+		if !player.trusteeship && !immediately {
+			player.timeoutTrusteeshipCount++
+			if player.timeoutTrusteeshipCount >= TrusteeshipTimoutNum {
+				player.trusteeship = true
+				s.room.Broadcast(&outer.FasterRunTrusteeshipNtf{ShortId: player.ShortId, Trusteeship: true})
+			}
+		}
 
 		if s.waitingPlayFollow {
 			latest := s.lastValidPlayCards()

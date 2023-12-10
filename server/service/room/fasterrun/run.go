@@ -30,6 +30,11 @@ const (
 	SettlementDuration    = 10 * time.Second // 结算持续时间
 )
 
+const (
+	TrusteeshipTimoutNum        = 3               // 超时几次进入托管
+	TrusteeshipTimoutExpiration = 1 * time.Second // 托管超时过期时间(秒)
+)
+
 func New(r *room.Room) *FasterRun {
 	fasterRun := &FasterRun{
 		room: r,
@@ -59,6 +64,11 @@ type (
 		bombsCount     int32
 		doubleHearts10 bool // 红桃10 翻倍
 		finalStatsMsg  *outer.FasterRunFinialPlayerInfo
+
+		// 托管
+		timeoutTrusteeshipCount int32 // 超时操作超过该次数，进入托管
+		trusteeship             bool  // 托管状态
+		trusteeshipCount        int32 // 托管局数（结算时处于托管状态，就累计）
 	}
 
 	FasterRun struct {
@@ -228,6 +238,18 @@ func (f *FasterRun) PlayerLeave(quitPlayer *room.Player) {
 
 // Handle 游戏消息，全部交由当前状态处理
 func (f *FasterRun) Handle(shortId int64, v any) any {
+	switch v.(type) {
+	case *outer.FasterRunCancelTrusteeshipReq: // 取消托管
+		player, seatIndex := f.findFasterRunPlayer(shortId)
+		if seatIndex == -1 {
+			return outer.ERROR_PLAYER_NOT_IN_ROOM
+		}
+		if player.trusteeship {
+			player.trusteeship = false
+			f.room.Broadcast(&outer.FasterRunTrusteeshipNtf{ShortId: player.ShortId, Trusteeship: false})
+		}
+		return &outer.FasterRunCancelTrusteeshipRsp{}
+	}
 	return f.fsm.CurrentStateHandler().Handle(shortId, v)
 }
 
@@ -262,6 +284,7 @@ func (f *FasterRun) playersToPB(shortId int64, settlement bool) (players []*oute
 				ReadyExpireAt: player.readyExpireAt.UnixMilli(),
 				HandCards:     handCards,
 				Score:         player.score,
+				Trusteeship:   player.trusteeship,
 			})
 		}
 	}
@@ -344,6 +367,8 @@ func (f *FasterRun) clear() {
 		if gamer != nil {
 			f.fasterRunPlayers[i] = f.newFasterRunPlayer(gamer.Player)
 			f.fasterRunPlayers[i].finalStatsMsg = gamer.finalStatsMsg
+			f.fasterRunPlayers[i].trusteeship = gamer.trusteeship
+			f.fasterRunPlayers[i].trusteeshipCount = gamer.trusteeshipCount
 		}
 	}
 }

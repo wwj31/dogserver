@@ -126,12 +126,6 @@ func (s *StatePlaying) Handle(shortId int64, v any) (result any) {
 		}
 		return &outer.MahjongBTEOperateRsp{AllCards: player.allCardsToPB(s.gameParams(), player.ShortId, false)}
 
-	case *outer.MahjongBTECancelTrusteeshipReq: // 取消托管
-		if player.trusteeship {
-			player.trusteeship = false
-			s.room.Broadcast(&outer.MahjongBTETrusteeshipNtf{ShortId: player.ShortId, Trusteeship: false})
-		}
-		return &outer.MahjongBTECancelTrusteeshipRsp{}
 	default:
 		s.Log().Warnw("playing status has received an unknown message", "msg", reflect.TypeOf(msg).String())
 	}
@@ -243,7 +237,7 @@ func (s *StatePlaying) actionTimer(expireAt time.Time, actionSeats ...int) {
 
 	// 托管超时
 	if len(trusteeshipSeats) > 0 {
-		trusteeshipExpireAt := tools.Now().Add(time.Duration(TrusteeshipTimoutExpire) * time.Second)
+		trusteeshipExpireAt := tools.Now().Add(TrusteeshipTimoutExpiration)
 		s.room.AddTimer(tools.XUID(), trusteeshipExpireAt, func(dt time.Duration) {
 			timeoutAction(trusteeshipSeats...)
 		})

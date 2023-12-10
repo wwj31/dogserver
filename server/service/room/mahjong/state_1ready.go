@@ -40,11 +40,11 @@ func (s *StateReady) Enter() {
 			continue
 		}
 
-		if player.Gold <= 0 || player.trusteeship {
+		if player.Gold <= 0 {
 			// 新一轮游戏，或者不允许负分，都需要踢出玩家
 			if resetPlayCount || !s.gameParams().AllowScoreSmallZero {
 				s.Log().Infow("kick player with ready case gold <= 0",
-					"shortId", player.ShortId, "trusteeship", player.trusteeship, "gold", player.Gold)
+					"shortId", player.ShortId, "gold", player.Gold)
 				s.room.PlayerLeave(player.ShortId, true)
 			}
 			continue

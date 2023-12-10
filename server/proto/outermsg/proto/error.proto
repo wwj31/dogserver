@@ -52,6 +52,7 @@ enum ERROR {
    ROOM_HAS_DISBAND                 = 111; // 房间已经被解散过了
    ROOM_MANIFEST_NUM_LESS_ZERO      = 112; // 申请的清单预设空房间数量不能为0
    ROOM_MANIFEST_NUM_MORE_LIMIT     = 113; // 申请的清单预设空房间数量超过最大值50
+   ROOM_NEED_CANCEL_TRUSTEESHIP     = 114; // 托管中，请先取消托管
 
    // 血战到底
    MAHJONG_EXCHANGE3_LEN_ERROR         = 200; // 请求换三张长度不为3
