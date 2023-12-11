@@ -35,6 +35,7 @@ func (s *StateShow) Enter() {
 					HandCards: player.handCards.ToPB(),
 					CardsType: player.cardsGroup.ToPB(),
 				})
+				player.checkTrusteeship(s.room)
 			}
 			s.showCards[int32(seat)] = 1
 		})
@@ -68,8 +69,13 @@ func (s *StateShow) Handle(shortId int64, v any) (result any) {
 
 	switch req := v.(type) {
 	case *outer.NiuNiuShowCardsReq: // 亮牌
+		if player.trusteeship {
+			return outer.ERROR_ROOM_NEED_CANCEL_TRUSTEESHIP
+		}
+
 		s.showCards[int32(s.SeatIndex(shortId))] = 1
 		player.cardsGroup = player.handCards.AnalyzeCards(s.gameParams())
+		player.timeoutTrusteeshipCount = 0
 		s.room.Broadcast(&outer.NiuNiuFinishShowCardsNtf{
 			ShortId:   shortId,
 			HandCards: player.handCards.ToPB(),

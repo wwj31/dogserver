@@ -32,6 +32,7 @@ message NiuNiuPlayerInfo {
 
     int64               Score          = 7;// 玩家本局拥有的分数
     bool                CanPushBet     = 8; // 本次押注能否推注
+    bool                Trusteeship    = 9;// 是否处于托管
 }
 
 // 牌型数据
@@ -66,6 +67,14 @@ message NiuNiuShowCardsReq {// tag:gambling
 }
 message NiuNiuShowCardsRsp {
 }
+
+
+// 取消托管
+message NiuNiuCancelTrusteeshipReq {// tag:gambling
+}
+message NiuNiuCancelTrusteeshipRsp {
+}
+
 ////////////////////////////////////////////// 游戏通知 //////////////////////////////////////////////
 // 进入准备中，（房间初始状态， 结算结束后会通知）
 message NiuNiuReadyNtf {
@@ -130,4 +139,11 @@ message NiuNiuSettlementNtf {
     int64    EndAt                        = 2; // 结算结束时间
     repeated NiuNiuPlayerInfo players     = 3; // 亮牌后的信息
     map<int32,int64> WinScores            = 4; // 每个位置的玩家总输赢,正数是赢，负数是输
+}
+
+
+// 玩家托管状态通知
+message NiuNiuTrusteeshipNtf {
+    int64 ShortId      = 1;
+    bool  Trusteeship  = 2; // true.处于托管、false.未处于托管
 }

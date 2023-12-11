@@ -39,6 +39,7 @@ func (s *StateMaster) Enter() {
 					ShortId: s.niuniuPlayers[seat].ShortId,
 					Times:   0,
 				})
+				s.niuniuPlayers[seat].checkTrusteeship(s.room)
 			}
 		}
 		s.decideMaster()
@@ -111,6 +112,10 @@ func (s *StateMaster) Handle(shortId int64, v any) (result any) {
 
 		if req.Times < 0 || req.Times > 4 {
 			return outer.ERROR_NIUNIU_MASTER_OUT_OF_RANGE
+		}
+
+		if player.trusteeship {
+			return outer.ERROR_ROOM_NEED_CANCEL_TRUSTEESHIP
 		}
 
 		seat := int32(s.SeatIndex(shortId))

@@ -59,6 +59,7 @@ func (s *StateBetting) Enter() {
 					ShortId: player.ShortId,
 					Gold:    s.betGoldSeats[int32(seat)],
 				})
+				player.checkTrusteeship(s.room)
 			}
 		})
 		s.SwitchTo(ShowCards)
@@ -110,6 +111,10 @@ func (s *StateBetting) Handle(shortId int64, v any) (result any) {
 
 		if _, ok := s.betGoldSeats[seat]; ok {
 			return outer.ERROR_NIUNIU_HAS_BE_BET
+		}
+
+		if player.trusteeship {
+			return outer.ERROR_ROOM_NEED_CANCEL_TRUSTEESHIP
 		}
 
 		s.betGoldSeats[seat] = gold

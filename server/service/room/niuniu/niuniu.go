@@ -27,6 +27,11 @@ const (
 	SettlementDuration  = 10 * time.Second // 结算持续时间
 )
 
+const (
+	TrusteeshipTimoutNum        = 3               // 超时几次进入托管
+	TrusteeshipTimoutExpiration = 1 * time.Second // 托管超时过期时间(秒)
+)
+
 func New(r *room.Room) *NiuNiu {
 	niuniu := &NiuNiu{
 		room: r,
@@ -57,6 +62,11 @@ type (
 		readyExpireAt time.Time
 		handCards     PokerCards
 		cardsGroup    CardsGroup
+
+		// 托管
+		timeoutTrusteeshipCount int32 // 超时操作超过该次数，进入托管
+		trusteeship             bool  // 托管状态
+		trusteeshipCount        int32 // 托管局数（结算时处于托管状态，就累计）
 	}
 
 	NiuNiu struct {
@@ -168,7 +178,7 @@ func (n *NiuNiu) CanSetGold(p *inner.PlayerInfo) bool {
 	return false
 }
 
-// RecordingPlayback 当前状态是否需要记录回播内容
+// CanRecordingPlayback 当前状态是否需要记录回播内容
 func (n *NiuNiu) CanRecordingPlayback() bool {
 	if n.fsm.State() == Ready {
 		return false
@@ -215,6 +225,19 @@ func (n *NiuNiu) PlayerLeave(quitPlayer *room.Player) {
 
 // Handle 游戏消息，全部交由当前状态处理
 func (n *NiuNiu) Handle(shortId int64, v any) any {
+	switch v.(type) {
+	case *outer.NiuNiuCancelTrusteeshipReq: // 取消托管
+		player, seatIndex := n.findNiuNiuPlayer(shortId)
+		if seatIndex == -1 {
+			return outer.ERROR_PLAYER_NOT_IN_ROOM
+		}
+		if player.trusteeship {
+			player.trusteeship = false
+			n.room.Broadcast(&outer.NiuNiuTrusteeshipNtf{ShortId: player.ShortId, Trusteeship: false})
+		}
+		return &outer.NiuNiuCancelTrusteeshipRsp{}
+	}
+
 	return n.fsm.CurrentStateHandler().Handle(shortId, v)
 }
 
@@ -272,6 +295,7 @@ func (n *NiuNiu) playersToPB(shortId int64) (players []*outer.NiuNiuPlayerInfo) 
 				CardsType:     player.cardsGroup.ToPB(),
 				Score:         player.score,
 				CanPushBet:    n.canPushBet(player.ShortId) == outer.ERROR_OK,
+				Trusteeship:   player.trusteeship,
 			})
 		}
 	}
@@ -354,6 +378,22 @@ func (m *niuniuPlayer) updateScore(val int64) {
 	m.LastWinScore += val
 }
 
+func (m *niuniuPlayer) checkTrusteeship(room *room.Room) {
+	if room.GameParams.NiuNiu.TrusteeshipCount == 0 {
+		return
+	}
+
+	// 是否进入托管
+	if !m.trusteeship {
+		m.timeoutTrusteeshipCount++
+		if m.timeoutTrusteeshipCount >= TrusteeshipTimoutNum {
+			m.trusteeship = true
+			m.timeoutTrusteeshipCount = 0
+			room.Broadcast(&outer.MahjongBTETrusteeshipNtf{ShortId: m.ShortId, Trusteeship: true})
+		}
+	}
+}
+
 func (n *NiuNiu) playerCount() int32 {
 	var count int32
 
@@ -408,6 +448,8 @@ func (n *NiuNiu) clear() {
 		if oldPlayer != nil {
 			n.niuniuPlayers[seatIndex] = n.newNiuNiuPlayer(oldPlayer.Player)
 			n.niuniuPlayers[seatIndex].LastWinScore = oldPlayer.LastWinScore
+			n.niuniuPlayers[seatIndex].trusteeship = oldPlayer.trusteeship
+			n.niuniuPlayers[seatIndex].trusteeshipCount = oldPlayer.trusteeshipCount
 		}
 	}
 }

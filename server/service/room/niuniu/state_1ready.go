@@ -25,7 +25,7 @@ func (s *StateReady) Enter() {
 	s.timeout = ""
 
 	s.RangePartInPlayer(func(seat int, player *niuniuPlayer) {
-		if player.Gold <= s.baseScore() {
+		if player.Gold <= s.baseScore() || player.trusteeshipCount >= s.gameParams().TrusteeshipCount {
 			s.room.PlayerLeave(player.ShortId, true)
 			return
 		}

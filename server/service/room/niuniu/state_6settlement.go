@@ -40,6 +40,14 @@ func (s *StateSettlement) Enter() {
 		WinScores:        map[int32]int64{},
 	}
 
+	// 托管计数
+	for i := 0; i < len(s.niuniuPlayers); i++ {
+		player := s.niuniuPlayers[i]
+		if player.trusteeship {
+			player.trusteeshipCount++
+		}
+	}
+
 	// 先分别统计输家和赢家,排除庄家
 	var (
 		winners          []int

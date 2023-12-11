@@ -588,6 +588,7 @@ func (m *mahjongPlayer) checkTrusteeship(room *room.Room) {
 		m.timeoutTrusteeshipCount++
 		if m.timeoutTrusteeshipCount >= TrusteeshipTimoutNum {
 			m.trusteeship = true
+			m.timeoutTrusteeshipCount = 0
 			room.Broadcast(&outer.MahjongBTETrusteeshipNtf{ShortId: m.ShortId, Trusteeship: true})
 		}
 	}

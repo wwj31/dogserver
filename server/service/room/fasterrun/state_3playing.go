@@ -327,6 +327,7 @@ func (s *StatePlaying) actionTimer(expireAt time.Time, immediately bool) {
 			player.timeoutTrusteeshipCount++
 			if player.timeoutTrusteeshipCount >= TrusteeshipTimoutNum {
 				player.trusteeship = true
+				player.timeoutTrusteeshipCount = 0
 				s.room.Broadcast(&outer.FasterRunTrusteeshipNtf{ShortId: player.ShortId, Trusteeship: true})
 			}
 		}
