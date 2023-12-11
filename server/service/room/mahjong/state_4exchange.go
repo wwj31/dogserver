@@ -88,6 +88,10 @@ func (s *StateExchange3) Handle(shortId int64, v any) (result any) {
 			return outer.ERROR_PLAYER_NOT_IN_ROOM
 		}
 
+		if player.trusteeship {
+			return outer.ERROR_ROOM_NEED_CANCEL_TRUSTEESHIP
+		}
+
 		// 同花色换三张
 		if s.room.GameParams.Mahjong.HuanSanZhang == 1 {
 			l := int32(player.handCards.Len())
@@ -156,7 +160,7 @@ func (s *StateExchange3) checkAndInit(player *mahjongPlayer) {
 
 func (s *StateExchange3) isAllReady() bool {
 	for _, player := range s.mahjongPlayers {
-		if player.exchange == nil {
+		if player.exchange == nil && !player.trusteeship {
 			return false
 		}
 	}

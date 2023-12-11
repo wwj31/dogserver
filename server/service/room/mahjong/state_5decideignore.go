@@ -48,6 +48,9 @@ func (s *StateDecideIgnore) Handle(shortId int64, v any) (result any) {
 			return outer.ERROR_ROOM_PLAYER_NOT_IN_GAME
 		}
 
+		if player.trusteeship {
+			return outer.ERROR_ROOM_NEED_CANCEL_TRUSTEESHIP
+		}
 		player.ignoreColor = ColorType(msg.Color)
 
 		s.Log().Infow("MahjongBTEDecideIgnoreReq",
@@ -103,7 +106,7 @@ func (s *StateDecideIgnore) stateEnd() {
 // 是否所有玩家都定缺完成
 func (s *StateDecideIgnore) isAllDecide() bool {
 	for _, player := range s.mahjongPlayers {
-		if player.ignoreColor == ColorUnknown {
+		if player.ignoreColor == ColorUnknown && !player.trusteeship {
 			return false
 		}
 	}
