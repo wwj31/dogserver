@@ -44,7 +44,12 @@ func (s *StateReady) Enter() {
 				s.Log().Infow("kick player with ready case gold <= 0", "shortId", player.ShortId, "gold", player.Gold)
 				s.room.PlayerLeave(player.ShortId, true)
 			}
-			continue
+		}
+
+		// 大结算后，需要踢出托管的玩家
+		if player.trusteeship && resetPlayCount {
+			s.Log().Infow("kick player with ready case trusteeship", "shortId", player.ShortId)
+			s.room.PlayerLeave(player.ShortId, true)
 		}
 	}
 
