@@ -578,6 +578,21 @@ func (m *mahjongPlayer) resetPassHand() {
 	m.passHandHuFan = -1
 }
 
+func (m *mahjongPlayer) checkTrusteeship(room *room.Room) {
+	if room.GameParams.Mahjong.TrusteeshipCount == 0 {
+		return
+	}
+
+	// 是否进入托管
+	if !m.trusteeship {
+		m.timeoutTrusteeshipCount++
+		if m.timeoutTrusteeshipCount >= TrusteeshipTimoutNum {
+			m.trusteeship = true
+			room.Broadcast(&outer.MahjongBTETrusteeshipNtf{ShortId: m.ShortId, Trusteeship: true})
+		}
+	}
+}
+
 func (m *mahjongPlayer) allCardsToPB(params *outer.MahjongParams, shortId int64, settlement bool) *outer.CardsOfBTE {
 	allCards := &outer.CardsOfBTE{}
 	if m.ShortId == shortId || settlement || (params.HuImmediatelyScore && m.hu != HuInvalid) {

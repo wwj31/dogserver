@@ -123,6 +123,7 @@ func (s *StateExchange3) Handle(shortId int64, v any) (result any) {
 
 		seatIndex := s.SeatIndex(player.ShortId)
 		nextSeatIndex := s.nextSeatIndex(seatIndex)
+		player.timeoutTrusteeshipCount = 0
 		player.exchange = &outer.Exchange3Info{
 			CardsFrom:     nil,
 			FromSeatIndex: -1,
@@ -155,6 +156,7 @@ func (s *StateExchange3) checkAndInit(player *mahjongPlayer) {
 			CardsTo:       player.handCards[:3].ToSlice(),
 			ToSeatIndex:   int32(s.nextSeatIndex(s.SeatIndex(player.ShortId))),
 		}
+		player.checkTrusteeship(s.room)
 	}
 }
 

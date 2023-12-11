@@ -52,6 +52,7 @@ func (s *StateDecideIgnore) Handle(shortId int64, v any) (result any) {
 			return outer.ERROR_ROOM_NEED_CANCEL_TRUSTEESHIP
 		}
 		player.ignoreColor = ColorType(msg.Color)
+		player.timeoutTrusteeshipCount = 0
 
 		s.Log().Infow("MahjongBTEDecideIgnoreReq",
 			"room", s.room.RoomId, "player", player.ShortId, "ignore color", player.ignoreColor)
@@ -91,6 +92,7 @@ func (s *StateDecideIgnore) stateEnd() {
 			sort.Slice(arr, func(i, j int) bool { return arr[i].len < arr[j].len })
 
 			player.ignoreColor = arr[0].c
+			player.checkTrusteeship(s.room)
 		}
 
 		s.colorMap[player.ShortId] = player.ignoreColor.PB()

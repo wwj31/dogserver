@@ -177,14 +177,7 @@ func (s *StatePlaying) actionTimer(expireAt time.Time, actionSeats ...int) {
 			}
 			player := s.mahjongPlayers[seat]
 
-			// 是否进入托管
-			if !player.trusteeship {
-				player.timeoutTrusteeshipCount++
-				if player.timeoutTrusteeshipCount >= TrusteeshipTimoutNum {
-					player.trusteeship = true
-					s.room.Broadcast(&outer.MahjongBTETrusteeshipNtf{ShortId: player.ShortId, Trusteeship: true})
-				}
-			}
+			player.checkTrusteeship(s.room)
 
 			s.Log().Infow("operator timeout with auto op", "short", player.ShortId, "seat", seat, "act", act.String())
 			// (碰杠胡过)行动者，优先打胡->杠->碰->打牌

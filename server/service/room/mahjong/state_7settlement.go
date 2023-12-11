@@ -48,7 +48,7 @@ func (s *StateSettlement) Enter() {
 		player := s.mahjongPlayers[i]
 		if player.trusteeship {
 			player.trusteeshipCount++
-			if player.trusteeshipCount == 2 {
+			if player.trusteeshipCount == s.gameParams().TrusteeshipCount {
 				trusteeshipFinalSettlement = true
 			}
 		}

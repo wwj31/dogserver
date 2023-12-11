@@ -323,7 +323,7 @@ func (s *StatePlaying) actionTimer(expireAt time.Time, immediately bool) {
 		}()
 
 		// 是否进入托管
-		if !player.trusteeship && !immediately {
+		if s.gameParams().TrusteeshipCount > 0 && !player.trusteeship && !immediately {
 			player.timeoutTrusteeshipCount++
 			if player.timeoutTrusteeshipCount >= TrusteeshipTimoutNum {
 				player.trusteeship = true
