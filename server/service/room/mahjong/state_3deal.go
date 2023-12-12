@@ -54,13 +54,10 @@ func (s *StateDeal) Enter() {
 	s.Log().Infow("[Mahjong] enter state deal",
 		"room", s.room.RoomId, "params", *s.gameParams(), "cards", s.cards)
 
-	var (
-		i, last int
-	)
-
+	var start, last int // start 玩家拿牌的起始位置, last 庄家最后一张牌的拿牌位置
 	for _, player := range s.mahjongPlayers {
-		player.handCards = append(Cards{}, s.cards[i:i+baseCardsNum]...).Sort()
-		i += baseCardsNum
+		player.handCards = append(Cards{}, s.cards[start:start+baseCardsNum]...).Sort()
+		start += baseCardsNum
 		last += baseCardsNum
 	}
 
@@ -84,7 +81,11 @@ func (s *StateDeal) Enter() {
 	s.room.AddTimer(tools.XUID(), s.currentStateEndAt, func(dt time.Duration) {
 		var nextState State
 		if s.room.GameParams.Mahjong.HuanSanZhang == 0 {
-			nextState = DecideIgnore // 不换牌，直接定缺
+			if s.ignoreState() {
+				nextState = DecideIgnore // 不换牌，直接定缺
+			} else {
+				nextState = Playing // 不换牌，直接游戏
+			}
 		} else {
 			nextState = Exchange3
 		}

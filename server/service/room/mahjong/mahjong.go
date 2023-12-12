@@ -406,6 +406,12 @@ func (m *Mahjong) nextSeatIndex(index int) int {
 	return index
 }
 
+// 仅四人三方、三人三方有定缺模式
+func (m *Mahjong) ignoreState() bool {
+	mode := m.gameParams().GameMode
+	return mode == 0 || mode == 1
+}
+
 func (m *Mahjong) nextSeatIndexWithoutHu(index int) int {
 	// 0,1,2,3 东南西北
 	index--

@@ -67,7 +67,11 @@ func (s *StateExchange3) stateEnd() {
 
 	// 状态结束，给个换牌动画播放延迟，进入定缺
 	s.room.AddTimer(tools.XUID(), tools.Now().Add(Exchange3ShowDuration), func(time.Duration) {
-		s.SwitchTo(DecideIgnore)
+		if s.ignoreState() {
+			s.SwitchTo(DecideIgnore)
+		} else {
+			s.SwitchTo(Playing)
+		}
 	})
 }
 
