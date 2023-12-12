@@ -362,7 +362,7 @@ type MahjongParams struct {
 	AllowScoreSmallZero  bool          `protobuf:"varint,15,opt,name=AllowScoreSmallZero,proto3" json:"AllowScoreSmallZero,omitempty"`   // 是否允许负分
 	BigWinner            bool          `protobuf:"varint,16,opt,name=BigWinner,proto3" json:"BigWinner,omitempty"`                       // 是否开启大赢家模式
 	ReBate               *RebateParams `protobuf:"bytes,17,opt,name=ReBate,proto3" json:"ReBate,omitempty"`                              // 抽水相关设置
-	GameMode             int32         `protobuf:"varint,18,opt,name=GameMode,proto3" json:"GameMode,omitempty"`                         // 游戏模式 0.四人三房(筒条万)、 1.三人三房(筒条万)、 2.两人两房(筒条)、3.两人一房(万)
+	GameMode             int32         `protobuf:"varint,18,opt,name=GameMode,proto3" json:"GameMode,omitempty"`                         // 游戏模式 0.四人三房(筒条万)、 1.三人三房(筒条万)、 2.三人两房(筒条) 3.两人两房(筒条)、4.两人一房(万)
 	MasterRebate         float32       `protobuf:"fixed32,19,opt,name=MasterRebate,proto3" json:"MasterRebate,omitempty"`                // 门票，仅给盟主返利
 	TrusteeshipCount     int32         `protobuf:"varint,20,opt,name=trusteeshipCount,proto3" json:"trusteeshipCount,omitempty"`         // 托管局数，0表示不开启托管(托管超过n局，直接进入大结算)
 }

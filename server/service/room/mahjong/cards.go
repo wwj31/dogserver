@@ -13,9 +13,9 @@ import (
 const MaxCardNum = 41
 
 // RandomCards 获得洗好的一副新牌
-func RandomCards(ignoreCard Cards) Cards {
-	cards := make(Cards, len(cards108))
-	copy(cards, cards108[:])
+func (c Cards) RandomCards(ignoreCard Cards) Cards {
+	cards := make(Cards, len(c))
+	copy(cards, c[:])
 	tail := len(cards)
 	for i := 0; i < len(cards); i++ {
 		idx := rand.Intn(len(cards[:tail]))

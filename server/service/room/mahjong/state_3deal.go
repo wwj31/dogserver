@@ -25,7 +25,17 @@ func (s *StateDeal) State() int {
 
 func (s *StateDeal) Enter() {
 	s.room.GameRecordingStart()
-	s.cards = RandomCards(nil) // 总共108张
+	var initCards Cards
+	switch s.gameParams().GameMode {
+	case 0, 1:
+		initCards = cards108[:]
+	case 2, 3:
+		initCards = cards72[:]
+	case 4:
+		initCards = cards36[:]
+	}
+
+	s.cards = initCards.RandomCards(nil)
 	testCardsStr := rds.Ins.Get(context.Background(), "testcards").Val()
 	if testCardsStr != "" {
 		testCards := Cards{}

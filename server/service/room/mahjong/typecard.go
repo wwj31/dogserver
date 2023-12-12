@@ -116,6 +116,7 @@ func (c Cards) String() string {
 	return result
 }
 
+// 筒条万
 var cards108 = [108]Card{
 	WAN_1, WAN_1, WAN_1, WAN_1,
 	WAN_2, WAN_2, WAN_2, WAN_2,
@@ -146,6 +147,42 @@ var cards108 = [108]Card{
 	TIAO_7, TIAO_7, TIAO_7, TIAO_7,
 	TIAO_8, TIAO_8, TIAO_8, TIAO_8,
 	TIAO_9, TIAO_9, TIAO_9, TIAO_9,
+}
+
+// 筒条
+var cards72 = [72]Card{
+	TONG_1, TONG_1, TONG_1, TONG_1,
+	TONG_2, TONG_2, TONG_2, TONG_2,
+	TONG_3, TONG_3, TONG_3, TONG_3,
+	TONG_4, TONG_4, TONG_4, TONG_4,
+	TONG_5, TONG_5, TONG_5, TONG_5,
+	TONG_6, TONG_6, TONG_6, TONG_6,
+	TONG_7, TONG_7, TONG_7, TONG_7,
+	TONG_8, TONG_8, TONG_8, TONG_8,
+	TONG_9, TONG_9, TONG_9, TONG_9,
+
+	TIAO_1, TIAO_1, TIAO_1, TIAO_1,
+	TIAO_2, TIAO_2, TIAO_2, TIAO_2,
+	TIAO_3, TIAO_3, TIAO_3, TIAO_3,
+	TIAO_4, TIAO_4, TIAO_4, TIAO_4,
+	TIAO_5, TIAO_5, TIAO_5, TIAO_5,
+	TIAO_6, TIAO_6, TIAO_6, TIAO_6,
+	TIAO_7, TIAO_7, TIAO_7, TIAO_7,
+	TIAO_8, TIAO_8, TIAO_8, TIAO_8,
+	TIAO_9, TIAO_9, TIAO_9, TIAO_9,
+}
+
+// 万
+var cards36 = [36]Card{
+	WAN_1, WAN_1, WAN_1, WAN_1,
+	WAN_2, WAN_2, WAN_2, WAN_2,
+	WAN_3, WAN_3, WAN_3, WAN_3,
+	WAN_4, WAN_4, WAN_4, WAN_4,
+	WAN_5, WAN_5, WAN_5, WAN_5,
+	WAN_6, WAN_6, WAN_6, WAN_6,
+	WAN_7, WAN_7, WAN_7, WAN_7,
+	WAN_8, WAN_8, WAN_8, WAN_8,
+	WAN_9, WAN_9, WAN_9, WAN_9,
 }
 
 // 去除了缺一门花色的牌组
