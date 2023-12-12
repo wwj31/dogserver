@@ -129,8 +129,10 @@ func (c Cards) qingYiSeUpgrade(colors map[int]struct{}, lightGang, darkGang, pon
 
 // 传入花色，传入明杠
 func (c Cards) upgrade(colors map[int]struct{}, lightGang, darkGang, pong map[int32]int64, typ HuType, triggerCard Card, params *outer.MahjongParams) HuType {
-	// 判断清一色升级牌型
-	typ = c.qingYiSeUpgrade(colors, lightGang, darkGang, pong, typ)
+	// 判断清一色升级牌型, 两人一房不算清一色系列的牌型
+	if params.GameMode != 4 {
+		typ = c.qingYiSeUpgrade(colors, lightGang, darkGang, pong, typ)
+	}
 
 	switch typ {
 	case DuiDuiHu, QiDui, LongQiDui: // 对对胡->将对对、七对\龙七对->将七对
