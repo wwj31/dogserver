@@ -13,7 +13,6 @@ import (
 	"github.com/wwj31/dogactor/tools"
 
 	"server/common"
-	"server/common/log"
 	"server/proto/outermsg/outer"
 	"server/rdsop"
 
@@ -40,12 +39,15 @@ const (
 	TrusteeshipTimoutExpiration = 1 * time.Second // 托管超时过期时间(秒)
 )
 
+var mahjongPlayerNum = map[int32]int{
+	0: 4,
+	1: 3,
+	2: 2,
+	3: 2,
+}
+
 func New(r *room.Room) *Mahjong {
-	playerNum := int(r.GameParams.Mahjong.GamePlayerNumber)
-	if playerNum < 2 || playerNum > 4 {
-		log.Errorw("mahjong player num invalid", "num", playerNum)
-		return nil
-	}
+	playerNum := mahjongPlayerNum[r.GameParams.Mahjong.GameMode]
 	mahjong := &Mahjong{
 		room:           r,
 		fsm:            room.NewFSM(),
@@ -469,9 +471,12 @@ func (m *Mahjong) baseScore() int64 {
 	return int64(float32(base*common.Gold1000Times) * baseScoreTimes)
 }
 
+func (m *Mahjong) playerNumber() int {
+	return mahjongPlayerNum[m.gameParams().GameMode]
+}
 func (m *Mahjong) clear() {
 	// 重置玩家数据
-	for i := 0; i < int(m.gameParams().GamePlayerNumber); i++ {
+	for i := 0; i < m.playerNumber(); i++ {
 		gamer := m.mahjongPlayers[i]
 		if gamer != nil {
 			m.mahjongPlayers[i] = m.newMahjongPlayer(gamer.Player)
@@ -499,7 +504,7 @@ func (m *Mahjong) allSeats(ignoreSeat ...int) (result []int) {
 		seatMap[seat] = struct{}{}
 	}
 
-	for seatIndex := 0; seatIndex < int(m.gameParams().GamePlayerNumber); seatIndex++ {
+	for seatIndex := 0; seatIndex < m.playerNumber(); seatIndex++ {
 		if _, ignore := seatMap[seatIndex]; !ignore {
 			result = append(result, seatIndex)
 		}

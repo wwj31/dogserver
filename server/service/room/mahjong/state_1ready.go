@@ -34,7 +34,7 @@ func (s *StateReady) Enter() {
 	}
 
 	// 先把金币<=0的玩家踢出去
-	for seat := 0; seat < int(s.gameParams().GamePlayerNumber); seat++ {
+	for seat := 0; seat < s.playerNumber(); seat++ {
 		player := s.mahjongPlayers[seat]
 		if player == nil {
 			continue
@@ -65,7 +65,7 @@ func (s *StateReady) Enter() {
 	}
 
 	// 设置每个玩家的准备状态
-	for seat := 0; seat < int(s.gameParams().GamePlayerNumber); seat++ {
+	for seat := 0; seat < s.playerNumber(); seat++ {
 		player := s.mahjongPlayers[seat]
 		if player == nil {
 			continue

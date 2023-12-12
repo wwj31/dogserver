@@ -165,7 +165,17 @@ func (r *Room) responseHandle(resultMsg any) {
 func (r *Room) IsFull() bool {
 	maxNum := gameMaxPlayers[r.GameType]
 	if r.GameType == Mahjong {
-		maxNum = int(r.GameParams.Mahjong.GamePlayerNumber)
+		switch r.GameParams.Mahjong.GameMode {
+		case 0:
+			maxNum = 4
+		case 1:
+			maxNum = 3
+		case 2, 3:
+			maxNum = 2
+		default:
+			r.Log().Errorw("unknown majong game mode", "room", r.RoomId, "mode", r.GameParams.Mahjong.GameMode)
+			return true
+		}
 	}
 	return len(r.Players) >= maxNum
 }

@@ -216,7 +216,7 @@ func (s *StatePlaying) allSeatsWithoutHu(ignoreSeat ...int) (result []int) {
 		seatMap[seat] = struct{}{}
 	}
 
-	for seatIndex := 0; seatIndex < int(s.gameParams().GamePlayerNumber); seatIndex++ {
+	for seatIndex := 0; seatIndex < s.playerNumber(); seatIndex++ {
 		player := s.mahjongPlayers[seatIndex]
 		if _, ignore := seatMap[seatIndex]; !ignore && player.hu == HuInvalid {
 			result = append(result, seatIndex)

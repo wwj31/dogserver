@@ -94,11 +94,7 @@ var _ = router.Reg(func(p *player.Player, msg *outer.SetRoomManifestReq) any {
 			return err
 		}
 
-		if msg.GetGameParams().Mahjong.GamePlayerNumber == 0 {
-			msg.GetGameParams().Mahjong.GamePlayerNumber = 4
-		}
-
-		if msg.GetGameParams().Mahjong.GamePlayerNumber < 2 || msg.GetGameParams().Mahjong.GamePlayerNumber > 4 {
+		if msg.GetGameParams().Mahjong.GameMode < 0 || msg.GetGameParams().Mahjong.GameMode > 3 {
 			return outer.ERROR_MAHJONG_PLAYER_NUMBER_INVALID
 		}
 
@@ -158,11 +154,7 @@ var _ = router.Reg(func(p *player.Player, msg *outer.CreateRoomReq) any {
 			return err
 		}
 
-		if msg.GetGameParams().Mahjong.GamePlayerNumber == 0 {
-			msg.GetGameParams().Mahjong.GamePlayerNumber = 4
-		}
-
-		if msg.GetGameParams().Mahjong.GamePlayerNumber < 2 || msg.GetGameParams().Mahjong.GamePlayerNumber > 4 {
+		if msg.GetGameParams().Mahjong.GameMode < 0 || msg.GetGameParams().Mahjong.GameMode > 3 {
 			return outer.ERROR_MAHJONG_PLAYER_NUMBER_INVALID
 		}
 
