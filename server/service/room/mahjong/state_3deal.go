@@ -25,14 +25,21 @@ func (s *StateDeal) State() int {
 
 func (s *StateDeal) Enter() {
 	s.room.GameRecordingStart()
-	var initCards Cards
+	var (
+		initCards    Cards
+		baseCardsNum int
+	)
+
 	switch s.gameParams().GameMode {
 	case 0, 1:
 		initCards = cards108[:]
+		baseCardsNum = 13
 	case 2, 3:
 		initCards = cards72[:]
+		baseCardsNum = 13
 	case 4:
 		initCards = cards36[:]
+		baseCardsNum = 7 // 两人一房，闲家7张牌，庄家8张牌
 	}
 
 	s.cards = initCards.RandomCards(nil)
@@ -47,16 +54,20 @@ func (s *StateDeal) Enter() {
 	s.Log().Infow("[Mahjong] enter state deal",
 		"room", s.room.RoomId, "params", *s.gameParams(), "cards", s.cards)
 
-	var i int
+	var (
+		i, last int
+	)
+
 	for _, player := range s.mahjongPlayers {
-		player.handCards = append(Cards{}, s.cards[i:i+13]...).Sort()
-		i += 13
+		player.handCards = append(Cards{}, s.cards[i:i+baseCardsNum]...).Sort()
+		i += baseCardsNum
+		last += baseCardsNum
 	}
 
 	// 庄家多发一张
 	master := s.mahjongPlayers[s.masterIndex]
-	master.handCards = master.handCards.Insert(s.cards[52])
-	s.masterCard14 = s.cards[52]
+	master.handCards = master.handCards.Insert(s.cards[last])
+	s.masterCard14 = s.cards[last]
 
 	for _, player := range s.mahjongPlayers {
 		s.room.SendToPlayer(player.ShortId, &outer.MahjongBTEDealNtf{
@@ -66,7 +77,7 @@ func (s *StateDeal) Enter() {
 	}
 
 	// 剩下的算本局牌组
-	s.cards = s.cards[53:]
+	s.cards = s.cards[last+1:]
 
 	// 发牌动画后，进入下个状态
 	s.currentStateEndAt = tools.Now().Add(DealShowDuration)
