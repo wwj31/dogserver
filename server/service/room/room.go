@@ -2,6 +2,7 @@ package room
 
 import (
 	"fmt"
+	"path"
 	"reflect"
 	"time"
 
@@ -9,6 +10,7 @@ import (
 	"github.com/wwj31/dogactor/tools"
 
 	"server/common/actortype"
+	"server/common/log"
 	"server/rdsop"
 
 	"github.com/golang/protobuf/proto"
@@ -28,6 +30,10 @@ var gameMaxPlayers = map[GamblingType]int{
 }
 
 func New(info *rdsop.NewRoomInfo) *Room {
+	var roomLogPath string
+	if log.Path() != "" {
+		roomLogPath = path.Join(log.Path(), "room")
+	}
 	r := &Room{
 		RoomId:         info.RoomId,
 		GameType:       info.GameType,
@@ -38,7 +44,7 @@ func New(info *rdsop.NewRoomInfo) *Room {
 
 		log: logger.New(logger.Option{
 			Level:          logger.DebugLevel,
-			LogPath:        "./log/room",
+			LogPath:        roomLogPath,
 			FileName:       fmt.Sprintf("room%v", info.RoomId),
 			FileMaxAge:     30,
 			FileMaxSize:    1024,

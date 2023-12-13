@@ -1,9 +1,11 @@
 package main
 
 import (
-	"github.com/wwj31/dogactor/logger"
-	"server/common"
 	"time"
+
+	"github.com/wwj31/dogactor/logger"
+
+	"server/common"
 )
 
 var monitorLog *logger.Logger

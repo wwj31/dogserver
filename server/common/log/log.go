@@ -6,6 +6,9 @@ import (
 
 var gLogger *logger.Logger
 
+func Path() string {
+	return gLogger.Option.LogPath
+}
 func Init(lv int, path, fileName string, dispay bool) {
 	gLogger = logger.New(logger.Option{
 		Level:          logger.Level(lv),
