@@ -21,7 +21,7 @@ import (
 
 // -addr ws://localhost:7001/
 var (
-	addr      = flag.String("addr", "ws://localhost:7001/", "链接地址")
+	addr      = flag.String("addr", "localhost:7001/", "链接地址")
 	reconnect = flag.Int64("recon", -1, "重连时间(毫秒)")
 	device    = flag.String("device", "test1", "设备号")
 	help      = flag.String("help", " ", "帮助")
