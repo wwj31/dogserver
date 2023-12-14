@@ -2,8 +2,10 @@ version: '3.8'
 
 services:
   mongodb:
-    image: mongo:latest
+    image: bitnami/mongodb:latest
     container_name: mongodb
+    #volumes:
+    #  - ./db/mongo:/bitnami/mongodb
     ports:
       - "27017:27017"
     restart: always
@@ -11,6 +13,8 @@ services:
   redis:
     image: redis:latest
     container_name: redis
+    #volumes:
+    #  - ./db/redis:/data
     ports:
       - "6379:6379"
     command: redis-server --requirepass 123456
