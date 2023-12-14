@@ -35,7 +35,8 @@ services:
     image: wwj32/dog:latest
     container_name: dog
     volumes: 
-      - ./:/server/toml
+      - ./config.toml:/server/toml/config.toml
+      - ./confjson:/server/confjson
     ports:
       - "7001:7001"
     command: --toml ./toml
