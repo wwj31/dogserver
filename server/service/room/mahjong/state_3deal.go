@@ -31,13 +31,13 @@ func (s *StateDeal) Enter() {
 	)
 
 	switch s.gameParams().GameMode {
-	case 0, 1:
+	case 0, 1: // 四人三房、三人三房
 		initCards = cards108[:]
 		baseCardsNum = 13
-	case 2, 3:
+	case 2, 3: // 三人两房、两人两房
 		initCards = cards72[:]
 		baseCardsNum = 13
-	case 4:
+	case 4: // 两人一房
 		initCards = cards36[:]
 		baseCardsNum = 7 // 两人一房，闲家7张牌，庄家8张牌
 	}
