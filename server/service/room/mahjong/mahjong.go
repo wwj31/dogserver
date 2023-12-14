@@ -395,7 +395,7 @@ func (m *Mahjong) nextSeatIndex(index int) int {
 	for {
 		index--
 		if index < 0 {
-			index = m.playerNumber()
+			index = m.playerNumber() - 1
 		}
 
 		player := m.mahjongPlayers[index]
