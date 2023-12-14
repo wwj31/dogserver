@@ -8,7 +8,7 @@ import (
 
 var (
 	tomlPath   = flag.String("toml", "../toml", "toml file path")
-	appName    = flag.String("app", "all", "app type")
+	appName    = flag.String("app", "allinone", "app type")
 	appId      = flag.Int("id", 1, "app id")
 	logLevel   = flag.Int("log", -1, "log level, debug log=-1")
 	logPath    = flag.String("log_path", "", "path of log file")
