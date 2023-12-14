@@ -243,7 +243,7 @@ func (s *StatePlaying) gameOver() bool {
 	for _, p := range s.mahjongPlayers {
 		if p.hu != HuInvalid {
 			huCount++
-			if huCount >= 3 {
+			if huCount >= s.playerNumber()-1 {
 				return true
 			}
 		}
