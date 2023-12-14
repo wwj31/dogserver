@@ -14,7 +14,7 @@ import (
 func TestMembersReq(t *testing.T) {
 	cli := &client.Client{Addr: *Addr, DeviceID: "test1"}
 	Init(cli)
-	rsp, ok := cli.Req(outer.Msg_IdAgentMembersReq, &outer.AgentMembersReq{}).(*outer.AgentMembersRsp)
+	rsp, ok := cli.Req(&outer.AgentMembersReq{}).(*outer.AgentMembersRsp)
 	assert.True(t, ok)
 	log.Infof("agent members rsp [%v]\n", rsp)
 
@@ -46,7 +46,7 @@ func TestMembersReq(t *testing.T) {
 func TestSetScoreForDownReq(t *testing.T) {
 	cli := &client.Client{Addr: *Addr, DeviceID: "wwj1"}
 	Init(cli)
-	rsp, ok := cli.Req(outer.Msg_IdSetScoreForDownReq, &outer.SetScoreForDownReq{
+	rsp, ok := cli.Req(&outer.SetScoreForDownReq{
 		ShortId: 1147959,
 		Gold:    -100,
 	}).(*outer.SetScoreForDownRsp)
@@ -57,7 +57,7 @@ func TestSetScoreForDownReq(t *testing.T) {
 func TestSetAgentDownRebateReq(t *testing.T) {
 	cli := &client.Client{Addr: *Addr, DeviceID: "test1"}
 	Init(cli)
-	rsp, ok := cli.Req(outer.Msg_IdSetAgentDownRebateReq, &outer.SetAgentDownRebateReq{
+	rsp, ok := cli.Req(&outer.SetAgentDownRebateReq{
 		ShortId: 1612475,
 		Rebate:  11,
 	}).(*outer.SetAgentDownRebateRsp)

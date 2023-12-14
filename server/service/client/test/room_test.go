@@ -14,7 +14,7 @@ import (
 func TestCreateRoom(t *testing.T) {
 	cli := &client.Client{Addr: *Addr, DeviceID: "test1"}
 	Init(cli)
-	rsp, ok := cli.Req(outer.Msg_IdCreateRoomReq, &outer.CreateRoomReq{
+	rsp, ok := cli.Req(&outer.CreateRoomReq{
 		GameType: outer.GameType_NiuNiu,
 		GameParams: &outer.GameParams{NiuNiu: &outer.NiuNiuParams{
 			PlayCountLimit:       2,
@@ -43,7 +43,7 @@ func TestCreateRoom(t *testing.T) {
 func TestDisbandRoom(t *testing.T) {
 	cli := &client.Client{Addr: *Addr, DeviceID: "test1"}
 	Init(cli)
-	rsp, ok := cli.Req(outer.Msg_IdDisbandRoomReq, &outer.DisbandRoomReq{RoomId: 1}).(*outer.DisbandRoomRsp)
+	rsp, ok := cli.Req(&outer.DisbandRoomReq{RoomId: 1}).(*outer.DisbandRoomRsp)
 	assert.True(t, ok)
 	log.Infof("disband room rsp [%v]\n", rsp)
 }
@@ -51,20 +51,20 @@ func TestDisbandRoom(t *testing.T) {
 func TestRoomList(t *testing.T) {
 	cli := &client.Client{Addr: *Addr, DeviceID: "test2"}
 	Init(cli)
-	_, ok := cli.Req(outer.Msg_IdRoomListReq, &outer.RoomListReq{}).(*outer.RoomListRsp)
+	_, ok := cli.Req(&outer.RoomListReq{}).(*outer.RoomListRsp)
 	assert.True(t, ok)
 }
 
 func TestJoinRoom(t *testing.T) {
 	cli := &client.Client{Addr: *Addr, DeviceID: "test1"}
 	Init(cli)
-	_, ok := cli.Req(outer.Msg_IdJoinRoomReq, &outer.JoinRoomReq{RoomId: 1}).(*outer.JoinRoomRsp)
+	_, ok := cli.Req(&outer.JoinRoomReq{RoomId: 1}).(*outer.JoinRoomRsp)
 	assert.True(t, ok)
 }
 
 func TestLeaveRoom(t *testing.T) {
 	cli := &client.Client{Addr: *Addr, DeviceID: "test1"}
 	Init(cli)
-	_, ok := cli.Req(outer.Msg_IdLeaveRoomReq, &outer.LeaveRoomReq{}).(*outer.LeaveRoomRsp)
+	_, ok := cli.Req(&outer.LeaveRoomReq{}).(*outer.LeaveRoomRsp)
 	assert.True(t, ok)
 }

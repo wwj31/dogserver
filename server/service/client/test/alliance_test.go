@@ -14,7 +14,7 @@ import (
 func TestInviteAlli(t *testing.T) {
 	cli := &client.Client{Addr: *Addr, DeviceID: "test1"}
 	Init(cli)
-	rsp, ok := cli.Req(outer.Msg_IdInviteAllianceReq, &outer.InviteAllianceReq{
+	rsp, ok := cli.Req(&outer.InviteAllianceReq{
 		ShortId: 2961128,
 	}).(*outer.InviteAllianceRsp)
 	assert.True(t, ok)
@@ -24,7 +24,7 @@ func TestInviteAlli(t *testing.T) {
 func TestSetPosition(t *testing.T) {
 	cli := &client.Client{Addr: *Addr, DeviceID: "wwj1"}
 	Init(cli)
-	rsp, ok := cli.Req(outer.Msg_IdSetMemberPositionReq, &outer.SetMemberPositionReq{
+	rsp, ok := cli.Req(&outer.SetMemberPositionReq{
 		ShortId:  1670667,
 		Position: outer.Position_Manager,
 	}).(*outer.SetMemberPositionRsp)
@@ -35,7 +35,7 @@ func TestSetPosition(t *testing.T) {
 func TestKickOut(t *testing.T) {
 	cli := &client.Client{Addr: *Addr, DeviceID: "wwj1"}
 	Init(cli)
-	rsp, ok := cli.Req(outer.Msg_IdKickOutMemberReq, &outer.KickOutMemberReq{ShortId: 1036478}).(*outer.KickOutMemberRsp)
+	rsp, ok := cli.Req(&outer.KickOutMemberReq{ShortId: 1036478}).(*outer.KickOutMemberRsp)
 	assert.True(t, ok)
 	log.Infof("kick out menber [%v]\n", rsp)
 }
@@ -43,7 +43,7 @@ func TestKickOut(t *testing.T) {
 func TestDisband(t *testing.T) {
 	cli := &client.Client{Addr: *Addr, DeviceID: "wwj1"}
 	Init(cli)
-	rsp, ok := cli.Req(outer.Msg_IdDisbandAllianceReq, &outer.DisbandAllianceReq{}).(*outer.DisbandAllianceRsp)
+	rsp, ok := cli.Req(&outer.DisbandAllianceReq{}).(*outer.DisbandAllianceRsp)
 	assert.True(t, ok)
 	log.Infof("kick out menber [%v]\n", rsp)
 }
@@ -51,7 +51,7 @@ func TestDisband(t *testing.T) {
 func TestSearchPlayer(t *testing.T) {
 	cli := &client.Client{Addr: *Addr, DeviceID: "wwj1"}
 	Init(cli)
-	rsp, ok := cli.Req(outer.Msg_IdSearchPlayerInfoReq, &outer.SearchPlayerInfoReq{
+	rsp, ok := cli.Req(&outer.SearchPlayerInfoReq{
 		ShortId: 1784645,
 	}).(*outer.SearchPlayerInfoRsp)
 	assert.True(t, ok)
