@@ -174,9 +174,9 @@ func (r *Room) IsFull() bool {
 		switch r.GameParams.Mahjong.GameMode {
 		case 0:
 			maxNum = 4
-		case 1:
+		case 1, 2:
 			maxNum = 3
-		case 2, 3:
+		case 3, 4:
 			maxNum = 2
 		default:
 			r.Log().Errorw("unknown majong game mode", "room", r.RoomId, "mode", r.GameParams.Mahjong.GameMode)
