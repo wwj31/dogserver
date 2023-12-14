@@ -395,7 +395,7 @@ func (m *Mahjong) nextSeatIndex(index int) int {
 	for {
 		index--
 		if index < 0 {
-			index = 3
+			index = m.playerNumber()
 		}
 
 		player := m.mahjongPlayers[index]
@@ -406,7 +406,7 @@ func (m *Mahjong) nextSeatIndex(index int) int {
 	return index
 }
 
-// 仅四人三方、三人三方有定缺模式
+// 仅四人三房、三人三房有定缺模式
 func (m *Mahjong) ignoreState() bool {
 	mode := m.gameParams().GameMode
 	return mode == 0 || mode == 1
