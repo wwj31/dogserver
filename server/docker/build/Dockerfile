@@ -1,7 +1,7 @@
-FROM alpine:latest
+FROM alpine:3.19
 
 WORKDIR /server
 
-COPY bin/dog .
+COPY ../bin/dog .
 
 ENTRYPOINT ["./dog"]
