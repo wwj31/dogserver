@@ -33,6 +33,12 @@ func Reg[ACTOR actor.Actor, MSG gogo.Message](fn func(actor ACTOR, msg MSG) any,
 	}
 
 	handlers.Store(actName, func(actor actor.Actor, message gogo.Message) {
+		defer func() {
+			if r := recover(); r != nil {
+				stack := fmt.Sprintf("panic actor:[%v] message:[%T]  recover:%v", actor.ID(), message, r)
+				log.Errorf(stack)
+			}
+		}()
 		log.Infow("router INPUT", "actor", actor.ID(), "msg", reflect.TypeOf(message), "message", message.String())
 
 		ret := fn(actor.(ACTOR), message.(MSG))
