@@ -141,24 +141,25 @@ func (a *Alliance) loadAllManifest() {
 func (a *Alliance) responseHandle(resultMsg any) {
 	msg, ok := resultMsg.(proto.Message)
 	if !ok {
-		return
+		var errCode outer.ERROR
+		errCode, ok = resultMsg.(outer.ERROR)
+		if !ok {
+			return
+		}
+		msg = &inner.Error{ErrorCode: int32(errCode)}
 	}
 
-	// 网关消息，直接将消息转发给session, 其他服务消息，走内部通讯接口
-	if actortype.IsActorOf(a.currentMsg.GetSourceId(), actortype.GatewayActor) {
-		a.Send2Client(a.currentGSession, msg)
+	var err error
+	if a.currentMsg.GetRequestId() != "" {
+		err = a.Response(a.currentMsg.GetRequestId(), msg)
 	} else {
-		var err error
-		if a.currentMsg.GetRequestId() != "" {
-			err = a.Response(a.currentMsg.GetRequestId(), msg)
-		} else {
-			err = a.Send(a.currentMsg.GetSourceId(), msg)
-		}
+		err = a.Send(a.currentMsg.GetSourceId(), msg)
+	}
 
-		if err != nil {
-			log.Warnw("response to actor failed",
-				"source", a.currentMsg.GetSourceId(), "msg name", a.currentMsg.GetMsgName())
-		}
+	if err != nil {
+		log.Warnw("response to actor failed",
+			"source", a.currentMsg.GetSourceId(),
+			"msg name", a.currentMsg.GetMsgName())
 	}
 }
 
