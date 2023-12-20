@@ -103,7 +103,6 @@ func (a *Alliance) manifestMaintenance() {
 			log.Infow("disband alliance room success", "alliance", a.allianceId, "room", roomActorId, "manifestId", id, "manifest", manifest.GameParams.String())
 		}
 
-		// 先判断是否需要删除清单
 		if manifest.GameParams.MaintainEmptyRoom == 0 && len(emptyRoomStats[id]) == 0 && len(roomStats[id]) == 0 {
 			manifest.Delete()
 		}
