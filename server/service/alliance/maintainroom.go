@@ -7,6 +7,7 @@ import (
 	"server/common/actortype"
 	"server/common/log"
 	"server/proto/innermsg/inner"
+	"server/proto/outermsg/outer"
 	"server/rdsop"
 )
 
@@ -93,9 +94,8 @@ func (a *Alliance) manifestMaintenance() {
 				break
 			}
 
-			v, err := a.RequestWait(roomActorId, &inner.DisbandRoomReq{})
-			if yes, _ := common.IsErr(v, err); yes {
-				log.Warnw("disband room failed", "err", err, "v", v)
+			if yes, err := common.IsErr(a.RequestWait(roomActorId, &inner.DisbandRoomReq{})); yes && err != outer.ERROR_ROOM_HAS_DISBAND {
+				log.Warnw("disband room failed", "err", err)
 				continue
 			}
 
