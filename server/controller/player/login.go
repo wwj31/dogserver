@@ -6,6 +6,7 @@ import (
 	"server/common/router"
 	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
+	"server/rdsop"
 	"server/service/game/logic/player"
 )
 
@@ -18,6 +19,12 @@ var _ = router.Reg(func(player *player.Player, msg *outer.EnterGameReq) any {
 
 	enterGameRsp := &outer.EnterGameRsp{}
 	player.Login(msg.NewPlayer, enterGameRsp)
+
+	// 用户留存统计
+	if msg.NewPlayer {
+		rdsop.AddDailyRegistry(player.Role().ShortId())
+	}
+	rdsop.AddDailyLogin(player.Role().ShortId())
 
 	return enterGameRsp
 })

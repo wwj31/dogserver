@@ -2,19 +2,15 @@ package test
 
 import (
 	"context"
+	"log"
 	"testing"
 
-	"server/common/log"
 	"server/common/rds"
 )
 
 func init() {
-	if err := rds.NewBuilder().
-		Addr("localhost:6379").
-		//ClusterMode().
-		Connect(); err != nil {
-		log.Errorw("redis connect failed", "err", err)
-		return
+	if err := rds.Connect("redis://localhost:6379/3", false); err != nil {
+		log.Fatalf("redids connect failed:%v", err)
 	}
 }
 

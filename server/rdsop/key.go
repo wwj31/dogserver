@@ -2,6 +2,7 @@ package rdsop
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/wwj31/dogactor/tools"
 )
@@ -139,4 +140,14 @@ func GMCmdListKey(shortId int64) string {
 // UpdateGoldRecordKey 玩家金币变更记录队列
 func UpdateGoldRecordKey(shortId int64) string {
 	return fmt.Sprintf("goldrecords:%v", shortId)
+}
+
+// DailyRegistrySetKey 每日注册玩家统计
+func DailyRegistrySetKey(date time.Time) string {
+	return fmt.Sprintf("retention:registry:%v", date.Format(tools.StdDateFormat))
+}
+
+// DailyLoginSetKey 每日登录玩家统计
+func DailyLoginSetKey(date time.Time) string {
+	return fmt.Sprintf("retention:login:%v", date.Format(tools.StdDateFormat))
 }
