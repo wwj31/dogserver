@@ -5,16 +5,17 @@ import (
 	"reflect"
 	"sync"
 
+	"github.com/golang/protobuf/proto"
+
 	"server/common/log"
 
-	gogo "github.com/gogo/protobuf/proto"
 	"github.com/wwj31/dogactor/actor"
 )
 
 var router = sync.Map{}
 var result = sync.Map{}
 
-func Reg[ACTOR actor.Actor, MSG gogo.Message](fn func(actor ACTOR, msg MSG) any, repeat ...bool) bool {
+func Reg[ACTOR actor.Actor, MSG proto.Message](fn func(actor ACTOR, msg MSG) any, repeat ...bool) bool {
 	var (
 		msg     MSG
 		act     ACTOR
@@ -32,7 +33,7 @@ func Reg[ACTOR actor.Actor, MSG gogo.Message](fn func(actor ACTOR, msg MSG) any,
 		}
 	}
 
-	handlers.Store(actName, func(actor actor.Actor, message gogo.Message) {
+	handlers.Store(actName, func(actor actor.Actor, message proto.Message) {
 		defer func() {
 			if r := recover(); r != nil {
 				stack := fmt.Sprintf("panic actor:[%v] message:[%T]  recover:%v", actor.ID(), message, r)
@@ -57,7 +58,7 @@ func Result(a actor.Actor, fn func(result any)) {
 	result.Store(a.ID(), fn)
 }
 
-func Dispatch(a actor.Actor, msg gogo.Message) error {
+func Dispatch(a actor.Actor, msg proto.Message) error {
 	msgName := reflect.TypeOf(msg).String()
 	actorName := reflect.TypeOf(a).String()
 
@@ -72,7 +73,7 @@ func Dispatch(a actor.Actor, msg gogo.Message) error {
 		return fmt.Errorf("not find msg:[%v] handler without actor:[%v]", msgName, actorName)
 	}
 
-	handle, _ := v.(func(actor actor.Actor, message gogo.Message))
+	handle, _ := v.(func(actor actor.Actor, message proto.Message))
 	handle(a, msg)
 	return nil
 }

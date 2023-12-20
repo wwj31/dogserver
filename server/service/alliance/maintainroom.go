@@ -16,16 +16,17 @@ func (a *Alliance) manifestMaintenance() {
 	}
 
 	var (
-		emptyRoomStat = make(map[string]map[actor.Id]struct{}) // 统计各个清单空房间数量 map[清单id][房间actorId]
-		roomStat      = make(map[string]map[actor.Id]struct{}) // 统计各个清单非房间数量 map[清单id][房间actorId]
+		emptyRoomStats = make(map[string]map[actor.Id]struct{}) // 统计各个清单空房间数量 map[清单id][房间actorId]
+		roomStats      = make(map[string]map[actor.Id]struct{}) // 统计各个清单非房间数量 map[清单id][房间actorId]
 	)
 
 	for id, _ := range a.manifests {
-		emptyRoomStat[id] = make(map[actor.Id]struct{})
-		roomStat[id] = make(map[actor.Id]struct{})
+		emptyRoomStats[id] = make(map[actor.Id]struct{})
+		roomStats[id] = make(map[actor.Id]struct{})
 	}
 	roomList := rdsop.RoomList(a.allianceId)
 
+	// 依次获取联盟所有房间的信息，加入stat统计结果中
 	for _, roomId := range roomList {
 		roomActorId := actortype.RoomName(roomId)
 		v, err := a.RequestWait(roomActorId, &inner.RoomIsEmptyReq{})
@@ -42,25 +43,25 @@ func (a *Alliance) manifestMaintenance() {
 		}
 
 		if rsp.Empty {
-			if emptyRoomStat[rsp.ManifestId] == nil {
+			if emptyRoomStats[rsp.ManifestId] == nil {
 				log.Errorw("room cannot find manifest", "id", rsp.ManifestId)
 				continue
 			}
-			emptyRoomStat[rsp.ManifestId][roomActorId] = struct{}{}
+			emptyRoomStats[rsp.ManifestId][roomActorId] = struct{}{}
 		} else {
-			if roomStat[rsp.ManifestId] == nil {
+			if roomStats[rsp.ManifestId] == nil {
 				log.Errorw("room cannot find manifest", "id", rsp.ManifestId)
 				continue
 			}
-			roomStat[rsp.ManifestId][roomActorId] = struct{}{}
+			roomStats[rsp.ManifestId][roomActorId] = struct{}{}
 		}
 	}
-	log.Infow("regular maintain", "emptyRoomStat", emptyRoomStat, "roomStat", roomStat)
+	log.Infow("regular maintain", "emptyRoomStats", emptyRoomStats, "roomStats", roomStats)
 
-	// 检查是否满足清单所需数量，不满足的执行补充，多于所需数量尝试销毁
+	// 维护每份清单所需房间数量，不满足的补充，多于所需尝试销毁
 	for id, manifest := range a.manifests {
 		// 补充房间
-		for i := len(emptyRoomStat[id]); i < int(manifest.GameParams.MaintainEmptyRoom); i++ {
+		for i := len(emptyRoomStats[id]); i < int(manifest.GameParams.MaintainEmptyRoom); i++ {
 			roomMgrId := rdsop.GetRoomMgrId()
 			if roomMgrId == -1 {
 				log.Errorw("load rooms failed", "roomMgrId", roomMgrId)
@@ -82,19 +83,13 @@ func (a *Alliance) manifestMaintenance() {
 			log.Infow("create alliance room success", "alliance", a.allianceId, "manifestId", id, "manifest", manifest.GameParams.String())
 		}
 
-		// 先判断是否需要删除清单
-		if manifest.GameParams.MaintainEmptyRoom == 0 && len(emptyRoomStat[id]) == 0 && len(roomStat[id]) == 0 {
-			manifest.Delete()
-		}
-
 		// 尝试销毁多余的空房间
-		disbandNum := len(emptyRoomStat[id]) - int(manifest.GameParams.MaintainEmptyRoom)
+		disbandNum := len(emptyRoomStats[id]) - int(manifest.GameParams.MaintainEmptyRoom)
 		for i := 0; i < disbandNum; i++ {
 			// 随便选个空房间，尝试销毁
 			var roomActorId actor.Id
-			for v := range emptyRoomStat[id] {
+			for v := range emptyRoomStats[id] {
 				roomActorId = v
-				delete(emptyRoomStat[id], v)
 				break
 			}
 
@@ -103,7 +98,14 @@ func (a *Alliance) manifestMaintenance() {
 				log.Warnw("disband room failed", "err", err, "v", v)
 				continue
 			}
+
+			delete(emptyRoomStats[id], roomActorId)
 			log.Infow("disband alliance room success", "alliance", a.allianceId, "room", roomActorId, "manifestId", id, "manifest", manifest.GameParams.String())
+		}
+
+		// 先判断是否需要删除清单
+		if manifest.GameParams.MaintainEmptyRoom == 0 && len(emptyRoomStats[id]) == 0 && len(roomStats[id]) == 0 {
+			manifest.Delete()
 		}
 	}
 }
