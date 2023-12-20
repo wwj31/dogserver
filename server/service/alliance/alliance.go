@@ -132,6 +132,7 @@ func (a *Alliance) loadAllManifest() {
 	}
 
 	for _, manifest := range manifests {
+		manifest.Alliance = a
 		a.manifests[manifest.UID] = manifest
 		log.Debugf("alliance:%v load manifest %+v", a.allianceId, *manifest)
 	}
