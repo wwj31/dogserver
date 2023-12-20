@@ -94,7 +94,8 @@ func (a *Alliance) manifestMaintenance() {
 				break
 			}
 
-			if yes, err := common.IsErr(a.RequestWait(roomActorId, &inner.DisbandRoomReq{})); yes && err != outer.ERROR_ROOM_HAS_DISBAND {
+			yes, err := common.IsErr(a.RequestWait(roomActorId, &inner.DisbandRoomReq{}))
+			if yes && err != outer.ERROR_ROOM_HAS_DISBAND {
 				log.Warnw("disband room failed", "err", err)
 				continue
 			}
