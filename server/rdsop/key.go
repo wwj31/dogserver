@@ -151,3 +151,8 @@ func DailyRegistrySetKey(date time.Time) string {
 func DailyLoginSetKey(date time.Time) string {
 	return fmt.Sprintf("retention:login:%v", date.Format(tools.StdDateFormat))
 }
+
+// RealTimeUserKey 每日实时在线用户
+func RealTimeUserKey(date time.Time) string {
+	return fmt.Sprintf("retention:realtime:%v", date.Format(tools.StdDateFormat))
+}

@@ -27,6 +27,6 @@ func TestRetention(t *testing.T) {
 
 	rdsop.AddDailyLogin(2)
 	rdsop.AddDailyLogin(4)
-	total, v := rdsop.RetentionOf(tools.Now().Local(), 0)
+	total, v := rdsop.Retention(tools.Now().Local(), 0)
 	fmt.Println(total, v)
 }
