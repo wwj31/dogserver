@@ -58,6 +58,10 @@ func (s *Door) OnInit() {
 	alliance.POST("/addgold", addGold)
 	alliance.POST("/rebate", setRebate)
 
+	player := s.ginEngine.Group("/player")
+	player.Use(checkToken)
+	player.Any("/playerlist", playerList)
+
 	go func() {
 		log.Infow("gin startup ", "port", 9999)
 		if err := s.ginEngine.Run(fmt.Sprintf(":%v", 9999)); err != nil {

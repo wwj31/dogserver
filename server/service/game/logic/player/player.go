@@ -189,24 +189,27 @@ func (p *Player) Logout() {
 
 func (p *Player) PlayerInfo() *inner.PlayerInfo {
 	return &inner.PlayerInfo{
-		RID:        p.roleId,
-		ShortId:    p.Role().ShortId(),
-		Name:       p.Role().Name(),
-		Icon:       p.Role().Icon(),
-		Gender:     p.Role().Gender(),
-		UpShortId:  p.Role().UpShortId(),
-		AllianceId: p.Alliance().AllianceId(),
-		Position:   p.Alliance().Position(),
-		RoomId:     p.Room().RoomId(),
-		LoginAt:    tools.TimeFormat(p.Role().LoginAt()),
-		LogoutAt:   tools.TimeFormat(p.Role().LogoutAt()),
-		GSession:   p.gSession.String(),
-		Gold:       p.Role().Gold(),
-		GoldLine:   p.Role().GoldLine(),
+		RID:         p.roleId,
+		ShortId:     p.Role().ShortId(),
+		Name:        p.Role().Name(),
+		Icon:        p.Role().Icon(),
+		Gender:      p.Role().Gender(),
+		AllianceId:  p.Alliance().AllianceId(),
+		Position:    p.Alliance().Position(),
+		UpShortId:   p.Role().UpShortId(),
+		RoomId:      p.Room().RoomId(),
+		LoginAt:     tools.TimeFormat(p.Role().LoginAt()),
+		LogoutAt:    tools.TimeFormat(p.Role().LogoutAt()),
+		GSession:    p.gSession.String(),
+		Gold:        p.Role().Gold(),
+		GoldLine:    p.Role().GoldLine(),
+		ForbidLogin: p.Role().ForbidLogin(),
 	}
 }
 func (p *Player) UpdateInfoToRedis() {
-	rdsop.SetPlayerInfo(p.PlayerInfo())
+	rdsop.GetAndSetPlayerInfo(p.Role().ShortId(), func(info *inner.PlayerInfo) {
+		info = p.PlayerInfo()
+	})
 }
 
 func (p *Player) load() {

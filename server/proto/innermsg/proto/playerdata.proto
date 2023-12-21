@@ -5,18 +5,19 @@ option  go_package = "/inner";
 import "gogo.proto";
 
 message RoleInfo {
-    string RID      = 1 [(gogoproto.moretags) = 'bson:"_id"'];
-    string UID      = 2;
-    int64  ShortId  = 3;
-    string LoginAt  = 4;
-    string LogoutAt = 5;
-    string CreateAt = 6;
-    string Phone    = 7;
-    string Name     = 8;
-    string Icon     = 9;
-    int64  Gold     = 10;
-    int32  Gender   = 11;
-    int64  GoldLine  =12;  // 警戒值
+    string RID         = 1 [(gogoproto.moretags) = 'bson:"_id"'];
+    string UID         = 2;
+    int64  ShortId     = 3;
+    string LoginAt     = 4;
+    string LogoutAt    = 5;
+    string CreateAt    = 6;
+    string Phone       = 7;
+    string Name        = 8;
+    string Icon        = 9;
+    int64  Gold        = 10;
+    int32  Gender      = 11;
+    int64  GoldLine    = 12;  // 警戒值
+    bool   ForbidLogin = 13; // 是否禁止登录游戏
 }
 
 message AllianceInfo {

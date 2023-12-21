@@ -57,9 +57,10 @@ func (a *Alliance) AddMember(playerInfo *inner.PlayerInfo, ntf bool, position ..
 	}
 
 	// 更新玩家公共数据
-	playerInfo.Position = member.Position.Int32()
-	playerInfo.AllianceId = a.allianceId
-	rdsop.SetPlayerInfo(playerInfo)
+	rdsop.GetAndSetPlayerInfo(playerInfo.ShortId, func(info *inner.PlayerInfo) {
+		info.Position = member.Position.Int32()
+		info.AllianceId = a.allianceId
+	})
 	log.Infow("setMember", "member info", playerInfo.String())
 	return member
 }

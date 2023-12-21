@@ -1,8 +1,6 @@
 package alliance
 
 import (
-	"time"
-
 	"server/common"
 	"server/common/actortype"
 	"server/common/log"
@@ -74,56 +72,48 @@ var _ = router.Reg(func(alli *alliance.Alliance, msg *inner.SetMemberPositionReq
 	member.Position = alliance.Position(msg.Position)
 	member.Save()
 
+	rdsop.GetAndSetPlayerInfo(member.ShortId, func(info *inner.PlayerInfo) { info.Position = msg.Position })
 	// 如果对方在线，就通知更新
 	if msg.Player.GSession != "" {
 		// 玩家在线，通知Player actor修改联盟id
-		alli.Request(actortype.PlayerId(member.RID), &inner.AllianceInfoNtf{
+		_ = alli.Send(actortype.PlayerId(member.RID), &inner.AllianceInfoNtf{
 			AllianceId: alli.AllianceId(),
 			Position:   member.Position.Int32(),
-		}, time.Second).Handle(func(resp any, err error) {
-			log.Infow("set result ", "err", err)
-			if err != nil {
-				playerInfo := rdsop.PlayerInfo(member.ShortId)
-				playerInfo.Position = msg.Position
-				rdsop.SetPlayerInfo(&playerInfo)
-			}
 		})
-	} else {
-		msg.Player.Position = msg.Position
-		rdsop.SetPlayerInfo(msg.Player)
 	}
 	return &inner.SetMemberPositionRsp{}
 })
 
 // 解散联盟
-var _ = router.Reg(func(alli *alliance.Alliance, msg *inner.DisbandAllianceReq) any {
-	return nil
-	if msg.RID != alli.Master().RID {
-		return &inner.Error{ErrorInfo: "disband failed rid is not master"}
-	}
-
-	rdsop.DeleteAlliance(alli.AllianceId())
-
-	// 获取联盟所有在线成员，并广播解散消息
-	for _, member := range alli.Members() {
-		playerInfo := rdsop.PlayerInfo(member.ShortId)
-		if playerInfo.GSession != "" {
-			playerActor := actortype.PlayerId(member.RID)
-			_ = alli.Send(playerActor, &inner.AllianceInfoNtf{})
-		}
-
-		playerInfo.AllianceId = 0
-		playerInfo.Position = 0
-		rdsop.SetPlayerInfo(&playerInfo)
-	}
-	_, _ = alli.RequestWait(actortype.AllianceMgrName(), msg)
-
-	alli.Disband()
-	alli.Exit()
-
-	return &inner.DisbandAllianceRsp{}
-})
-
+//
+//	var _ = router.Reg(func(alli *alliance.Alliance, msg *inner.DisbandAllianceReq) any {
+//		return nil
+//		if msg.RID != alli.Master().RID {
+//			return &inner.Error{ErrorInfo: "disband failed rid is not master"}
+//		}
+//
+//		rdsop.DeleteAlliance(alli.AllianceId())
+//
+//		// 获取联盟所有在线成员，并广播解散消息
+//		for _, member := range alli.Members() {
+//			playerInfo := rdsop.PlayerInfo(member.ShortId)
+//			if playerInfo.GSession != "" {
+//				playerActor := actortype.PlayerId(member.RID)
+//				_ = alli.Send(playerActor, &inner.AllianceInfoNtf{})
+//			}
+//
+//			playerInfo.AllianceId = 0
+//			playerInfo.Position = 0
+//			rdsop.SetPlayerInfo(&playerInfo)
+//		}
+//		_, _ = alli.RequestWait(actortype.AllianceMgrName(), msg)
+//
+//		alli.Disband()
+//		alli.Exit()
+//
+//		return &inner.DisbandAllianceRsp{}
+//	})
+//
 // 踢出成员
 var _ = router.Reg(func(alli *alliance.Alliance, msg *inner.KickOutMembersReq) any {
 	for _, shortId := range msg.GetShortIds() {

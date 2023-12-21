@@ -27,8 +27,10 @@ func (s *Role) AddGold(v int64) {
 	s.Player.UpdateInfoToRedis()
 }
 
-func (s *Role) GoldLine() int64     { return s.data.GoldLine }
-func (s *Role) SetGoldLine(v int64) { s.data.GoldLine = v }
+func (s *Role) GoldLine() int64       { return s.data.GoldLine }
+func (s *Role) SetGoldLine(v int64)   { s.data.GoldLine = v }
+func (s *Role) ForbidLogin() bool     { return s.data.ForbidLogin }
+func (s *Role) SetForbidLogin(b bool) { s.data.ForbidLogin = b }
 
 func (s *Role) Name() string        { return s.data.Name }
 func (s *Role) Icon() string        { return s.data.Icon }

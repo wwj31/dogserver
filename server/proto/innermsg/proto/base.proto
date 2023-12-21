@@ -11,20 +11,21 @@ message Error {
 message Ok {}
 
 message PlayerInfo {
-    string RID        = 1;
-    int64  ShortId    = 2;
-    string Name       = 3;
-    string Icon       = 4;
-    int32  Gender     = 5;
-    int32  AllianceId = 6;
-    int32  Position   = 7;
-    int64  UpShortId  = 8;
-    int64  RoomId     = 9;
-    string LoginAt    = 10;
-    string LogoutAt   = 11;
-    string GSession   = 12;
-    int64  Gold       = 13;
-    int64  GoldLine   = 14; // 警戒值 小于该值，不能进游戏、并且会直接导致游戏结束
+    string RID         = 1;
+    int64  ShortId     = 2;
+    string Name        = 3;
+    string Icon        = 4;
+    int32  Gender      = 5;
+    int32  AllianceId  = 6;
+    int32  Position    = 7;
+    int64  UpShortId   = 8;
+    int64  RoomId      = 9;
+    string LoginAt     = 10;
+    string LogoutAt    = 11;
+    string GSession    = 12;
+    int64  Gold        = 13;
+    int64  GoldLine    = 14; // 警戒值 小于该值，不能进游戏、并且会直接导致游戏结束
+    bool   ForbidLogin = 15; // 是否禁止登录游戏
 }
 
 

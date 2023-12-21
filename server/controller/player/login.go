@@ -19,6 +19,7 @@ var _ = router.Reg(func(player *player.Player, msg *outer.EnterGameReq) any {
 		log.Warnw("checksum md5 check failed", "msg", msg.String())
 		return outer.ERROR_FAILED
 	}
+	player.PlayerInfo()
 
 	enterGameRsp := &outer.EnterGameRsp{}
 	player.Login(msg.NewPlayer, enterGameRsp)

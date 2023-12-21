@@ -22,6 +22,9 @@ type Role interface {
 	GoldLine() int64
 	SetGoldLine(v int64)
 
+	ForbidLogin() bool
+	SetForbidLogin(b bool)
+
 	Name() string
 	Icon() string
 	Gender() int32

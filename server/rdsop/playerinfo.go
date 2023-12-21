@@ -3,6 +3,7 @@ package rdsop
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/redis/go-redis/v9"
@@ -15,14 +16,23 @@ import (
 	"server/proto/innermsg/inner"
 )
 
-func SetPlayerInfo(info *inner.PlayerInfo) {
-	b, err := json.Marshal(info)
-	if err != nil {
-		log.Errorw("SetPlayerInfo json marshal failed", "err", err, "info", info.String())
-		return
-	}
+func GetAndSetPlayerInfo(shortId int64, fn func(info *inner.PlayerInfo)) {
+	key := fmt.Sprintf("lock:playerinfo:%v", shortId)
+	rds.LockDo(key, func() {
+		info := PlayerInfo(shortId)
+		if info.ShortId == 0 {
+			info.ShortId = shortId
+		}
 
-	rds.Ins.Set(context.Background(), PlayerInfoKey(info.ShortId), string(b), 0)
+		fn(&info)
+
+		b, err := json.Marshal(info)
+		if err != nil {
+			log.Errorw("SetPlayerInfo json marshal failed", "err", err, "info", info.String())
+			return
+		}
+		rds.Ins.Set(context.Background(), PlayerInfoKey(info.ShortId), string(b), 0)
+	})
 }
 
 func PlayerInfo(shortId int64) (info inner.PlayerInfo) {
