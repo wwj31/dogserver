@@ -186,7 +186,7 @@ func (f *FasterRun) CanLeave(p *inner.PlayerInfo) bool {
 }
 
 func (f *FasterRun) CanSetGold(p *inner.PlayerInfo) bool {
-	if f.fsm.State() == Ready {
+	if f.fsm.State() == Ready || f.fsm.State() == Settlement {
 		return true
 	}
 	return false

@@ -172,7 +172,7 @@ func (n *NiuNiu) CanLeave(p *inner.PlayerInfo) bool {
 }
 
 func (n *NiuNiu) CanSetGold(p *inner.PlayerInfo) bool {
-	if n.fsm.State() == Ready {
+	if n.fsm.State() == Ready || n.fsm.State() == Settlement {
 		return true
 	}
 	return false

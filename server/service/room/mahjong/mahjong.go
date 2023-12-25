@@ -308,7 +308,7 @@ func (m *Mahjong) CanLeave(p *inner.PlayerInfo) bool {
 }
 
 func (m *Mahjong) CanSetGold(p *inner.PlayerInfo) bool {
-	if m.fsm.State() == Ready {
+	if m.fsm.State() == Ready || m.fsm.State() == Settlement {
 		return true
 	}
 	return false
