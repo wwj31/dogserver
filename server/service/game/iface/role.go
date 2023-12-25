@@ -18,6 +18,7 @@ type Role interface {
 
 	Gold() int64
 	AddGold(v int64)
+	SyncDelayGoldWithNtf()
 
 	GoldLine() int64
 	SetGoldLine(v int64)

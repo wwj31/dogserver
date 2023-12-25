@@ -16,6 +16,8 @@ func Put(name string, x interface{}) {}
 
 var spawner = map[string]factory{
 	"inner.WeChatUserInfo":             func() interface{} { return &WeChatUserInfo{} },
+	"inner.SyncDelayGoldRsp":           func() interface{} { return &SyncDelayGoldRsp{} },
+	"inner.SyncDelayGoldReq":           func() interface{} { return &SyncDelayGoldReq{} },
 	"inner.SetWeChatInfoRsp":           func() interface{} { return &SetWeChatInfoRsp{} },
 	"inner.SetWeChatInfoReq":           func() interface{} { return &SetWeChatInfoReq{} },
 	"inner.SetMemberPositionRsp":       func() interface{} { return &SetMemberPositionRsp{} },

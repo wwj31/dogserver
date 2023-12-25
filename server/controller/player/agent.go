@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"server/service/alliance"
+	"server/shared"
 
 	"github.com/spf13/cast"
 	"github.com/wwj31/dogactor/tools"
@@ -220,25 +221,18 @@ var _ = router.Reg(func(p *player.Player, msg *outer.SetScoreForDownReq) any {
 		return outer.ERROR_CAN_NOT_FIND_PLAYER_INFO
 	}
 
-	// 下级还在房间，不能上下分操作
+	// 下级还在房间，不能上下分操作(基于房间、游戏有各种水位限制，以及游戏中存在不确定的实时结算，所以游戏中不允许上下分)
 	if downPlayerInfo.RoomId != 0 {
 		return outer.ERROR_AGENT_DOWN_GOLD_PLAYER_IN_ROOM
 	}
 
 	// 确保下级玩家处于激活状态
 	// 找下级玩家最近登录过的game节点，如果没找到就用自己所在的game节点
-	var dispatchGameId string
-	gameNodeId, _ := rds.Ins.Get(context.Background(), rdsop.GameNodeKey(msg.ShortId)).Result()
-	if gameNodeId != "" {
-		dispatchGameId = gameNodeId
-	} else {
-		dispatchGameId = p.Gamer().ID()
-	}
-
-	v, pullErr := p.RequestWait(dispatchGameId, &inner.PullPlayer{RID: downPlayerInfo.RID})
-	if yes, errCode := common.IsErr(v, pullErr); yes {
-		log.Warnw("SetScoreForDownReq pull player failed", "msg", msg.String(), "err code", errCode)
-		return outer.ERROR_FAILED
+	errCode, gameNode := shared.PullPlayer(p, downPlayerInfo.ShortId, downPlayerInfo.RID, p.Gamer().ID())
+	if errCode != outer.ERROR_OK {
+		log.Warnw("SetScoreForDownReq pull player failed",
+			"msg", msg.String(), "down player", downPlayerInfo, "gameNode", gameNode, "err", errCode)
+		return errCode
 	}
 
 	// 修改下级玩家的分数

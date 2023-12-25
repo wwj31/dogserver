@@ -5,10 +5,12 @@ import (
 	"net/http"
 	"time"
 
-	"server/common"
 	"server/common/actortype"
+	"server/common/log"
 	"server/proto/innermsg/inner"
+	"server/proto/outermsg/outer"
 	"server/rdsop"
+	"server/shared"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
@@ -123,28 +125,19 @@ func addGold(ctx *gin.Context) {
 		return
 	}
 
-	if playerInfo.RoomId != 0 {
-		v, err := door.RequestWait(actortype.RoomName(playerInfo.RoomId), &inner.RoomCanSetGoldReq{ShortId: playerInfo.ShortId})
-		if yes, _ := common.IsErr(v, err); yes {
-			ctx.JSON(http.StatusBadRequest,
-				gin.H{"error": fmt.Errorf("request room failed playerInfo:%v", playerInfo.String()).Error()})
-			return
-		}
-		rsp := v.(*inner.RoomCanSetGoldRsp)
-		if !rsp.Ok {
-			ctx.JSON(http.StatusBadRequest,
-				gin.H{"error": fmt.Errorf("the player's room does not allow to set gold:%v", playerInfo.String()).Error()})
-			return
-		}
+	errCode, gameNode := shared.PullPlayer(door, playerInfo.ShortId, playerInfo.RID)
+	if errCode != outer.ERROR_OK {
+		log.Errorw("pull player failed", "errCode", errCode, "gameNode", gameNode)
+		ctx.JSON(http.StatusInternalServerError,
+			gin.H{"error": fmt.Errorf("door pull player failed").Error()})
+		return
 	}
 
 	gmMsg := &inner.ModifyGoldReq{Gold: gold}
 	result, err := door.RequestWait(actortype.PlayerId(playerInfo.RID), gmMsg, time.Second)
 	if err != nil {
-		rdsop.AddOfflineGMCmd(playerInfo.ShortId, gmMsg)
-		ctx.JSON(http.StatusOK, gin.H{"info": "玩家不在线，命令保存等待玩家上线执行"})
+		ctx.JSON(http.StatusOK, gin.H{"request err": err.Error()})
 		return
-
 	}
 
 	rsp, ok := result.(*inner.ModifyGoldRsp)

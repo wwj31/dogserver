@@ -26,6 +26,18 @@ func (s *Role) AddGold(v int64) {
 	s.Player.SendToClient(&outer.UpdateGoldNtf{Gold: s.data.Gold})
 	s.Player.UpdateInfoToRedis()
 }
+func (s *Role) SyncDelayGoldWithNtf() {
+	changeVal := int64(0)
+	rdsop.SyncGold(s.ShortId(), func(val int64) {
+		s.data.Gold += val
+		changeVal += val
+	})
+
+	if changeVal != 0 {
+		s.Player.SendToClient(&outer.UpdateGoldNtf{Gold: s.data.Gold})
+		s.Player.UpdateInfoToRedis()
+	}
+}
 
 func (s *Role) GoldLine() int64       { return s.data.GoldLine }
 func (s *Role) SetGoldLine(v int64)   { s.data.GoldLine = v }
