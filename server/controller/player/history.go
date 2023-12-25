@@ -41,6 +41,10 @@ var _ = router.Reg(func(p *player.Player, msg *outer.RoomGamblingHistoryReq) any
 // 获取游戏记录
 var _ = router.Reg(func(p *player.Player, msg *outer.RoomRecordingReq) any {
 	recording := rdsop.GetRoomRecording(msg.RoomId, msg.GameStartAt)
+	if recording == nil {
+		return outer.ERROR_FAILED
+	}
+
 	return &outer.RoomRecordingRsp{GameRecordData: &outer.Recording{
 		GameStartAt: recording.GameStartAt,
 		GameOverAt:  recording.GameOverAt,
