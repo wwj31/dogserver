@@ -32,7 +32,8 @@ message ModifyPasswordRsp {
 }
 
 message UpdateGoldNtf {
-    int64 Gold = 1; // 最新金币
+    int64 Gold    = 1; // 最新金币
+    int64 ShortId = 2;
 }
 
 ///////////////////////// 金币变动记录 /////////////////////////

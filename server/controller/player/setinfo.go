@@ -75,7 +75,7 @@ var _ = router.Reg(func(p *player.Player, msg *inner.ModifyGoldReq) any {
 		return &inner.ModifyGoldRsp{Success: true, Info: info}
 	} else {
 		p.Role().AddGold(addGold)
-		p.Role().SyncDelayGoldWithNtf()
+		p.Role().SyncDelayGold()
 		return &inner.ModifyGoldRsp{Success: true, Info: p.PlayerInfo()}
 	}
 })

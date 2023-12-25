@@ -111,6 +111,15 @@ var _ = router.Reg(func(r *room.Room, msg *inner.RoomLogoutReq) any {
 	return nil
 })
 
+// 金币变动广播
+var _ = router.Reg(func(r *room.Room, msg *inner.UpdateGoldInRoomNtf) any {
+	r.Broadcast(&outer.UpdateGoldNtf{
+		Gold:    msg.Gold,
+		ShortId: msg.ShortId,
+	}, msg.ShortId)
+	return nil
+})
+
 // 房间当前状态是否允许上下分
 var _ = router.Reg(func(r *room.Room, msg *inner.RoomCanSetGoldReq) any {
 	// 玩家不在房间内

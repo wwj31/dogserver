@@ -3,6 +3,8 @@ package role
 import (
 	"time"
 
+	"server/common/actortype"
+	"server/proto/innermsg/inner"
 	"server/proto/outermsg/outer"
 	"server/rdsop"
 
@@ -23,19 +25,29 @@ func (s *Role) ShortId() int64     { return s.data.ShortId }
 func (s *Role) Gold() int64 { return s.data.Gold }
 func (s *Role) AddGold(v int64) {
 	s.data.Gold = s.data.Gold + v
-	s.Player.SendToClient(&outer.UpdateGoldNtf{Gold: s.data.Gold})
+	ntf := &outer.UpdateGoldNtf{
+		Gold:    s.data.Gold,
+		ShortId: s.ShortId(),
+	}
+	s.Player.SendToClient(ntf)
 	s.Player.UpdateInfoToRedis()
+
+	if s.Player.Room().RoomId() != 0 {
+		roomId := actortype.RoomName(s.Player.Room().RoomId())
+		_ = s.Player.Send(roomId, &inner.UpdateGoldInRoomNtf{
+			Gold:    s.data.Gold,
+			ShortId: s.ShortId(),
+		})
+	}
 }
-func (s *Role) SyncDelayGoldWithNtf() {
+func (s *Role) SyncDelayGold() {
 	changeVal := int64(0)
 	rdsop.SyncGold(s.ShortId(), func(val int64) {
-		s.data.Gold += val
 		changeVal += val
 	})
 
 	if changeVal != 0 {
-		s.Player.SendToClient(&outer.UpdateGoldNtf{Gold: s.data.Gold})
-		s.Player.UpdateInfoToRedis()
+		s.AddGold(changeVal)
 	}
 }
 

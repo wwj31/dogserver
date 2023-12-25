@@ -114,3 +114,10 @@ message RoomIsEmptyRsp {
   bool     Empty       = 1;
   string   ManifestId  = 2;
 }
+
+// 房间内玩家金币变化的通知
+message UpdateGoldInRoomNtf {
+  int64 Gold    = 1; // 最新值
+  int64 ShortId = 2; // 变动者
+}
+
