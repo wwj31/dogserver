@@ -5,12 +5,12 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/redis/go-redis/v9"
 	"github.com/wwj31/dogactor/logger"
 
 	"github.com/wwj31/dogactor/tools"
 
 	"server/common"
+	"server/common/rds"
 	"server/proto/outermsg/outer"
 	"server/rdsop"
 
@@ -321,7 +321,7 @@ func (n *NiuNiu) masterRebate() {
 		CreateAt:  tools.Now().UnixMilli(),
 	}
 
-	var pip redis.Pipeliner
+	pip := rds.Ins.Pipeline()
 	score := int64(n.gameParams().MasterRebate * common.Gold1000Times) // 门票
 	n.RangePartInPlayer(func(seat int, player *niuniuPlayer) {
 		player.score = common.Max(player.score-score, 0)

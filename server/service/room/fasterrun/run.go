@@ -5,10 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/redis/go-redis/v9"
-
 	"server/common"
 	"server/common/log"
+	"server/common/rds"
 	"server/rdsop"
 
 	"github.com/golang/protobuf/proto"
@@ -319,7 +318,7 @@ func (f *FasterRun) masterRebate() {
 		CreateAt:  tools.Now().UnixMilli(),
 	}
 
-	var pip redis.Pipeliner
+	pip := rds.Ins.Pipeline()
 	score := int64(f.gameParams().MasterRebate * common.Gold1000Times) // 门票
 	for _, player := range f.fasterRunPlayers {
 		player.score = common.Max(player.score-score, 0)
