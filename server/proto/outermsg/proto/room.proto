@@ -127,7 +127,7 @@ message Recording {
 }
 
 // 请求游戏数据回播数据
-message RoomRecordingReq {
+message RoomRecordingReq {// tag:player
     int64 RoomId      = 1; // 房间id
     int64 GameStartAt = 2; // 要看的那局游戏开始时间
 }
@@ -146,7 +146,7 @@ message HistoryInfo {
 }
 
 // 获得游戏历史战绩列表
-message RoomGamblingHistoryReq {
+message RoomGamblingHistoryReq {// tag:player
 }
 message RoomGamblingHistoryRsp {
     repeated HistoryInfo list = 1; // 时间大到小排序

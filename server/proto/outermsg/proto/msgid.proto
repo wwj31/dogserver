@@ -140,8 +140,8 @@ enum Msg {
     IdRoomPlayerEnterNtf = 867132366;
     IdRoomPlayerLeaveNtf = 721409295;
     IdRoomPlayerOnlineNtf = 1386944282;
-    IdRoomRecordingReq = 585852543;
+    IdRoomRecordingReq = 585852543;// dispatch to player
     IdRoomRecordingRsp = 887849782;
-    IdRoomGamblingHistoryReq = 408995401;
+    IdRoomGamblingHistoryReq = 408995401;// dispatch to player
     IdRoomGamblingHistoryRsp = 241219084;
 }

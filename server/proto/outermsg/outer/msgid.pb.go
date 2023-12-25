@@ -161,9 +161,9 @@ const (
 	Msg_IdRoomPlayerEnterNtf                Msg = 867132366
 	Msg_IdRoomPlayerLeaveNtf                Msg = 721409295
 	Msg_IdRoomPlayerOnlineNtf               Msg = 1386944282
-	Msg_IdRoomRecordingReq                  Msg = 585852543
+	Msg_IdRoomRecordingReq                  Msg = 585852543 // dispatch to player
 	Msg_IdRoomRecordingRsp                  Msg = 887849782
-	Msg_IdRoomGamblingHistoryReq            Msg = 408995401
+	Msg_IdRoomGamblingHistoryReq            Msg = 408995401 // dispatch to player
 	Msg_IdRoomGamblingHistoryRsp            Msg = 241219084
 )
 
