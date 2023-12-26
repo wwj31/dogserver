@@ -43,7 +43,7 @@ func (s *StateSettlement) Enter() {
 	// 托管计数
 	for i := 0; i < len(s.niuniuPlayers); i++ {
 		player := s.niuniuPlayers[i]
-		if player.trusteeship {
+		if player != nil && player.trusteeship {
 			player.trusteeshipCount++
 		}
 	}
