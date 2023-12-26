@@ -148,7 +148,7 @@ func (s *StateSettlement) Enter() {
 		partInShortIds = append(partInShortIds, player.ShortId)
 		s.room.Request(actortype.PlayerId(player.RID), &inner.ModifyGoldReq{
 			Set:       false,
-			Gold:      finalScore,
+			Gold:      changes,
 			SmallZero: true, // 允许扣为负数
 		}).Handle(func(resp any, err error) {
 			modifyRspCount[player.RID] = struct{}{}
@@ -163,7 +163,7 @@ func (s *StateSettlement) Enter() {
 			// 记录本场游戏的输赢变化
 			s.history[player.ShortId] = changes
 			rdsop.SetUpdateGoldRecord(player.ShortId, rdsop.GoldUpdateReason{
-				Type:      rdsop.GameWinOrLose, // 跑的快游戏输赢记录
+				Type:      rdsop.GameWinOrLose, // 牛牛游戏输赢记录
 				Gold:      changes,
 				AfterGold: finalScore,
 				OccurAt:   tools.Now(),
