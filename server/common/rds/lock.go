@@ -17,6 +17,16 @@ func LockDo(key string, fn func()) {
 		return
 	}
 	defer locker.Unlock()
-
 	fn()
+}
+
+// Lock For example:
+//
+//		func(){
+//		 	defer Lock("lockXXX")()
+//	       do something...
+//		}
+func Lock(key string) func() {
+	lock := Locker(key)
+	return func() { _, _ = lock.Unlock() }
 }

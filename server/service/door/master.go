@@ -125,7 +125,7 @@ func addGold(ctx *gin.Context) {
 		return
 	}
 
-	errCode, gameNode := shared.PullPlayer(door, playerInfo.ShortId, playerInfo.RID)
+	errCode, gameNode := shared.PullPlayer(door, playerInfo.RID)
 	if errCode != outer.ERROR_OK {
 		log.Errorw("pull player failed", "errCode", errCode, "gameNode", gameNode)
 		ctx.JSON(http.StatusInternalServerError,

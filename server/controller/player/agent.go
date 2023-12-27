@@ -228,7 +228,7 @@ var _ = router.Reg(func(p *player.Player, msg *outer.SetScoreForDownReq) any {
 
 	// 确保下级玩家处于激活状态
 	// 找下级玩家最近登录过的game节点，如果没找到就用自己所在的game节点
-	errCode, gameNode := shared.PullPlayer(p, downPlayerInfo.ShortId, downPlayerInfo.RID, p.Gamer().ID())
+	errCode, gameNode := shared.PullPlayer(p, downPlayerInfo.RID, p.Gamer().ID())
 	if errCode != outer.ERROR_OK {
 		log.Warnw("SetScoreForDownReq pull player failed",
 			"msg", msg.String(), "down player", downPlayerInfo, "gameNode", gameNode, "err", errCode)

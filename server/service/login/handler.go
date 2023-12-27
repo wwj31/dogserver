@@ -155,7 +155,7 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 
 			// 找玩家最近登录过的game节点，如果没找到就重新分配节点，将玩家拉起
 			var dispatchGameNode string
-			errCode, dispatchGameNode = shared.PullPlayer(s, acc.LastShortID, acc.LastLoginRID, s.getGameNode())
+			errCode, dispatchGameNode = shared.PullPlayer(s, acc.LastLoginRID, s.getGameNode())
 			if errCode != outer.ERROR_OK {
 				log.Errorw("pull the player send to game failed ", "err", errCode, "dispatchGameNode", dispatchGameNode)
 				return
@@ -176,7 +176,7 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 				})
 			}
 
-			rds.Ins.Set(context.Background(), rdsop.GameNodeKey(acc.LastShortID), dispatchGameNode, 7*24*time.Hour)
+			rds.Ins.Set(context.Background(), rdsop.GameNodeKey(acc.LastLoginRID), dispatchGameNode, 7*24*time.Hour)
 			log.Infow("login success dispatch the player to game",
 				"new", newPlayer, "role", acc.Roles[acc.LastLoginRID], "req", req.String(), "wechat", weChatAccessToken, "to game", dispatchGameNode)
 		})

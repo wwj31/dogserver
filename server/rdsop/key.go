@@ -18,8 +18,8 @@ func SessionKey(rid string) string {
 }
 
 // GameNodeKey 记录玩家最近一次进入的game节点
-func GameNodeKey(shortId int64) string {
-	return fmt.Sprintf("gamenode:%v", shortId)
+func GameNodeKey(rid string) string {
+	return fmt.Sprintf("gamenode:%v", rid)
 }
 
 // ShortIDKey 获得并从库里删除一个随机短ID
