@@ -149,7 +149,7 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 				s.RequestWait(gate, &inner.KickOutReq{
 					GateSession: oldGateSession.String(),
 					RID:         acc.LastLoginRID,
-				}, 3*time.Second)
+				}, 2*time.Second)
 			}
 			rds.Ins.Set(context.Background(), rdsop.SessionKey(acc.LastLoginRID), gSession.String(), 7*24*time.Hour)
 
