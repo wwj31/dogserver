@@ -27,6 +27,15 @@ func LockDo(key string, fn func()) {
 //	       do something...
 //		}
 func Lock(key string) func() {
-	lock := Locker(key)
-	return func() { _, _ = lock.Unlock() }
+	l := Locker(key)
+	if err := l.Lock(); err != nil {
+		log.Errorw("lock failed", "key", key, "err", err)
+		return func() {}
+	}
+
+	return func() {
+		if _, err := l.Unlock(); err != nil {
+			log.Warnw("unlock failed", "key", key, "err", err)
+		}
+	}
 }
