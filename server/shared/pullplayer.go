@@ -39,7 +39,7 @@ func PullPlayer(sender actor.Messenger, targetRID string, gameNode ...string) (o
 
 	v, pullErr := sender.RequestWait(dispatchGameNode, &inner.PullPlayer{RID: targetRID})
 	if yes, errCode := common.IsErr(v, pullErr); yes {
-		log.Warnw("SetScoreForDownReq pull player failed", "err code", errCode)
+		log.Warnw("pull player failed", "err code", errCode, "RID", targetRID, "gameNode", gameNode)
 		return outer.ERROR_FAILED, dispatchGameNode
 	}
 
