@@ -119,7 +119,7 @@ func (s *StateDeal) decideMaster(mode int32) int {
 		return Spade3Seat()
 
 	case 2: // 赢家
-		if s.gameCount == 0 {
+		if s.gameCount == 1 {
 			return s.decideMaster(0)
 		}
 		_, seat := s.findFasterRunPlayer(s.lastWinShortId)
