@@ -40,7 +40,6 @@ func (s *StateReady) Leave() {
 	s.room.CancelTimer(s.timeout)
 	s.onPlayerEnter = nil
 	s.onPlayerLeave = nil
-	s.masterRebate()
 	s.Log().Infow("[NiuNiu] leave state ready", "room", s.room.RoomId)
 }
 

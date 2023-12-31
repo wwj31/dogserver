@@ -35,6 +35,9 @@ func (s *StateDeal) Enter() {
 		}
 	}
 
+	// 扣门票
+	s.masterRebate()
+
 	cards := RandomPokerCards(nil, s.gameParams().LaiZi)
 	testCardsStr := rds.Ins.Get(context.Background(), "niuniu_testcards").Val()
 	if testCardsStr != "" {
