@@ -128,6 +128,8 @@ func (s *StateSettlement) Enter() {
 		}
 	}
 
+	s.lastWinShortId = winner.ShortId
+
 	// 大结算
 	if s.finalSettlement() || s.scoreZeroOver || trusteeshipFinalSettlement {
 		s.Log().Infow("final settlement",

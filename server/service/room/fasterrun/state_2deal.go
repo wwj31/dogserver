@@ -126,7 +126,7 @@ func (s *StateDeal) decideMaster(mode int32) int {
 		return seat
 
 	case 3: //  首局黑桃三，之后赢家
-		if s.gameCount == 0 {
+		if s.gameCount == 1 {
 			return Spade3Seat()
 		}
 		return s.decideMaster(2)

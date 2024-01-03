@@ -93,6 +93,8 @@ func (s *Login) Login(gSession common.GSession, req *outer.LoginReq) {
 					weChatAccessToken = claims.weChatToken
 				}
 
+				// 甲乙丙丁戊己庚辛壬葵
+				// 子丑寅卯辰巳午未申酉戌亥
 				result = mongodb.Ins.Collection(account.Collection).FindOne(context.Background(), bson.M{"_id": claims.UID})
 				if err = result.Err(); err == mongo.ErrNoDocuments {
 					log.Warnw("token login can not find account", "err", err, "req", req.String())
