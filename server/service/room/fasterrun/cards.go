@@ -139,6 +139,13 @@ func (p PokerCards) StraightGroups(t PokerCardsType, n int) (result []PokerCards
 		return nil
 	}
 
+	// 排除数量不够的
+	for i := 0; i < len(arr); i++ {
+		if stat[arr[i]] < same {
+			arr = append(arr[:i], arr[i+1:]...)
+		}
+	}
+
 	var (
 		seq      = 1
 		seqPoint = arr[0]

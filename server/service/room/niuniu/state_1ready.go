@@ -27,7 +27,6 @@ func (s *StateReady) Enter() {
 	s.RangePartInPlayer(func(seat int, player *niuniuPlayer) {
 		if player.Gold <= s.baseScore() || player.trusteeshipCount >= s.gameParams().TrusteeshipCount {
 			s.room.PlayerLeave(player.ShortId, true)
-			return
 		}
 	})
 	s.Log().Infow("[NiuNiu] enter state ready ", "room", s.room.RoomId)
