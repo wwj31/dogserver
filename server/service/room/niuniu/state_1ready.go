@@ -24,11 +24,14 @@ func (s *StateReady) Enter() {
 	s.onPlayerLeave = s.playerLeave
 	s.timeout = ""
 
-	s.RangePartInPlayer(func(seat int, player *niuniuPlayer) {
-		if player.Gold <= s.baseScore() || player.trusteeshipCount >= s.gameParams().TrusteeshipCount {
-			s.room.PlayerLeave(player.ShortId, true)
+	for _, player := range s.niuniuPlayers {
+		if player != nil {
+			if player.Gold <= s.baseScore() || player.trusteeshipCount >= s.gameParams().TrusteeshipCount {
+				s.room.PlayerLeave(player.ShortId, true)
+			}
 		}
-	})
+	}
+
 	s.Log().Infow("[NiuNiu] enter state ready ", "room", s.room.RoomId)
 	s.room.Broadcast(&outer.NiuNiuReadyNtf{})
 
