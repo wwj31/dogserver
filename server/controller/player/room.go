@@ -122,6 +122,10 @@ var _ = router.Reg(func(p *player.Player, msg *outer.SetRoomManifestReq) any {
 
 // 删除清单
 var _ = router.Reg(func(p *player.Player, msg *outer.PruneRoomManifestReq) any {
+	if p.Alliance().Position() < alliance.DeputyMaster.Int32() {
+		return outer.ERROR_PLAYER_POSITION_LIMIT
+	}
+
 	alliId := actortype.AllianceName(p.Alliance().AllianceId())
 	v, err := p.RequestWait(alliId, msg)
 	if yes, code := common.IsErr(v, err); yes {
@@ -274,7 +278,7 @@ var _ = router.Reg(func(p *player.Player, msg *outer.JoinRoomReq) any {
 	}
 
 	roomActor := actortype.RoomName(msg.RoomId)
-	v, err := p.RequestWait(roomActor, &inner.JoinRoomReq{Player: p.PlayerInfo()})
+	v, err := p.RequestWait(roomActor, &inner.JoinRoomReq{Player: p.PlayerInfo()}, 1500*time.Millisecond)
 	if yes, code := common.IsErr(v, err); yes {
 		return code
 	}
