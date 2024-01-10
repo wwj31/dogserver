@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"path"
 	"reflect"
+	"runtime/debug"
 	"time"
 
 	"github.com/wwj31/dogactor/logger"
@@ -125,6 +126,12 @@ func (r *Room) OnStop() bool {
 }
 
 func (r *Room) OnHandle(msg actor.Message) {
+	defer func() {
+		if err := recover(); err != nil {
+			r.Log().Errorf(fmt.Sprintf("panic recover:%v msg(%v): %v \n%v", err, reflect.TypeOf(msg), msg.String(), string(debug.Stack())))
+		}
+	}()
+
 	pt, ok := msg.Payload().(proto.Message)
 	if !ok {
 		r.Log().Warnw("room handler msg is not proto",
