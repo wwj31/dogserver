@@ -28,8 +28,7 @@ func (s *StateSettlement) Enter() {
 	s.history = make(map[int64]int64)
 	s.currentStateEndAt = tools.Now().Add(SettlementDuration)
 	s.Log().Infow("[Mahjong] enter state settlement",
-		"room", s.room.RoomId, "master", s.masterIndex, "notHu", notHu, "game count", s.gameCount,
-		"endAt", s.currentStateEndAt.UnixMilli())
+		"room", s.room.RoomId, "master", s.masterIndex, "notHu", notHu, "game count", s.gameCount, "endAt", s.currentStateEndAt.UnixMilli())
 
 	maxNum := s.playerNumber()
 	settlementMsg := &outer.MahjongBTESettlementNtf{

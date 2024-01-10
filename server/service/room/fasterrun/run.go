@@ -177,8 +177,15 @@ func (f *FasterRun) CanLeave(p *inner.PlayerInfo) bool {
 
 	// 只有准备和结算时可以离开
 	switch f.fsm.State() {
-	case Settlement, Ready:
-		return true
+	case Settlement:
+		if f.gameCount == int(f.gameParams().PlayCountLimit) {
+			return true
+		}
+
+	case Ready:
+		if f.gameCount == 1 {
+			return true
+		}
 	}
 
 	return false
