@@ -1,8 +1,9 @@
 package fasterrun
 
 import (
-	"server/common"
 	"sort"
+
+	"server/common"
 
 	"server/common/log"
 )
@@ -312,6 +313,8 @@ func (p PokerCards) AnalyzeCards(AAAisBomb bool) (cardsGroup CardsGroup) {
 					if len(seqArr) > 2 {
 						seqArr = seqArr[1:]
 						goto again
+					} else {
+						continue
 					}
 				}
 
