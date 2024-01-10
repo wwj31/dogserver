@@ -93,3 +93,53 @@ func (s *StateShow) Handle(shortId int64, v any) (result any) {
 	}
 	return outer.ERROR_NIUNIU_STATE_MSG_INVALID
 }
+
+func insteadJoker(handCards PokerCards, cardsGroup CardsGroup) (result CardsGroup) {
+	result = cardsGroup
+	var jokers PokerCards
+	for _, card := range handCards {
+		if card.Color() == Joker {
+			jokers = append(jokers, card)
+		}
+	}
+
+	if len(jokers) == 0 {
+		return
+	}
+
+	var dmpCards PokerCards
+	// 找到dmpCards中存在的一张牌，并且删除
+	dmpDelete := func(targetCard PokerCard) bool {
+		for i, card := range dmpCards {
+			if card == targetCard {
+				dmpCards = append(dmpCards[:i], dmpCards[i+1:]...)
+				return true
+			}
+		}
+		return false
+	}
+
+	copy(dmpCards, handCards)
+	for i, card := range result.Cards {
+		if !dmpDelete(card) {
+			result.Cards[i] = jokers[0]
+			jokers = jokers[1:]
+			if len(jokers) == 0 {
+				return
+			}
+		}
+	}
+
+	copy(dmpCards, handCards)
+	for i, card := range result.SideCards {
+		if !dmpDelete(card) {
+			result.SideCards[i] = jokers[0]
+			jokers = jokers[1:]
+			if len(jokers) == 0 {
+				return
+			}
+		}
+	}
+
+	return
+}

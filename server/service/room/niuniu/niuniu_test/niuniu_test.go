@@ -75,3 +75,68 @@ func TestBug(t *testing.T) {
 	fmt.Println(dst)
 
 }
+
+func TestInsteadJoker(t *testing.T) {
+	cards := niuniu.PokerCards{
+		niuniu.Spades_A,
+		niuniu.Hearts_7,
+		niuniu.Diamonds_8,
+		niuniu.Joker1,
+		niuniu.Joker2,
+	}
+	dst := cards.AnalyzeCards(&params)
+	fmt.Println(dst)
+
+	ret := insteadJoker(cards, dst)
+	fmt.Println(ret)
+}
+
+func insteadJoker(handCards niuniu.PokerCards, cardsGroup niuniu.CardsGroup) (result niuniu.CardsGroup) {
+	result = cardsGroup
+	var jokers niuniu.PokerCards
+	for _, card := range handCards {
+		if card.Color() == niuniu.Joker {
+			jokers = append(jokers, card)
+		}
+	}
+
+	if len(jokers) == 0 {
+		return
+	}
+
+	var dmpCards niuniu.PokerCards
+	// 找到dmpCards中存在的一张牌，并且删除
+	dmpDelete := func(targetCard niuniu.PokerCard) bool {
+		for i, card := range dmpCards {
+			if card == targetCard {
+				dmpCards = append(dmpCards[:i], dmpCards[i+1:]...)
+				return true
+			}
+		}
+		return false
+	}
+
+	copy(dmpCards, handCards)
+	for i, card := range result.Cards {
+		if !dmpDelete(card) {
+			result.Cards[i] = jokers[0]
+			jokers = jokers[1:]
+			if len(jokers) == 0 {
+				return
+			}
+		}
+	}
+
+	copy(dmpCards, handCards)
+	for i, card := range result.SideCards {
+		if !dmpDelete(card) {
+			result.SideCards[i] = jokers[0]
+			jokers = jokers[1:]
+			if len(jokers) == 0 {
+				return
+			}
+		}
+	}
+
+	return
+}
