@@ -33,7 +33,7 @@ func (s *StateShow) Enter() {
 				s.room.Broadcast(&outer.NiuNiuFinishShowCardsNtf{
 					ShortId:   player.ShortId,
 					HandCards: player.handCards.ToPB(),
-					CardsType: player.cardsGroup.ToPB(),
+					CardsType: insteadJoker(player.handCards, player.cardsGroup).ToPB(),
 				})
 				player.checkTrusteeship(s.room)
 			}
@@ -79,7 +79,7 @@ func (s *StateShow) Handle(shortId int64, v any) (result any) {
 		s.room.Broadcast(&outer.NiuNiuFinishShowCardsNtf{
 			ShortId:   shortId,
 			HandCards: player.handCards.ToPB(),
-			CardsType: player.cardsGroup.ToPB(),
+			CardsType: insteadJoker(player.handCards, player.cardsGroup).ToPB(),
 		})
 		s.Log().Infow("player show cards", "shortId", shortId, "hand cards", player.handCards, "cards group", player.cardsGroup)
 
