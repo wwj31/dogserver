@@ -204,3 +204,29 @@ func TestFindBiggerDebug2(t *testing.T) {
 	cg := cards.AnalyzeCards(true)
 	fmt.Println(cg)
 }
+
+/*
+"213, 313, 310, 409, 408, 106, 206, 306, 105, 205, 305"
+*/
+func TestFindBiggerDebug3(t *testing.T) {
+	handCards := fasterrun.PokerCards{213, 313, 310, 409, 408, 106, 206, 306, 105, 205, 305}
+	biggerPlane := handCards.FindBigger(fasterrun.CardsGroup{
+		Type:  fasterrun.Plane,
+		Cards: fasterrun.PokerCards{0, 0, 0, 0, 0, 0},
+	})
+
+	var playCardsGroup fasterrun.CardsGroup
+
+	if len(biggerPlane) > 0 {
+		n := len(biggerPlane[0].Cards) / 3
+		needSideCardsNum := n * 2 // 飞机需要的带牌数量
+		spareCards := handCards.Remove(biggerPlane[0].Cards...)
+		if len(spareCards) <= needSideCardsNum {
+			playCardsGroup.Type = fasterrun.Plane
+			playCardsGroup.Cards = biggerPlane[0].Cards
+			playCardsGroup.SideCards = spareCards
+		}
+		return
+	}
+	fmt.Println(biggerPlane)
+}

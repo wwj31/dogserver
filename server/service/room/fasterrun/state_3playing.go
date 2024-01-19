@@ -398,7 +398,7 @@ func (s *StatePlaying) playTolerance(handCards PokerCards) (playCardsGroup Cards
 	// 飞机
 	biggerPlane := handCards.FindBigger(CardsGroup{
 		Type:  Plane,
-		Cards: PokerCards{0},
+		Cards: PokerCards{0, 0, 0, 0, 0, 0},
 	})
 	if len(biggerPlane) > 0 {
 		n := len(biggerPlane[0].Cards) / 3
@@ -415,7 +415,7 @@ func (s *StatePlaying) playTolerance(handCards PokerCards) (playCardsGroup Cards
 	// 三张
 	biggerTrips := handCards.FindBigger(CardsGroup{
 		Type:  Trips,
-		Cards: PokerCards{0},
+		Cards: PokerCards{0, 0, 0},
 	})
 	if len(biggerTrips) > 0 {
 		needSideCardsNum := 2 // 三带二需要的带牌数量

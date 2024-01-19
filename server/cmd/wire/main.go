@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/google/wire"
+
 	"server/a"
 	"server/b"
 	"server/c"
