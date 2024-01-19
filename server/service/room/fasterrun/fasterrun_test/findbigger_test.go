@@ -209,20 +209,19 @@ func TestFindBiggerDebug2(t *testing.T) {
 "213, 313, 310, 409, 408, 106, 206, 306, 105, 205, 305"
 */
 func TestFindBiggerDebug3(t *testing.T) {
-	handCards := fasterrun.PokerCards{213, 313, 310, 409, 408, 106, 206, 306, 105, 205, 305}
+	handCards := fasterrun.PokerCards{104, 204, 404, 405}
 	biggerPlane := handCards.FindBigger(fasterrun.CardsGroup{
-		Type:  fasterrun.Plane,
-		Cards: fasterrun.PokerCards{0, 0, 0, 0, 0, 0},
+		Type:  fasterrun.Trips,
+		Cards: fasterrun.PokerCards{0, 0, 0},
 	})
 
 	var playCardsGroup fasterrun.CardsGroup
 
 	if len(biggerPlane) > 0 {
-		n := len(biggerPlane[0].Cards) / 3
-		needSideCardsNum := n * 2 // 飞机需要的带牌数量
+		needSideCardsNum := 2 // 飞机需要的带牌数量
 		spareCards := handCards.Remove(biggerPlane[0].Cards...)
 		if len(spareCards) <= needSideCardsNum {
-			playCardsGroup.Type = fasterrun.Plane
+			playCardsGroup.Type = fasterrun.TripsWithTwo
 			playCardsGroup.Cards = biggerPlane[0].Cards
 			playCardsGroup.SideCards = spareCards
 		}

@@ -318,10 +318,6 @@ func (s *StatePlaying) actionTimer(expireAt time.Time, immediately bool) {
 		player, _ := s.findFasterRunPlayer(s.waitingPlayShortId)
 		var cards PokerCards
 
-		defer func() {
-			s.Log().Infow("player timeout", "shortId", s.waitingPlayShortId, "cards", cards)
-		}()
-
 		// 是否进入托管
 		if s.gameParams().TrusteeshipCount > 0 && !player.trusteeship && !immediately {
 			player.timeoutTrusteeshipCount++
@@ -332,6 +328,7 @@ func (s *StatePlaying) actionTimer(expireAt time.Time, immediately bool) {
 			}
 		}
 
+		s.Log().Infow("player timeout", "shortId", s.waitingPlayShortId, "cards", cards)
 		if s.waitingPlayFollow {
 			latest := s.lastValidPlayCards()
 			biggerCardGroups := player.handCards.FindBigger(latest.cardsGroup)
@@ -422,7 +419,7 @@ func (s *StatePlaying) playTolerance(handCards PokerCards) (playCardsGroup Cards
 		spareCards := handCards.Remove(biggerPlane[0].Cards...)
 		if len(spareCards) <= needSideCardsNum {
 			playCardsGroup.Type = TripsWithTwo
-			playCardsGroup.Cards = biggerPlane[0].Cards
+			playCardsGroup.Cards = biggerTrips[0].Cards
 			playCardsGroup.SideCards = spareCards
 		}
 	}
