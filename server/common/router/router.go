@@ -36,7 +36,7 @@ func Reg[ACTOR actor.Actor, MSG proto.Message](fn func(actor ACTOR, msg MSG) any
 	handlers.Store(actName, func(actor actor.Actor, message proto.Message) {
 		defer func() {
 			if r := recover(); r != nil {
-				stack := fmt.Sprintf("panic actor:[%v] message:[%T]  recover:%v", actor.ID(), message, r)
+				stack := fmt.Sprintf("panic actor:[%v] message:[%T]  info:%v recover:%v", actor.ID(), message, message.String(), r)
 				log.Errorf(stack)
 			}
 		}()
