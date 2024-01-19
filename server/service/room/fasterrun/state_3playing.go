@@ -250,6 +250,10 @@ func (s *StatePlaying) nextPlayer(seat int, lastPlayInfo *playCardsRecord) {
 
 		// 手牌没有更大的牌了，延迟2秒直接过
 		biggerCardGroups := player.handCards.FindBigger(lastValidPlay.cardsGroup)
+		if len(biggerCardGroups) < 0 && s.gameParams().FollowPlayTolerance {
+			playCardsGroup, _ := s.followPlayTolerance(player.handCards, lastValidPlay.cardsGroup)
+			biggerCardGroups = append(biggerCardGroups, playCardsGroup)
+		}
 		bigger = len(biggerCardGroups) > 0
 		if !bigger {
 			waitingExpiration = tools.Now().Add(WaitingPassExpiration)
@@ -332,6 +336,10 @@ func (s *StatePlaying) actionTimer(expireAt time.Time, immediately bool) {
 		if s.waitingPlayFollow {
 			latest := s.lastValidPlayCards()
 			biggerCardGroups := player.handCards.FindBigger(latest.cardsGroup)
+			if len(biggerCardGroups) < 0 && s.gameParams().FollowPlayTolerance {
+				playCardsGroup, _ := s.followPlayTolerance(player.handCards, latest.cardsGroup)
+				biggerCardGroups = append(biggerCardGroups, playCardsGroup)
+			}
 			if len(biggerCardGroups) == 0 {
 				s.pass(player)
 				return
