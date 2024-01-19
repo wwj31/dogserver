@@ -416,7 +416,7 @@ func (s *StatePlaying) playTolerance(handCards PokerCards) (playCardsGroup Cards
 	})
 	if len(biggerTrips) > 0 {
 		needSideCardsNum := 2 // 三带二需要的带牌数量
-		spareCards := handCards.Remove(biggerPlane[0].Cards...)
+		spareCards := handCards.Remove(biggerTrips[0].Cards...)
 		if len(spareCards) <= needSideCardsNum {
 			playCardsGroup.Type = TripsWithTwo
 			playCardsGroup.Cards = biggerTrips[0].Cards
